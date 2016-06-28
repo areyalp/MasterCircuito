@@ -2,6 +2,7 @@ package ve.com.mastercircuito.sales;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -264,6 +265,18 @@ public class MainView extends JFrame{
 	private MyInternalFrame budgetsFrame = new MyInternalFrame();
 	private MyInternalFrame startersFrame = new MyInternalFrame();
 	private MyInternalFrame tracingFrame = new MyInternalFrame();
+	
+	//Budget add Objects
+		private JButton buttonBudgetAdd;
+		private JButton buttonBudgetEdit;
+		private Component budgetSwitchesPanel;
+		private Object panelBudgetAddNew;
+		private Object panelBudgetEdit;
+		private Object panelBudgetDescription;
+		private Component panelWrapperBudgetDescription;
+		private JScrollPane tableBudgetScrollPane;
+		private JTable tableBudgetsResult;
+
 	
 	public static void main(String[] args) {
 		new MainView();
@@ -531,8 +544,30 @@ public class MainView extends JFrame{
 		} catch(java.beans.PropertyVetoException e) {
 			
 		}
+		
+		Font fa = null;
+		
+		JTabbedPane budgetsTabbedPane = new JTabbedPane(JTabbedPane.LEFT);
+		budgetsTabbedPane.addTab(Fa.fa_search, null, createBudgetMainPanel(), "Buscar");
+		budgetsTabbedPane.addTab(Fa.fa_pencil_square_o, null, createBudgetSettingsPanel(), "Editar");
+		budgetsTabbedPane.setFont(fa);
+		
+		budgetsFrame.add(budgetsTabbedPane);
+		
+		budgetsFrame.setVisible(true);
+		desktop.add(budgetsFrame);
+		try{
+			budgetsFrame.setSelected(true);
+		} catch(java.beans.PropertyVetoException e) {
+			
+		}
 	}
 	
+	private Component createBudgetSettingsPanel() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	private void createStartersFrame() {
 		startersFrame = new MyInternalFrame("Arrancadores");
 		startersFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -4633,6 +4668,76 @@ public class MainView extends JFrame{
 		}
 	}
 	
+	private JTabbedPane createBudgetMainPanel() {
+		
+		JTabbedPane budgetViewTabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		
+		JPanel budgetMainPanel = new JPanel();
+		budgetMainPanel.setLayout(new BorderLayout(20,20));
+		
+		budgetMainPanel.add(createBudgetSearchBarPanel(), BorderLayout.NORTH);
+				
+		tableBudgetScrollPane = new JScrollPane(createBudgetTablePanel());
+		tableBudgetsResult.setFillsViewportHeight(true);
+		budgetMainPanel.add(tableBudgetScrollPane, BorderLayout.CENTER);
+		
+		JPanel panelButtons = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 20));
+		
+		ButtonListener lForButton = new ButtonListener();
+		
+		buttonBudgetAdd = new JButton("Agregar");
+		buttonBudgetAdd.setActionCommand("budget.description.buttons.add");
+		buttonBudgetAdd.addActionListener(lForButton);
+		panelButtons.add(buttonBudgetAdd);
+		
+		buttonBudgetEdit = new JButton("Editar");
+		buttonBudgetEdit.setActionCommand("budget.description.buttons.edit");
+		buttonBudgetEdit.addActionListener(lForButton);
+		buttonBudgetEdit.setEnabled(false);
+		panelButtons.add(buttonBudgetEdit);
+		
+		JPanel panelBudgetLower = new JPanel(new BorderLayout(20,20));
+		panelBudgetDescription = createBudgetDescriptionPanel();
+		
+		panelWrapperBoardDescription = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		panelWrapperBoardDescription.add(panelBoardDescription);
+		/*
+		panelBudgetAddNew = createBudgetAddPanel();
+		panelBudgetAddNew.setVisible(false);
+		
+		panelBudgetEdit = createBudgetEditPanel();
+		panelBudgetEdit.setVisible(false);
+		*/
+		panelBudgetLower.add(panelWrapperBudgetDescription, BorderLayout.CENTER);
+		panelBudgetLower.add(panelButtons, BorderLayout.SOUTH);
+		
+		budgetMainPanel.add(panelBoardLower, BorderLayout.SOUTH);
+		budgetViewTabbedPane.addTab("Buscar", null, budgetMainPanel, "Buscar");
+		
+		budgetSwitchesPanel = createBoardSwitchesPanel();
+		
+		budgetViewTabbedPane.addTab("Interruptores", null, budgetSwitchesPanel, "Interruptores");
+		budgetViewTabbedPane.setFont(new Font(null, Font.BOLD, 16));
+	
+			
+		return budgetViewTabbedPane;
+	}
+	
+	private Object createBudgetDescriptionPanel() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private Component createBudgetTablePanel() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private Component createBudgetSearchBarPanel() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	private List<String> loadComboList(String queryString, String columnName) {
 		List<String> comboList = new ArrayList<String>();
 		comboList.add("Todas");
