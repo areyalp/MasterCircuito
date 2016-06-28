@@ -1,0 +1,663 @@
+package ve.com.mastercircuito.db;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Iterator;
+
+import javax.swing.JOptionPane;
+
+import ve.com.mastercircuito.utils.StringTools;
+
+public class Db extends MysqlDriver {
+	
+	public Db() {
+		super();
+	}
+	
+	public Db(String host, String dbuser, String dbpassword, String database) {
+		super(host,dbuser,dbpassword,database);
+	}
+	
+	public boolean switchExists(String phases, String current, String brand, String type, String interruption, String model) {
+		String queryString;
+		
+		queryString = "SELECT * FROM switches, switch_brand, switch_type, currents, interruptions "
+					+ "WHERE switches.brand_id = switch_brand.id "
+					+ "AND switches.type_id = switch_type.id "
+					+ "AND switches.interruption_id = interruptions.id "
+					+ "AND switches.current_id = currents.id "
+					+ "AND switches.phases = '" + phases + "' "
+					+ "AND switch_type.type = '" + type + "' "
+					+ "AND currents.current = '" + current + "' "
+					+ "AND switch_brand.brand = '" + brand + "' "
+					+ "AND interruptions.interruption = '" + interruption + "' "
+					+ "AND switches.model = '" + model + "'";
+		
+		this.select(queryString);
+		
+		return (this.getNumRows() > 0)? true:false;
+	}
+	
+	public boolean editSwitch(int switchId, ArrayList<Object> listFields, ArrayList<Object> listValues) {
+		if (listFields.size() > 0) {
+			String queryFields = "";
+			Iterator<Object> it1 = listFields.iterator();
+			Iterator<Object> it2 = listValues.iterator();
+			while (it1.hasNext() && it2.hasNext()) {
+				queryFields += it1.next().toString() + " = " + it2.next().toString() + ",";
+			}
+			queryFields = StringTools.removeLastChar(queryFields);
+			String queryString = "UPDATE switches SET " + queryFields + " WHERE id = " + switchId;
+			if (this.update(queryString)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean editBox(int boxId, ArrayList<Object> listFields, ArrayList<Object> listValues) {
+		if (listFields.size() > 0) {
+			String queryFields = "";
+			Iterator<Object> it1 = listFields.iterator();
+			Iterator<Object> it2 = listValues.iterator();
+			while (it1.hasNext() && it2.hasNext()) {
+				queryFields += it1.next().toString() + " = " + it2.next().toString() + ",";
+			}
+			queryFields = StringTools.removeLastChar(queryFields);
+			String queryString = "UPDATE boxes SET " + queryFields + " WHERE id = " + boxId;
+			if (this.update(queryString)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean editBoard(int boardId, ArrayList<Object> listFields, ArrayList<Object> listValues) {
+		if (listFields.size() > 0) {
+			String queryFields = "";
+			Iterator<Object> it1 = listFields.iterator();
+			Iterator<Object> it2 = listValues.iterator();
+			while (it1.hasNext() && it2.hasNext()) {
+				queryFields += it1.next().toString() + " = " + it2.next().toString() + ",";
+			}
+			queryFields = StringTools.removeLastChar(queryFields);
+			String queryString = "UPDATE boards SET " + queryFields + " WHERE id = " + boardId;
+			if (this.update(queryString)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean switchBrandExists(String brand) {
+		String queryString;
+		
+		queryString = "SELECT id FROM switch_brand WHERE brand = '" + brand + "'";
+		this.select(queryString);
+
+		return (this.getNumRows() > 0)? true:false;
+	}
+	
+	public boolean addSwitchBrand(String brand) {
+		String queryInsert;
+		
+		queryInsert = "INSERT INTO switch_brand (brand) VALUES ('" + brand + "')";
+		this.insert(queryInsert);
+		
+		return (this.getInsertId() > 0)? true:false;
+	}
+	
+	public boolean removeSwitchBrand(String brand) {
+		String queryDelete;
+		
+		queryDelete = "DELETE FROM switch_brand WHERE brand = '" + brand + "'";
+		return this.delete(queryDelete);
+	}
+	
+	public boolean switchTypeExists(String type) {
+		String queryString;
+		
+		queryString = "SELECT id FROM switch_type WHERE type = '" + type + "'";
+		this.select(queryString);
+		
+		return (this.getNumRows() > 0)? true:false;
+	}
+	
+	public boolean addSwitchType(String type, String brand) {
+		String queryInsert;
+		int brandId = this.getSwitchBrandId(brand);
+		
+		if(brandId < 1) {
+			return false;
+		}
+		
+		queryInsert = "INSERT INTO switch_type (type, brand_id) VALUES ('" + type + "', " + brandId + ")";
+		this.insert(queryInsert);
+		
+		return (this.getInsertId() > 0)? true:false;
+	}
+	
+	public boolean removeSwitchType(String type) {
+		String queryDelete;
+		
+		queryDelete = "DELETE FROM switch_type WHERE type = '" + type + "'";
+		return this.delete(queryDelete);
+	}
+	
+	public boolean currentExists(String current) {
+		String queryString;
+		
+		queryString = "SELECT id FROM currents WHERE current = '" + current + "'";
+		this.select(queryString);
+		
+		return (this.getNumRows() > 0)? true:false;
+	}
+	
+	public boolean addCurrent(String current) {
+		String queryInsert;
+		
+		queryInsert = "INSERT INTO currents (current) VALUES ('" + current + "')";
+		this.insert(queryInsert);
+		
+		return (this.getInsertId() > 0)? true:false;
+	}
+	
+	public boolean removeCurrent(String current) {
+		String queryDelete;
+		
+		queryDelete = "DELETE FROM currents WHERE current = '" + current + "'";
+		return this.delete(queryDelete);
+	}
+	
+	public boolean voltageExists(String voltage) {
+		String queryString;
+		
+		queryString = "SELECT id FROM voltages WHERE voltage = '" + voltage + "'";
+		this.select(queryString);
+		
+		return (this.getNumRows() > 0)? true:false;
+	}
+	
+	public boolean addVoltage(String voltage, String type) {
+		String queryInsert;
+		
+		queryInsert = "INSERT INTO voltages (voltage) VALUES ('" + voltage + "V" + type + "')";
+		this.insert(queryInsert);
+		
+		return (this.getInsertId() > 0)? true:false;
+	}
+	
+	public boolean removeVoltage(String voltage) {
+		String queryDelete;
+		
+		queryDelete = "DELETE FROM voltages WHERE voltage = '" + voltage + "'";
+		return this.delete(queryDelete);
+	}
+	
+	public boolean interruptionExists(String interruption) {
+		String queryString;
+		
+		queryString = "SELECT id FROM interruptions WHERE interruption = '" + interruption + "'";
+		this.select(queryString);
+		
+		return (this.getNumRows() > 0)? true:false;
+	}
+	
+	public boolean addInterruption(String interruption) {
+		String queryInsert;
+		
+		queryInsert = "INSERT INTO interruptions (interruption) VALUES ('" + interruption + "')";
+		this.insert(queryInsert);
+		
+		return (this.getInsertId() > 0)? true:false;
+	}
+	
+	public boolean removeInterruption(String interruption) {
+		String queryDelete;
+		
+		queryDelete = "DELETE FROM interruptions WHERE interruption = '" + interruption + "'";
+		return this.delete(queryDelete);
+	}
+	
+	public int getSwitchBrandId(String brand) {
+		ResultSet setBrand;
+		int brandId = 0;
+		setBrand = this.select("SELECT id FROM switch_brand WHERE brand = '" + brand + "'");
+		
+		try {
+			setBrand.first();
+			brandId = setBrand.getInt("id");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener el id de la marca");
+		}
+		return brandId;
+	}
+	
+	public int getSwitchTypeId(String type) {
+		ResultSet setType;
+		int typeId = 0;
+		setType = this.select("SELECT id FROM switch_type WHERE type = '" + type + "'");
+		
+		try {
+			setType.first();
+			typeId = setType.getInt("id");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener el id del tipo");
+		}
+		return typeId;
+	}
+	
+	public int getCurrentId(int current) {
+		ResultSet setCurrent;
+		int currentId = 0;
+		setCurrent = this.select("SELECT id FROM currents WHERE current = '" + current + "'");
+		
+		try {
+			if(setCurrent.next()) {
+				currentId = setCurrent.getInt("id");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener el id de la corriente");
+		}
+		return currentId;
+	}
+	
+	public int getVoltageId(String voltage) {
+		ResultSet setVoltage;
+		int voltageId = 0;
+		setVoltage = this.select("SELECT id FROM voltages WHERE voltage = '" + voltage + "'");
+		
+		try {
+			setVoltage.first();
+			voltageId = setVoltage.getInt("id");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener el id del voltaje");
+		}
+		return voltageId;
+	}
+	
+	public int getInterruptionId(int interruption) {
+		ResultSet setInterruption;
+		int interruptionId = 0;
+		setInterruption = this.select("SELECT id FROM interruptions WHERE interruption = " + interruption);
+		
+		try {
+			setInterruption.first();
+			interruptionId = setInterruption.getInt("id");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener el id de la interrupcion");
+		}
+		return interruptionId;
+	}
+	
+	public int getBoxTypeId(String type) {
+		ResultSet setType;
+		int typeId = 0;
+		setType = this.select("SELECT id FROM box_types WHERE type = '" + type + "'");
+		
+		try {
+			setType.first();
+			typeId = setType.getInt("id");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener el id del tipo");
+		}
+		return typeId;
+	}
+	
+	public int getInstallationId(String installation) {
+		ResultSet setInstallation;
+		int installationId = 0;
+		setInstallation = this.select("SELECT id FROM installations WHERE installation = '" + installation + "'");
+		
+		try {
+			setInstallation.first();
+			installationId = setInstallation.getInt("id");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener el id de la instalacion");
+		}
+		return installationId;
+	}
+	
+	public int getNemaId(String nema) {
+		ResultSet setNema;
+		int nemaId = 0;
+		setNema = this.select("SELECT id FROM nemas WHERE nema = '" + nema + "'");
+		
+		try {
+			setNema.first();
+			nemaId = setNema.getInt("id");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener el id de la nema");
+		}
+		return nemaId;
+	}
+	
+	public int getBoxSheetId(String sheet) {
+		ResultSet setSheet;
+		int sheetId = 0;
+		setSheet = this.select("SELECT id FROM box_sheets WHERE sheet = '" + sheet + "'");
+		
+		try {
+			setSheet.first();
+			sheetId = setSheet.getInt("id");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener el id de la lamina");
+		}
+		return sheetId;
+	}
+	
+	public int getBoxFinishId(String finish) {
+		ResultSet setFinish;
+		int finishId = 0;
+		setFinish = this.select("SELECT id FROM box_finishes WHERE finish = '" + finish + "'");
+		
+		try {
+			setFinish.first();
+			finishId = setFinish.getInt("id");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener el id del acabado");
+		}
+		return finishId;
+	}
+	
+	public int getBoxColorId(String color) {
+		ResultSet setColor;
+		int colorId = 0;
+		setColor = this.select("SELECT id FROM box_colors WHERE color = '" + color + "'");
+		
+		try {
+			setColor.first();
+			colorId = setColor.getInt("id");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener el id del color");
+		}
+		return colorId;
+	}
+	
+	public boolean colorExists(String color) {
+		String queryString;
+		
+		queryString = "SELECT id FROM box_colors WHERE color = '" + color + "'";
+		this.select(queryString);
+		
+		return (this.getNumRows() > 0)? true:false;
+	}
+	
+	public boolean addColor(String color) {
+		String queryInsert;
+		
+		queryInsert = "INSERT INTO box_colors (color) VALUES ('" + color + "')";
+		this.insert(queryInsert);
+		
+		return (this.getInsertId() > 0)? true:false;
+	}
+	
+	public boolean removeColor(String color) {
+		String queryDelete;
+		
+		queryDelete = "DELETE FROM box_colors WHERE color = '" + color + "'";
+		return this.delete(queryDelete);
+	}
+	
+	public int getBoxUnitsId(String units) {
+		ResultSet setUnits;
+		int unitsId = 0;
+		setUnits = this.select("SELECT id FROM box_measure_units WHERE units = '" + units + "'");
+		
+		try {
+			setUnits.first();
+			unitsId = setUnits.getInt("id");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener el id de las unidades");
+		}
+		return unitsId;
+	}
+	
+	public int getBoxCaliberId(String caliber) {
+		ResultSet setCaliber;
+		int caliberId = 0;
+		setCaliber = this.select("SELECT id FROM box_calibers WHERE caliber = '" + caliber + "'");
+		
+		try {
+			setCaliber.first();
+			caliberId = setCaliber.getInt("id");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener el id del calibre");
+		}
+		return caliberId;
+	}
+	
+	public boolean caliberExists(String caliber) {
+		String queryString;
+		
+		queryString = "SELECT id FROM box_calibers WHERE caliber = '" + caliber + "'";
+		this.select(queryString);
+		
+		return (this.getNumRows() > 0)? true:false;
+	}
+	
+	public boolean addCaliber(String caliber) {
+		String queryInsert;
+		
+		queryInsert = "INSERT INTO box_calibers (caliber) VALUES ('" + caliber + "')";
+		this.insert(queryInsert);
+		
+		return (this.getInsertId() > 0)? true:false;
+	}
+	
+	public boolean removeCaliber(String caliber) {
+		String queryDelete;
+		
+		queryDelete = "DELETE FROM box_calibers WHERE caliber = '" + caliber + "'";
+		return this.delete(queryDelete);
+	}
+	
+	public int getLockTypeId(String lockType) {
+		ResultSet setLockType;
+		int lockTypeId = 0;
+		setLockType = this.select("SELECT id FROM lock_types WHERE lock_type = '" + lockType + "'");
+		
+		try {
+			setLockType.first();
+			lockTypeId = setLockType.getInt("id");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener el id de la cerradura");
+		}
+		return lockTypeId;
+	}
+	
+	public String getBoxCaliberComments(int id) {
+		ResultSet setCaliber;
+		String caliberComments = "";
+		setCaliber = this.select("SELECT caliber_comments FROM boxes WHERE id = " + id);
+		
+		try {
+			setCaliber.first();
+			caliberComments = setCaliber.getString("caliber_comments");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener el comentario del calibre");
+		}
+		return caliberComments;
+	}
+	
+	public int getBoardTypeId(String type) {
+		ResultSet setType;
+		int typeId = 0;
+		setType = this.select("SELECT id FROM board_types WHERE type = '" + type + "'");
+		
+		try {
+			setType.first();
+			typeId = setType.getInt("id");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener el id del tipo");
+		}
+		return typeId;
+	}
+	
+	public int getBoardBarCapacityId(Integer barCapacity) {
+		ResultSet setBarCapacity;
+		int barCapacityId = 0;
+		setBarCapacity = this.select("SELECT id FROM board_bar_capacities WHERE bar_capacity = '" + barCapacity + "'");
+		
+		try {
+			setBarCapacity.first();
+			barCapacityId = setBarCapacity.getInt("id");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener el id del tipo");
+		}
+		return barCapacityId;
+	}
+	
+	public int getBoardBarTypeId(String barType) {
+		ResultSet setBarType;
+		int barTypeId = 0;
+		setBarType = this.select("SELECT id FROM board_bar_types WHERE bar_type = '" + barType + "'");
+		
+		try {
+			setBarType.first();
+			barTypeId = setBarType.getInt("id");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener el id del tipo de barra");
+		}
+		return barTypeId;
+	}
+	
+	public int getBoardCircuitsId(Integer circuits) {
+		ResultSet setCircuits;
+		int circuitsId = 0;
+		setCircuits = this.select("SELECT id FROM board_circuits WHERE circuits = '" + circuits + "'");
+		
+		try {
+			setCircuits.first();
+			circuitsId = setCircuits.getInt("id");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener el id de los circuitos");
+		}
+		return circuitsId;
+	}
+	
+	public int getBoardVoltageId(String voltage) {
+		ResultSet setVoltage;
+		int voltageId = 0;
+		setVoltage = this.select("SELECT id FROM board_voltages WHERE voltage = '" + voltage + "'");
+		
+		try {
+			setVoltage.first();
+			voltageId = setVoltage.getInt("id");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener el id del voltaje");
+		}
+		return voltageId;
+	}
+	
+	public int getSwitchBoardId(int switchId) {
+		ResultSet setSwitchBoard;
+		int switchBoardId = 0;
+		setSwitchBoard = this.select("SELECT board_container_id FROM board_switches WHERE id = '" + switchId + "'");
+		
+		try {
+			setSwitchBoard.first();
+			switchBoardId = setSwitchBoard.getInt("board_container_id");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener el id del tablero para este interruptor");
+		}
+		return switchBoardId;
+	}
+	
+	public int getBoardSwitchId(int switchId) {
+		ResultSet setBoardSwitch;
+		int boardSwitchId = 0;
+		setBoardSwitch = this.select("SELECT switch_id FROM board_switches WHERE id = '" + switchId + "'");
+		
+		try {
+			setBoardSwitch.first();
+			boardSwitchId = setBoardSwitch.getInt("switch_id");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener el id del interruptor");
+		}
+		return boardSwitchId;
+	}
+	
+	public boolean addSwitch(String model, String brand, String type, String phases, int current, String voltage, int interruption, String price) {
+		int brandId = this.getSwitchBrandId(brand);
+		int typeId = this.getSwitchTypeId(type);
+		int currentId = this.getCurrentId(current);
+		int voltageId = this.getVoltageId(voltage);
+		int interruptionId = this.getInterruptionId(interruption);
+		
+		String queryInsert = "INSERT INTO switches (model, brand_id, type_id, phases, current_id, voltage_id, interruption_id, price) "
+				+ "VALUES('" + model + "', " + brandId + ", " + typeId + ", '" + phases + "', " + currentId + ", " + voltageId + ", " + interruptionId + ", '" + price + "')";
+		
+		this.insert(queryInsert);
+		
+		return (this.getInsertId() > 0)? true:false;
+	}
+	
+	public boolean addBox(String type, String installation, String nema, int pairs, String sheet, String finish, String color, Double height, Double width, Double depth, String units, String caliber, String caliberComments, String lockType, Double price) {
+		int typeId = this.getBoxTypeId(type);
+		int installationId = this.getInstallationId(installation);
+		int nemaId = this.getNemaId(nema);
+		int sheetId = this.getBoxSheetId(sheet);
+		int finishId = (finish.isEmpty())?0:this.getBoxFinishId(finish);
+		int colorId = (color.isEmpty())?0:this.getBoxColorId(color);
+		int unitsId = this.getBoxUnitsId(units);
+		int caliberId = this.getBoxCaliberId(caliber);
+		int lockTypeId = this.getLockTypeId(lockType);
+
+		String queryInsert = "INSERT INTO boxes (type_id, installation_id, nema_id, pairs, sheet_id, finish_id, color_id, height, width, depth, units_id, caliber_id, caliber_comments, lock_type_id, price) "
+				+ "VALUES(" + typeId + ", " + installationId + ", " + nemaId + ", " + pairs + ", " + sheetId + ", " + finishId + ", " + colorId + ", " + height + ", " + width + ", " + depth + ", " + unitsId + ", " + caliberId + ", '" + caliberComments + "', " + lockTypeId + ", " + price + ")";
+		
+		this.insert(queryInsert);
+		
+		return (this.getInsertId() > 0)? true:false;
+	}
+	
+	public boolean addBoard(String name, String type, String installation, String nema, Integer barCapacity, String barType, Integer circuits, String voltage, Integer phases, String ground, Integer interruption, String lockType, Double price) {
+		int typeId = this.getBoardTypeId(type);
+		int installationId = this.getInstallationId(installation);
+		int nemaId = this.getNemaId(nema);
+		int barCapacityId = this.getBoardBarCapacityId(barCapacity);
+		int barTypeId = this.getBoardBarTypeId(barType);
+		int circuitsId = this.getBoardCircuitsId(circuits);
+		int voltageId = this.getBoardVoltageId(voltage);
+		int interruptionId = this.getInterruptionId(interruption);
+		int lockTypeId = this.getLockTypeId(lockType);
+
+		String queryInsert = "INSERT INTO boards (name, type_id, installation_id, nema_id, bar_capacity_id, bar_type_id, circuits_id, voltage_id, phases, ground, interruption_id, lock_type_id, price) "
+				+ "VALUES('" + name + "', " + typeId + ", " + installationId + ", " + nemaId + ", " + barCapacityId + ", " + barTypeId + ", " + circuitsId + ", " + voltageId + ", '" + phases + "', '" + ground + "', " + interruptionId + ", " + lockTypeId + ", " + price + ")";
+		
+		this.insert(queryInsert);
+		
+		return (this.getInsertId() > 0)? true:false;
+	}
+	
+	public boolean removeBoardSwitch(int switchId) {
+		String queryDelete;
+		queryDelete = "DELETE FROM board_switches WHERE id = '" + switchId + "'";
+		return this.delete(queryDelete);
+	}
+	
+}
