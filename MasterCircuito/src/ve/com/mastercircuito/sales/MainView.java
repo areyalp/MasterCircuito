@@ -4,12 +4,14 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
+import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Toolkit;
@@ -17,32 +19,29 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDesktopPane;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -59,18 +58,9 @@ import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.event.TableColumnModelListener;
-import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.JTableHeader;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
-import javax.swing.table.TableModel;
-
 import ve.com.mastercircuito.components.MyInternalFrame;
 import ve.com.mastercircuito.components.MyTableModel;
-import ve.com.mastercircuito.components.TableButton;
-import ve.com.mastercircuito.components.TableButton.TableButtonPressedHandler;
 import ve.com.mastercircuito.db.Db;
 import ve.com.mastercircuito.font.Fa;
 import ve.com.mastercircuito.utils.Errors;
@@ -237,6 +227,15 @@ public class MainView extends JFrame{
 	private int boardSwitchesTableSelectedIndex;
 	private JButton buttonAddBoardSwitch, buttonRemoveBoardSwitch;
 	private int selectedBoardSwitchId;
+	// Board Switches Add Objects
+	private JDialog dialogBoardSwitchAdd;
+	private Object[][] boardSwitchesSearchData;
+	private JTable tableBoardSwitchesSearchResult;
+	private ListSelectionModel listBoardSwitchSearchSelectionModel;
+	private JComboBox<String> comboBoardSwitchBrands, comboBoardSwitchTypes, comboBoardSwitchPhases, comboBoardSwitchCurrents, comboBoardSwitchInterruptions;
+	private int boardSwitchAddQuantity = 1;
+	private int boardSwitchSearchQuantity = 1;
+	private int boardSwitchSearchId = 0;
 	// Board Add Objects
 	private JPanel panelBoardAddNew;
 	private JButton buttonBoardAddCancel;
@@ -538,6 +537,11 @@ public class MainView extends JFrame{
 						
 		Font fa = null;
 		
+		
+		JTabbedPane budgetsTabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		budgetsTabbedPane.addTab(Fa.fa_search, null, createBudgetMainPanel(), "Buscar");
+		budgetsTabbedPane.addTab(Fa.fa_pencil_square_o, null, createBudgetSettingsPanel(), "Editar");
+		
 		try {
 			URL url = getClass().getResource("fontawesome-webfont.ttf");
 			InputStream is;
@@ -548,12 +552,14 @@ public class MainView extends JFrame{
 			e.printStackTrace();
 		}
 		
-		JTabbedPane budgetsTabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		//This tabbed pane is duplicated above
+//		JTabbedPane budgetsTabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		budgetsTabbedPane.addTab("Buscar", null, createBudgetMainPanel(), "Presupuesto");
 //		budgetsTabbedPane.addTab("Interruptores", null, createBudgetSettingsPanel(), "Interruptores");
 //		budgetsTabbedPane.addTab("Cajas", null, createBudgetSettingsPanel(), "Cajas");
 //		budgetsTabbedPane.addTab("Tableros", null, createBudgetSettingsPanel(), "Tableros");
 //		budgetsTabbedPane.addTab("Adicionales", null, createBudgetSettingsPanel(), "Adicionales");
+		
 		budgetsTabbedPane.setFont(fa);
 		
 		budgetsFrame.add(budgetsTabbedPane);
@@ -3630,6 +3636,204 @@ public class MainView extends JFrame{
 		return tablePanel;
 	}
 	
+	private JPanel createBoardSwitchAddSearchPanel() {
+		JPanel panelBoardSwitchAddSearch = new JPanel();
+		
+		panelBoardSwitchAddSearch.setLayout(new FlowLayout(FlowLayout.CENTER));
+		
+		String queryBrands = "SELECT brand "
+				+ "FROM switch_brands, switches "
+				+ "WHERE switch_brands.id = switches.brand_id "
+				+ "GROUP BY switch_brands.brand";
+		
+		String queryTypes = "SELECT type "
+				+ "FROM switch_types, switches "
+				+ "WHERE switch_types.id = switches.type_id "
+				+ "GROUP BY switch_types.type";
+		
+		String queryPhases = "SELECT phases "
+				+ "FROM switches "
+				+ "GROUP BY phases";
+		
+		String queryCurrents = "SELECT current "
+				+ "FROM currents, switches "
+				+ "WHERE currents.id = switches.current_id "
+				+ "GROUP BY currents.current";
+		
+		String queryInterruptions = "SELECT interruption "
+				+ "FROM interruptions, switches "
+				+ "WHERE interruptions.id = switches.interruption_id "
+				+ "GROUP BY interruptions.interruption";
+		
+		JLabel brandsLabel = new JLabel("Marca:");
+		JLabel typesLabel = new JLabel("Tipo:");
+		JLabel phasesLabel = new JLabel("Fases:");
+		JLabel currentsLabel = new JLabel("Amperaje:");
+		JLabel interruptionsLabel = new JLabel("Interrupcion:");
+		
+		ComboBoxListener lForCombo = new ComboBoxListener();
+		
+		comboBoardSwitchBrands = new JComboBox<String>(new Vector<String>(loadComboList(queryBrands, "brand")));
+		comboBoardSwitchBrands.setActionCommand("board.switch.bar.brand");
+		comboBoardSwitchBrands.addActionListener(lForCombo);
+		panelBoardSwitchAddSearch.add(brandsLabel);
+		panelBoardSwitchAddSearch.add(comboBoardSwitchBrands);
+		
+		comboBoardSwitchTypes = new JComboBox<String>(new Vector<String>(loadComboList(queryTypes, "type")));
+		comboBoardSwitchTypes.setActionCommand("board.switch.bar.type");
+		comboBoardSwitchTypes.addActionListener(lForCombo);
+		panelBoardSwitchAddSearch.add(typesLabel);
+		panelBoardSwitchAddSearch.add(comboBoardSwitchTypes);
+		
+		comboBoardSwitchPhases = new JComboBox<String>(new Vector<String>(loadComboList(queryPhases, "phases")));
+		comboBoardSwitchPhases.setActionCommand("board.switch.bar.phases");
+		comboBoardSwitchPhases.addActionListener(lForCombo);
+		panelBoardSwitchAddSearch.add(phasesLabel);
+		panelBoardSwitchAddSearch.add(comboBoardSwitchPhases);
+		
+		comboBoardSwitchCurrents = new JComboBox<String>(new Vector<String>(loadComboList(queryCurrents, "current")));
+		comboBoardSwitchCurrents.setActionCommand("board.switch.bar.current");
+		comboBoardSwitchCurrents.addActionListener(lForCombo);
+		panelBoardSwitchAddSearch.add(currentsLabel);
+		panelBoardSwitchAddSearch.add(comboBoardSwitchCurrents);
+		
+		comboBoardSwitchInterruptions = new JComboBox<String>(new Vector<String>(loadComboList(queryInterruptions, "interruption")));
+		comboBoardSwitchInterruptions.setActionCommand("board.switch.bar.interruption");
+		comboBoardSwitchInterruptions.addActionListener(lForCombo);
+		panelBoardSwitchAddSearch.add(interruptionsLabel);
+		panelBoardSwitchAddSearch.add(comboBoardSwitchInterruptions);
+		
+		panelBoardSwitchAddSearch.add(separator());
+		
+		JButton searchButton = new JButton("Buscar");
+		searchButton.setActionCommand("board.switch.search.bar.button");
+		SearchButtonListener lForSearchButton = new SearchButtonListener();
+		searchButton.addActionListener(lForSearchButton);
+		panelBoardSwitchAddSearch.add(searchButton);
+		
+		return panelBoardSwitchAddSearch;
+	}
+	
+	private JPanel createBoardSwitchAddTablePanel() {
+		String switchesQuery = "SELECT switches.id, "
+						+ "switches.model, "
+						+ "switch_brands.brand, "
+						+ "switch_types.type, "
+						+ "switches.phases, "
+						+ "currents.current, "
+						+ "interruptions.interruption, "
+						+ "switch_voltages.voltage, "
+						+ "switches.price "
+					+ "FROM switches, "
+						+ "switch_brands, "
+						+ "switch_types, "
+						+ "currents, "
+						+ "interruptions, "
+						+ "switch_voltages "
+					+ "WHERE switches.brand_id = switch_brands.id "
+					+ "AND switches.type_id = switch_types.id "
+					+ "AND switches.current_id = currents.id "
+					+ "AND switches.interruption_id = interruptions.id "
+					+ "AND switches.voltage_id = switch_voltages.id "
+					+ "AND switches.active = '1'";
+		
+		boardSwitchesSearchData = db.fetchAll(db.select(switchesQuery));
+		
+		String[] switchesColumnNames = { "Id", "Modelo", "Marca", "Tipo", "Fases", "Amperaje", "Interrupcion", "Voltaje", "Precio"};
+		
+		MyTableModel mForTable = new MyTableModel(boardSwitchesSearchData, switchesColumnNames);
+		
+		tableBoardSwitchesSearchResult = new JTable();
+		tableBoardSwitchesSearchResult.setModel(mForTable);
+		tableBoardSwitchesSearchResult.setAutoCreateRowSorter(true);
+		tableBoardSwitchesSearchResult.getTableHeader().setReorderingAllowed(false);
+		
+		SharedListSelectionListener lForList = new SharedListSelectionListener();
+		
+		listBoardSwitchSearchSelectionModel = tableBoardSwitchesSearchResult.getSelectionModel();
+		listBoardSwitchSearchSelectionModel.addListSelectionListener(lForList);
+		tableBoardSwitchesSearchResult.setSelectionModel(listBoardSwitchSearchSelectionModel);
+		tableBoardSwitchesSearchResult.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		
+		JPanel panelBoardSwitchAddTable = new JPanel(new BorderLayout());
+		panelBoardSwitchAddTable.add(tableBoardSwitchesSearchResult.getTableHeader(), BorderLayout.PAGE_START);
+		panelBoardSwitchAddTable.add(tableBoardSwitchesSearchResult, BorderLayout.CENTER);
+		
+		return panelBoardSwitchAddTable;
+	}
+	
+	private JPanel createBoardSwitchAddCountPanel() {
+		JPanel panelCount = new JPanel();
+		panelCount.setLayout(new GridLayout(1, 3));
+		JButton buttonDecrease = new JButton("-");
+		JButton buttonIncrease = new JButton("+");
+		JLabel labelQuantity = new JLabel("1");
+		boardSwitchAddQuantity = 1;
+		int min = 1;
+		int max = 100;
+		
+		panelCount.add(buttonDecrease);
+		panelCount.add(labelQuantity);
+		panelCount.add(buttonIncrease);
+		
+		buttonDecrease.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(boardSwitchAddQuantity > min) {
+					boardSwitchAddQuantity--;
+					labelQuantity.setText(String.valueOf(boardSwitchAddQuantity));
+				}
+			}
+		});
+		
+		buttonIncrease.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(boardSwitchAddQuantity < max) {
+					boardSwitchAddQuantity++;
+					labelQuantity.setText(String.valueOf(boardSwitchAddQuantity));
+				}
+			}
+		});
+		
+		return panelCount;
+	}
+	
+	private JPanel createBoardSwitchAddButtonPanel() {
+		JPanel panelButtons = new JPanel();
+		panelButtons.setLayout(new GridLayout(1, 2));
+		JButton buttonAccept = new JButton("Aceptar");
+		JButton buttonCancel = new JButton("Cancelar");
+		panelButtons.add(buttonAccept);
+		panelButtons.add(buttonCancel);
+		
+		buttonAccept.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(tableBoardSwitchesSearchResult.getSelectedRow() > -1) {
+					boardSwitchSearchId = Integer.valueOf((String)tableBoardSwitchesSearchResult.getValueAt(tableBoardSwitchesSearchResult.getSelectedRow(), 0));
+					boardSwitchSearchQuantity = boardSwitchAddQuantity;
+					dialogBoardSwitchAdd.dispose();
+					
+				}
+			}
+		});
+		
+		buttonCancel.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				boardSwitchSearchId = 0;
+				dialogBoardSwitchAdd.dispose();
+			}
+		});
+		
+		return panelButtons;
+	}
+	
 	private JPanel createBoardDescriptionPanel() {
 		JPanel descriptionPanel = new JPanel(new GridBagLayout());
 		
@@ -4831,7 +5035,7 @@ public class MainView extends JFrame{
 		
 		return panelBudgetSearch;
 	}
-
+	
 	private List<String> loadComboList(String queryString, String columnName) {
 		List<String> comboList = new ArrayList<String>();
 		comboList.add("Todas");
@@ -6842,7 +7046,34 @@ public class MainView extends JFrame{
 			} else if (actionCommand.equalsIgnoreCase("board.description.edit.cancel")) {
 				setBoardsMode(MainView.VIEW_MODE);
 			} else if (actionCommand.equalsIgnoreCase("board.switch.add")) {
+				dialogBoardSwitchAdd = new JDialog(null, "Agregar Interruptor", Dialog.DEFAULT_MODALITY_TYPE);
+				dialogBoardSwitchAdd.setMinimumSize(new Dimension(800, 300));
+				dialogBoardSwitchAdd.setSize(800, 300);
+				dialogBoardSwitchAdd.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 				
+				Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+				int x = (dim.width / 2) - (dialogBoardSwitchAdd.getWidth() / 2);
+				int y = (dim.height / 2) - (dialogBoardSwitchAdd.getHeight() / 2);
+				dialogBoardSwitchAdd.setLocation(x, y);
+				// finish the createBoardSwitchAddPanel() method and replace it at the line below
+				// add the listener to handle the accept button
+				JPanel panelCenter = new JPanel();
+				panelCenter.setLayout(new BoxLayout(panelCenter, BoxLayout.PAGE_AXIS));
+				panelCenter.add(createBoardSwitchAddSearchPanel());
+				panelCenter.add(Box.createRigidArea(new Dimension(0, 10)));
+				panelCenter.add(createBoardSwitchAddTablePanel());
+				dialogBoardSwitchAdd.add(panelCenter, BorderLayout.CENTER);
+				
+				JPanel panelLower = new JPanel();
+				panelLower.setLayout(new BoxLayout(panelLower, BoxLayout.LINE_AXIS));
+				panelLower.add(createBoardSwitchAddCountPanel());
+				panelLower.add(createBoardSwitchAddButtonPanel());
+				dialogBoardSwitchAdd.add(panelLower, BorderLayout.SOUTH);
+				
+				WindowsListener lForWindow = new WindowsListener();
+				dialogBoardSwitchAdd.addWindowListener(lForWindow);
+				
+				dialogBoardSwitchAdd.setVisible(true);
 			} else if (actionCommand.equalsIgnoreCase("board.switch.remove")) {
 				int response = JOptionPane.showConfirmDialog(null, "Esta seguro que desea remover este interruptor del tablero?", "Remover interruptor del tablero", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 				if(response == JOptionPane.YES_OPTION) {
@@ -6882,6 +7113,48 @@ public class MainView extends JFrame{
 					}
 				}
 			}
+		}
+		
+	}
+	
+	private class WindowsListener implements WindowListener {
+
+		@Override
+		public void windowOpened(WindowEvent e) {
+			
+		}
+
+		@Override
+		public void windowClosing(WindowEvent e) {
+			
+		}
+
+		@Override
+		public void windowClosed(WindowEvent e) {
+			if(boardSwitchSearchId > 0) {
+				JOptionPane.showMessageDialog(null, "El id seleccionado fue: " + boardSwitchSearchId + " y una cantidad de " + boardSwitchSearchQuantity + " interruptores");
+				
+			}
+		}
+
+		@Override
+		public void windowIconified(WindowEvent e) {
+			
+		}
+
+		@Override
+		public void windowDeiconified(WindowEvent e) {
+			
+		}
+
+		@Override
+		public void windowActivated(WindowEvent e) {
+			
+		}
+
+		@Override
+		public void windowDeactivated(WindowEvent e) {
+			
 		}
 		
 	}
