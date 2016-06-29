@@ -533,36 +533,23 @@ public class MainView extends JFrame{
 		int y = (desktop.getHeight() / 2) - (budgetsFrame.getHeight() / 2);
 		budgetsFrame.setLocation(new Point(x, y));
 		
-		budgetsFrame.setLayout(new BorderLayout(50, 50));
+		budgetsFrame.setLayout(new GridLayout(1, 1));
 						
 		Font fa = null;
 		
-		
-		JTabbedPane budgetsTabbedPane = new JTabbedPane(JTabbedPane.TOP);
+//		JTabbedPane budgetsTabbedPane = new JTabbedPane(JTabbedPane.TOP);
 //		budgetsTabbedPane.addTab(Fa.fa_search, null, createBudgetMainPanel(), "Buscar");
 //		budgetsTabbedPane.addTab(Fa.fa_pencil_square_o, null, createBudgetSettingsPanel(), "Editar");
 		
-		try {
-			URL url = getClass().getResource("fontawesome-webfont.ttf");
-			InputStream is;
-			is = url.openStream();
-			fa = Font.createFont(Font.TRUETYPE_FONT, is);
-			fa = fa.deriveFont(Font.PLAIN, 36f);
-		} catch (IOException | FontFormatException e) {
-			e.printStackTrace();
-		}
-		
 		//This tabbed pane is duplicated above
 //		JTabbedPane budgetsTabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		budgetsTabbedPane.addTab("Buscar", null, createBudgetMainPanel(), "Presupuesto");
+//		budgetsTabbedPane.addTab("Buscar", null, createBudgetMainPanel(), "Presupuesto");
 //		budgetsTabbedPane.addTab("Interruptores", null, createBudgetSettingsPanel(), "Interruptores");
 //		budgetsTabbedPane.addTab("Cajas", null, createBudgetSettingsPanel(), "Cajas");
 //		budgetsTabbedPane.addTab("Tableros", null, createBudgetSettingsPanel(), "Tableros");
 //		budgetsTabbedPane.addTab("Adicionales", null, createBudgetSettingsPanel(), "Adicionales");
 		
-		budgetsTabbedPane.setFont(fa);
-		
-		budgetsFrame.add(budgetsTabbedPane);
+		budgetsFrame.add(createBudgetMainPanel());
 		
 		budgetsFrame.setVisible(true);
 		
