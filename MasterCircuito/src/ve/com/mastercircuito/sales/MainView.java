@@ -539,8 +539,8 @@ public class MainView extends JFrame{
 		
 		
 		JTabbedPane budgetsTabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		budgetsTabbedPane.addTab(Fa.fa_search, null, createBudgetMainPanel(), "Buscar");
-		budgetsTabbedPane.addTab(Fa.fa_pencil_square_o, null, createBudgetSettingsPanel(), "Editar");
+//		budgetsTabbedPane.addTab(Fa.fa_search, null, createBudgetMainPanel(), "Buscar");
+//		budgetsTabbedPane.addTab(Fa.fa_pencil_square_o, null, createBudgetSettingsPanel(), "Editar");
 		
 		try {
 			URL url = getClass().getResource("fontawesome-webfont.ttf");
