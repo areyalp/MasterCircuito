@@ -124,7 +124,6 @@ public class MainView extends JFrame{
 	private static final String BOARD_BAR_CAPACITIES_TABLE = "board_bar_capacities";
 	private static final String BOARD_BAR_TYPES_TABLE = "board_bar_types";
 	private static final String BOARD_CIRCUITS_TABLE = "board_circuits";
-	private static final String BOARD_SWITCHES_TABLE = "board_switches";
 	private static final String BOARD_TYPES_TABLE = "board_types";
 	private static final String BOARD_VOLTAGES_TABLE = "board_voltages";
 	// Board Fields
@@ -137,8 +136,6 @@ public class MainView extends JFrame{
 	private static final String BOARD_VOLTAGE_FIELD = "board_voltages.voltage";
 	private static final String BOARD_PHASES_FIELD = "boards.phases";
 	private static final String BOARD_GROUND_FIELD = "IF(boards.ground=0,'NO','SI') as ground";
-	private static final String BOARD_MATERIALS_FIELD = "boards.materials";
-	private static final String BOARD_COMMENTS_FIELD = "boards.comments";
 	private static final String BOARD_LOCK_TYPE_FIELD = "lock_types.lock_type";
 	private static final String BOARD_PRICE_FIELD = "boards.price";
 	// Finish filling up the fields of the board table and the tables above too
@@ -188,7 +185,7 @@ public class MainView extends JFrame{
 	private JComboBox<String> comboBoxTypes, comboBoxInstallations, comboBoxNemas, comboBoxPairs, comboBoxSheets, comboBoxFinishes, comboBoxColors, comboBoxCalibers, comboBoxLockTypes;
 	private JTextField textBoxHeight, textBoxWidth, textBoxDepth;
 	private String searchSelectedBoxType = "", searchSelectedBoxInstallation = "", searchSelectedBoxNema = "", searchSelectedBoxPairs = "", searchSelectedBoxSheet = "", searchSelectedBoxFinish = "", searchSelectedBoxColor = "", searchSelectedBoxHeight = "", searchSelectedBoxWidth = "", searchSelectedBoxDepth = "", searchSelectedBoxCaliber = "", searchSelectedBoxLockType = "";
-	private JPanel panelBoxLower, panelBoxDescription, panelWrapperBoxDescription, panelBoxAddNew, panelBoxEdit;
+	private JPanel panelBoxDescription, panelWrapperBoxDescription, panelBoxAddNew, panelBoxEdit;
 	private JTextField textBoxDescriptionType, textBoxDescriptionInstallation, textBoxDescriptionNema, textBoxDescriptionPairs, textBoxDescriptionSheet, textBoxDescriptionFinish, textBoxDescriptionColor, textBoxDescriptionHeight, textBoxDescriptionWidth, textBoxDescriptionDepth, textBoxDescriptionUnits, textBoxDescriptionCaliber, textBoxDescriptionLockType, textBoxDescriptionPrice;
 	private JTextArea textBoxDescription;
 	private JLabel labelBoxCopy;
@@ -235,7 +232,6 @@ public class MainView extends JFrame{
 	private int selectedBoardId = 0;
 	// Board Switches Objects
 	private JPanel boardSwitchesPanel;
-	private JScrollPane tableBoardSwitchesScrollPane;
 	private JTable tableBoardSwitchesResult;
 	private ListSelectionModel listBoardSwitchesSelectionModel;
 	private int boardSwitchesTableSelectedIndex;
@@ -247,7 +243,6 @@ public class MainView extends JFrame{
 	private JTextField textBoardAddName, textBoardAddPrice;
 	private JComboBox<String> comboBoardAddType, comboBoardAddInstallation, comboBoardAddNema, comboBoardAddBarCapacity, comboBoardAddBarType, comboBoardAddCircuits, comboBoardAddVoltage, comboBoardAddPhases, comboBoardAddInterruption, comboBoardAddLockType;
 	private JCheckBox checkBoardAddGround;
-	private String addSelectedBoardType;
 	private JTextArea textBoardAddDescription;
 	// Board Edit Objects
 	private JPanel panelBoardEdit;
@@ -256,7 +251,7 @@ public class MainView extends JFrame{
 	private Double editBoardPrice;
 	private String editBoardType, editBoardName, editBoardInstallation, editBoardNema, editBoardBarCapacity, editBoardBarType, editBoardCircuits, editBoardVoltage, editBoardGround, editBoardInterruption, editBoardLockType;
 	private JTextField textBoardEditName, textBoardEditPrice;
-	private JComboBox<String> comboBoardEditType, comboBoardEditInstallation, comboBoardEditNema, comboBoardEditBarCapacity, comboBoardEditBarType, comboBoardEditCircuits, comboBoardEditVoltage, comboBoardEditPhases, comboBoardEditGround, comboBoardEditInterruption, comboBoardEditLockType;
+	private JComboBox<String> comboBoardEditType, comboBoardEditInstallation, comboBoardEditNema, comboBoardEditBarCapacity, comboBoardEditBarType, comboBoardEditCircuits, comboBoardEditVoltage, comboBoardEditPhases, comboBoardEditInterruption, comboBoardEditLockType;
 	private JCheckBox checkBoardEditGround;
 	private JTextArea textBoardEditDescription;
 	private JButton buttonBoardEditSave, buttonBoardEditCancel;
@@ -267,16 +262,18 @@ public class MainView extends JFrame{
 	private MyInternalFrame tracingFrame = new MyInternalFrame();
 	
 	//Budget add Objects
-		private JButton buttonBudgetAdd;
-		private JButton buttonBudgetEdit;
-		private Component budgetSwitchesPanel;
-		private Object panelBudgetAddNew;
-		private Object panelBudgetEdit;
-		private Object panelBudgetDescription;
-		private Component panelWrapperBudgetDescription;
-		private JScrollPane tableBudgetScrollPane;
-		private JTable tableBudgetsResult;
-
+	private JButton buttonBudgetAdd;
+	private JButton buttonBudgetEdit;
+	private JPanel budgetSwitchesPanel;
+	private JPanel panelWrapperBudgetDescription;
+	private JScrollPane tableBudgetScrollPane;
+	private JTable tableBudgetsResult;
+	private JPanel panelBudgetDescription;
+	private JPanel budgetBoxesPanel;
+	private Component budgetBoardsPanel;
+	private JPanel budgetMaterialsPanel;
+	private JPanel budgetSpecialsPanel;
+	private JPanel budgetNotesPanel;
 	
 	public static void main(String[] args) {
 		new MainView();
@@ -528,7 +525,7 @@ public class MainView extends JFrame{
 		budgetsFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		budgetsFrame.setMaximizable(false);
 		budgetsFrame.setFrameIcon(new ImageIcon("resources/presupuesto_32x32.jpg"));
-		double aspectRatio = 0.7;
+		double aspectRatio = 0.99;
 		int w = (int) (desktop.getWidth() * aspectRatio);
 		int h = (int)(desktop.getHeight()*aspectRatio);
 		budgetsFrame.setSize(new Dimension(w,h));
@@ -537,35 +534,44 @@ public class MainView extends JFrame{
 		int y = (desktop.getHeight() / 2) - (budgetsFrame.getHeight() / 2);
 		budgetsFrame.setLocation(new Point(x, y));
 		
-		budgetsFrame.setVisible(true);
-		desktop.add(budgetsFrame);
-		try{
-			budgetsFrame.setSelected(true);
-		} catch(java.beans.PropertyVetoException e) {
-			
-		}
-		
+		budgetsFrame.setLayout(new BorderLayout(50, 50));
+						
 		Font fa = null;
 		
-		JTabbedPane budgetsTabbedPane = new JTabbedPane(JTabbedPane.LEFT);
-		budgetsTabbedPane.addTab(Fa.fa_search, null, createBudgetMainPanel(), "Buscar");
-		budgetsTabbedPane.addTab(Fa.fa_pencil_square_o, null, createBudgetSettingsPanel(), "Editar");
+		try {
+			URL url = getClass().getResource("fontawesome-webfont.ttf");
+			InputStream is;
+			is = url.openStream();
+			fa = Font.createFont(Font.TRUETYPE_FONT, is);
+			fa = fa.deriveFont(Font.PLAIN, 36f);
+		} catch (IOException | FontFormatException e) {
+			e.printStackTrace();
+		}
+		
+		JTabbedPane budgetsTabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		budgetsTabbedPane.addTab("Buscar", null, createBudgetMainPanel(), "Presupuesto");
+//		budgetsTabbedPane.addTab("Interruptores", null, createBudgetSettingsPanel(), "Interruptores");
+//		budgetsTabbedPane.addTab("Cajas", null, createBudgetSettingsPanel(), "Cajas");
+//		budgetsTabbedPane.addTab("Tableros", null, createBudgetSettingsPanel(), "Tableros");
+//		budgetsTabbedPane.addTab("Adicionales", null, createBudgetSettingsPanel(), "Adicionales");
 		budgetsTabbedPane.setFont(fa);
 		
 		budgetsFrame.add(budgetsTabbedPane);
 		
 		budgetsFrame.setVisible(true);
+		
 		desktop.add(budgetsFrame);
 		try{
 			budgetsFrame.setSelected(true);
 		} catch(java.beans.PropertyVetoException e) {
 			
 		}
+
 	}
 	
-	private Component createBudgetSettingsPanel() {
-		// TODO Auto-generated method stub
-		return null;
+	private JPanel createBudgetSettingsPanel() {
+		JPanel panelBudgetSettings = new JPanel();
+		return panelBudgetSettings;
 	}
 
 	private void createStartersFrame() {
@@ -3285,7 +3291,7 @@ public class MainView extends JFrame{
 				+ " WHERE " + MainView.LOCK_TYPES_TABLE + ".id = " + MainView.BOARD_TABLE + ".lock_type_id "
 				+ " GROUP BY " + MainView.LOCK_TYPES_TABLE + ".lock_type";
 		
-		JLabel labelName = new JLabel("Nombre:");
+		JLabel labelName = new JLabel("Nombre: ");
 		JLabel labelType = new JLabel("Tipo:");
 		JLabel labelInstallation = new JLabel("Instalacion:");
 		JLabel labelNema = new JLabel("Nema:");
@@ -3838,7 +3844,7 @@ public class MainView extends JFrame{
 	private JPanel createBoardAddPanel() {
 		JPanel addPanel = new JPanel(new GridBagLayout());
 		ComboBoxListener lForCombo = new ComboBoxListener();
-		TextFieldListener lForText = new TextFieldListener();
+		new TextFieldListener();
 		GridBagConstraints cs = new GridBagConstraints();
 		
 		cs.fill = GridBagConstraints.HORIZONTAL;
@@ -4676,6 +4682,8 @@ public class MainView extends JFrame{
 		budgetMainPanel.setLayout(new BorderLayout(20,20));
 		
 		budgetMainPanel.add(createBudgetSearchBarPanel(), BorderLayout.NORTH);
+		
+		tableBudgetsResult = new JTable();
 				
 		tableBudgetScrollPane = new JScrollPane(createBudgetTablePanel());
 		tableBudgetsResult.setFillsViewportHeight(true);
@@ -4697,10 +4705,10 @@ public class MainView extends JFrame{
 		panelButtons.add(buttonBudgetEdit);
 		
 		JPanel panelBudgetLower = new JPanel(new BorderLayout(20,20));
-		panelBudgetDescription = createBudgetDescriptionPanel();
+		createBudgetDescriptionPanel();
 		
-		panelWrapperBoardDescription = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		panelWrapperBoardDescription.add(panelBoardDescription);
+		panelWrapperBudgetDescription = new JPanel(new FlowLayout(FlowLayout.CENTER));
+//		panelWrapperBudgetDescription.add(panelBudgetDescription);
 		/*
 		panelBudgetAddNew = createBudgetAddPanel();
 		panelBudgetAddNew.setVisible(false);
@@ -4708,34 +4716,120 @@ public class MainView extends JFrame{
 		panelBudgetEdit = createBudgetEditPanel();
 		panelBudgetEdit.setVisible(false);
 		*/
+		
+		JPanel panelWrapperBudgetDescription = new JPanel(new BorderLayout(20,20));
 		panelBudgetLower.add(panelWrapperBudgetDescription, BorderLayout.CENTER);
 		panelBudgetLower.add(panelButtons, BorderLayout.SOUTH);
 		
-		budgetMainPanel.add(panelBoardLower, BorderLayout.SOUTH);
+		budgetMainPanel.add(panelBudgetLower, BorderLayout.SOUTH);
 		budgetViewTabbedPane.addTab("Buscar", null, budgetMainPanel, "Buscar");
 		
-		budgetSwitchesPanel = createBoardSwitchesPanel();
+		budgetSwitchesPanel = createBudgetSwitchesPanel();
 		
 		budgetViewTabbedPane.addTab("Interruptores", null, budgetSwitchesPanel, "Interruptores");
 		budgetViewTabbedPane.setFont(new Font(null, Font.BOLD, 16));
 	
-			
+		budgetBoxesPanel = createBudgetBoxesPanel();
+		
+		budgetViewTabbedPane.addTab("Cajas", null, budgetBoxesPanel, "Cajas");
+		budgetViewTabbedPane.setFont(new Font(null, Font.BOLD, 16));
+		
+		budgetBoardsPanel = createBudgetBoardsPanel();
+		
+		budgetViewTabbedPane.addTab("Tableros", null, budgetBoardsPanel, "Tableros");
+		budgetViewTabbedPane.setFont(new Font(null, Font.BOLD, 16));
+		
+		budgetMaterialsPanel = createBudgetMaterialsPanel();
+		
+		budgetViewTabbedPane.addTab("Materiales", null, budgetMaterialsPanel, "Materiales");
+		budgetViewTabbedPane.setFont(new Font(null, Font.BOLD, 16));
+		
+		budgetSpecialsPanel = createBudgetSpecialsPanel();
+		
+		budgetViewTabbedPane.addTab("Especiales", null, budgetSpecialsPanel, "Especiales");
+		budgetViewTabbedPane.setFont(new Font(null, Font.BOLD, 16));
+		
+		budgetNotesPanel = createBudgetNotesPanel();
+		
+		budgetViewTabbedPane.addTab("Notas", null, budgetNotesPanel, "Notas");
+		budgetViewTabbedPane.setFont(new Font(null, Font.BOLD, 16));
+					
 		return budgetViewTabbedPane;
 	}
 	
-	private Object createBudgetDescriptionPanel() {
-		// TODO Auto-generated method stub
-		return null;
+	private JPanel createBudgetBoardsPanel() {
+		JPanel createBudgetBoardsPanel = new JPanel();
+		return createBudgetBoardsPanel;
 	}
 
-	private Component createBudgetTablePanel() {
-		// TODO Auto-generated method stub
-		return null;
+	private JPanel createBudgetMaterialsPanel() {
+		JPanel createBudgetMaterialsPanel = new JPanel();
+		return createBudgetMaterialsPanel;
 	}
 
-	private Component createBudgetSearchBarPanel() {
-		// TODO Auto-generated method stub
-		return null;
+	private JPanel createBudgetSpecialsPanel() {
+		JPanel createBudgetSpecialsPanel = new JPanel();
+		return createBudgetSpecialsPanel;
+	}
+
+	private JPanel createBudgetNotesPanel() {
+		JPanel createBudgetNotes = new JPanel();
+		return createBudgetNotes;
+	}
+
+	private JPanel createBudgetBoxesPanel() {
+		JPanel panelBudgetBoxes = new JPanel();
+		return panelBudgetBoxes;
+	}
+
+	private JPanel createBudgetSwitchesPanel() {
+		JPanel panelBudgetSwitches = new JPanel();		
+		
+//		budgetSwitchesPanel.setLayout(new BorderLayout(20, 20));		
+//		budgetSwitchesPanel.add(createBudgetSwitchesTablePanel(), BorderLayout.CENTER);		
+//		
+		return panelBudgetSwitches;
+	}
+
+	private JPanel createBudgetSwitchesTablePanel() {
+		JPanel tablePanel = new JPanel();
+		return tablePanel;
+	}
+
+	private JPanel createBudgetDescriptionPanel() {
+		JPanel panelBudgetDescription = new JPanel();
+		return panelBudgetDescription;
+	}
+
+	private JPanel createBudgetTablePanel() {
+		JPanel panelBudgetTable = new JPanel();
+		return panelBudgetTable;
+	}
+
+	private JPanel createBudgetSearchBarPanel() {
+		JPanel panelBudgetSearch = new JPanel();
+		
+		panelBudgetSearch.setLayout(new BoxLayout(panelBudgetSearch, BoxLayout.PAGE_AXIS));
+		JPanel searchBarPanel1 = new JPanel();
+		searchBarPanel1.setLayout(new FlowLayout(FlowLayout.CENTER));
+		JPanel searchBarPanel2 = new JPanel();
+		searchBarPanel2.setLayout(new FlowLayout(FlowLayout.CENTER));
+		
+		JLabel labelName = new JLabel("Nombre: ");
+		JLabel labelDate = new JLabel("Fecha:");
+		JLabel labelExpiration = new JLabel("Días de Vencimiento:");
+		JLabel labelWorkName = new JLabel("Nombre de la Obra:");
+		JLabel labelMethodPayment = new JLabel("Forma de Pago:");
+		JLabel labelBusinessName = new JLabel("Nombre de Empresa:");
+		JLabel labelBusinessRepresentaive = new JLabel("Representate de Empresa:");
+		JLabel labelDeliveryPlace = new JLabel("Lugar de Entrega:");
+		JLabel labelDeliveryTime = new JLabel("Tiempo de Entrega:");
+		JLabel labelSeller = new JLabel("Vendedor:");
+		JLabel labelTracing = new JLabel("Seguimiento:");		
+		
+		
+		
+		return panelBudgetSearch;
 	}
 
 	private List<String> loadComboList(String queryString, String columnName) {
