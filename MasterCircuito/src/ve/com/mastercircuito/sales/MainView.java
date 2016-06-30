@@ -30,6 +30,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 
@@ -59,6 +60,10 @@ import javax.swing.Timer;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
+
+import org.joda.time.DateTime;
+import org.joda.time.JodaTimePermission;
+
 import ve.com.mastercircuito.components.MyInternalFrame;
 import ve.com.mastercircuito.components.MyTableModel;
 import ve.com.mastercircuito.db.Db;
@@ -273,6 +278,15 @@ public class MainView extends JFrame{
 	private JPanel budgetMaterialsPanel;
 	private JPanel budgetSpecialsPanel;
 	private JPanel budgetNotesPanel;
+	private JTextField textBudgetSearchClient;
+	private JTextField textBudgetSearchId;
+	private JComboBox<String> comboBudgetDays;
+	private String queryDay;
+	private Component panelBudgetSearch;
+	private JComboBox<String> comboBudgetMonths;
+	private String queryMonth;
+	private JComboBox<String> comboBudgetYears;
+	private String queryYear;
 	
 	public static void main(String[] args) {
 		new MainView();
@@ -4975,11 +4989,40 @@ public class MainView extends JFrame{
 
 	private JPanel createBudgetSwitchesPanel() {
 		JPanel panelBudgetSwitches = new JPanel();		
+		panelBudgetSwitches.setLayout(new BorderLayout());
+//		panelBudgetSwitches.add(createBudgetSwitchesSearchPanel(), BorderLayout.NORTH);
 		
+//		JLabel labelClient = new JLabel("Cliente:");
+//		JTextField textClient = new JTextField(6);
+//		ArrayList<Integer> listYears = new ArrayList<Integer>();
+//		Date nowDate = new Date();
+//		DateTime dt = new DateTime(nowDate);
+//		int todayYear = dt.getYear();
+//		for(int i = 2015; i <= todayYear; i++) {
+//			listYears.add(i);
+//		}
+//		
+//		String queryYears = "SELECT year FROM years ORDER BY year DESC";
+//		
+//		loadComboList(queryYears, "year");
+//		
+//		Object[] columnNames = {"Enero", "Febrero"};
+//		
+//		JTable tableTest = new JTable();
+//		
+//		tableTest.setModel(new DefaultTableModel(data, columnNames));
+//		
+//		JComboBox<Integer> comboYear = new JComboBox<Integer>(new Vector<Integer>(listYears));
+//		
 //		budgetSwitchesPanel.setLayout(new BorderLayout(20, 20));		
 //		budgetSwitchesPanel.add(createBudgetSwitchesTablePanel(), BorderLayout.CENTER);		
 //		
 		return panelBudgetSwitches;
+	}
+
+	private JPanel createBudgetSwitchesSearchPanel() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	private JPanel createBudgetSwitchesTablePanel() {
@@ -4998,27 +5041,45 @@ public class MainView extends JFrame{
 	}
 
 	private JPanel createBudgetSearchBarPanel() {
-		JPanel panelBudgetSearch = new JPanel();
 		
-		panelBudgetSearch.setLayout(new BoxLayout(panelBudgetSearch, BoxLayout.PAGE_AXIS));
-		JPanel searchBarPanel1 = new JPanel();
-		searchBarPanel1.setLayout(new FlowLayout(FlowLayout.CENTER));
-		JPanel searchBarPanel2 = new JPanel();
-		searchBarPanel2.setLayout(new FlowLayout(FlowLayout.CENTER));
+		JPanel panelBudgetSearch = new JPanel();		
+//		panelBudgetSearch.setLayout(new BoxLayout(panelBudgetSearch, BoxLayout.PAGE_AXIS));
+//		JPanel searchBarPanel1 = new JPanel();
+//		searchBarPanel1.setLayout(new FlowLayout(FlowLayout.CENTER));
+		panelBudgetSearch.setLayout(new FlowLayout(FlowLayout.CENTER));
+		//creating labels 
+		JLabel labelClient = new JLabel("Cliente: ");
+		JLabel labelId = new JLabel("Id:");
+		JLabel labelDay = new JLabel("Dia:");
+		JLabel labelMonth = new JLabel("Mes");
+		JLabel labelYear = new JLabel("Año");
 		
-		JLabel labelName = new JLabel("Nombre: ");
-		JLabel labelDate = new JLabel("Fecha:");
-		JLabel labelExpiration = new JLabel("Días de Vencimiento:");
-		JLabel labelWorkName = new JLabel("Nombre de la Obra:");
-		JLabel labelMethodPayment = new JLabel("Forma de Pago:");
-		JLabel labelBusinessName = new JLabel("Nombre de Empresa:");
-		JLabel labelBusinessRepresentaive = new JLabel("Representate de Empresa:");
-		JLabel labelDeliveryPlace = new JLabel("Lugar de Entrega:");
-		JLabel labelDeliveryTime = new JLabel("Tiempo de Entrega:");
-		JLabel labelSeller = new JLabel("Vendedor:");
-		JLabel labelTracing = new JLabel("Seguimiento:");		
+		//creating textbox for client
+		textBudgetSearchClient = new JTextField(6);		
+		panelBudgetSearch.add(labelClient);
+		panelBudgetSearch.add(textBudgetSearchClient);
 		
+		textBudgetSearchId = new JTextField(6);		
+		panelBudgetSearch.add(labelId);
+		panelBudgetSearch.add(textBudgetSearchId);
 		
+		comboBudgetDays = new JComboBox<String>(new Vector<String>(loadComboList(queryDay, "day")));
+//		comboBudgetTypes.setActionCommand("budget.search.day");
+//		comboBudgetTypes.addActionListener(lForCombo);
+		panelBudgetSearch.add(labelDay);
+		panelBudgetSearch.add(comboBudgetDays);
+		
+		comboBudgetMonths = new JComboBox<String>(new Vector<String>(loadComboList(queryMonth, "month")));
+//		comboBudgetTypes.setActionCommand("budget.search.day");
+//		comboBudgetTypes.addActionListener(lForCombo);
+		panelBudgetSearch.add(labelMonth);
+		panelBudgetSearch.add(comboBudgetMonths);
+		
+		comboBudgetYears = new JComboBox<String>(new Vector<String>(loadComboList(queryYear, "years")));
+//		comboBudgetTypes.setActionCommand("budget.search.day");
+//		comboBudgetTypes.addActionListener(lForCombo);
+		panelBudgetSearch.add(labelYear);
+		panelBudgetSearch.add(comboBudgetYears);
 		
 		return panelBudgetSearch;
 	}
