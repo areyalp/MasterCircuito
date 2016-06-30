@@ -287,6 +287,7 @@ public class MainView extends JFrame{
 	private String queryMonth;
 	private JComboBox<String> comboBudgetYears;
 	private String queryYear;
+	private Object[][] budgetData = {};
 	
 	public static void main(String[] args) {
 		new MainView();
@@ -3843,7 +3844,7 @@ public class MainView extends JFrame{
 		cs.fill = GridBagConstraints.HORIZONTAL;
 		cs.insets = new Insets(0, 0, 5, 5);
 		
-		JLabel labelName = new JLabel("Nombre:");
+		JLabel labelName = new JLabel("Nombre: aqui");
 		cs.gridx = 0;
 		cs.gridy = 0;
 		cs.gridwidth = 1;
@@ -5035,17 +5036,27 @@ public class MainView extends JFrame{
 		return panelBudgetDescription;
 	}
 
-	private JPanel createBudgetTablePanel() {
-		JPanel panelBudgetTable = new JPanel();
+	private JPanel createBudgetTablePanel() {			
+		
+		ArrayList<String> fields = new ArrayList<String>();
+		ArrayList<String> tables = new ArrayList<String>();
+		
+		String[] budgetsColumnNames = {"Id", "Cliente", "Dia", "Mes", "Año"};
+
+		tableBudgetsResult = new JTable();
+		
+		tableBudgetsResult.setModel(new MyTableModel(budgetData, budgetsColumnNames));
+		
+		JPanel panelBudgetTable = new JPanel( new BorderLayout());
+		panelBudgetTable.add(tableBudgetsResult.getTableHeader(), BorderLayout.PAGE_START);
+		panelBudgetTable.add(tableBudgetsResult, BorderLayout.CENTER);
+			
 		return panelBudgetTable;
 	}
 
 	private JPanel createBudgetSearchBarPanel() {
 		
 		JPanel panelBudgetSearch = new JPanel();		
-//		panelBudgetSearch.setLayout(new BoxLayout(panelBudgetSearch, BoxLayout.PAGE_AXIS));
-//		JPanel searchBarPanel1 = new JPanel();
-//		searchBarPanel1.setLayout(new FlowLayout(FlowLayout.CENTER));
 		panelBudgetSearch.setLayout(new FlowLayout(FlowLayout.CENTER));
 		//creating labels 
 		JLabel labelClient = new JLabel("Cliente: ");
@@ -5070,14 +5081,10 @@ public class MainView extends JFrame{
 		panelBudgetSearch.add(comboBudgetDays);
 		
 		comboBudgetMonths = new JComboBox<String>(new Vector<String>(loadComboList(queryMonth, "month")));
-//		comboBudgetTypes.setActionCommand("budget.search.day");
-//		comboBudgetTypes.addActionListener(lForCombo);
 		panelBudgetSearch.add(labelMonth);
 		panelBudgetSearch.add(comboBudgetMonths);
 		
 		comboBudgetYears = new JComboBox<String>(new Vector<String>(loadComboList(queryYear, "years")));
-//		comboBudgetTypes.setActionCommand("budget.search.day");
-//		comboBudgetTypes.addActionListener(lForCombo);
 		panelBudgetSearch.add(labelYear);
 		panelBudgetSearch.add(comboBudgetYears);
 		
