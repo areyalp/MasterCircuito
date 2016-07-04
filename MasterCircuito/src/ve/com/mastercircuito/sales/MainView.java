@@ -235,6 +235,7 @@ public class MainView extends JFrame{
 	private JButton buttonAddBoardSwitch, buttonRemoveBoardSwitch;
 	private int selectedBoardSwitchId;
 	// Board Switches Add Objects
+	private String searchSelectedBoardSwitchBrand, searchSelectedBoardSwitchType, searchSelectedBoardSwitchPhases, searchSelectedBoardSwitchCurrent, searchSelectedBoardSwitchInterruption;
 	private JDialog dialogBoardSwitchAdd;
 	private Object[][] boardSwitchesSearchData;
 	private JTable tableBoardSwitchesSearchResult;
@@ -4855,6 +4856,41 @@ public class MainView extends JFrame{
 		buttonRemoveBoardSwitch.setEnabled(false);
 	}
 	
+	private void loadBoardSwitchTable(String whereQuery) {
+		String switchesQuery = "SELECT switches.id, "
+				+ "switches.model, "
+				+ "switch_brands.brand, "
+				+ "switch_types.type, "
+				+ "switches.phases, "
+				+ "currents.current, "
+				+ "interruptions.interruption, "
+				+ "switch_voltages.voltage, "
+				+ "switches.price "
+			+ "FROM switches, "
+				+ "switch_brands, "
+				+ "switch_types, "
+				+ "currents, "
+				+ "interruptions, "
+				+ "switch_voltages "
+			+ "WHERE switches.brand_id = switch_brands.id "
+			+ "AND switches.type_id = switch_types.id "
+			+ "AND switches.current_id = currents.id "
+			+ "AND switches.interruption_id = interruptions.id "
+			+ "AND switches.voltage_id = switch_voltages.id "
+			+ "AND switches.active = '1' "
+			+ whereQuery;
+
+		boardSwitchesSearchData = db.fetchAll(db.select(switchesQuery));
+		
+		String[] switchesColumnNames = { "Id", "Modelo", "Marca", "Tipo", "Fases", "Amperaje", "Interrupcion", "Voltaje", "Precio"};
+		
+		if(boardSwitchesSearchData.length > 0) {
+			tableBoardSwitchesSearchResult.setModel(new MyTableModel(boardSwitchesSearchData, switchesColumnNames));
+		} else {
+			tableBoardSwitchesSearchResult.setModel(new DefaultTableModel());
+		}
+	}
+	
 	private void updateBoardTextAddDescription() {
 		String boardType = (null != comboBoardAddType.getSelectedItem().toString())?comboBoardAddType.getSelectedItem().toString():"";
 		String boardPhases =(null != comboBoardAddPhases.getSelectedItem().toString())?comboBoardAddPhases.getSelectedItem().toString():"";
@@ -5740,6 +5776,58 @@ public class MainView extends JFrame{
 					actionCommand.equalsIgnoreCase("board.description.add.circuits") || 
 					actionCommand.equalsIgnoreCase("board.description.add.phases")) {
 				updateBoardTextAddDescription();
+			} else if(actionCommand.equalsIgnoreCase("board.switch.bar.brand")) {
+				fromQuery = "switches, switch_types ";
+				searchSelectedBoardSwitchBrand = comboBoardSwitchBrands.getSelectedItem().toString();
+				this.clearSelectedBoardSwitchOptions("type");
+				if(!searchSelectedBoardSwitchBrand.equalsIgnoreCase("Todas")) {
+					fromQuery += ", switch_brands ";
+					whereQuery = "WHERE switches.brand_id = switch_brands.id "
+									+ "AND switch_types.brand_id = switch_brands.id "
+									+ "AND switch_types.id = switches.type_id "
+									+ "AND switch_brands.brand = '"+searchSelectedBoardSwitchBrand+"' ";
+				} else {
+					whereQuery = "WHERE switch_types.id = switches.type_id ";
+				}
+				this.addSwitchCommonQuery();
+				this.loadComboBoardSwitch("types");
+			} else if (actionCommand.equalsIgnoreCase("board.switch.bar.type")) {
+				fromQuery = "switches ";
+				searchSelectedBoardSwitchType = comboBoardSwitchTypes.getSelectedItem().toString();
+				this.clearSelectedBoardSwitchOptions("phases");
+				if(!searchSelectedBoardSwitchType.equalsIgnoreCase("Todas")) {
+					fromQuery += ", switch_types ";
+					whereQuery = "WHERE switches.type_id = switch_types.id "
+									+ "AND switch_types.type = '"+searchSelectedBoardSwitchType+"' ";
+				} else {
+					whereQuery = "";
+				}
+				this.switchBrandQuery();
+				this.addSwitchCommonQuery();
+				this.loadComboBoardSwitch("phases");
+			} else if (actionCommand.equalsIgnoreCase("board.switch.bar.phases")) {
+				fromQuery = "switches ";
+				searchSelectedBoardSwitchPhases = comboBoardSwitchPhases.getSelectedItem().toString();
+				this.clearSelectedBoardSwitchOptions("current");
+				this.switchPhasesQuery();
+				this.switchBrandQuery();
+				this.addSwitchCommonQuery();
+				this.loadComboBoardSwitch("currents");
+			} else if (actionCommand.equalsIgnoreCase("board.switch.bar.current")) {
+				fromQuery = "switches ";
+				searchSelectedBoardSwitchCurrent = comboBoardSwitchCurrents.getSelectedItem().toString();
+				this.clearSelectedBoardSwitchOptions("interruption");
+				if(!searchSelectedBoardSwitchCurrent.equalsIgnoreCase("Todas")) {
+					this.selectWhereQuery();
+					whereQuery += " switches.current_id = currents.id "
+									+ "AND currents.current = '" + searchSelectedBoardSwitchCurrent + "' ";
+				}
+				this.switchPhasesQuery();
+				this.switchBrandQuery();
+				this.addSwitchCommonQuery();
+				this.loadComboBoardSwitch("interruptions");
+			} else if (actionCommand.equalsIgnoreCase("board.switch.bar.interruption")) {
+				searchSelectedBoardSwitchInterruption = comboBoardSwitchInterruptions.getSelectedItem().toString();
 			}
 		}
 		
@@ -5804,6 +5892,20 @@ public class MainView extends JFrame{
 					searchSelectedBoardInterruption = "";
 				case "interruption":
 					searchSelectedBoardLockType = "";
+					break;
+			}
+		}
+		
+		private void clearSelectedBoardSwitchOptions(String start) {
+			switch(start) {
+				case "type":
+					searchSelectedBoardSwitchType = "";
+				case "phases":
+					searchSelectedBoardSwitchPhases = "";
+				case "current":
+					searchSelectedBoardSwitchCurrent = "";
+				case "interruption":
+					searchSelectedBoardSwitchInterruption = "";
 					break;
 			}
 		}
@@ -6300,6 +6402,20 @@ public class MainView extends JFrame{
 			}
 		}
 		
+		private void loadComboBoardSwitch(String start) {
+			switch(start) {
+				case "types":
+					comboBoardSwitchTypes.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList("switch_types", "type"))));
+				case "phases":
+					comboBoardSwitchPhases.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList("switches", "phases"))));
+				case "currents":
+					comboBoardSwitchCurrents.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList("currents", "current"))));
+				case "interruptions":
+					comboBoardSwitchInterruptions.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList("interruptions", "interruption"))));
+					break;
+			}
+		}
+		
 	}
 	
 	private class SearchButtonListener implements ActionListener {
@@ -6523,6 +6639,30 @@ public class MainView extends JFrame{
 				textBoardDescription.setText("");
 				buttonBoardAdd.setEnabled(true);
 				buttonBoardEdit.setEnabled(false);
+			} else if(actionCommand.equalsIgnoreCase("board.switch.search.bar.button")) {
+				whereQuery = "";
+				if(searchSelectedBoardSwitchBrand != null && !searchSelectedBoardSwitchBrand.equalsIgnoreCase("Todas") &&
+						!searchSelectedBoardSwitchBrand.isEmpty()) {
+					whereQuery += " AND switch_brands.brand = '" + searchSelectedBoardSwitchBrand + "'";
+				}
+				if(searchSelectedBoardSwitchType != null && !searchSelectedBoardSwitchType.equalsIgnoreCase("Todas") &&
+						!searchSelectedBoardSwitchType.isEmpty()) {
+					whereQuery += " AND switch_types.type = '" + searchSelectedBoardSwitchType + "'";
+				}
+				if(searchSelectedBoardSwitchPhases != null && !searchSelectedBoardSwitchPhases.equalsIgnoreCase("Todas") &&
+						!searchSelectedBoardSwitchPhases.isEmpty()) {
+					whereQuery += " AND switches.phases = '" + searchSelectedBoardSwitchPhases + "'";
+				}
+				if(searchSelectedBoardSwitchCurrent != null && !searchSelectedBoardSwitchCurrent.equalsIgnoreCase("Todas") &&
+						!searchSelectedBoardSwitchCurrent.isEmpty()) {
+					whereQuery += " AND currents.current = '" + searchSelectedBoardSwitchCurrent + "'";
+				}
+				if(searchSelectedBoardSwitchInterruption != null && !searchSelectedBoardSwitchInterruption.equalsIgnoreCase("Todas") &&
+						!searchSelectedBoardSwitchInterruption.isEmpty()) {
+					whereQuery += " AND interruptions.interruption = '" + searchSelectedBoardSwitchInterruption + "'";
+				}
+				
+				loadBoardSwitchTable(whereQuery);
 			}
 		}
 		
