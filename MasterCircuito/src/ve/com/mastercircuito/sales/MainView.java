@@ -66,6 +66,7 @@ import javax.swing.text.JTextComponent;
 import org.joda.time.DateTime;
 import org.joda.time.JodaTimePermission;
 
+import javafx.scene.control.ComboBox;
 import ve.com.mastercircuito.components.MyInternalFrame;
 import ve.com.mastercircuito.components.MyTableModel;
 import ve.com.mastercircuito.db.Db;
@@ -271,44 +272,32 @@ public class MainView extends JFrame{
 	private JButton buttonBudgetAdd;
 	private JButton buttonBudgetEdit;
 	private JPanel budgetSwitchesPanel;
-	private JPanel panelWrapperBudgetDescription;
 	private JScrollPane tableBudgetScrollPane;
 	private JTable tableBudgetsResult;
-	private JPanel panelBudgetDescription;
 	private JPanel budgetBoxesPanel;
-	private Component budgetBoardsPanel;
+	private JPanel budgetBoardsPanel;
 	private JPanel budgetMaterialsPanel;
 	private JPanel budgetSpecialsPanel;
 	private JPanel budgetNotesPanel;
 	private JTextField textBudgetSearchId;
 	private JComboBox<String> comboBudgetDays;
-	private String queryDay;
-	private Component panelBudgetSearch;
+	private JPanel panelBudgetSearch;
 	private JComboBox<String> comboBudgetMonths;
-	private String queryMonth;
 	private JComboBox<String> comboBudgetYears;
-	private String queryYear;
 	private Object[][] budgetData = {};
-	private JTextField textBoardDescriptionClient;
-	private JLabel labelBudgetCopy;
 	private JPanel descriptionBudgetPanel;
-	private Object panelBudgetAddNew;
-	private Object panelBudgetEdit;
-	private Component textBoardDescriptionId;
-	private JTextField textBudgetDescriptionId;
-	private JTextField textBudgetSearchClient;
-	private JTextField textBudgetDescriptionCode;
-	private JTextField textBudgetDescriptionDate;
-	private JTextField textBudgetDescriptionExpiration;
-	private JTextField textBudgetDescriptionExpirationDate;
-	private JTextField textBudgetDescriptionClientCode;
-	private JTextField textBudgetDescriptionCompany;
-	private JTextField textBudgetDescriptionCompanyRepresentative;
-	private JTextField textBudgetDescriptionBuildingName;
-	private JTextField textBudgetDescriptionPaymentMethod;
-	private JTextField textBudgetDescriptionSeller;
-	private JTextComponent textBudgetDescriptionDeliveryTime;
-	private JTextField textBudgetDescriptionDeliverySite;
+	private JPanel panelBudgetAddNew, panelBudgetEdit;
+	private JTextField textBudgetDescriptionId, textBudgetSearchClient,textBudgetDescriptionCode;
+	private JTextField textBudgetDescriptionDate, textBudgetDescriptionExpiration, textBudgetDescriptionExpirationDate;
+	private JTextField textBudgetDescriptionClientCode, textBudgetDescriptionCompany;
+	private JTextField textBudgetDescriptionCompanyRepresentative, textBudgetDescriptionBuildingName, textBudgetDescriptionPaymentMethod;
+	private JTextField textBudgetDescriptionSeller, textBudgetDescriptionDeliveryTime, textBudgetDescriptionDeliverySite;
+	private JButton buttonBudgetAddSave, buttonBudgetAddCancel;
+	private JTextField textBudgetAddCode, textBudgetAddId, textBudgetAddDate, textBudgetAddClientCode,textBudgetAddExpiration;
+	private JTextField textBudgetAddCompanyRepresentative, textBudgetAddBuildingName, textBudgetAddCompany;
+	private JTextField textBudgetAddSeller, textBudgetAddDeliveryTime;
+	private JComboBox<String> comboBugetAddPaymentMethod,comboBugetAddDeliverySite;
+	private JCheckBox checkBudgetAddTracing;
 	
 	public static void main(String[] args) {
 		new MainView();
@@ -4061,7 +4050,7 @@ public class MainView extends JFrame{
 		ComboBoxListener lForCombo = new ComboBoxListener();
 		new TextFieldListener();
 		GridBagConstraints cs = new GridBagConstraints();
-		
+	
 		cs.fill = GridBagConstraints.HORIZONTAL;
 		cs.insets = new Insets(0, 0, 5, 5);
 		
@@ -4771,6 +4760,11 @@ public class MainView extends JFrame{
 		
 	}
 	
+	private void setBudgetsMode(int mode){
+		
+		
+	}
+	
 	private void loadBoardTable(String whereQuery) {
 		ArrayList<String> fields = new ArrayList<String>();
 		fields.add(MainView.BOARD_ID_FIELD);
@@ -4922,6 +4916,12 @@ public class MainView extends JFrame{
 		JPanel panelBudgetLower = new JPanel(new BorderLayout(20,20));
 		descriptionBudgetPanel = createBudgetDescriptionPanel();
 		
+		panelBudgetAddNew = createBudgetAddPanel();
+		panelBudgetAddNew.setVisible(false);
+		
+		panelBudgetEdit = createBudgetEditPanel();
+//		panelBudgetEdit.setVisible(false);   //agregar luego de implementar metodo BudgetEditPanel
+		
 		panelBudgetLower.add(descriptionBudgetPanel, BorderLayout.CENTER);
 		panelBudgetLower.add(panelButtons, BorderLayout.SOUTH);
 		
@@ -4967,8 +4967,217 @@ public class MainView extends JFrame{
 	}
 
 	private JPanel createBudgetAddPanel() {
+		JPanel addPanel = new JPanel(new GridBagLayout());
+		ComboBoxListener lForCombo = new ComboBoxListener();
+//		new TextFieldListener();
+		GridBagConstraints cs = new GridBagConstraints();
+		
+		cs.fill = GridBagConstraints.HORIZONTAL;
+		cs.insets = new Insets(0, 0, 5, 5);
+		
+		JLabel labelId = new JLabel("Id:");
+		cs.gridx = 0;
+		cs.gridy = 0;
+		cs.gridwidth = 1;
+		addPanel.add(labelId, cs);
+		
+		textBudgetAddId = new JTextField("", 8);
+		textBudgetAddId.setEditable(false);
+		cs.gridx = 1;
+		cs.gridy = 0;
+		cs.gridwidth = 8;
+		addPanel.add(textBudgetAddId, cs);
+		
+		JLabel labelCode = new JLabel("Codigo:");
+		cs.gridx = 9;
+		cs.gridy = 0;
+		cs.gridwidth = 1;
+		addPanel.add(labelCode, cs);
+		
+		textBudgetAddCode = new JTextField("", 8);
+		textBudgetAddCode.setEditable(false);
+		cs.gridx = 10;
+		cs.gridy = 0;
+		cs.gridwidth = 8;
+		addPanel.add(textBudgetAddCode, cs);
+		
+		JLabel labelDate = new JLabel("Fecha:");
+		cs.gridx = 18;
+		cs.gridy = 0;
+		cs.gridwidth = 1;
+		addPanel.add(labelDate, cs);                   
+		
+		textBudgetAddDate = new JTextField("", 8);
+		textBudgetAddDate.setEditable(false);
+		cs.gridx = 19;
+		cs.gridy = 0;
+		cs.gridwidth = 8;
+		addPanel.add(textBudgetAddDate, cs);
+		
+		JLabel labelExpiration = new JLabel("Vencimiento:");
+		cs.gridx = 27;
+		cs.gridy = 0;
+		cs.gridwidth = 1;
+		addPanel.add(labelExpiration, cs);
+		
+		textBudgetAddExpiration = new JTextField("", 6);
+		textBudgetAddExpiration.setEditable(false);
+		cs.gridx = 28;
+		cs.gridy = 0;
+		cs.gridwidth = 6;
+		addPanel.add(textBudgetAddExpiration, cs);
+				
+		JLabel labelClientCode = new JLabel("Codigo Cliente :");
+		cs.gridx = 43;
+		cs.gridy = 0;
+		cs.gridwidth = 1;
+		addPanel.add(labelClientCode, cs);
+		
+		textBudgetAddClientCode = new JTextField("", 8);
+		textBudgetAddClientCode.setEditable(false);
+		cs.gridx = 44;
+		cs.gridy = 0;
+		cs.gridwidth = 8;
+		addPanel.add(textBudgetAddClientCode, cs);
+		
+		JLabel labelCompany = new JLabel("Empresa:");
+		cs.gridx = 0;
+		cs.gridy = 1;
+		cs.gridwidth = 1;
+		addPanel.add(labelCompany, cs);
+		
+		textBudgetAddCompany = new JTextField("", 10);
+		textBudgetAddCompany.setEditable(false);
+		cs.gridx = 1;
+		cs.gridy = 1;
+		cs.gridwidth = 10;
+		addPanel.add(textBudgetAddCompany, cs);
+		
+		JLabel labelCompanyRepresentative = new JLabel("Representante de la Empresa:");
+		cs.gridx = 11;
+		cs.gridy = 1;
+		cs.gridwidth = 1;
+		addPanel.add(labelCompanyRepresentative, cs);
+		
+		textBudgetAddCompanyRepresentative = new JTextField("", 10);
+		textBudgetAddCompanyRepresentative.setEditable(false);
+		cs.gridx = 12;
+		cs.gridy = 1;
+		cs.gridwidth = 10;
+		addPanel.add(textBudgetAddCompanyRepresentative, cs);
+		
+		JLabel labelBuildingName = new JLabel("Nombre de la Obra:");
+		cs.gridx = 22;
+		cs.gridy = 1;
+		cs.gridwidth = 1;
+		addPanel.add(labelBuildingName, cs);
+		
+		textBudgetAddBuildingName = new JTextField("", 10);
+		textBudgetAddBuildingName.setEditable(false);
+		cs.gridx = 23;
+		cs.gridy = 1;
+		cs.gridwidth = 10;
+		addPanel.add(textBudgetAddBuildingName, cs);
+
+//		
+		JLabel labelPaymentMethod = new JLabel("Forma de Pago:");
+		cs.gridx = 33;
+		cs.gridy = 1;
+		cs.gridwidth = 1;
+		addPanel.add(labelPaymentMethod, cs);
+		
+		List<String> listPaymentMethod = new ArrayList<String>();
+		listPaymentMethod.add("100% + iva");
+		listPaymentMethod.add("75% + iva");
+		listPaymentMethod.add("50% + iva");
+
+		comboBugetAddPaymentMethod = new JComboBox<String>(new Vector<String>(listPaymentMethod));
+		comboBugetAddPaymentMethod.setActionCommand("budget.add.payment");
+		comboBugetAddPaymentMethod.addActionListener(lForCombo);
+		cs.gridx = 34;
+		cs.gridy = 1;
+		cs.gridwidth = 8;
+		addPanel.add(comboBugetAddPaymentMethod, cs);
+		
+		JLabel labelSeller = new JLabel("Vendedor:");
+		cs.gridx = 42;
+		cs.gridy = 1;
+		cs.gridwidth = 1;
+		addPanel.add(labelSeller, cs);
+		
+		textBudgetAddSeller = new JTextField("", 10);
+		textBudgetAddSeller.setEditable(false);
+		cs.gridx = 43;
+		cs.gridy = 1;
+		cs.gridwidth = 10;
+		addPanel.add(textBudgetAddSeller, cs);
+		
+		JLabel labelDeliverySite = new JLabel("Sitio de entrega:");
+		cs.gridx = 0;
+		cs.gridy = 2;
+		cs.gridwidth = 1;
+		addPanel.add(labelDeliverySite, cs);
+		
+		List<String> listDeliverySite = new ArrayList<String>();
+		listDeliverySite.add("Planta");
+		listDeliverySite.add("Oficina Caracas");
+		listDeliverySite.add("Instalaciones Cliente");
+
+		comboBugetAddDeliverySite = new JComboBox<String>(new Vector<String>(listDeliverySite));
+		comboBugetAddDeliverySite.setActionCommand("budget.add.deliverysite");
+		comboBugetAddDeliverySite.addActionListener(lForCombo);
+		cs.gridx = 1;
+		cs.gridy = 2;
+		cs.gridwidth = 10;
+		addPanel.add(comboBugetAddDeliverySite, cs);
+	
+		JLabel labelDeliveryTime = new JLabel("Tiempo de entrega:");
+		cs.gridx = 11;
+		cs.gridy = 2;
+		cs.gridwidth = 1;
+		addPanel.add(labelDeliveryTime, cs);
+					
+		textBudgetAddDeliveryTime = new JTextField("", 8);
+		textBudgetAddDeliveryTime.setEditable(false);
+		cs.gridx = 12;
+		cs.gridy = 2;
+		cs.gridwidth = 8;
+		addPanel.add(textBudgetAddDeliveryTime, cs);
+					
+		checkBudgetAddTracing = new JCheckBox("Seguimiento");
+		cs.gridx = 20;
+		cs.gridy = 2;
+		cs.gridwidth = 1;
+		addPanel.add(checkBudgetAddTracing, cs);
+				
+		ButtonListener lForButton = new ButtonListener();
+		
+		JPanel panelButtons = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		
+		buttonBudgetAddSave = new JButton("Guardar");
+		buttonBudgetAddSave.setActionCommand("budget.description.add.save");
+		buttonBudgetAddSave.addActionListener(lForButton);
+		panelButtons.add(buttonBudgetAddSave);
+		
+		buttonBudgetAddCancel = new JButton("Cancelar");
+		buttonBudgetAddCancel.setActionCommand("budget.description.add.cancel");
+		buttonBudgetAddCancel.addActionListener(lForButton);
+		panelButtons.add(buttonBudgetAddCancel);
+		
+		cs.gridx = 0;
+		cs.gridy = 4;
+		cs.gridwidth = 43;
+		addPanel.add(panelButtons, cs);
+		
+		updateBudgetTextAddDescription();
+		
+		return addPanel;
+		
+	}
+
+	private void updateBudgetTextAddDescription() {
 		// TODO Auto-generated method stub
-		return null;
+		
 	}
 
 	private JPanel createBudgetBoardsPanel() {
@@ -5217,10 +5426,7 @@ public class MainView extends JFrame{
 		cs.gridy = 2;
 		cs.gridwidth = 8;
 		descriptionBudgetPanel.add(textBudgetDescriptionDeliveryTime, cs);
-		
-
-
-		
+				
 		return descriptionBudgetPanel;
 	}
 
@@ -7384,6 +7590,9 @@ public class MainView extends JFrame{
 					}
 				}
 			}
+//			else if (actionCommand.equalsIgnoreCase("budget.description.buttons.add")) {
+//				setBoardsMode(MainView.ADD_MODE);
+//			}
 		}
 		
 	}
