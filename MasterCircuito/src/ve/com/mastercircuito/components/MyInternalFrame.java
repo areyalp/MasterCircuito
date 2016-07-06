@@ -54,7 +54,6 @@ public class MyInternalFrame extends JInternalFrame {
 		try {
 			this.setClosed(true);
 		} catch (PropertyVetoException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

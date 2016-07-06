@@ -571,7 +571,7 @@ public class Db extends MysqlDriver {
 		return voltageId;
 	}
 	
-	public int getSwitchBoardId(int switchId) {
+	public int getBoardContainerId(int switchId) {
 		ResultSet setSwitchBoard;
 		int switchBoardId = 0;
 		setSwitchBoard = this.select("SELECT board_container_id FROM board_switches WHERE id = '" + switchId + "'");

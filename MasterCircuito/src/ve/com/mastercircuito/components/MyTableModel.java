@@ -6,6 +6,7 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 
 import ve.com.mastercircuito.db.Db;
+import ve.com.mastercircuito.utils.StringTools;
 
 public class MyTableModel extends AbstractTableModel {
 	/**
@@ -71,23 +72,38 @@ public class MyTableModel extends AbstractTableModel {
 	public void setValueAt(Object value, int row, int col) {
 		if(this.getColumnClass(col).equals(Boolean.class)) {
 			Db db = new Db();
-			int boardId = 0;
+			String boardMainSwitches = "";
+			int boardMains = 0;
+			int boardContainerId = 0;
 			for(int i = 0; i < data.length; i++) {
-				if(i != row && data[i][col].equals(true)) {
-					this.data[i][col] = false;
-					fireTableCellUpdated(i, col);
+				if(data[i][col].equals(true)) {
+					boardMains++;
+					boardMainSwitches = boardMainSwitches.concat(data[i][0] + ",");
 				}
 			}
-			this.data[row][col] = value;
-			fireTableCellUpdated(row, col);
-			
-			Object boardSwitchId = this.data[row][0];
-			boardId = db.getSwitchBoardId(Integer.valueOf((String) boardSwitchId));
-			ArrayList<Object> listFields = new ArrayList<Object>();
-			ArrayList<Object> listValues = new ArrayList<Object>();
-			listFields.add("main_switch_id");
-			listValues.add("'" + (value.equals(true)?boardSwitchId:"0") + "'");
-			db.editBoard(boardId, listFields, listValues);
+			if(value.equals(false)) {
+				boardMainSwitches = boardMainSwitches.replace(this.data[row][0] + ",", "");
+				boardMains--;
+			}
+			if(boardMains < 2) {
+				this.data[row][col] = value;
+				fireTableCellUpdated(row, col);
+				if(value.equals(true)) {
+					boardMainSwitches = boardMainSwitches.concat(data[row][0] + ",");
+				}
+				
+				if(boardMainSwitches.endsWith(",")) {
+					boardMainSwitches = StringTools.removeLastChar(boardMainSwitches);
+				}
+				
+				Object boardSwitchId = this.data[row][0];
+				boardContainerId = db.getBoardContainerId(Integer.valueOf((String) boardSwitchId));
+				ArrayList<Object> listFields = new ArrayList<Object>();
+				ArrayList<Object> listValues = new ArrayList<Object>();
+				listFields.add("main_switch_id");
+				listValues.add("'" + boardMainSwitches + "'");
+				db.editBoard(boardContainerId, listFields, listValues);
+			}
 		} else {
 			this.data[row][col] = value;
 			fireTableCellUpdated(row, col);

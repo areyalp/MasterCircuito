@@ -84,7 +84,6 @@ public abstract class Fa extends Font{
 	
 	protected Fa(Font font) {
 		super(font);
-		// TODO Auto-generated constructor stub
 	}
 
 }

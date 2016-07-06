@@ -4866,7 +4866,7 @@ public class MainView extends JFrame{
 				+ " board_switches.quantity, "
 				+ " switches.price, "
 				+ " (board_switches.quantity * switches.price) as total, "
-				+ " IF(boards.main_switch_id=board_switches.id,'1','0') as principal "
+				+ " IF(FIND_IN_SET(board_switches.id,boards.main_switch_id),'1','0') as principal "
 			+ " FROM boards, board_switches, switches, switch_types, switch_brands, currents "
 			+ " WHERE board_switches.board_container_id = " + selectedBoardId
 			+ " AND boards.id = board_switches.board_container_id"
@@ -5039,7 +5039,7 @@ public class MainView extends JFrame{
 	}
 	
 	private JPanel createBudgetEditPanel() {
-		// TODO Auto-generated method stub
+		// TODO Need to finish budget edit panel here
 		return null;
 	}
 
@@ -5253,8 +5253,7 @@ public class MainView extends JFrame{
 	}
 
 	private void updateBudgetTextAddDescription() {
-		// TODO Auto-generated method stub
-		
+		// TODO Finish budget text add description
 	}
 
 	private JPanel createBudgetBoardsPanel() {
@@ -5316,10 +5315,10 @@ public class MainView extends JFrame{
 	}
 
 	private JPanel createBudgetSwitchesSearchPanel() {
-		// TODO Auto-generated method stub
+		// TODO Finish budget switches search panel
 		return null;
 	}
-
+	
 	private JPanel createBudgetSwitchesTablePanel() {
 		JPanel tablePanel = new JPanel();
 		return tablePanel;
