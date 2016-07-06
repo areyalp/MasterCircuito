@@ -236,6 +236,7 @@ public class MainView extends JFrame{
 	private JButton buttonAddBoardSwitch, buttonRemoveBoardSwitch;
 	private int selectedBoardSwitchId;
 	// Board Switches Add Objects
+	private int selectedTableBoardCircuits = 0;
 	private String searchSelectedBoardSwitchBrand, searchSelectedBoardSwitchType, searchSelectedBoardSwitchPhases, searchSelectedBoardSwitchCurrent, searchSelectedBoardSwitchInterruption;
 	private JDialog dialogBoardSwitchAdd;
 	private Object[][] boardSwitchesSearchData;
@@ -580,7 +581,7 @@ public class MainView extends JFrame{
 		JPanel panelBudgetSettings = new JPanel();
 		return panelBudgetSettings;
 	}
-
+	
 	private void createStartersFrame() {
 		startersFrame = new MyInternalFrame("Arrancadores");
 		startersFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -3764,8 +3765,10 @@ public class MainView extends JFrame{
 	}
 	
 	private JPanel createBoardSwitchAddCountPanel() {
-		JPanel panelCount = new JPanel();
-		panelCount.setLayout(new GridLayout(1, 3));
+		JPanel panelCountOuter = new JPanel(new BorderLayout());
+		JPanel panelCountInner = new JPanel();
+		
+		panelCountInner.setLayout(new FlowLayout(FlowLayout.CENTER));
 		JButton buttonDecrease = new JButton("-");
 		JButton buttonIncrease = new JButton("+");
 		JLabel labelQuantity = new JLabel("1");
@@ -3773,9 +3776,9 @@ public class MainView extends JFrame{
 		int min = 1;
 		int max = 100;
 		
-		panelCount.add(buttonDecrease);
-		panelCount.add(labelQuantity);
-		panelCount.add(buttonIncrease);
+		panelCountInner.add(buttonDecrease);
+		panelCountInner.add(labelQuantity);
+		panelCountInner.add(buttonIncrease);
 		
 		buttonDecrease.addActionListener(new ActionListener() {
 			
@@ -3799,16 +3802,19 @@ public class MainView extends JFrame{
 			}
 		});
 		
-		return panelCount;
+		panelCountOuter.add(panelCountInner, BorderLayout.CENTER);
+		
+		return panelCountOuter;
 	}
 	
 	private JPanel createBoardSwitchAddButtonPanel() {
-		JPanel panelButtons = new JPanel();
-		panelButtons.setLayout(new GridLayout(1, 2));
+		JPanel panelOuter = new JPanel(new BorderLayout());
+		JPanel panelInner = new JPanel();
+		panelInner.setLayout(new FlowLayout(FlowLayout.CENTER));
 		JButton buttonAccept = new JButton("Aceptar");
 		JButton buttonCancel = new JButton("Cancelar");
-		panelButtons.add(buttonAccept);
-		panelButtons.add(buttonCancel);
+		panelInner.add(buttonAccept);
+		panelInner.add(buttonCancel);
 		
 		buttonAccept.addActionListener(new ActionListener() {
 			
@@ -3832,7 +3838,9 @@ public class MainView extends JFrame{
 			}
 		});
 		
-		return panelButtons;
+		panelOuter.add(panelInner, BorderLayout.CENTER);
+		
+		return panelOuter;
 	}
 	
 	private JPanel createBoardDescriptionPanel() {
@@ -4605,6 +4613,7 @@ public class MainView extends JFrame{
 			textBoardDescriptionName.setText("");
 			textBoardDescriptionPrice.setText("");
 			tableBoardsResult.clearSelection();
+			selectedTableBoardCircuits = 0;
 			SwingUtilities.invokeLater(new Runnable(){
 				@Override
 				public void run() {
@@ -4845,12 +4854,44 @@ public class MainView extends JFrame{
 		} else {
 			tableBoardsResult.setModel(new DefaultTableModel());
 		}
+		selectedTableBoardCircuits = 0;
 		tableBoardSwitchesResult.setModel(new DefaultTableModel());
 		buttonAddBoardSwitch.setEnabled(false);
 		buttonRemoveBoardSwitch.setEnabled(false);
 	}
 	
-	private void loadBoardSwitchTable(String whereQuery) {
+	private void loadBoardSwitchTable() {
+		String boardSwitchesQuery = "SELECT board_switches.id, "
+				+ " CONCAT('Interruptor ', boards.phases, 'X', currents.current, 'A,', switch_types.type, ',', switch_brands.brand) as description, "
+				+ " board_switches.quantity, "
+				+ " switches.price, "
+				+ " (board_switches.quantity * switches.price) as total, "
+				+ " IF(boards.main_switch_id=board_switches.id,'1','0') as principal "
+			+ " FROM boards, board_switches, switches, switch_types, switch_brands, currents "
+			+ " WHERE board_switches.board_container_id = " + selectedBoardId
+			+ " AND boards.id = board_switches.board_container_id"
+			+ " AND switches.id = board_switches.switch_id "
+			+ " AND switches.current_id = currents.id"
+			+ " AND switches.type_id = switch_types.id"
+			+ " AND switches.brand_id = switch_brands.id";
+		
+		String[] boardSwitchesColumnNames = { "Id", "Descripcion", "Cantidad", "Precio", "Total", "Principal"};
+		boardSwitchesData = db.fetchAllAddBoolean(db.select(boardSwitchesQuery), boardSwitchesColumnNames.length);
+		
+		if(boardSwitchesData.length > 0) {
+			MyTableModel mForTable = new MyTableModel(boardSwitchesData, boardSwitchesColumnNames);
+			tableBoardSwitchesResult.setModel(mForTable);
+			if(null != tableBoardSwitchesResult && tableBoardSwitchesResult.getSelectedRow() == -1) {
+				buttonRemoveBoardSwitch.setEnabled(false);
+			}
+		} else {
+			tableBoardSwitchesResult.setModel(new DefaultTableModel());
+			buttonRemoveBoardSwitch.setEnabled(false);
+		}
+		buttonAddBoardSwitch.setEnabled(true);
+	}
+	
+	private void loadBoardSwitchSearchTable(String whereQuery) {
 		String switchesQuery = "SELECT switches.id, "
 				+ "switches.model, "
 				+ "switch_brands.brand, "
@@ -6868,7 +6909,7 @@ public class MainView extends JFrame{
 					whereQuery += " AND interruptions.interruption = '" + searchSelectedBoardSwitchInterruption + "'";
 				}
 				
-				loadBoardSwitchTable(whereQuery);
+				loadBoardSwitchSearchTable(whereQuery);
 			}
 		}
 		
@@ -7003,40 +7044,15 @@ public class MainView extends JFrame{
 				}
 			} else if (null != tableBoardsResult && tableBoardsResult.isFocusOwner() && lsm.getMinSelectionIndex() > -1) {
 				boardsTableSelectedIndex = lsm.getMinSelectionIndex();
-				String[] boardSwitchesColumnNames = { "Id", "Descripcion", "Cantidad", "Precio", "Total", "Principal"};
+				
 				if(lsm.isSelectionEmpty()) {
 					buttonAddBoardSwitch.setEnabled(false);
 					tableBoardSwitchesResult.setModel(new DefaultTableModel());
 				} else {
 					selectedBoardId = Integer.valueOf((String) tableBoardsResult.getValueAt(boardsTableSelectedIndex, 0));
 					
-					String boardSwitchesQuery = "SELECT board_switches.id, "
-								+ " CONCAT('Interruptor ', boards.phases, 'X', currents.current, 'A,', switch_types.type, ',', switch_brands.brand) as description, "
-								+ " board_switches.quantity, "
-								+ " switches.price, "
-								+ " (board_switches.quantity * switches.price) as total, "
-								+ " IF(boards.main_switch_id=board_switches.id,'1','0') as principal "
-							+ " FROM boards, board_switches, switches, switch_types, switch_brands, currents "
-							+ " WHERE board_switches.board_container_id = " + selectedBoardId
-							+ " AND boards.id = board_switches.board_container_id"
-							+ " AND switches.id = board_switches.switch_id "
-							+ " AND switches.current_id = currents.id"
-							+ " AND switches.type_id = switch_types.id"
-							+ " AND switches.brand_id = switch_brands.id";
+					loadBoardSwitchTable();
 					
-					boardSwitchesData = db.fetchAllAddBoolean(db.select(boardSwitchesQuery), boardSwitchesColumnNames.length);
-					
-					if(boardSwitchesData.length > 0) {
-						MyTableModel mForTable = new MyTableModel(boardSwitchesData, boardSwitchesColumnNames);
-						tableBoardSwitchesResult.setModel(mForTable);
-						if(null != tableBoardSwitchesResult && tableBoardSwitchesResult.getSelectedRow() == -1) {
-							buttonRemoveBoardSwitch.setEnabled(false);
-						}
-					} else {
-						tableBoardSwitchesResult.setModel(new DefaultTableModel());
-						buttonRemoveBoardSwitch.setEnabled(false);
-					}
-					buttonAddBoardSwitch.setEnabled(true);
 					if(lsm.isSelectionEmpty()) {
 						buttonBoardEdit.setEnabled(false);
 						textBoardDescriptionName.setText("");
@@ -7064,6 +7080,9 @@ public class MainView extends JFrame{
 						textBoardDescriptionBarCapacity.setText((String) tableBoardsResult.getValueAt(boardsTableSelectedIndex, BOARD_BAR_CAPACITY_COLUMN));
 						textBoardDescriptionBarType.setText((String) tableBoardsResult.getValueAt(boardsTableSelectedIndex, BOARD_BAR_TYPE_COLUMN));
 						textBoardDescriptionCircuits.setText((String) tableBoardsResult.getValueAt(boardsTableSelectedIndex, BOARD_CIRCUITS_COLUMN));
+						
+						selectedTableBoardCircuits = Integer.valueOf((String) tableBoardsResult.getValueAt(boardsTableSelectedIndex, BOARD_CIRCUITS_COLUMN));
+						
 						textBoardDescriptionVoltage.setText((String) tableBoardsResult.getValueAt(boardsTableSelectedIndex, BOARD_VOLTAGE_COLUMN));
 						textBoardDescriptionPhases.setText((String) tableBoardsResult.getValueAt(boardsTableSelectedIndex, BOARD_PHASES_COLUMN));
 						textBoardDescriptionGround.setText((String) tableBoardsResult.getValueAt(boardsTableSelectedIndex, BOARD_GROUND_COLUMN));
@@ -7752,8 +7771,14 @@ public class MainView extends JFrame{
 		@Override
 		public void windowClosed(WindowEvent e) {
 			if(boardSwitchSearchId > 0) {
-				JOptionPane.showMessageDialog(null, "El id seleccionado fue: " + boardSwitchSearchId + " y una cantidad de " + boardSwitchSearchQuantity + " interruptores");
-				
+				//JOptionPane.showMessageDialog(null, "El id seleccionado fue: " + boardSwitchSearchId + " y una cantidad de " + boardSwitchSearchQuantity + " interruptores");
+				if ((boardSwitchSearchQuantity * db.getSwitchPhases(boardSwitchSearchId)) + db.getBoardSwitchesQuantity(selectedBoardId) <= selectedTableBoardCircuits) {
+					if(db.addBoardSwitch(selectedBoardId, boardSwitchSearchId, boardSwitchSearchQuantity)) {
+						loadBoardSwitchTable();
+					}
+				} else {
+					JOptionPane.showMessageDialog(null, "No puede agregar mas de " + selectedTableBoardCircuits + " circuitos");
+				}
 			}
 		}
 
