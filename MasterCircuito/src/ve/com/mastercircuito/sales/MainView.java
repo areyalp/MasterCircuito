@@ -7712,36 +7712,24 @@ public class MainView extends JFrame{
 			} else if (actionCommand.equalsIgnoreCase("board.switch.remove")) {
 				int response = JOptionPane.showConfirmDialog(null, "Esta seguro que desea remover este interruptor del tablero?", "Remover interruptor del tablero", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 				if(response == JOptionPane.YES_OPTION) {
+					int boardContainerId = db.getSwitchBoardId(selectedBoardSwitchId);
+					String boardMainSwitches = db.getBoardSwitchMainId(boardContainerId);
 					if(db.removeBoardSwitch(selectedBoardSwitchId)) {
+						boardMainSwitches = boardMainSwitches.replace(String.valueOf(selectedBoardSwitchId), "");
+						if(boardMainSwitches.endsWith(",")) {
+							boardMainSwitches = StringTools.removeLastChar(boardMainSwitches);
+						}
+						if(boardMainSwitches.startsWith(",")) {
+							boardMainSwitches = StringTools.removeFirstChar(boardMainSwitches);
+						}
+						ArrayList<Object> listFields = new ArrayList<Object>();
+						ArrayList<Object> listValues = new ArrayList<Object>();
+						listFields.add("main_switch_id");
+						listValues.add("'" + boardMainSwitches + "'");
+						db.editBoard(boardContainerId, listFields, listValues);
 						if(tableBoardsResult.getSelectedRow() > -1) {
-							String[] boardSwitchesColumnNames = { "Id", "Descripcion", "Cantidad", "Precio", "Total", "Principal"};
-							
 							selectedBoardId = Integer.valueOf( (String) tableBoardsResult.getValueAt(tableBoardsResult.getSelectedRow(), SharedListSelectionListener.BOARD_ID_COLUMN));
-							
-							String boardSwitchesQuery = "SELECT board_switches.id, "
-										+ " CONCAT('Interruptor ', boards.phases, 'X', currents.current, 'A,', switch_types.type, ',', switch_brands.brand) as description, "
-										+ " board_switches.quantity, "
-										+ " switches.price, "
-										+ " (board_switches.quantity * switches.price) as total, "
-										+ " IF(boards.main_switch_id=board_switches.id,'1','0') as principal "
-									+ " FROM boards, board_switches, switches, switch_types, switch_brands, currents "
-									+ " WHERE board_switches.board_container_id = " + selectedBoardId
-									+ " AND boards.id = board_switches.board_container_id"
-									+ " AND switches.id = board_switches.switch_id "
-									+ " AND switches.current_id = currents.id"
-									+ " AND switches.type_id = switch_types.id"
-									+ " AND switches.brand_id = switch_brands.id";
-							
-							boardSwitchesData = db.fetchAllAddBoolean(db.select(boardSwitchesQuery), boardSwitchesColumnNames.length);
-							
-							if(boardSwitchesData.length > 0) {
-								MyTableModel mForTable = new MyTableModel(boardSwitchesData, boardSwitchesColumnNames);
-								tableBoardSwitchesResult.setModel(mForTable);
-							} else {
-								tableBoardSwitchesResult.setModel(new DefaultTableModel());
-								buttonRemoveBoardSwitch.setEnabled(false);
-							}
-							buttonAddBoardSwitch.setEnabled(true);
+							loadBoardSwitchTable();
 						}
 					} else {
 						JOptionPane.showMessageDialog(null, "Error al remover interruptor del tablero");

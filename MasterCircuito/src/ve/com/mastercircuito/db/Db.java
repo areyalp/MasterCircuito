@@ -586,19 +586,34 @@ public class Db extends MysqlDriver {
 		return switchBoardId;
 	}
 	
-	public int getBoardSwitchId(int switchId) {
+	public int getSwitchBoardId(int boardSwitchId) {
 		ResultSet setBoardSwitch;
-		int boardSwitchId = 0;
-		setBoardSwitch = this.select("SELECT switch_id FROM board_switches WHERE id = '" + switchId + "'");
+		int boardId = 0;
+		setBoardSwitch = this.select("SELECT board_container_id FROM board_switches WHERE id = '" + boardSwitchId + "'");
 		
 		try {
 			setBoardSwitch.first();
-			boardSwitchId = setBoardSwitch.getInt("switch_id");
+			boardId = setBoardSwitch.getInt("board_container_id");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener el id del tablero");
+		}
+		return boardId;
+	}
+	
+	public int getBoardSwitchId(int boardSwitchId) {
+		ResultSet setBoardSwitch;
+		int switchId = 0;
+		setBoardSwitch = this.select("SELECT switch_id FROM board_switches WHERE id = '" + boardSwitchId + "'");
+		
+		try {
+			setBoardSwitch.first();
+			switchId = setBoardSwitch.getInt("switch_id");
 		} catch (SQLException e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(null, "Error al obtener el id del interruptor");
 		}
-		return boardSwitchId;
+		return switchId;
 	}
 	
 	public boolean addSwitch(String model, String brand, String type, String phases, int current, String voltage, int interruption, String price) {
@@ -658,6 +673,25 @@ public class Db extends MysqlDriver {
 		String queryDelete;
 		queryDelete = "DELETE FROM board_switches WHERE id = '" + switchId + "'";
 		return this.delete(queryDelete);
+	}
+	
+	public String getBoardSwitchMainId(int boardId) {
+		String queryString;
+		ResultSet setBoardSwitchMainId;
+		
+		queryString = "SELECT boards.main_switch_id FROM boards "
+					+ "WHERE boards.id = '" + boardId + "'";
+		
+		setBoardSwitchMainId = this.select(queryString);
+		
+		try {
+			if (setBoardSwitchMainId.next()) {
+				return setBoardSwitchMainId.getString("boards.main_switch_id");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 	public int getBoardSwitchesQuantity(int boardId) {

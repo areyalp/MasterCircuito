@@ -2,6 +2,13 @@ package ve.com.mastercircuito.utils;
 
 public class StringTools {
 	
+	public static String removeFirstChar(String s) {
+	    if (s == null || s.length() == 0) {
+	        return s;
+	    }
+	    return s.substring(1, s.length());
+	}
+	
 	public static String removeLastChar(String s) {
 	    if (s == null || s.length() == 0) {
 	        return s;
