@@ -31,7 +31,6 @@ public class MysqlDriver {
 		try {
 			prop.load(propertiesInput);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			JOptionPane.showMessageDialog(null, "Error loading config file - " + e.getMessage());
 		}
 		this.host = prop.getProperty("host");
@@ -41,7 +40,6 @@ public class MysqlDriver {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
 			JOptionPane.showMessageDialog(null, "com.mysql.jdbc.Driver Not Found - " + e.getMessage());
 		}
 		this.connect();
@@ -56,7 +54,6 @@ public class MysqlDriver {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
 			JOptionPane.showMessageDialog(null, "com.mysql.jdbc.Driver Not Found - " + e.getMessage());
 		}
 		this.connect();
@@ -67,7 +64,6 @@ public class MysqlDriver {
 		try {
 			conn = DriverManager.getConnection(url, dbuser, dbpassword);
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			JOptionPane.showMessageDialog(null, "error connecting to " + url + " - " + e.getMessage());
 		}
 		return conn;
@@ -143,7 +139,6 @@ public class MysqlDriver {
 				metaData = set.getMetaData();
 				columns = metaData.getColumnCount();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -159,7 +154,6 @@ public class MysqlDriver {
 					i++;
 				}
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -176,7 +170,6 @@ public class MysqlDriver {
 				metaData = set.getMetaData();
 				columns = metaData.getColumnCount();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -196,7 +189,6 @@ public class MysqlDriver {
 					i++;
 				}
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -231,7 +223,6 @@ public class MysqlDriver {
 					i++;
 				}
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -264,7 +255,6 @@ public class MysqlDriver {
 			this.numRows = set.getRow();
 			set.beforeFirst();;
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

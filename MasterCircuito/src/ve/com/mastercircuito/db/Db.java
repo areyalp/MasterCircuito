@@ -571,7 +571,7 @@ public class Db extends MysqlDriver {
 		return voltageId;
 	}
 	
-	public int getSwitchBoardId(int switchId) {
+	public int getBoardContainerId(int switchId) {
 		ResultSet setSwitchBoard;
 		int switchBoardId = 0;
 		setSwitchBoard = this.select("SELECT board_container_id FROM board_switches WHERE id = '" + switchId + "'");
@@ -586,19 +586,34 @@ public class Db extends MysqlDriver {
 		return switchBoardId;
 	}
 	
-	public int getBoardSwitchId(int switchId) {
+	public int getSwitchBoardId(int boardSwitchId) {
 		ResultSet setBoardSwitch;
-		int boardSwitchId = 0;
-		setBoardSwitch = this.select("SELECT switch_id FROM board_switches WHERE id = '" + switchId + "'");
+		int boardId = 0;
+		setBoardSwitch = this.select("SELECT board_container_id FROM board_switches WHERE id = '" + boardSwitchId + "'");
 		
 		try {
 			setBoardSwitch.first();
-			boardSwitchId = setBoardSwitch.getInt("switch_id");
+			boardId = setBoardSwitch.getInt("board_container_id");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener el id del tablero");
+		}
+		return boardId;
+	}
+	
+	public int getBoardSwitchId(int boardSwitchId) {
+		ResultSet setBoardSwitch;
+		int switchId = 0;
+		setBoardSwitch = this.select("SELECT switch_id FROM board_switches WHERE id = '" + boardSwitchId + "'");
+		
+		try {
+			setBoardSwitch.first();
+			switchId = setBoardSwitch.getInt("switch_id");
 		} catch (SQLException e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(null, "Error al obtener el id del interruptor");
 		}
-		return boardSwitchId;
+		return switchId;
 	}
 	
 	public boolean addSwitch(String model, String brand, String type, String phases, int current, String voltage, int interruption, String price) {
@@ -658,6 +673,115 @@ public class Db extends MysqlDriver {
 		String queryDelete;
 		queryDelete = "DELETE FROM board_switches WHERE id = '" + switchId + "'";
 		return this.delete(queryDelete);
+	}
+	
+	public String getBoardSwitchMainId(int boardId) {
+		String queryString;
+		ResultSet setBoardSwitchMainId;
+		
+		queryString = "SELECT boards.main_switch_id FROM boards "
+					+ "WHERE boards.id = '" + boardId + "'";
+		
+		setBoardSwitchMainId = this.select(queryString);
+		
+		try {
+			if (setBoardSwitchMainId.next()) {
+				return setBoardSwitchMainId.getString("boards.main_switch_id");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public int getBoardSwitchesQuantity(int boardId) {
+		ResultSet setBoardSwitchesQuantity;
+		int boardSwitchesQuantity = 0;
+		setBoardSwitchesQuantity = this.select("SELECT IFNULL(SUM(board_switches.quantity * switches.phases),0) as cnt " +
+													"FROM board_switches, switches " +
+													"WHERE board_switches.board_container_id = '" + boardId + "' " +
+													"AND board_switches.switch_id = switches.id");
+		
+		try {
+			setBoardSwitchesQuantity.first();
+			boardSwitchesQuantity = setBoardSwitchesQuantity.getInt("cnt");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener la cantidad de interruptores en este tablero");
+		}
+		return boardSwitchesQuantity;
+	}
+	
+	public int getSwitchPhases(int switchId) {
+		ResultSet setSwitchPhases;
+		int switchPhases = 0;
+		setSwitchPhases = this.select("SELECT phases FROM switches WHERE switches.id = '" + switchId + "'");
+		
+		try {
+			setSwitchPhases.first();
+			switchPhases = setSwitchPhases.getInt("phases");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener la cantidad de fases del interruptor");
+		}
+		return switchPhases;
+	}
+	
+	public boolean boardSwitchExists(int containerId, int switchId) {
+		String queryString;
+		
+		queryString = "SELECT * FROM board_switches "
+					+ "WHERE board_switches.board_container_id = '" + containerId + "' "
+					+ "AND board_switches.switch_id = '" + switchId + "' ";
+		
+		this.select(queryString);
+		
+		return (this.getNumRows() > 0)? true:false;
+	}
+	
+	public int getBoardSwitchId(int containerId, int switchId) {
+		String queryString;
+		ResultSet setBoardSwitchId;
+		
+		queryString = "SELECT board_switches.id FROM board_switches "
+					+ "WHERE board_switches.board_container_id = '" + containerId + "' "
+					+ "AND board_switches.switch_id = '" + switchId + "' "
+					+ "LIMIT 1";
+		
+		setBoardSwitchId = this.select(queryString);
+		
+		try {
+			if (setBoardSwitchId.next()) {
+				return setBoardSwitchId.getInt("board_switches.id");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return 0;
+	}
+	
+	public boolean addBoardSwitch(int containerId, int switchId, int quantity) {
+		int boardSwitchId = 0;
+		if(this.boardSwitchExists(containerId, switchId)) {
+			boardSwitchId = this.getBoardSwitchId(containerId, switchId);
+			if(boardSwitchId > 0) {
+				return this.increaseBoardSwitch(boardSwitchId, quantity);
+			} else {
+				return false;
+			}
+		} else {
+			String queryString = "INSERT INTO board_switches (board_container_id, switch_id, quantity) "
+								+ "VALUES (" + containerId + ", " + switchId + ", " + quantity + ")";
+			this.insert(queryString);
+			return (this.getInsertId() > 0)? true:false;
+		}
+	}
+	
+	private boolean increaseBoardSwitch(int boardSwitchId, int quantity) {
+		String queryString = "UPDATE board_switches SET quantity = quantity + " + quantity 
+							+ " WHERE id = " + boardSwitchId;
+		
+		return this.update(queryString);
 	}
 	
 }
