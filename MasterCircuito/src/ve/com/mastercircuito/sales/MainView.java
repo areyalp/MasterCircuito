@@ -2,7 +2,6 @@ package ve.com.mastercircuito.sales;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dialog;
 import java.awt.Dimension;
@@ -13,7 +12,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
-import java.awt.LayoutManager;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
@@ -62,12 +60,7 @@ import javax.swing.Timer;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.text.JTextComponent;
-
 import org.joda.time.DateTime;
-import org.joda.time.JodaTimePermission;
-
-import javafx.scene.control.ComboBox;
 import ve.com.mastercircuito.components.MyInternalFrame;
 import ve.com.mastercircuito.components.MyTableModel;
 import ve.com.mastercircuito.db.Db;
@@ -236,8 +229,9 @@ public class MainView extends JFrame{
 	private MyInternalFrame boardsFrame = new MyInternalFrame();
 	private Object[][] boardsData = {};
 	private Object[][] boardSwitchesData = {};
+	private JTabbedPane boardViewTabbedPane;
 	// Board View Objects
-	private JPanel panelBoardLower, panelBoardDescription, panelWrapperBoardDescription;
+	private JPanel panelBoardDescription, panelWrapperBoardDescription;
 	private JButton buttonBoardAdd, buttonBoardEdit;
 	private JTextField textBoardSearchNames;
 	private JComboBox<String> comboBoardTypes, comboBoardInstallations, comboBoardNemas, comboBoardBarCapacities, comboBoardBarTypes, comboBoardCircuits, comboBoardVoltages, comboBoardPhases, comboBoardGround, comboBoardInterruptions, comboBoardLockTypes;
@@ -287,6 +281,14 @@ public class MainView extends JFrame{
 	private JCheckBox checkBoardEditGround;
 	private JTextArea textBoardEditDescription;
 	private JButton buttonBoardEditSave, buttonBoardEditCancel;
+	// Board Materials Objects
+	private JPanel boardMaterialsPanel;
+	private JTextArea textMaterials;
+	private JTextField textMaterialsPrice;
+	private JButton buttonBoardMaterialsEdit, buttonBoardMaterialsEditSave, buttonBoardMaterialsEditCancel;
+	private JPanel panelBoardMaterialsEditSaveCancel;
+	// Board Comments Objects
+	private JPanel boardCommentsPanel;
 	
 	//*** Budget Global Variables and objects ***//
 	private MyInternalFrame budgetsFrame = new MyInternalFrame();
@@ -3222,7 +3224,7 @@ public class MainView extends JFrame{
 	}
 	
 	private JTabbedPane createBoardMainPanel() {
-		JTabbedPane boardViewTabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		boardViewTabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		
 		JPanel boardMainPanel = new JPanel();
 		boardMainPanel.setLayout(new BorderLayout(20,20));
@@ -3264,12 +3266,20 @@ public class MainView extends JFrame{
 		panelBoardLower.add(panelButtons, BorderLayout.SOUTH);
 		
 		boardMainPanel.add(panelBoardLower, BorderLayout.SOUTH);
+		boardViewTabbedPane.setFont(new Font(null, Font.BOLD, 16));
 		boardViewTabbedPane.addTab("Buscar", null, boardMainPanel, "Buscar");
 		
 		boardSwitchesPanel = createBoardSwitchesPanel();
 		
 		boardViewTabbedPane.addTab("Interruptores", null, boardSwitchesPanel, "Interruptores");
-		boardViewTabbedPane.setFont(new Font(null, Font.BOLD, 16));
+		
+		boardMaterialsPanel = createBoardMaterialsPanel();
+		
+		boardViewTabbedPane.addTab("Materiales", null, boardMaterialsPanel, "Materiales");
+		
+		boardCommentsPanel = createBoardCommentsPanel();
+		
+		boardViewTabbedPane.addTab("Observaciones", null, boardCommentsPanel, "Observaciones");
 		
 		return boardViewTabbedPane;
 	}
@@ -3438,6 +3448,11 @@ public class MainView extends JFrame{
 				textBoardDescription.setText("");
 				buttonBoardAdd.setEnabled(true);
 				buttonBoardEdit.setEnabled(false);
+				textMaterials.setText("");
+				textMaterials.setEditable(false);
+				textMaterialsPrice.setText("");
+				textMaterialsPrice.setEditable(false);
+				buttonBoardMaterialsEdit.setEnabled(false);
 			}
 			
 			@Override
@@ -3535,8 +3550,11 @@ public class MainView extends JFrame{
 	}
 	
 	private JPanel createBoardSettingsPanel() {
+		JPanel panelSettings = new JPanel();
 		
-		return null;
+		
+		
+		return panelSettings;
 	}
 	
 	private JPanel createBoardTablePanel() {
@@ -4600,6 +4618,85 @@ public class MainView extends JFrame{
 		return editPanel;
 	}
 	
+	private JPanel createBoardMaterialsPanel() {
+		JPanel panelMaterials = new JPanel();
+		panelMaterials.setLayout(new BorderLayout(20, 20));
+		
+		JPanel panelMaterialsCenter = new JPanel();
+		panelMaterialsCenter.setLayout(new GridBagLayout());
+		
+		GridBagConstraints cs = new GridBagConstraints();
+		
+		cs.fill = GridBagConstraints.HORIZONTAL;
+		cs.insets = new Insets(0, 0, 5, 5);
+		
+		JLabel labelMaterials = new JLabel("Materiales:");
+		cs.gridx = 0;
+		cs.gridy = 0;
+		cs.gridwidth = 1;
+		panelMaterialsCenter.add(labelMaterials, cs);
+		
+		textMaterials = new JTextArea(20, 50);
+		cs.gridx = 0;
+		cs.gridy = 1;
+		cs.gridwidth = 50;
+		textMaterials.setEditable(false);
+		panelMaterialsCenter.add(textMaterials, cs);
+		
+		JLabel labelPrice = new JLabel("Precio:");
+		cs.gridx = 0;
+		cs.gridy = 23;
+		cs.gridwidth = 1;
+		panelMaterialsCenter.add(labelPrice, cs);
+		
+		textMaterialsPrice = new JTextField();
+		cs.gridx = 0;
+		cs.gridy = 24;
+		cs.gridwidth = 50;
+		panelMaterialsCenter.add(textMaterialsPrice, cs);
+		textMaterialsPrice.setHorizontalAlignment(JTextField.TRAILING);
+		textMaterialsPrice.setEditable(false);
+		
+		panelBoardMaterialsEditSaveCancel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		
+		buttonBoardMaterialsEditSave = new JButton("Guardar");
+		buttonBoardMaterialsEditSave.setEnabled(false);
+		buttonBoardMaterialsEditCancel = new JButton("Cancelar");
+		buttonBoardMaterialsEditCancel.setEnabled(false);
+		panelBoardMaterialsEditSaveCancel.add(buttonBoardMaterialsEditSave);
+		panelBoardMaterialsEditSaveCancel.add(buttonBoardMaterialsEditCancel);
+		
+		cs.gridx = 0;
+		cs.gridy = 45;
+		cs.gridwidth = 50;
+		panelMaterialsCenter.add(panelBoardMaterialsEditSaveCancel,cs);
+		panelBoardMaterialsEditSaveCancel.setVisible(false);
+		
+		panelMaterials.add(panelMaterialsCenter, BorderLayout.CENTER);
+		
+		ButtonListener lForButton = new ButtonListener();
+		
+		buttonBoardMaterialsEdit = new JButton("Editar");
+		buttonBoardMaterialsEdit.setActionCommand("board.materials.edit");
+		buttonBoardMaterialsEdit.addActionListener(lForButton);
+		buttonBoardMaterialsEdit.setEnabled(false);
+		
+		JPanel panelMaterialsButtons = new JPanel();
+		panelMaterialsButtons.add(buttonBoardMaterialsEdit);
+		
+		panelMaterials.add(panelMaterialsButtons, BorderLayout.SOUTH);
+		
+		return panelMaterials;
+	}
+	
+	private JPanel createBoardCommentsPanel() {
+		JPanel panelComments = new JPanel();
+		
+		
+		
+		return panelComments;
+	}
+	
 	private void setBoardsMode(int mode) {
 		
 		if(mode == MainView.VIEW_MODE) {
@@ -4650,6 +4747,9 @@ public class MainView extends JFrame{
 		} else if(mode == MainView.ADD_MODE) {
 			buttonBoardAdd.setEnabled(false);
 			buttonBoardEdit.setEnabled(false);
+			textMaterials.setEditable(false);
+			textMaterialsPrice.setEditable(false);
+			buttonBoardMaterialsEdit.setEnabled(false);
 			textBoardDescriptionName.setText("");
 			textBoardDescriptionPrice.setText("");
 			tableBoardsResult.clearSelection();
@@ -4676,6 +4776,9 @@ public class MainView extends JFrame{
 		} else if(mode == MainView.EDIT_MODE) {
 			buttonBoardAdd.setEnabled(false);
 			buttonBoardEdit.setEnabled(false);
+			textMaterials.setEditable(false);
+			textMaterialsPrice.setEditable(false);
+			buttonBoardMaterialsEdit.setEnabled(false);
 			editBoardId = Integer.valueOf(String.valueOf(tableBoardsResult.getValueAt(boardsTableSelectedIndex, SharedListSelectionListener.BOARD_ID_COLUMN)));
 			editBoardName = String.valueOf(tableBoardsResult.getValueAt(boardsTableSelectedIndex, SharedListSelectionListener.BOARD_NAME_COLUMN));
 			editBoardType = String.valueOf(tableBoardsResult.getValueAt(boardsTableSelectedIndex, SharedListSelectionListener.BOARD_TYPE_COLUMN));
@@ -7267,6 +7370,11 @@ public class MainView extends JFrame{
 				textBoardDescription.setText("");
 				buttonBoardAdd.setEnabled(true);
 				buttonBoardEdit.setEnabled(false);
+				textMaterials.setText("");
+				textMaterials.setEditable(false);
+				textMaterialsPrice.setText("");
+				textMaterialsPrice.setEditable(false);
+				buttonBoardMaterialsEdit.setEnabled(false);
 			} else if(actionCommand.equalsIgnoreCase("board.switch.search.bar.button")) {
 				whereQuery = "";
 				if(searchSelectedBoardSwitchBrand != null && !searchSelectedBoardSwitchBrand.equalsIgnoreCase("Todas") &&
@@ -7449,6 +7557,11 @@ public class MainView extends JFrame{
 					
 					if(lsm.isSelectionEmpty()) {
 						buttonBoardEdit.setEnabled(false);
+						textMaterials.setText("");
+						textMaterials.setEditable(false);
+						textMaterialsPrice.setText("");
+						textMaterialsPrice.setEditable(false);
+						buttonBoardMaterialsEdit.setEnabled(false);
 						textBoardDescriptionName.setText("");
 						textBoardDescriptionType.setText("");
 						textBoardDescriptionInstallation.setText("");
@@ -7466,7 +7579,11 @@ public class MainView extends JFrame{
 					} else {
 						if(panelBoardDescription.isShowing()) {
 							buttonBoardEdit.setEnabled(true);
+							textMaterials.setEditable(false);
+							textMaterialsPrice.setEditable(false);
+							buttonBoardMaterialsEdit.setEnabled(true);
 						}
+						
 						textBoardDescriptionName.setText((String) tableBoardsResult.getValueAt(boardsTableSelectedIndex, BOARD_NAME_COLUMN));
 						textBoardDescriptionType.setText((String) tableBoardsResult.getValueAt(boardsTableSelectedIndex, BOARD_TYPE_COLUMN));
 						textBoardDescriptionInstallation.setText((String) tableBoardsResult.getValueAt(boardsTableSelectedIndex, BOARD_INSTALLATION_COLUMN));
@@ -7483,6 +7600,10 @@ public class MainView extends JFrame{
 						textBoardDescriptionInterruption.setText((String) tableBoardsResult.getValueAt(boardsTableSelectedIndex, BOARD_INTERRUPTION_COLUMN));
 						textBoardDescriptionLockType.setText((String) tableBoardsResult.getValueAt(boardsTableSelectedIndex, BOARD_LOCK_TYPE_COLUMN));
 						textBoardDescriptionPrice.setText("BsF " + tableBoardsResult.getValueAt(boardsTableSelectedIndex, BOARD_PRICE_COLUMN));
+						
+						textMaterials.setText(db.getBoardMaterials(selectedBoardId));
+						textMaterialsPrice.setText(String.valueOf(db.getBoardMaterialsPrice(selectedBoardId)));
+						
 						textBoardDescription.setText("Caja para Tablero, " +
 								tableBoardsResult.getValueAt(boardsTableSelectedIndex, BOARD_TYPE_COLUMN) +
 								", " +
@@ -8130,6 +8251,14 @@ public class MainView extends JFrame{
 						JOptionPane.showMessageDialog(null, "Error al remover interruptor del tablero");
 					}
 				}
+			} else if(actionCommand.equalsIgnoreCase("board.materials.edit")) {
+				boardViewTabbedPane.setEnabled(false);
+				buttonBoardMaterialsEdit.setEnabled(false);
+				textMaterials.setEditable(true);
+				textMaterialsPrice.setEditable(true);
+				panelBoardMaterialsEditSaveCancel.setVisible(true);
+				buttonBoardMaterialsEditSave.setEnabled(true);
+				buttonBoardMaterialsEditCancel.setEnabled(true);
 			}
 			else if (actionCommand.equalsIgnoreCase("budget.description.buttons.add")) {
 				setBoardsMode(MainView.ADD_MODE);

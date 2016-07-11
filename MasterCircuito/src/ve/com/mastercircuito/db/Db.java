@@ -784,4 +784,34 @@ public class Db extends MysqlDriver {
 		return this.update(queryString);
 	}
 	
+	public String getBoardMaterials(int boardId) {
+		ResultSet setBoardMaterials;
+		String materials = "";
+		setBoardMaterials = this.select("SELECT materials FROM boards WHERE id = '" + boardId + "'");
+		
+		try {
+			setBoardMaterials.first();
+			materials = setBoardMaterials.getString("materials");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener los materiales del tablero");
+		}
+		return materials;
+	}
+	
+	public Double getBoardMaterialsPrice(int boardId) {
+		ResultSet setBoardMaterialsPrice;
+		Double materialsPrice = 0.00;
+		setBoardMaterialsPrice = this.select("SELECT materials_price FROM boards WHERE id = '" + boardId + "'");
+		
+		try {
+			setBoardMaterialsPrice.first();
+			materialsPrice = setBoardMaterialsPrice.getDouble("materials_price");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener el precio de los materiales del tablero");
+		}
+		return materialsPrice;
+	}
+	
 }
