@@ -5855,10 +5855,43 @@ public class MainView extends JFrame{
 		return descriptionBudgetPanel;
 	}
 
-	private JPanel createBudgetTablePanel() {			
+	private JPanel createBudgetTablePanel() {	
 		
 		ArrayList<String> fields = new ArrayList<String>();
+		fields.add(MainView.BUDGET_ID_FIELD);
+		fields.add(MainView.BUDGET_CODE_FIELD);
+		fields.add(MainView.BUDGET_DATE_FIELD);
+		fields.add(MainView.BUDGET_EXPIRY_DAYS_FIELD);
+		fields.add(MainView.CLIENT_FIELD);
+		fields.add(MainView.BUDGET_WORK_NAME_FIELD);
+		fields.add(MainView.METHOD_FIELD);
+		fields.add(MainView.USERNAME_FIELD);
+		fields.add(MainView.PLACE_FIELD);
+		fields.add(MainView.BUDGET_DELIVERY_TIME_FIELD);
+		fields.add(MainView.BUDGET_TRACING_FIELD);
+		
 		ArrayList<String> tables = new ArrayList<String>();
+		tables.add(MainView.BUDGET_TABLE);
+		tables.add(MainView.BUDGET_DISPATCH_PLACES_TABLE);
+		tables.add(MainView.BUDGET_PAYMENT_METHODS_TABLE);
+		tables.add(MainView.BUDGET_STAGES_TABLE);
+		tables.add(MainView.USERS_TABLE);
+		tables.add(MainView.CLIENTS_TABLE);
+				
+		
+		String fieldsQuery = StringTools.implode(",", fields);
+		String tablesQuery = StringTools.implode(",", tables);
+		String budgetsQuery = "SELECT " + fieldsQuery
+						+ " FROM "
+						+ tablesQuery
+						+ " WHERE  budgets.client_id = clients.id "
+						+ "AND budgets.payment_method_id = budget_payment_methods.id "
+						+ "AND budgets.seller_id = budget_sellers.id "
+						+ "AND budgets.dispatch_place_id = budget_dispatch_places.id "
+						+ "AND budgets.stage_id = budget_stages.id "
+						+ "AND budgets.active = '1' "
+						+ " GROUP BY budgets.id";
+		
 		
 		String[] budgetsColumnNames = {"Id", "Codigo", "Fecha", "Vencimiento", "Codigo Cliente", "Empresa", "Representante", "Nombre Obra", "Forma Pago", "Vendedor", "Sitio Entrega", "Tiempo Entrega"};
 
@@ -8098,9 +8131,52 @@ public class MainView extends JFrame{
 					}
 				}
 			}
-//			else if (actionCommand.equalsIgnoreCase("budget.description.buttons.add")) {
-//				setBoardsMode(MainView.ADD_MODE);
-//			}
+			else if (actionCommand.equalsIgnoreCase("budget.description.buttons.add")) {
+				setBoardsMode(MainView.ADD_MODE);
+			}
+			else if (actionCommand.equalsIgnoreCase("budget.description.buttons.edit")) {
+				setBudgetsMode(MainView.EDIT_MODE);
+			}
+//			 else if (actionCommand.equalsIgnoreCase("budget.description.add.save")) {
+//					String budgetName = textBoardAddName.getText();
+//					String boardType = comboBoardAddType.getSelectedItem().toString();
+//					String boardInstallation = comboBoardAddInstallation.getSelectedItem().toString();
+//					String boardNema = comboBoardAddNema.getSelectedItem().toString();
+//					String boardBarCapacity = comboBoardAddBarCapacity.getSelectedItem().toString();
+//					String boardBarType = comboBoardAddBarType.getSelectedItem().toString();
+//					String boardCircuits = comboBoardAddCircuits.getSelectedItem().toString();
+//					String boardVoltage = comboBoardAddVoltage.getSelectedItem().toString();
+//					String boardPhases = comboBoardAddPhases.getSelectedItem().toString();
+//					String boardGround = (checkBoardAddGround.isSelected())?"1":"0";
+//					String boardInterruption = comboBoardAddInterruption.getSelectedItem().toString();
+//					String boardLockType = comboBoardAddLockType.getSelectedItem().toString();
+//					String boardPrice = textBoardAddPrice.getText();
+//					Errors err = new Errors();
+//					
+//					if(boardName.isEmpty()) {
+//						err.add("Debe escribir un nombre para el tablero");
+//					}
+//					if(boardPrice.isEmpty() || !Numbers.isNumeric(boardPrice)) {
+//						err.add("El precio no puede estar vacio y solo debe contener digitos numericos");
+//					}
+//					if(err.isEmpty()) {
+//						boolean saved = db.addBoard(boardName, boardType, boardInstallation, boardNema, Integer.valueOf(boardBarCapacity), boardBarType, Integer.valueOf(boardCircuits), boardVoltage, Integer.valueOf(boardPhases), boardGround, Integer.valueOf(boardInterruption), boardLockType, Double.valueOf(boardPrice));
+//						if(saved) {
+//							JOptionPane.showMessageDialog(null, "Tablero creado exitosamente");
+//							setBoardsMode(MainView.VIEW_MODE);
+//						}
+//					} else {
+//						err.dump();
+//					}
+//				} else if (actionCommand.equalsIgnoreCase("budget.description.add.cancel")) {
+//					setBudgetsMode(MainView.VIEW_MODE);
+//				} else if (actionCommand.equalsIgnoreCase("budget.description.edit.save")) {
+//				
+//				}
+//				} else if (actionCommand.equalsIgnoreCase("budget.description.edit.cancel")) {
+//					setBudgetsMode(MainView.VIEW_MODE);
+//				}
+//				
 		}
 		
 	}
