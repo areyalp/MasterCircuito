@@ -266,7 +266,9 @@ public class MainView extends JFrame{
 	private JPanel panelBoardMaterialsEditSaveCancel;
 	// Board Comments Objects
 	private JPanel boardCommentsPanel;
-	
+	private JTextArea textComments;
+	private JButton buttonBoardCommentsEdit, buttonBoardCommentsEditSave, buttonBoardCommentsEditCancel;
+	private JPanel panelBoardCommentsEditSaveCancel;
 	//*** Budget Global Variables and objects ***//
 	private MyInternalFrame budgetsFrame = new MyInternalFrame();
 	private MyInternalFrame startersFrame = new MyInternalFrame();
@@ -3413,6 +3415,8 @@ public class MainView extends JFrame{
 				textMaterialsPrice.setText("");
 				textMaterialsPrice.setEditable(false);
 				buttonBoardMaterialsEdit.setEnabled(false);
+				textComments.setEditable(false);
+				buttonBoardCommentsEdit.setEnabled(false);
 			}
 			
 			@Override
@@ -4617,11 +4621,17 @@ public class MainView extends JFrame{
 		textMaterialsPrice.setHorizontalAlignment(JTextField.TRAILING);
 		textMaterialsPrice.setEditable(false);
 		
+		ButtonListener lForButton = new ButtonListener();
+		
 		panelBoardMaterialsEditSaveCancel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		
 		buttonBoardMaterialsEditSave = new JButton("Guardar");
 		buttonBoardMaterialsEditSave.setEnabled(false);
+		buttonBoardMaterialsEditSave.setActionCommand("board.materials.edit.save");
+		buttonBoardMaterialsEditSave.addActionListener(lForButton);
 		buttonBoardMaterialsEditCancel = new JButton("Cancelar");
+		buttonBoardMaterialsEditCancel.setActionCommand("board.materials.edit.cancel");
+		buttonBoardMaterialsEditCancel.addActionListener(lForButton);
 		buttonBoardMaterialsEditCancel.setEnabled(false);
 		panelBoardMaterialsEditSaveCancel.add(buttonBoardMaterialsEditSave);
 		panelBoardMaterialsEditSaveCancel.add(buttonBoardMaterialsEditCancel);
@@ -4633,8 +4643,6 @@ public class MainView extends JFrame{
 		panelBoardMaterialsEditSaveCancel.setVisible(false);
 		
 		panelMaterials.add(panelMaterialsCenter, BorderLayout.CENTER);
-		
-		ButtonListener lForButton = new ButtonListener();
 		
 		buttonBoardMaterialsEdit = new JButton("Editar");
 		buttonBoardMaterialsEdit.setActionCommand("board.materials.edit");
@@ -4651,8 +4659,61 @@ public class MainView extends JFrame{
 	
 	private JPanel createBoardCommentsPanel() {
 		JPanel panelComments = new JPanel();
+		panelComments.setLayout(new BorderLayout(20, 20));
 		
+		JPanel panelCommentsCenter = new JPanel();
+		panelCommentsCenter.setLayout(new GridBagLayout());
 		
+		GridBagConstraints cs = new GridBagConstraints();
+		
+		cs.fill = GridBagConstraints.HORIZONTAL;
+		cs.insets = new Insets(0, 0, 5, 5);
+		
+		JLabel labelComments = new JLabel("Observaciones:");
+		cs.gridx = 0;
+		cs.gridy = 0;
+		cs.gridwidth = 1;
+		panelCommentsCenter.add(labelComments, cs);
+		
+		textComments = new JTextArea(20, 50);
+		cs.gridx = 0;
+		cs.gridy = 1;
+		cs.gridwidth = 50;
+		textComments.setEditable(false);
+		panelCommentsCenter.add(textComments, cs);
+		
+		ButtonListener lForButton = new ButtonListener();
+		
+		panelBoardCommentsEditSaveCancel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		
+		buttonBoardCommentsEditSave = new JButton("Guardar");
+		buttonBoardCommentsEditSave.setEnabled(false);
+		buttonBoardCommentsEditSave.setActionCommand("board.comments.edit.save");
+		buttonBoardCommentsEditSave.addActionListener(lForButton);
+		buttonBoardCommentsEditCancel = new JButton("Cancelar");
+		buttonBoardCommentsEditCancel.setActionCommand("board.comments.edit.cancel");
+		buttonBoardCommentsEditCancel.addActionListener(lForButton);
+		buttonBoardCommentsEditCancel.setEnabled(false);
+		panelBoardCommentsEditSaveCancel.add(buttonBoardCommentsEditSave);
+		panelBoardCommentsEditSaveCancel.add(buttonBoardCommentsEditCancel);
+		
+		cs.gridx = 0;
+		cs.gridy = 45;
+		cs.gridwidth = 50;
+		panelCommentsCenter.add(panelBoardCommentsEditSaveCancel,cs);
+		panelBoardCommentsEditSaveCancel.setVisible(false);
+		
+		panelComments.add(panelCommentsCenter, BorderLayout.CENTER);
+		
+		buttonBoardCommentsEdit = new JButton("Editar");
+		buttonBoardCommentsEdit.setActionCommand("board.comments.edit");
+		buttonBoardCommentsEdit.addActionListener(lForButton);
+		buttonBoardCommentsEdit.setEnabled(false);
+		
+		JPanel panelMaterialsButtons = new JPanel();
+		panelMaterialsButtons.add(buttonBoardCommentsEdit);
+		
+		panelComments.add(panelMaterialsButtons, BorderLayout.SOUTH);
 		
 		return panelComments;
 	}
@@ -4707,9 +4768,14 @@ public class MainView extends JFrame{
 		} else if(mode == MainView.ADD_MODE) {
 			buttonBoardAdd.setEnabled(false);
 			buttonBoardEdit.setEnabled(false);
+			textMaterials.setText("");
 			textMaterials.setEditable(false);
+			textMaterialsPrice.setText("");
 			textMaterialsPrice.setEditable(false);
 			buttonBoardMaterialsEdit.setEnabled(false);
+			textComments.setText("");
+			textComments.setEditable(false);
+			buttonBoardCommentsEdit.setEnabled(false);
 			textBoardDescriptionName.setText("");
 			textBoardDescriptionPrice.setText("");
 			tableBoardsResult.clearSelection();
@@ -4739,6 +4805,8 @@ public class MainView extends JFrame{
 			textMaterials.setEditable(false);
 			textMaterialsPrice.setEditable(false);
 			buttonBoardMaterialsEdit.setEnabled(false);
+			textComments.setEditable(false);
+			buttonBoardCommentsEdit.setEnabled(false);
 			editBoardId = Integer.valueOf(String.valueOf(tableBoardsResult.getValueAt(boardsTableSelectedIndex, SharedListSelectionListener.BOARD_ID_COLUMN)));
 			editBoardName = String.valueOf(tableBoardsResult.getValueAt(boardsTableSelectedIndex, SharedListSelectionListener.BOARD_NAME_COLUMN));
 			editBoardType = String.valueOf(tableBoardsResult.getValueAt(boardsTableSelectedIndex, SharedListSelectionListener.BOARD_TYPE_COLUMN));
@@ -6993,6 +7061,9 @@ public class MainView extends JFrame{
 				textMaterialsPrice.setText("");
 				textMaterialsPrice.setEditable(false);
 				buttonBoardMaterialsEdit.setEnabled(false);
+				textComments.setText("");
+				textComments.setEditable(false);
+				buttonBoardCommentsEdit.setEnabled(false);
 			} else if(actionCommand.equalsIgnoreCase("board.switch.search.bar.button")) {
 				whereQuery = "";
 				if(searchSelectedBoardSwitchBrand != null && !searchSelectedBoardSwitchBrand.equalsIgnoreCase("Todas") &&
@@ -7187,6 +7258,8 @@ public class MainView extends JFrame{
 							textMaterials.setEditable(false);
 							textMaterialsPrice.setEditable(false);
 							buttonBoardMaterialsEdit.setEnabled(true);
+							textComments.setEditable(false);
+							buttonBoardCommentsEdit.setEnabled(true);
 						}
 						
 						textBoardDescriptionName.setText((String) tableBoardsResult.getValueAt(boardsTableSelectedIndex, BOARD_NAME_COLUMN));
@@ -7208,6 +7281,8 @@ public class MainView extends JFrame{
 						
 						textMaterials.setText(db.getBoardMaterials(selectedBoardId));
 						textMaterialsPrice.setText(String.valueOf(db.getBoardMaterialsPrice(selectedBoardId)));
+						
+						textComments.setText(db.getBoardComments(selectedBoardId));
 						
 						textBoardDescription.setText("Caja para Tablero, " +
 								tableBoardsResult.getValueAt(boardsTableSelectedIndex, BOARD_TYPE_COLUMN) +
@@ -7864,6 +7939,63 @@ public class MainView extends JFrame{
 				panelBoardMaterialsEditSaveCancel.setVisible(true);
 				buttonBoardMaterialsEditSave.setEnabled(true);
 				buttonBoardMaterialsEditCancel.setEnabled(true);
+			} else if (actionCommand.equalsIgnoreCase("board.materials.edit.save")) {
+				if(selectedBoardId > 0) {
+					ArrayList<Object> listFields = new ArrayList<Object>();
+					ArrayList<Object> listValues = new ArrayList<Object>();
+					listFields.add("materials");
+					listValues.add("'" + textMaterials.getText() + "'");
+					listFields.add("materials_price");
+					listValues.add(textMaterialsPrice.getText());
+					db.editBoard(selectedBoardId, listFields, listValues);
+					boardViewTabbedPane.setEnabled(true);
+					buttonBoardMaterialsEdit.setEnabled(true);
+					textMaterials.setEditable(false);
+					textMaterialsPrice.setEditable(false);
+					buttonBoardMaterialsEditSave.setEnabled(false);
+					buttonBoardMaterialsEditCancel.setEnabled(false);
+					panelBoardMaterialsEditSaveCancel.setVisible(false);
+				} else {
+					JOptionPane.showMessageDialog(null, "No hay ningun tablero seleccionado");
+				}
+			} else if (actionCommand.equalsIgnoreCase("board.materials.edit.cancel")) {
+				boardViewTabbedPane.setEnabled(true);
+				buttonBoardMaterialsEdit.setEnabled(true);
+				textMaterials.setEditable(false);
+				textMaterialsPrice.setEditable(false);
+				buttonBoardMaterialsEditSave.setEnabled(false);
+				buttonBoardMaterialsEditCancel.setEnabled(false);
+				panelBoardMaterialsEditSaveCancel.setVisible(false);
+			} else if(actionCommand.equalsIgnoreCase("board.comments.edit")) {
+				boardViewTabbedPane.setEnabled(false);
+				buttonBoardCommentsEdit.setEnabled(false);
+				textComments.setEditable(true);
+				panelBoardCommentsEditSaveCancel.setVisible(true);
+				buttonBoardCommentsEditSave.setEnabled(true);
+				buttonBoardCommentsEditCancel.setEnabled(true);
+			} else if (actionCommand.equalsIgnoreCase("board.comments.edit.save")) {
+				if(selectedBoardId > 0) {
+					ArrayList<Object> listFields = new ArrayList<Object>();
+					ArrayList<Object> listValues = new ArrayList<Object>();
+					listFields.add("comments");
+					listValues.add("'" + textComments.getText() + "'");
+					db.editBoard(selectedBoardId, listFields, listValues);
+					boardViewTabbedPane.setEnabled(true);
+					buttonBoardCommentsEdit.setEnabled(true);
+					textComments.setEditable(false);
+					buttonBoardCommentsEditSave.setEnabled(false);
+					buttonBoardCommentsEditCancel.setEnabled(false);
+					panelBoardCommentsEditSaveCancel.setVisible(false);
+				} else {
+					JOptionPane.showMessageDialog(null, "No hay ningun tablero seleccionado");
+				}
+			} else if (actionCommand.equalsIgnoreCase("board.comments.edit.cancel")) {
+				boardViewTabbedPane.setEnabled(true);
+				buttonBoardCommentsEdit.setEnabled(true);
+				textComments.setEditable(false);
+				buttonBoardCommentsEditSave.setEnabled(false);
+				buttonBoardCommentsEditCancel.setEnabled(false);
+				panelBoardCommentsEditSaveCancel.setVisible(false);
 			}
 //			else if (actionCommand.equalsIgnoreCase("budget.description.buttons.add")) {
 //				setBoardsMode(MainView.ADD_MODE);
