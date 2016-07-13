@@ -1720,17 +1720,15 @@ public class MainView extends JFrame{
 	}
 	
 	private void updateSwitchTextEditDescription() {
-		if(comboSwitchEditPhases.getSelectedIndex() > -1 && comboSwitchEditType.getSelectedIndex() > -1 && comboSwitchEditBrand.getSelectedIndex() > -1) {
-			textSwitchEditDescription.setText("Interruptor " +
-					((null != comboSwitchEditPhases.getSelectedItem())?comboSwitchEditPhases.getSelectedItem().toString():"") +
-					"X" +
-					((null != comboSwitchEditCurrent.getSelectedItem())?comboSwitchEditCurrent.getSelectedItem().toString():"") +
-					" A, " +
-					((null != comboSwitchEditType.getSelectedItem())?comboSwitchEditType.getSelectedItem().toString():"") +
-					", " +
-					((null != comboSwitchEditBrand.getSelectedItem())?comboSwitchEditBrand.getSelectedItem().toString():"")
-					);
-		}
+		textSwitchEditDescription.setText("Interruptor " +
+				((null != comboSwitchEditPhases.getSelectedItem())?comboSwitchEditPhases.getSelectedItem().toString():"") +
+				"X" +
+				((null != comboSwitchEditCurrent.getSelectedItem())?comboSwitchEditCurrent.getSelectedItem().toString():"") +
+				" A, " +
+				((null != comboSwitchEditType.getSelectedItem())?comboSwitchEditType.getSelectedItem().toString():"") +
+				", " +
+				((null != comboSwitchEditBrand.getSelectedItem())?comboSwitchEditBrand.getSelectedItem().toString():"")
+				);
 	}
 	
 	private void updateSwitchComboSettings() {
@@ -6354,6 +6352,7 @@ public class MainView extends JFrame{
 				if(editSwitchBrand.equalsIgnoreCase(editSelectedSwitchBrand)) {
 					comboSwitchEditType.setSelectedItem(editSwitchType);
 				}
+				updateSwitchTextEditDescription();
 			} else if (actionCommand.equalsIgnoreCase("box.search.type")) {
 				fromQuery = MainView.BOXES_TABLE + "," + MainView.BOX_TYPES_TABLE;
 				whereQuery = " WHERE " + MainView.BOXES_TABLE + ".type_id = " + MainView.BOX_TYPES_TABLE + ".id ";
