@@ -31,8 +31,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 import java.util.Vector;
 
+import javax.swing.AbstractButton;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
@@ -59,7 +61,13 @@ import javax.swing.Timer;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
+
+import org.jdatepicker.impl.JDatePanelImpl;
+import org.jdatepicker.impl.JDatePickerImpl;
+import org.jdatepicker.impl.UtilDateModel;
 import org.joda.time.DateTime;
+
+import ve.com.mastercircuito.components.DateLabelFormatter;
 import ve.com.mastercircuito.components.MyInternalFrame;
 import ve.com.mastercircuito.components.MyTableModel;
 import ve.com.mastercircuito.db.Db;
@@ -83,11 +91,11 @@ public class MainView extends JFrame{
 	private static final String NEMAS_TABLE = "nemas";
 	private static final String INTERRUPTIONS_TABLE = "interruptions";
 	private static final String LOCK_TYPES_TABLE = "lock_types";
+	
 	// Common Fields
 	private static final String INSTALLATION_FIELD = "installations.installation";
 	private static final String NEMA_FIELD = "nemas.nema";
 	private static final String INTERRUPTION_FIELD = "interruptions.interruption";
-	
 	// Box Tables
 	private static final String BOXES_TABLE = "boxes";
 	private static final String BOX_TYPES_TABLE = "box_types";
@@ -130,6 +138,30 @@ public class MainView extends JFrame{
 	private static final String BOARD_LOCK_TYPE_FIELD = "lock_types.lock_type";
 	private static final String BOARD_PRICE_FIELD = "boards.price";
 	// Finish filling up the fields of the board table and the tables above too
+	
+	//Budget Tables	
+	private static final String BUDGET_TABLE = "budgets";
+	private static final String BUDGET_PAYMENT_METHODS_TABLE = "budget_payment_methods";
+	private static final String BUDGET_DISPATCH_PLACES_TABLE = "budget_dispatch_places";
+	private static final String BUDGET_STAGES_TABLE = "budget_stages";
+	private static final String USERS_TABLE = "users";
+	private static final String CLIENTS_TABLE = "clients";
+	private static final String BUDGET_DELIVERY_TIME_TABLE = "budget_delivery_time";
+	
+	//Budget Fields
+	private static final String BUDGET_ID_FIELD = "budgets.id";
+	private static final String BUDGET_CODE_FIELD = "budgets.code";
+	private static final String BUDGET_DATE_FIELD = "budgets.date";
+	private static final String BUDGET_EXPIRY_DAYS_FIELD = "budgets.expiry_days";
+	private static final String BUDGET_WORK_NAME_FIELD = "budgets.work_name";
+	private static final String BUDGET_DELIVERY_TIME_FIELD = "budgets.delivery_time";
+	private static final String BUDGET_TRACING_FIELD = "budgets.tracing";
+	private static final String METHOD_FIELD = "budget_payment_methods.method";
+	private static final String USERNAME_FIELD = "users.username";
+	private static final String PLACE_FIELD = "budget_dispatch_places.place";
+	private static final String STAGE_FIELD = "stages.stage";
+	private static final String CLIENT_FIELD = "clients.client";
+	private static final String SELLER_FIELD = "budget_sellers.seller";
 	
 	private Db db;
 	
@@ -287,23 +319,40 @@ public class MainView extends JFrame{
 	private JPanel budgetNotesPanel;
 	private JTextField textBudgetSearchId;
 	private JComboBox<String> comboBudgetDays;
-	private JPanel panelBudgetSearch;
+	private JPanel panelBudgetSearch, panelWrapperBudgetDescription;
 	private JComboBox<String> comboBudgetMonths;
 	private JComboBox<String> comboBudgetYears;
 	private Object[][] budgetData = {};
 	private JPanel descriptionBudgetPanel;
 	private JPanel panelBudgetAddNew, panelBudgetEdit;
 	private JTextField textBudgetDescriptionId, textBudgetSearchClient,textBudgetDescriptionCode;
-	private JTextField textBudgetDescriptionDate, textBudgetDescriptionExpiration, textBudgetDescriptionExpirationDate;
+	private JTextField textBudgetDescriptionDate, textBudgetDescriptionExpiryDays;
 	private JTextField textBudgetDescriptionClientCode, textBudgetDescriptionCompany;
-	private JTextField textBudgetDescriptionCompanyRepresentative, textBudgetDescriptionBuildingName, textBudgetDescriptionPaymentMethod;
-	private JTextField textBudgetDescriptionSeller, textBudgetDescriptionDeliveryTime, textBudgetDescriptionDeliverySite;
+	private JTextField textBudgetDescriptionCompanyRepresentative, textBudgetDescriptionWorkName, textBudgetDescriptionPaymentMethod;
+	private JTextField textBudgetDescriptionSeller, textBudgetDescriptionDeliveryTime, textBudgetDescriptionDispatchPlace;
 	private JButton buttonBudgetAddSave, buttonBudgetAddCancel;
-	private JTextField textBudgetAddCode, textBudgetAddId, textBudgetAddDate, textBudgetAddClientCode,textBudgetAddExpiration;
-	private JTextField textBudgetAddCompanyRepresentative, textBudgetAddBuildingName, textBudgetAddCompany;
+	private JTextField textBudgetAddCode, textBudgetAddId, textBudgetAddDate, textBudgetAddClientCode,textBudgetAddExpiryDays;
+	private JTextField textBudgetAddCompanyRepresentative, textBudgetAddWorkName, textBudgetAddCompany;
 	private JTextField textBudgetAddSeller, textBudgetAddDeliveryTime;
-	private JComboBox<String> comboBugetAddPaymentMethod,comboBugetAddDeliverySite;
+	private JComboBox<String> comboBugetAddPaymentMethod,comboBugetAddDispatchPlace;
 	private JCheckBox checkBudgetAddTracing;
+	private JComboBox<String> comboBudgetAddSeller;
+	private JTextField textBudgetDescriptionExpiryDate;
+//	private String queryUser;
+//	private String username;
+	private Object [][] budgetsData={};
+	private JComboBox<String> comboBudgetAddPaymentMethod, comboBudgetAddDispatchPlace,comboBugetAddDeliveryTime;
+	private List<String> comboListResult;
+	private int editBudgetId, editBudgetClientCode, editBudgetExpiryDays, editBudgetDate, editBudgetCode,editBudgetDeliveryTime;
+	private String editBudgetWorkName, editBudgetPaymentMethod, editBudgetSeller, editBudgetDispatchPlace, editBudgetTracing, editBudgetStage;
+	private int budgetsTableSelectedIndex;
+	private JCheckBox checkBudgetEditTracing;
+	private JTextField textBudgetEditCode, textBudgetEditClientCode, textBudgetEditworkName, textBudgetEditCompany;
+	private JTextField textBudgetEditCompanyRepresentative, textBudgetEditExpiryDays,textBudgetEditDate;
+	private String editBudgetCompanyRepresentative, editBudgetCompany, editBudgetExpirydays,editBudgetClient;
+	private JComboBox<String> comboBudgetEditDispatchPlace,comboBudgetEditDeliveryTime, comboBudgetEditSeller, comboBudgetEditPaymentMethod, comboBudgetEditStage;
+	private JButton buttonBudgetAddCompany, buttonBudgetAddSeller;
+	
 	
 	public static void main(String[] args) {
 		new MainView();
@@ -4943,9 +4992,271 @@ public class MainView extends JFrame{
 	
 	private void setBudgetsMode(int mode){
 		
+		if(mode == MainView.VIEW_MODE) {
+			if(panelBudgetAddNew.isVisible()) {
+				buttonBudgetAdd.setEnabled(true);
+				textBudgetAddId.setText("");
+				textBudgetAddCode.setText("");
+				textBudgetAddClientCode.setText("");
+				textBudgetAddCompany.setText("");
+				textBudgetAddCompanyRepresentative.setText("");
+				textBudgetAddWorkName.setText("");
+				textBudgetAddExpiryDays.setText("");
+				
+				loadBudgetTable("");
+				SwingUtilities.invokeLater(new Runnable(){
+
+					@Override
+					public void run() {
+						panelWrapperBudgetDescription.remove(panelBudgetAddNew);
+						panelWrapperBudgetDescription.validate();
+						panelWrapperBudgetDescription.repaint();
+						panelBudgetAddNew.setVisible(false);
+						
+						descriptionBudgetPanel.setVisible(true);
+						panelWrapperBudgetDescription.add(descriptionBudgetPanel);
+						panelWrapperBudgetDescription.validate();
+						panelWrapperBudgetDescription.repaint();
+						
+						budgetsFrame.validate();
+						budgetsFrame.repaint();
+					}
+				});
+			} else if (panelBudgetEdit.isVisible()) {
+				buttonBudgetAdd.setEnabled(true);
+				loadBudgetTable("");
+				SwingUtilities.invokeLater(new Runnable(){
+					@Override
+					public void run() {
+						panelWrapperBudgetDescription.remove(panelBudgetEdit);
+						panelWrapperBudgetDescription.validate();
+						panelWrapperBudgetDescription.repaint();
+						panelBudgetEdit.setVisible(false);
+						
+						descriptionBudgetPanel.setVisible(true);
+						panelWrapperBudgetDescription.add(descriptionBudgetPanel);
+						panelWrapperBudgetDescription.validate();
+						panelWrapperBudgetDescription.repaint();
+						
+						budgetsFrame.validate();
+						budgetsFrame.repaint();
+					}
+				});
+			}
+		} else if(mode == MainView.ADD_MODE) {
+			buttonBudgetAdd.setEnabled(false);
+			buttonBudgetEdit.setEnabled(false);
+			textBudgetDescriptionId.setText("");
+			textBudgetDescriptionCode.setText("");
+			textBudgetDescriptionClientCode.setText("");
+			textBudgetDescriptionCompany.setText("");
+			textBudgetDescriptionCompanyRepresentative.setText("");
+			textBudgetDescriptionExpiryDays.setText("");
+			textBudgetDescriptionWorkName.setText("");
+			tableBudgetsResult.clearSelection();
+			SwingUtilities.invokeLater(new Runnable(){
+				@Override
+				public void run() {
+					panelWrapperBudgetDescription.remove(descriptionBudgetPanel);
+					panelWrapperBudgetDescription.validate();
+					panelWrapperBudgetDescription.repaint();
+					descriptionBudgetPanel.setVisible(false);
+					
+					panelBudgetAddNew.setVisible(true);
+					panelWrapperBudgetDescription.add(panelBudgetAddNew);
+					panelWrapperBudgetDescription.validate();
+					panelWrapperBudgetDescription.repaint();
+					
+					updateBudgetTextAddDescription();
+					
+					budgetsFrame.validate();
+					budgetsFrame.repaint();
+				}
+			});
+		} else if(mode == MainView.EDIT_MODE) {
+			buttonBudgetAdd.setEnabled(false);
+			buttonBudgetEdit.setEnabled(false);
+			editBudgetId = Integer.valueOf(String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_ID_COLUMN)));
+			editBudgetCode = Integer.valueOf(String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_CODE_COLUMN)));
+			editBudgetDate = Integer.valueOf(String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_DATE_COLUMN)));
+			editBudgetExpiryDays = Integer.valueOf(String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_EXPIRY_DAYS_COLUMN)));
+			editBudgetClientCode = Integer.valueOf(String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_CLIENT_ID_COLUMN)));
+			editBudgetWorkName = String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_WORK_NAME_COLUMN));
+			editBudgetPaymentMethod = String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_PAYMENT_METHOD_COLUMN));
+			editBudgetSeller = String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_SELLER_COLUMN));
+			editBudgetDispatchPlace = String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_DISPATCH_PLACE_COLUMN));
+			editBudgetDeliveryTime = Integer.valueOf(String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_DELIVERY_TIME_COLUMN)));
+			editBudgetTracing = String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_TRACING_COLUMN));
+			editBudgetStage = String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_STAGE_COLUMN));
+			
+//			String queryId = "SELECT budgets.id "
+//					+ "FROM budgets "
+//					+ "GROUP BY budgets.id";
+//			
+//			String queryCode = "SELECT budgets.code "
+//					+ "FROM budgets "
+//					+ "GROUP BY budgets.code";
+//			
+//			String queryDate = "SELECT budgets.date "
+//					+ "FROM budgets "
+//					+ "GROUP BY budgets.date";
+//			
+//			String queryExpiryDays = "SELECT budgets.expiry_days "
+//					+ "FROM budgets "
+//					+ "GROUP BY budgets.expiry_days";
+//			
+//			String queryWorkName = "SELECT budgets.work_name "
+//					+ "FROM budgets "
+//					+ "GROUP BY budgets.work_name";
+//			
+			String queryDeliveryTime = "SELECT budgets.delivery_time "
+					+ "FROM budgets "
+					+ "GROUP BY budgets.delivery_time";
+			
+			String queryStage = "SELECT  budget_stages.stage "
+					+ "FROM budget_stages "
+					+ "GROUP BY budget_stages.stage";
+			
+			String queryDispatchPlace = "SELECT  budget_dispatch_places.place "
+					+ "FROM budget_dispatch_places "
+					+ "GROUP BY budget_dispatch_places.place";
+			
+			String queryPaymentMethod = "SELECT  budgets_payment_methods.method "
+					+ "FROM budgets_payment_methods  "
+					+ "GROUP BY budgets_payment_methods.method ";
+			
+			String querySeller = "SELECT  budgets_sellers.seller"
+					+ "FROM budgets_sellers  "
+					+ "GROUP BY budgets_sellers.seller ";
+//			
+//			String queryClient = "SELECT  clients.client"
+//					+ "FROM clients  "
+//					+ "GROUP BY clients.client ";
+//			
+//			String queryRepresentative = "SELECT  clients.representative"
+//					+ "FROM clients  "
+//					+ "GROUP BY clients.representative ";
+			
+//			textBudgetEditId.setText(String.valueOf(editBudgetId));			
+			textBudgetEditCode.setText(String.valueOf(editBudgetCode));			
+			textBudgetEditDate.setText(String.valueOf(editBudgetDate));			
+			textBudgetEditExpiryDays.setText(String.valueOf(editBudgetExpirydays));			
+			textBudgetEditClientCode.setText(String.valueOf(editBudgetClientCode));
+			textBudgetEditCompany.setText(editBudgetCompany);
+			textBudgetEditCompanyRepresentative.setText(editBudgetCompanyRepresentative);
+			textBudgetEditworkName.setText(editBudgetWorkName);
+				
+			comboBudgetEditPaymentMethod.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadComboList(queryPaymentMethod, "method"))));
+			comboBudgetEditPaymentMethod.removeItem("Todas");
+			comboBudgetEditPaymentMethod.setSelectedItem(editBudgetPaymentMethod);
+			
+			comboBudgetEditSeller.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadComboList(querySeller, "seller"))));
+			comboBudgetEditSeller.removeItem("Todas");
+			comboBudgetEditSeller.setSelectedItem(editBudgetSeller);
+			
+			comboBudgetEditDispatchPlace.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadComboList(queryDispatchPlace, "place"))));
+			comboBudgetEditDispatchPlace.removeItem("Todas");
+			comboBudgetEditDispatchPlace.setSelectedItem(editBudgetDispatchPlace);
+					
+			comboBudgetEditDeliveryTime.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadComboList(queryDeliveryTime, "delivery_time"))));
+			comboBudgetEditDeliveryTime.removeItem("Todas");
+			comboBudgetEditDeliveryTime.setSelectedItem(editBudgetDeliveryTime);
+			
+			checkBudgetEditTracing.setSelected((editBudgetTracing.equalsIgnoreCase("SI")?true:false));
+			
+			comboBudgetEditStage.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadComboList(queryStage, "stage"))));
+			comboBudgetEditStage.removeItem("Todas");
+			comboBudgetEditStage.setSelectedItem(editBudgetStage);
+				
+			SwingUtilities.invokeLater(new Runnable(){
+				@Override
+				public void run() {
+					panelWrapperBudgetDescription.remove(descriptionBudgetPanel);
+					panelWrapperBudgetDescription.validate();
+					panelWrapperBudgetDescription.repaint();
+					descriptionBudgetPanel.setVisible(false);
+					
+					panelBudgetEdit.setVisible(true);
+					panelWrapperBudgetDescription.add(panelBudgetEdit);
+					panelWrapperBudgetDescription.validate();
+					panelWrapperBudgetDescription.repaint();
+					
+					budgetsFrame.validate();
+					budgetsFrame.repaint();
+				}
+			});
+			this.updateBudgetTextEditDescription();
+			textBudgetDescriptionId.setText("");
+			textBudgetDescriptionCode.setText("");
+			textBudgetDescriptionClientCode.setText("");
+			textBudgetDescriptionCompany.setText("");
+			textBudgetDescriptionCompanyRepresentative.setText("");
+			textBudgetDescriptionExpiryDays.setText("");
+			textBudgetDescriptionWorkName.setText("");
+		}	
 		
 	}
 	
+	private void updateBudgetTextEditDescription() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void loadBudgetTable(String whereQuery) {
+		// TODO Auto-generated method stub
+		ArrayList<String> fields = new ArrayList<String>();
+		fields.add(MainView.BUDGET_ID_FIELD);
+		fields.add(MainView.BUDGET_CODE_FIELD);
+		fields.add(MainView.BUDGET_DATE_FIELD);
+		fields.add(MainView.BUDGET_EXPIRY_DAYS_FIELD);
+		fields.add(MainView.CLIENT_FIELD);
+		fields.add(MainView.BUDGET_WORK_NAME_FIELD);
+		fields.add(MainView.METHOD_FIELD);
+		fields.add(MainView.USERNAME_FIELD);
+		fields.add(MainView.PLACE_FIELD);
+		fields.add(MainView.BUDGET_DELIVERY_TIME_FIELD);
+		fields.add(MainView.BUDGET_TRACING_FIELD);
+		
+		ArrayList<String> tables = new ArrayList<String>();
+		tables.add(MainView.BUDGET_TABLE);
+		tables.add(MainView.BUDGET_DISPATCH_PLACES_TABLE);
+		tables.add(MainView.BUDGET_PAYMENT_METHODS_TABLE);
+		tables.add(MainView.BUDGET_STAGES_TABLE);
+		tables.add(MainView.USERS_TABLE);
+		tables.add(MainView.CLIENTS_TABLE);
+				
+		
+		String fieldsQuery = StringTools.implode(",", fields);
+		String tablesQuery = StringTools.implode(",", tables);
+		String budgetsQuery = "SELECT " + fieldsQuery
+						+ " FROM "
+						+ tablesQuery
+						+ " WHERE budgets.id = budgets.id "
+						// Fix these conditions to make them disappear when filtering
+						
+						+ "AND budgets.client_id = clients.id "
+						+ "AND budgets.payment_method_id = budget_payment_methods.id "
+						+ "AND budgets.seller_id = budget_sellers.id "
+						+ "AND budgets.dispatch_place_id = budget_dispatch_places.id "
+						+ "AND budgets.stage_id = stages.id "
+						+ "AND budgets.active = '1' "
+						+ whereQuery
+						+ " GROUP BY budgets.id ";
+
+		budgetsData = db.fetchAll(db.select(budgetsQuery));
+		
+		String[] budgetsColumnNames = { "Id", "Codigo", "Fecha", "Vencimiento", "Codigo Cliente", "Nombre Empresa", "Representante", "Nombre Obra", "Vendedor", "Lugar de entrega", "Forma de Pago", "Seguimiento"};
+		
+		if(budgetsData.length > 0) {
+			tableBudgetsResult.setModel(new MyTableModel(budgetsData, budgetsColumnNames));
+		} else {
+			tableBudgetsResult.setModel(new DefaultTableModel());
+		}
+//		tableBudgetSwitchesResult.setModel(new DefaultTableModel());
+//		buttonAddBoardSwitch.setEnabled(false);
+//		buttonRemoveBoardSwitch.setEnabled(false);
+	}
+
 	private void loadBoardTable(String whereQuery) {
 		ArrayList<String> fields = new ArrayList<String>();
 		fields.add(MainView.BOARD_ID_FIELD);
@@ -5164,13 +5475,16 @@ public class MainView extends JFrame{
 		JPanel panelBudgetLower = new JPanel(new BorderLayout(20,20));
 		descriptionBudgetPanel = createBudgetDescriptionPanel();
 		
+		panelWrapperBudgetDescription = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		panelWrapperBudgetDescription.add(descriptionBudgetPanel);
+		
 		panelBudgetAddNew = createBudgetAddPanel();
 		panelBudgetAddNew.setVisible(false);
 		
 		panelBudgetEdit = createBudgetEditPanel();
-//		panelBudgetEdit.setVisible(false);   //agregar luego de implementar metodo BudgetEditPanel
+//		panelBudgetEdit.setVisible(false);   
 		
-		panelBudgetLower.add(descriptionBudgetPanel, BorderLayout.CENTER);
+		panelBudgetLower.add(panelWrapperBudgetDescription, BorderLayout.CENTER);
 		panelBudgetLower.add(panelButtons, BorderLayout.SOUTH);
 		
 		budgetMainPanel.add(panelBudgetLower, BorderLayout.SOUTH);
@@ -5217,188 +5531,239 @@ public class MainView extends JFrame{
 	private JPanel createBudgetAddPanel() {
 		JPanel addPanel = new JPanel(new GridBagLayout());
 		ComboBoxListener lForCombo = new ComboBoxListener();
-//		new TextFieldListener();
 		GridBagConstraints cs = new GridBagConstraints();
 		
 		cs.fill = GridBagConstraints.HORIZONTAL;
 		cs.insets = new Insets(0, 0, 5, 5);
 		
-		JLabel labelId = new JLabel("Id:");
-		cs.gridx = 0;
-		cs.gridy = 0;
-		cs.gridwidth = 1;
-		addPanel.add(labelId, cs);
+		String queryPaymentMethods = "SELECT budget_payment_methods.method "
+				+ "FROM budget_payment_methods "
+				+ "GROUP BY budget_payment_methods.method";
 		
-		textBudgetAddId = new JTextField("", 8);
-		textBudgetAddId.setEditable(false);
-		cs.gridx = 1;
-		cs.gridy = 0;
-		cs.gridwidth = 8;
-		addPanel.add(textBudgetAddId, cs);
+		String queryDispatchPlaces = "SELECT budget_dispatch_places.place "
+				+ "FROM  budget_dispatch_places "
+				+ "GROUP BY budget_dispatch_places.place";
 		
-		JLabel labelCode = new JLabel("Codigo:");
-		cs.gridx = 9;
-		cs.gridy = 0;
-		cs.gridwidth = 1;
-		addPanel.add(labelCode, cs);
+		String queryStages = "SELECT budget_stages.stage "
+				+ "FROM budget_stages "
+				+ "GROUP BY budget_stages.stage";
+			
+		String queryUsers = "SELECT users.username "
+				+ "FROM users "
+				+ "GROUP BY users.username";
 		
-		textBudgetAddCode = new JTextField("", 8);
-		textBudgetAddCode.setEditable(false);
-		cs.gridx = 10;
-		cs.gridy = 0;
-		cs.gridwidth = 8;
-		addPanel.add(textBudgetAddCode, cs);
+		String queryDeliveryTime = "SELECT budget_delivery_time.delivery_time "
+				+ "FROM  budget_delivery_time "
+				+ "GROUP BY budget_delivery_time.delivery_time";
+		
 		
 		JLabel labelDate = new JLabel("Fecha:");
-		cs.gridx = 18;
+		cs.gridx = 0;
 		cs.gridy = 0;
 		cs.gridwidth = 1;
 		addPanel.add(labelDate, cs);                   
 		
-		textBudgetAddDate = new JTextField("", 8);
-		textBudgetAddDate.setEditable(false);
-		cs.gridx = 19;
-		cs.gridy = 0;
-		cs.gridwidth = 8;
-		addPanel.add(textBudgetAddDate, cs);
+		//creating an object date picker to display a  calendar component 
 		
-		JLabel labelExpiration = new JLabel("Vencimiento:");
-		cs.gridx = 27;
+		UtilDateModel model = new UtilDateModel();
+		
+		Properties p = new Properties();
+		p.put("text.today",	"Hoy");
+		p.put("text.month", "Mes");
+		p.put("text.year", "Año");
+		JDatePanelImpl datePanel = new JDatePanelImpl(model, p);
+		JDatePickerImpl datePicker = new JDatePickerImpl(datePanel, new DateLabelFormatter());
+		
+		model.setDate(2016, 7, 1);
+		cs.gridx = 1;
+		cs.gridy = 0;
+		cs.gridwidth = 4;
+		addPanel.add(datePicker);
+		
+		JLabel labelExpiryDays = new JLabel("  Días de Vencimiento:");
+		cs.gridx = 5;
 		cs.gridy = 0;
 		cs.gridwidth = 1;
-		addPanel.add(labelExpiration, cs);
+		addPanel.add(labelExpiryDays, cs);
 		
-		textBudgetAddExpiration = new JTextField("", 6);
-		textBudgetAddExpiration.setEditable(false);
-		cs.gridx = 28;
+		textBudgetAddExpiryDays = new JTextField("", 4);
+		textBudgetAddExpiryDays.setEditable(false);
+		cs.gridx = 6;
 		cs.gridy = 0;
-		cs.gridwidth = 6;
-		addPanel.add(textBudgetAddExpiration, cs);
+		cs.gridwidth = 4;
+		addPanel.add(textBudgetAddExpiryDays, cs);
 				
-		JLabel labelClientCode = new JLabel("Codigo Cliente :");
-		cs.gridx = 43;
+		JLabel labelClientCode = new JLabel(" Codigo Cliente :");
+		cs.gridx = 10;
 		cs.gridy = 0;
 		cs.gridwidth = 1;
 		addPanel.add(labelClientCode, cs);
 		
-		textBudgetAddClientCode = new JTextField("", 8);
+		textBudgetAddClientCode = new JTextField("", 6);
 		textBudgetAddClientCode.setEditable(false);
-		cs.gridx = 44;
+		cs.gridx = 11;
 		cs.gridy = 0;
-		cs.gridwidth = 8;
+		cs.gridwidth = 6;
 		addPanel.add(textBudgetAddClientCode, cs);
 		
-		JLabel labelCompany = new JLabel("Empresa:");
-		cs.gridx = 0;
-		cs.gridy = 1;
+		JLabel labelCompany = new JLabel(" Empresa:");
+		cs.gridx = 17;
+		cs.gridy = 0;
 		cs.gridwidth = 1;
 		addPanel.add(labelCompany, cs);
 		
-		textBudgetAddCompany = new JTextField("", 10);
+		textBudgetAddCompany = new JTextField("", 8);
 		textBudgetAddCompany.setEditable(false);
-		cs.gridx = 1;
-		cs.gridy = 1;
-		cs.gridwidth = 10;
+		cs.gridx = 18;
+		cs.gridy = 0;
+		cs.gridwidth = 8;
 		addPanel.add(textBudgetAddCompany, cs);
 		
-		JLabel labelCompanyRepresentative = new JLabel("Representante de la Empresa:");
-		cs.gridx = 11;
+		ButtonListener lForButton = new ButtonListener();
+				
+		buttonBudgetAddCompany = new JButton("...");
+		buttonBudgetAddCompany.setActionCommand("budget.description.add.company");
+		buttonBudgetAddCompany.addActionListener(lForButton);
+				
+		cs.gridx = 26;
+		cs.gridy = 0;
+		cs.gridwidth = 1;
+		addPanel.add(buttonBudgetAddCompany, cs);
+		
+		
+		JLabel labelCompanyRepresentative = new JLabel("Representante:");
+		cs.gridx = 0;
 		cs.gridy = 1;
 		cs.gridwidth = 1;
 		addPanel.add(labelCompanyRepresentative, cs);
 		
-		textBudgetAddCompanyRepresentative = new JTextField("", 10);
+		textBudgetAddCompanyRepresentative = new JTextField("", 8);
 		textBudgetAddCompanyRepresentative.setEditable(false);
-		cs.gridx = 12;
+		cs.gridx = 1;
 		cs.gridy = 1;
-		cs.gridwidth = 10;
+		cs.gridwidth = 8;
 		addPanel.add(textBudgetAddCompanyRepresentative, cs);
 		
-		JLabel labelBuildingName = new JLabel("Nombre de la Obra:");
-		cs.gridx = 22;
+		JLabel labelWorkName = new JLabel(" Obra:");
+		cs.gridx = 9;
 		cs.gridy = 1;
 		cs.gridwidth = 1;
-		addPanel.add(labelBuildingName, cs);
+		addPanel.add(labelWorkName, cs);
 		
-		textBudgetAddBuildingName = new JTextField("", 10);
-		textBudgetAddBuildingName.setEditable(false);
-		cs.gridx = 23;
+		textBudgetAddWorkName = new JTextField("", 8);
+		textBudgetAddWorkName.setEditable(false);
+		cs.gridx = 10;
 		cs.gridy = 1;
-		cs.gridwidth = 10;
-		addPanel.add(textBudgetAddBuildingName, cs);
+		cs.gridwidth = 8;
+		addPanel.add(textBudgetAddWorkName, cs);
 
 //		
-		JLabel labelPaymentMethod = new JLabel("Forma de Pago:");
-		cs.gridx = 33;
+		JLabel labelPaymentMethod = new JLabel(" Forma de Pago:");
+		cs.gridx = 18;
 		cs.gridy = 1;
 		cs.gridwidth = 1;
 		addPanel.add(labelPaymentMethod, cs);
-		
-		List<String> listPaymentMethod = new ArrayList<String>();
-		listPaymentMethod.add("100% + iva");
-		listPaymentMethod.add("75% + iva");
-		listPaymentMethod.add("50% + iva");
 
-		comboBugetAddPaymentMethod = new JComboBox<String>(new Vector<String>(listPaymentMethod));
-		comboBugetAddPaymentMethod.setActionCommand("budget.add.payment");
-		comboBugetAddPaymentMethod.addActionListener(lForCombo);
-		cs.gridx = 34;
-		cs.gridy = 1;
-		cs.gridwidth = 8;
-		addPanel.add(comboBugetAddPaymentMethod, cs);
-		
+//		List<String> listPaymentMethod = new ArrayList<String>();
+//		listPaymentMethod.add("100% + IVA con la Orden de Compra");
+//		listPaymentMethod.add("50% de Inicial - Saldo previo a su entrega");
+//		listPaymentMethod.add("Factura a 30 días");
+//		listPaymentMethod.add("A la entrega");
+//		listPaymentMethod.add("50% de Inicial - Saldo a 30 días");
+//		listPaymentMethod.add("Factura a 45 días");
+//		listPaymentMethod.add("Contado");
+
+		comboListResult = loadComboList(queryPaymentMethods, "method");
+		if(comboListResult != null ){
+			comboBudgetAddPaymentMethod = new JComboBox<String>(new Vector<String>(comboListResult));
+		}
+		else{
+			comboBudgetAddPaymentMethod = new JComboBox<String>();
+		}
+			comboBudgetAddPaymentMethod.removeItem("Todas");
+			comboBudgetAddPaymentMethod.setActionCommand("budget.description.add.payment_method");
+			comboBudgetAddPaymentMethod.addActionListener(lForCombo);
+			cs.gridx = 19;
+			cs.gridy = 1;
+			cs.gridwidth = 8;
+			addPanel.add(comboBudgetAddPaymentMethod, cs);
+	
 		JLabel labelSeller = new JLabel("Vendedor:");
-		cs.gridx = 42;
-		cs.gridy = 1;
-		cs.gridwidth = 1;
-		addPanel.add(labelSeller, cs);
-		
-		textBudgetAddSeller = new JTextField("", 10);
-		textBudgetAddSeller.setEditable(false);
-		cs.gridx = 43;
-		cs.gridy = 1;
-		cs.gridwidth = 10;
-		addPanel.add(textBudgetAddSeller, cs);
-		
-		JLabel labelDeliverySite = new JLabel("Sitio de entrega:");
 		cs.gridx = 0;
 		cs.gridy = 2;
 		cs.gridwidth = 1;
-		addPanel.add(labelDeliverySite, cs);
+		addPanel.add(labelSeller, cs);
 		
-		List<String> listDeliverySite = new ArrayList<String>();
-		listDeliverySite.add("Planta");
-		listDeliverySite.add("Oficina Caracas");
-		listDeliverySite.add("Instalaciones Cliente");
-
-		comboBugetAddDeliverySite = new JComboBox<String>(new Vector<String>(listDeliverySite));
-		comboBugetAddDeliverySite.setActionCommand("budget.add.deliverysite");
-		comboBugetAddDeliverySite.addActionListener(lForCombo);
+		textBudgetAddSeller = new JTextField("", 8);
+		textBudgetAddSeller.setEditable(false);
 		cs.gridx = 1;
 		cs.gridy = 2;
-		cs.gridwidth = 10;
-		addPanel.add(comboBugetAddDeliverySite, cs);
+		cs.gridwidth = 8;
+		addPanel.add(textBudgetAddSeller, cs);
+		
+		buttonBudgetAddSeller = new JButton("...");
+		buttonBudgetAddSeller.setActionCommand("budget.description.add.seller");
+		buttonBudgetAddSeller.addActionListener(lForButton);
+		
+		cs.gridx = 9;
+		cs.gridy = 2;
+		cs.gridwidth = 1;
+		addPanel.add(buttonBudgetAddSeller, cs);
+		
+		JLabel labelDispatchPlace = new JLabel("Sitio de entrega:");
+		cs.gridx = 10;
+		cs.gridy = 2;
+		cs.gridwidth = 1;
+		addPanel.add(labelDispatchPlace, cs);
+		
+//		List<String> listDispatchPlace = new ArrayList<String>();
+//		listDispatchPlace.add("Planta");
+//		listDispatchPlace.add("Oficina Caracas");
+//		listDispatchPlace.add("Instalaciones Cliente");
+//
+//		comboBugetAddDispatchPlace = new JComboBox<String>(new Vector<String>(listDispatchPlace));
+//		comboBugetAddDispatchPlace.setActionCommand("budget.add.DispatchPlace");
+//		comboBugetAddDispatchPlace.addActionListener(lForCombo);
+//		cs.gridx = 1;
+//		cs.gridy = 2;
+//		cs.gridwidth = 10;
+//		addPanel.add(comboBugetAddDispatchPlace, cs);
 	
-		JLabel labelDeliveryTime = new JLabel("Tiempo de entrega:");
+		comboBudgetAddDispatchPlace = new JComboBox<String>(new Vector<String>(loadComboList(queryDispatchPlaces, "place")));
+		comboBudgetAddDispatchPlace.removeItem("Todas");
 		cs.gridx = 11;
+		cs.gridy = 2;
+		cs.gridwidth = 8;
+		addPanel.add(comboBudgetAddDispatchPlace, cs);
+		
+		JLabel labelDeliveryTime = new JLabel("Tiempo de entrega:");
+		cs.gridx = 19;
 		cs.gridy = 2;
 		cs.gridwidth = 1;
 		addPanel.add(labelDeliveryTime, cs);
 					
-		textBudgetAddDeliveryTime = new JTextField("", 8);
+		textBudgetAddDeliveryTime = new JTextField("", 4);
 		textBudgetAddDeliveryTime.setEditable(false);
-		cs.gridx = 12;
-		cs.gridy = 2;
-		cs.gridwidth = 8;
-		addPanel.add(textBudgetAddDeliveryTime, cs);
-					
-		checkBudgetAddTracing = new JCheckBox("Seguimiento");
 		cs.gridx = 20;
 		cs.gridy = 2;
-		cs.gridwidth = 1;
-		addPanel.add(checkBudgetAddTracing, cs);
+		cs.gridwidth = 4;
+		addPanel.add(textBudgetAddDeliveryTime, cs);
+		
+		comboBugetAddDeliveryTime = new JComboBox<String>(new Vector<String>(loadComboList(queryDeliveryTime, "delivery_time")));
+		comboBugetAddDeliveryTime.setActionCommand("budget.add.DeliveryTime");
+		comboBugetAddDeliveryTime.addActionListener(lForCombo);
+		cs.gridx = 24;
+		cs.gridy = 2;
+		cs.gridwidth = 4;
+		addPanel.add(comboBugetAddDeliveryTime, cs);
+							
+//		checkBudgetAddTracing = new JCheckBox("Seguimiento");
+//		cs.gridx = 28;
+//		cs.gridy = 2;
+//		cs.gridwidth = 1;
+//		addPanel.add(checkBudgetAddTracing, cs);
 				
-		ButtonListener lForButton = new ButtonListener();
+//		ButtonListener lForButton = new ButtonListener();
 		
 		JPanel panelButtons = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		
@@ -5414,7 +5779,7 @@ public class MainView extends JFrame{
 		
 		cs.gridx = 0;
 		cs.gridy = 4;
-		cs.gridwidth = 43;
+		cs.gridwidth = 30;
 		addPanel.add(panelButtons, cs);
 		
 		updateBudgetTextAddDescription();
@@ -5544,31 +5909,31 @@ public class MainView extends JFrame{
 		cs.gridwidth = 8;
 		descriptionBudgetPanel.add(textBudgetDescriptionDate, cs);
 		
-		JLabel labelExpiration = new JLabel("Vencimiento:");
+		JLabel labelExpiryDays = new JLabel("Vencimiento:");
 		cs.gridx = 27;
 		cs.gridy = 0;
 		cs.gridwidth = 1;
-		descriptionBudgetPanel.add(labelExpiration, cs);
+		descriptionBudgetPanel.add(labelExpiryDays, cs);
 		
-		textBudgetDescriptionExpiration = new JTextField("", 6);
-		textBudgetDescriptionExpiration.setEditable(false);
+		textBudgetDescriptionExpiryDays = new JTextField("", 6);
+		textBudgetDescriptionExpiryDays.setEditable(false);
 		cs.gridx = 28;
 		cs.gridy = 0;
 		cs.gridwidth = 6;
-		descriptionBudgetPanel.add(textBudgetDescriptionExpiration, cs);
+		descriptionBudgetPanel.add(textBudgetDescriptionExpiryDays, cs);
 		
-		JLabel labelExpirationDate = new JLabel("Fecha de vencimiento:");
+		JLabel labelExpiryDate = new JLabel("Fecha de vencimiento:");
 		cs.gridx = 34;
 		cs.gridy = 0;
 		cs.gridwidth = 1;
-		descriptionBudgetPanel.add(labelExpirationDate, cs);
+		descriptionBudgetPanel.add(labelExpiryDate, cs);
 		
-		textBudgetDescriptionExpirationDate = new JTextField("", 8);
-		textBudgetDescriptionExpirationDate.setEditable(false);
+		textBudgetDescriptionExpiryDate = new JTextField("", 8);
+		textBudgetDescriptionExpiryDate.setEditable(false);
 		cs.gridx = 35;
 		cs.gridy = 0;
 		cs.gridwidth = 8;
-		descriptionBudgetPanel.add(textBudgetDescriptionExpirationDate, cs);
+		descriptionBudgetPanel.add(textBudgetDescriptionExpiryDate, cs);
 		
 		JLabel labelClientCode = new JLabel("Codigo Cliente :");
 		cs.gridx = 43;
@@ -5609,18 +5974,18 @@ public class MainView extends JFrame{
 		cs.gridwidth = 10;
 		descriptionBudgetPanel.add(textBudgetDescriptionCompanyRepresentative, cs);
 		
-		JLabel labelBuildingName = new JLabel("Nombre de la Obra:");
+		JLabel labelWorkName = new JLabel("Nombre de la Obra:");
 		cs.gridx = 22;
 		cs.gridy = 1;
 		cs.gridwidth = 1;
-		descriptionBudgetPanel.add(labelBuildingName, cs);
+		descriptionBudgetPanel.add(labelWorkName, cs);
 		
-		textBudgetDescriptionBuildingName = new JTextField("", 10);
-		textBudgetDescriptionBuildingName.setEditable(false);
+		textBudgetDescriptionWorkName = new JTextField("", 10);
+		textBudgetDescriptionWorkName.setEditable(false);
 		cs.gridx = 23;
 		cs.gridy = 1;
 		cs.gridwidth = 10;
-		descriptionBudgetPanel.add(textBudgetDescriptionBuildingName, cs);
+		descriptionBudgetPanel.add(textBudgetDescriptionWorkName, cs);
 		
 		JLabel labelPaymentMethod = new JLabel("Forma de Pago:");
 		cs.gridx = 33;
@@ -5648,18 +6013,18 @@ public class MainView extends JFrame{
 		cs.gridwidth = 10;
 		descriptionBudgetPanel.add(textBudgetDescriptionSeller, cs);
 		
-		JLabel labelDeliverySite = new JLabel("Sitio de entrega:");
+		JLabel labelDispatchPlace = new JLabel("Sitio de entrega:");
 		cs.gridx = 0;
 		cs.gridy = 2;
 		cs.gridwidth = 1;
-		descriptionBudgetPanel.add(labelDeliverySite, cs);
+		descriptionBudgetPanel.add(labelDispatchPlace, cs);
 		
-		textBudgetDescriptionDeliverySite = new JTextField("", 10);
-		textBudgetDescriptionDeliverySite.setEditable(false);
+		textBudgetDescriptionDispatchPlace = new JTextField("", 10);
+		textBudgetDescriptionDispatchPlace.setEditable(false);
 		cs.gridx = 1;
 		cs.gridy = 2;
 		cs.gridwidth = 10;
-		descriptionBudgetPanel.add(textBudgetDescriptionDeliverySite, cs);
+		descriptionBudgetPanel.add(textBudgetDescriptionDispatchPlace, cs);
 		
 		JLabel labelDeliveryTime = new JLabel("Tiempo de entrega:");
 		cs.gridx = 11;
@@ -5677,16 +6042,50 @@ public class MainView extends JFrame{
 		return descriptionBudgetPanel;
 	}
 
-	private JPanel createBudgetTablePanel() {			
+	private JPanel createBudgetTablePanel() {	
 		
 		ArrayList<String> fields = new ArrayList<String>();
+		fields.add(MainView.BUDGET_ID_FIELD);
+		fields.add(MainView.BUDGET_CODE_FIELD);
+		fields.add(MainView.BUDGET_DATE_FIELD);
+		fields.add(MainView.BUDGET_EXPIRY_DAYS_FIELD);
+		fields.add(MainView.CLIENT_FIELD);
+		fields.add(MainView.BUDGET_WORK_NAME_FIELD);
+		fields.add(MainView.METHOD_FIELD);
+		fields.add(MainView.USERNAME_FIELD);
+		fields.add(MainView.PLACE_FIELD);
+		fields.add(MainView.BUDGET_DELIVERY_TIME_FIELD);
+		fields.add(MainView.BUDGET_TRACING_FIELD);
+		fields.add(MainView.SELLER_FIELD);
+		
 		ArrayList<String> tables = new ArrayList<String>();
+		tables.add(MainView.BUDGET_TABLE);
+		tables.add(MainView.BUDGET_DISPATCH_PLACES_TABLE);
+		tables.add(MainView.BUDGET_PAYMENT_METHODS_TABLE);
+		tables.add(MainView.BUDGET_STAGES_TABLE);
+		tables.add(MainView.USERS_TABLE);
+		tables.add(MainView.CLIENTS_TABLE);
+				
+		
+		String fieldsQuery = StringTools.implode(",", fields);
+		String tablesQuery = StringTools.implode(",", tables);
+		String budgetsQuery = "SELECT " + fieldsQuery
+						+ " FROM "
+						+ tablesQuery
+						+ " WHERE  budgets.client_id = clients.id "
+						+ "AND budgets.payment_method_id = budget_payment_methods.id "
+						+ "AND budgets.seller_id = budget_sellers.id "
+						+ "AND budgets.dispatch_place_id = budget_dispatch_places.id "
+						+ "AND budgets.stage_id = budget_stages.id "
+						+ "AND budgets.active = '1' "
+						+ " GROUP BY budgets.id";
+		
 		
 		String[] budgetsColumnNames = {"Id", "Codigo", "Fecha", "Vencimiento", "Codigo Cliente", "Empresa", "Representante", "Nombre Obra", "Forma Pago", "Vendedor", "Sitio Entrega", "Tiempo Entrega"};
 
 		tableBudgetsResult = new JTable();
 		
-		tableBudgetsResult.setModel(new MyTableModel(budgetData, budgetsColumnNames));
+		tableBudgetsResult.setModel(new MyTableModel(budgetsData, budgetsColumnNames));
 		
 		JPanel panelBudgetTable = new JPanel( new BorderLayout());
 		panelBudgetTable.add(tableBudgetsResult.getTableHeader(), BorderLayout.PAGE_START);
@@ -5756,6 +6155,13 @@ public class MainView extends JFrame{
 		comboBudgetYears = new JComboBox<String>(new Vector<String>(listYears));
 		panelBudgetSearch.add(labelYear);
 		panelBudgetSearch.add(comboBudgetYears);
+				
+		JButton searchButton = new JButton("Buscar");
+		searchButton.setActionCommand("budget.search.bar.button");
+		SearchButtonListener lForSearchButton = new SearchButtonListener();
+		searchButton.addActionListener(lForSearchButton);
+		panelBudgetSearch.add(searchButton);
+		
 		
 		return panelBudgetSearch;
 	}
@@ -7136,6 +7542,19 @@ public class MainView extends JFrame{
 		public static final int BOARD_LOCK_TYPE_COLUMN = 12;
 		public static final int BOARD_PRICE_COLUMN = 13;
 		
+		public static final int BUDGET_ID_COLUMN = 0;
+		public static final int BUDGET_CODE_COLUMN = 1;
+		public static final int BUDGET_DATE_COLUMN = 2;
+		public static final int BUDGET_EXPIRY_DAYS_COLUMN = 3;
+		public static final int BUDGET_CLIENT_ID_COLUMN = 4;
+		public static final int BUDGET_WORK_NAME_COLUMN = 5;
+		public static final int BUDGET_PAYMENT_METHOD_COLUMN = 6;
+		public static final int BUDGET_SELLER_COLUMN = 7;
+		public static final int BUDGET_DISPATCH_PLACE_COLUMN = 8;
+		public static final int BUDGET_DELIVERY_TIME_COLUMN = 9;
+		public static final int BUDGET_TRACING_COLUMN = 10;
+		public static final int BUDGET_STAGE_COLUMN = 11;
+		
 		@Override
 		public void valueChanged(ListSelectionEvent e) {
 			ListSelectionModel lsm = (ListSelectionModel)e.getSource();
@@ -7997,9 +8416,55 @@ public class MainView extends JFrame{
 				buttonBoardCommentsEditCancel.setEnabled(false);
 				panelBoardCommentsEditSaveCancel.setVisible(false);
 			}
-//			else if (actionCommand.equalsIgnoreCase("budget.description.buttons.add")) {
-//				setBoardsMode(MainView.ADD_MODE);
-//			}
+			else if (actionCommand.equalsIgnoreCase("budget.description.buttons.add")) {
+				setBudgetsMode(MainView.ADD_MODE);
+			}
+			else if (actionCommand.equalsIgnoreCase("budget.description.buttons.edit")) {
+				setBudgetsMode(MainView.EDIT_MODE);
+			}
+//			 else if (actionCommand.equalsIgnoreCase("budget.description.add.save")) {
+//					String budgetName = textBoardAddName.getText();
+//					String boardType = comboBoardAddType.getSelectedItem().toString();
+//					String boardInstallation = comboBoardAddInstallation.getSelectedItem().toString();
+//					String boardNema = comboBoardAddNema.getSelectedItem().toString();
+//					String boardBarCapacity = comboBoardAddBarCapacity.getSelectedItem().toString();
+//					String boardBarType = comboBoardAddBarType.getSelectedItem().toString();
+//					String boardCircuits = comboBoardAddCircuits.getSelectedItem().toString();
+//					String boardVoltage = comboBoardAddVoltage.getSelectedItem().toString();
+//					String boardPhases = comboBoardAddPhases.getSelectedItem().toString();
+//					String boardGround = (checkBoardAddGround.isSelected())?"1":"0";
+//					String boardInterruption = comboBoardAddInterruption.getSelectedItem().toString();
+//					String boardLockType = comboBoardAddLockType.getSelectedItem().toString();
+//					String boardPrice = textBoardAddPrice.getText();
+//					Errors err = new Errors();
+//					
+//					if(boardName.isEmpty()) {
+//						err.add("Debe escribir un nombre para el tablero");
+//					}
+//					if(boardPrice.isEmpty() || !Numbers.isNumeric(boardPrice)) {
+//						err.add("El precio no puede estar vacio y solo debe contener digitos numericos");
+//					}
+//					if(err.isEmpty()) {
+//						boolean saved = db.addBoard(boardName, boardType, boardInstallation, boardNema, Integer.valueOf(boardBarCapacity), boardBarType, Integer.valueOf(boardCircuits), boardVoltage, Integer.valueOf(boardPhases), boardGround, Integer.valueOf(boardInterruption), boardLockType, Double.valueOf(boardPrice));
+//						if(saved) {
+//							JOptionPane.showMessageDialog(null, "Tablero creado exitosamente");
+//							setBoardsMode(MainView.VIEW_MODE);
+//						}
+//					} else {
+//						err.dump();
+//					}
+//				} 
+				else if (actionCommand.equalsIgnoreCase("budget.description.add.cancel")) {
+					setBudgetsMode(MainView.VIEW_MODE);
+				} 
+//				else if (actionCommand.equalsIgnoreCase("budget.description.edit.save")) {
+//				
+//				}
+//				} 
+				else if (actionCommand.equalsIgnoreCase("budget.description.edit.cancel")) {
+					setBudgetsMode(MainView.VIEW_MODE);
+				}
+				
 		}
 		
 	}
