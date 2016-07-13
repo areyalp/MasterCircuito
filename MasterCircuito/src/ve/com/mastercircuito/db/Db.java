@@ -814,4 +814,19 @@ public class Db extends MysqlDriver {
 		return materialsPrice;
 	}
 	
+	public String getBoardComments(int boardId) {
+		ResultSet setBoardCommentsPrice;
+		String comments = "";
+		setBoardCommentsPrice = this.select("SELECT comments FROM boards WHERE id = '" + boardId + "'");
+		
+		try {
+			setBoardCommentsPrice.first();
+			comments = setBoardCommentsPrice.getString("comments");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener las observaciones del tablero");
+		}
+		return comments;
+	}
+	
 }
