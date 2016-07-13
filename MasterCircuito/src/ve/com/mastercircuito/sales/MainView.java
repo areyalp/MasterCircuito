@@ -1053,7 +1053,7 @@ public class MainView extends JFrame{
 		
 		JButton buttonCopy = new JButton("Copiar");
 		buttonCopy.addActionListener(lForButton);
-		buttonCopy.setActionCommand("search.description.copy");
+		buttonCopy.setActionCommand("switch.search.description.copy");
 		cs.gridx = 0;
 		cs.gridy = 6;
 		cs.gridwidth = 4;
