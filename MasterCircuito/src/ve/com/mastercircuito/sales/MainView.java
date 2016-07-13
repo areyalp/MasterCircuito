@@ -1451,6 +1451,53 @@ public class MainView extends JFrame{
 		return editPanel;
 	}
 	
+	private void switchAddReload() {
+		String queryBrands = "SELECT switch_brands.brand "
+				+ "FROM switch_brands "
+				+ "GROUP BY switch_brands.brand";
+		
+		String queryCurrents = "SELECT current "
+				+ "FROM currents "
+				+ "GROUP BY currents.current";
+		
+		String queryInterruptions = "SELECT interruption "
+				+ "FROM interruptions "
+				+ "GROUP BY interruptions.interruption";
+		
+		String queryVoltages = "SELECT voltage "
+				+ "FROM switch_voltages "
+				+ "GROUP BY switch_voltages.voltage";
+		
+		comboSwitchAddCurrents.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadComboList(queryCurrents, "current"))));
+		comboSwitchAddCurrents.removeItem("Todas");
+		
+		comboSwitchAddBrands.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadComboList(queryBrands, "brand"))));
+		comboSwitchAddBrands.removeItem("Todas");
+		String selectedBrand = comboSwitchAddBrands.getSelectedItem().toString();
+		String additionalFrom = "";
+		String additionalWhere = "";
+		if(selectedBrand != null && !selectedBrand.isEmpty()) {
+			additionalFrom = ", switch_brands ";
+			additionalWhere = "AND switch_brands.brand = '" + selectedBrand + "' ";
+		}
+		
+		String queryTypes = "SELECT type "
+				+ "FROM switch_types "
+				+ additionalFrom
+				+ "WHERE switch_types.brand_id = switch_brands.id "
+				+ additionalWhere
+				+ "GROUP BY switch_types.type ";
+		
+		comboSwitchAddTypes.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadComboList(queryTypes, "type"))));
+		comboSwitchAddTypes.removeItem("Todas");
+		
+		comboSwitchAddInterruptions.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadComboList(queryInterruptions, "interruption"))));
+		comboSwitchAddInterruptions.removeItem("Todas");
+		
+		comboSwitchAddVoltages.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadComboList(queryVoltages, "voltage"))));
+		comboSwitchAddVoltages.removeItem("Todas");
+	}
+	
 	private void setSwitchesMode(int mode) {
 		
 		if(mode == MainView.VIEW_MODE) {
@@ -1508,6 +1555,7 @@ public class MainView extends JFrame{
 			textSwitchBrand.setText("");
 			textSwitchDescription.setText("");
 			tableSwitchesResult.clearSelection();
+			this.switchAddReload();
 			SwingUtilities.invokeLater(new Runnable(){
 				@Override
 				public void run() {
@@ -6288,9 +6336,9 @@ public class MainView extends JFrame{
 				comboSwitchAddTypes.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadComboList(queryType, "type"))));
 				comboSwitchAddTypes.removeItem("Todas");
 				updateSwitchTextAddDescription();
-			} else if (actionCommand.equalsIgnoreCase("switch.description.add.type") || e.getActionCommand().equalsIgnoreCase("description.add.phases") || e.getActionCommand().equalsIgnoreCase("description.add.current")){
+			} else if (actionCommand.equalsIgnoreCase("switch.description.add.type") || e.getActionCommand().equalsIgnoreCase("switch.description.add.phases") || e.getActionCommand().equalsIgnoreCase("switch.description.add.current")){
 				updateSwitchTextAddDescription();
-			} else if (actionCommand.equalsIgnoreCase("switch.description.edit.phases") || e.getActionCommand().equalsIgnoreCase("description.edit.current") || e.getActionCommand().equalsIgnoreCase("description.edit.type")) {
+			} else if (actionCommand.equalsIgnoreCase("switch.description.edit.phases") || e.getActionCommand().equalsIgnoreCase("switch.description.edit.current") || e.getActionCommand().equalsIgnoreCase("switch.description.edit.type")) {
 				updateSwitchTextEditDescription();
 			} else if (actionCommand.equalsIgnoreCase("switch.description.edit.brand")) {
 				editSelectedSwitchBrand = comboSwitchEditBrand.getSelectedItem().toString();
@@ -8556,13 +8604,13 @@ public class MainView extends JFrame{
 							JOptionPane.showMessageDialog(null, "Marca agregada exitosamente");
 							updateSwitchComboSettings();
 						} else {
-							JOptionPane.showMessageDialog(null, "Ocurrio un error al agregar la marca");
+							JOptionPane.showMessageDialog(null, "Ocurrio un error al agregar la marca", "Error", JOptionPane.ERROR_MESSAGE);
 						}
 					} else {
-						JOptionPane.showMessageDialog(null, "Esta marca ya existe, no puede registrarla de nuevo");
+						JOptionPane.showMessageDialog(null, "Esta marca ya existe, no puede registrarla de nuevo", "Marca ya existe!", JOptionPane.ERROR_MESSAGE);
 					}
 				} else {
-					JOptionPane.showMessageDialog(null, "Debe introducir la marca que desea agregar, de lo contrario no se guardara");
+					JOptionPane.showMessageDialog(null, "Debe introducir la marca que desea agregar, de lo contrario no se guardara", "Marca vacia", JOptionPane.ERROR_MESSAGE);
 				}
 			} else if (actionCommand.equalsIgnoreCase("switch.settings.brands.remove")) {
 				String brandRemove = comboSwitchSettingsBrands.getSelectedItem().toString();
@@ -8574,10 +8622,10 @@ public class MainView extends JFrame{
 							JOptionPane.showMessageDialog(null, "Marca eliminada exitosamente");
 							updateSwitchComboSettings();
 						} else {
-							JOptionPane.showMessageDialog(null, "Ocurrio un error al eliminar la marca");
+							JOptionPane.showMessageDialog(null, "Ocurrio un error al eliminar la marca", "Error", JOptionPane.ERROR_MESSAGE);
 						}
 					} else {
-						JOptionPane.showMessageDialog(null, "Esta marca no existe, asi que no puede ser eliminada");
+						JOptionPane.showMessageDialog(null, "Esta marca no existe, asi que no puede ser eliminada", "Marca no existe!", JOptionPane.ERROR_MESSAGE);
 					}
 				}
 			} else if (actionCommand.equalsIgnoreCase("switch.settings.types.add")) {
@@ -8595,13 +8643,13 @@ public class MainView extends JFrame{
 								JOptionPane.showMessageDialog(null, "Tipo agregado exitosamente");
 								updateSwitchComboSettings();
 							} else {
-								JOptionPane.showMessageDialog(null, "Ocurrio un error al agregar el tipo");
+								JOptionPane.showMessageDialog(null, "Ocurrio un error al agregar el tipo", "Error", JOptionPane.ERROR_MESSAGE);
 							}
 						} else {
-							JOptionPane.showMessageDialog(null, "Debe introducir el tipo y marca que desea agregar, de lo contrario no se guardara");
+							JOptionPane.showMessageDialog(null, "Debe introducir el tipo y marca que desea agregar, de lo contrario no se guardara", "Datos incompletos", JOptionPane.ERROR_MESSAGE);
 						}
 					} else {
-						JOptionPane.showMessageDialog(null, "Este tipo ya existe, no puede registrarlo de nuevo");
+						JOptionPane.showMessageDialog(null, "Este tipo ya existe, no puede registrarlo de nuevo", "Tipo ya existe!", JOptionPane.ERROR_MESSAGE);
 					}
 				}
 			} else if (actionCommand.equalsIgnoreCase("switch.settings.types.remove")) {
@@ -8614,10 +8662,10 @@ public class MainView extends JFrame{
 							JOptionPane.showMessageDialog(null, "Tipo eliminado exitosamente");
 							updateSwitchComboSettings();
 						} else {
-							JOptionPane.showMessageDialog(null, "Ocurrio un error al eliminar el tipo");
+							JOptionPane.showMessageDialog(null, "Ocurrio un error al eliminar el tipo", "Error", JOptionPane.ERROR_MESSAGE);
 						}
 					} else {
-						JOptionPane.showMessageDialog(null, "Este tipo no existe, asi que no puede ser eliminado");
+						JOptionPane.showMessageDialog(null, "Este tipo no existe, asi que no puede ser eliminado", "Tipo no existe!", JOptionPane.ERROR_MESSAGE);
 					}
 				}
 			} else if (actionCommand.equalsIgnoreCase("switch.settings.currents.add")) {
@@ -8628,13 +8676,13 @@ public class MainView extends JFrame{
 							JOptionPane.showMessageDialog(null, "Corriente agregada exitosamente");
 							updateSwitchComboSettings();
 						} else {
-							JOptionPane.showMessageDialog(null, "Ocurrio un error al agregar la corriente");
+							JOptionPane.showMessageDialog(null, "Ocurrio un error al agregar la corriente", "Error", JOptionPane.ERROR_MESSAGE);
 						}
 					} else {
-						JOptionPane.showMessageDialog(null, "Esta corriente ya existe, no puede registrarla de nuevo");
+						JOptionPane.showMessageDialog(null, "Esta corriente ya existe, no puede registrarla de nuevo", "Corriente ya existe!", JOptionPane.ERROR_MESSAGE);
 					}
 				} else {
-					JOptionPane.showMessageDialog(null, "Debe introducir la corriente que desea agregar y solo puede ser numerica, de lo contrario no se guardara");
+					JOptionPane.showMessageDialog(null, "Debe introducir la corriente que desea agregar y solo puede ser numerica, de lo contrario no se guardara", "Corriente invalida!", JOptionPane.ERROR_MESSAGE);
 				}
 			} else if (actionCommand.equalsIgnoreCase("switch.settings.currents.remove")) {
 				String currentRemove = comboSwitchSettingsCurrents.getSelectedItem().toString();
@@ -8646,10 +8694,10 @@ public class MainView extends JFrame{
 							JOptionPane.showMessageDialog(null, "Corriente eliminada exitosamente");
 							updateSwitchComboSettings();
 						} else {
-							JOptionPane.showMessageDialog(null, "Ocurrio un error al eliminar la corriente");
+							JOptionPane.showMessageDialog(null, "Ocurrio un error al eliminar la corriente", "Error", JOptionPane.ERROR_MESSAGE);
 						}
 					} else {
-						JOptionPane.showMessageDialog(null, "Esta corriente no existe, asi que no puede ser eliminada");
+						JOptionPane.showMessageDialog(null, "Esta corriente no existe, asi que no puede ser eliminada", "Corriente no existe!", JOptionPane.ERROR_MESSAGE);
 					}
 				}
 			} else if (actionCommand.equalsIgnoreCase("switch.settings.voltages.add")) {
@@ -8658,19 +8706,19 @@ public class MainView extends JFrame{
 				if(null != voltageAdd && !voltageAdd.isEmpty()) {
 					Object[] types = {"AC", "DC"};
 					Object voltageType = JOptionPane.showInputDialog(null, "Que tipo de voltaje es?", "Agregar tipo de voltaje", JOptionPane.QUESTION_MESSAGE, null, types, null);
-					if(!db.voltageExists(voltageAdd + voltageType)) {
+					if(!db.voltageExists(voltageAdd + "V" + voltageType)) {
 						if(null != voltageType && null != voltageAdd && !voltageAdd.isEmpty() && !voltageType.toString().isEmpty()) {
 							if(db.addVoltage(voltageAdd, voltageType.toString())) {
 								JOptionPane.showMessageDialog(null, "Voltaje agregado exitosamente");
 								updateSwitchComboSettings();
 							} else {
-								JOptionPane.showMessageDialog(null, "Ocurrio un error al agregar el voltaje");
+								JOptionPane.showMessageDialog(null, "Ocurrio un error al agregar el voltaje", "Error", JOptionPane.ERROR_MESSAGE);
 							}
 						} else {
-							JOptionPane.showMessageDialog(null, "Debe introducir el voltaje y el tipo de voltage que desea agregar, de lo contrario no se guardara");
+							JOptionPane.showMessageDialog(null, "Debe introducir el voltaje y el tipo de voltage que desea agregar, de lo contrario no se guardara", "Voltaje invalido!", JOptionPane.ERROR_MESSAGE);
 						}
 					} else {
-						JOptionPane.showMessageDialog(null, "Este tipo ya existe, no puede registrarlo de nuevo");
+						JOptionPane.showMessageDialog(null, "Este voltaje ya existe, no puede registrarlo de nuevo", "Voltaje ya existe!", JOptionPane.ERROR_MESSAGE);
 					}
 				}
 			} else if (actionCommand.equalsIgnoreCase("switch.settings.voltages.remove")) {
@@ -8683,10 +8731,10 @@ public class MainView extends JFrame{
 							JOptionPane.showMessageDialog(null, "Voltaje eliminado exitosamente");
 							updateSwitchComboSettings();
 						} else {
-							JOptionPane.showMessageDialog(null, "Ocurrio un error al eliminar el voltaje");
+							JOptionPane.showMessageDialog(null, "Ocurrio un error al eliminar el voltaje", "Error", JOptionPane.ERROR_MESSAGE);
 						}
 					} else {
-						JOptionPane.showMessageDialog(null, "Este voltaje no existe, asi que no puede ser eliminado");
+						JOptionPane.showMessageDialog(null, "Este voltaje no existe, asi que no puede ser eliminado", "Voltaje no existe!", JOptionPane.ERROR_MESSAGE);
 					}
 				}
 			} else if (actionCommand.equalsIgnoreCase("switch.settings.interruptions.add")) {
@@ -8697,13 +8745,13 @@ public class MainView extends JFrame{
 							JOptionPane.showMessageDialog(null, "Interrupcion agregada exitosamente");
 							updateSwitchComboSettings();
 						} else {
-							JOptionPane.showMessageDialog(null, "Ocurrio un error al agregar la interrupcion");
+							JOptionPane.showMessageDialog(null, "Ocurrio un error al agregar la interrupcion", "Error", JOptionPane.ERROR_MESSAGE);
 						}
 					} else {
-						JOptionPane.showMessageDialog(null, "Esta interrupcion ya existe, no puede registrarla de nuevo");
+						JOptionPane.showMessageDialog(null, "Esta interrupcion ya existe, no puede registrarla de nuevo", "Interrupcion ya existe!", JOptionPane.ERROR_MESSAGE);
 					}
 				} else {
-					JOptionPane.showMessageDialog(null, "Debe introducir la interrupcion que desea agregar y solo puede ser numerica, de lo contrario no se guardara");
+					JOptionPane.showMessageDialog(null, "Debe introducir la interrupcion que desea agregar y solo puede ser numerica, de lo contrario no se guardara", "Interrupcion invalida", JOptionPane.ERROR_MESSAGE);
 				}
 			} else if (actionCommand.equalsIgnoreCase("switch.settings.interruptions.remove")) {
 				String interruptionRemove = comboSwitchSettingsInterruptions.getSelectedItem().toString();
@@ -8715,10 +8763,10 @@ public class MainView extends JFrame{
 							JOptionPane.showMessageDialog(null, "Interrupcion eliminada exitosamente");
 							updateSwitchComboSettings();
 						} else {
-							JOptionPane.showMessageDialog(null, "Ocurrio un error al eliminar la interrupcion");
+							JOptionPane.showMessageDialog(null, "Ocurrio un error al eliminar la interrupcion", "Error", JOptionPane.ERROR_MESSAGE);
 						}
 					} else {
-						JOptionPane.showMessageDialog(null, "Esta interrupcion no existe, asi que no puede ser eliminada");
+						JOptionPane.showMessageDialog(null, "Esta interrupcion no existe, asi que no puede ser eliminada", "Interrupcion no existe!", JOptionPane.ERROR_MESSAGE);
 					}
 				}
 			} else if (actionCommand.equalsIgnoreCase("box.settings.colors.add")) {
@@ -8729,13 +8777,13 @@ public class MainView extends JFrame{
 							JOptionPane.showMessageDialog(null, "Color agregado exitosamente");
 							updateBoxComboSettings();
 						} else {
-							JOptionPane.showMessageDialog(null, "Ocurrio un error al agregar el color");
+							JOptionPane.showMessageDialog(null, "Ocurrio un error al agregar el color", "Error", JOptionPane.ERROR_MESSAGE);
 						}
 					} else {
-						JOptionPane.showMessageDialog(null, "Este color ya existe, no puede registrarlo de nuevo");
+						JOptionPane.showMessageDialog(null, "Este color ya existe, no puede registrarlo de nuevo", "Color ya existe!", JOptionPane.ERROR_MESSAGE);
 					}
 				} else {
-					JOptionPane.showMessageDialog(null, "Debe introducir el color que desea agregar, de lo contrario no se guardara");
+					JOptionPane.showMessageDialog(null, "Debe introducir el color que desea agregar, de lo contrario no se guardara", "Color invalido", JOptionPane.ERROR_MESSAGE);
 				}
 			} else if (actionCommand.equalsIgnoreCase("box.settings.colors.remove")) {
 				String colorRemove = comboBoxSettingsColors.getSelectedItem().toString();
@@ -8747,10 +8795,10 @@ public class MainView extends JFrame{
 							JOptionPane.showMessageDialog(null, "Color eliminado exitosamente");
 							updateBoxComboSettings();
 						} else {
-							JOptionPane.showMessageDialog(null, "Ocurrio un error al eliminar el color");
+							JOptionPane.showMessageDialog(null, "Ocurrio un error al eliminar el color", "Error", JOptionPane.ERROR_MESSAGE);
 						}
 					} else {
-						JOptionPane.showMessageDialog(null, "Este color no existe, asi que no puede ser eliminado");
+						JOptionPane.showMessageDialog(null, "Este color no existe, asi que no puede ser eliminado", "Color no existe!", JOptionPane.ERROR_MESSAGE);
 					}
 				}
 			} else if (actionCommand.equalsIgnoreCase("box.settings.calibers.add")) {
@@ -8761,13 +8809,13 @@ public class MainView extends JFrame{
 							JOptionPane.showMessageDialog(null, "Calibre agregado exitosamente");
 							updateBoxComboSettings();
 						} else {
-							JOptionPane.showMessageDialog(null, "Ocurrio un error al agregar el calibre");
+							JOptionPane.showMessageDialog(null, "Ocurrio un error al agregar el calibre", "Error", JOptionPane.ERROR_MESSAGE);
 						}
 					} else {
-						JOptionPane.showMessageDialog(null, "Este calibre ya existe, no puede registrarlo de nuevo");
+						JOptionPane.showMessageDialog(null, "Este calibre ya existe, no puede registrarlo de nuevo", "Calibre ya existe!", JOptionPane.ERROR_MESSAGE);
 					}
 				} else {
-					JOptionPane.showMessageDialog(null, "Debe introducir el calibre que desea agregar y solo puede ser numerico, de lo contrario no se guardara");
+					JOptionPane.showMessageDialog(null, "Debe introducir el calibre que desea agregar y solo puede ser numerico, de lo contrario no se guardara", "Calibre invalido!", JOptionPane.ERROR_MESSAGE);
 				}
 			} else if (actionCommand.equalsIgnoreCase("box.settings.calibers.remove")) {
 				String caliberRemove = comboBoxSettingsCalibers.getSelectedItem().toString();
@@ -8779,10 +8827,10 @@ public class MainView extends JFrame{
 							JOptionPane.showMessageDialog(null, "Calibre eliminado exitosamente");
 							updateBoxComboSettings();
 						} else {
-							JOptionPane.showMessageDialog(null, "Ocurrio un error al eliminar el calibre");
+							JOptionPane.showMessageDialog(null, "Ocurrio un error al eliminar el calibre", "Error", JOptionPane.ERROR_MESSAGE);
 						}
 					} else {
-						JOptionPane.showMessageDialog(null, "Este calibre no existe, asi que no puede ser eliminado");
+						JOptionPane.showMessageDialog(null, "Este calibre no existe, asi que no puede ser eliminado", "Calibre no existe", JOptionPane.ERROR_MESSAGE);
 					}
 				}
 			}

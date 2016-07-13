@@ -173,7 +173,7 @@ public class Db extends MysqlDriver {
 	public boolean voltageExists(String voltage) {
 		String queryString;
 		
-		queryString = "SELECT id FROM voltages WHERE voltage = '" + voltage + "'";
+		queryString = "SELECT id FROM switch_voltages WHERE voltage = '" + voltage + "'";
 		this.select(queryString);
 		
 		return (this.getNumRows() > 0)? true:false;
@@ -182,7 +182,7 @@ public class Db extends MysqlDriver {
 	public boolean addVoltage(String voltage, String type) {
 		String queryInsert;
 		
-		queryInsert = "INSERT INTO voltages (voltage) VALUES ('" + voltage + "V" + type + "')";
+		queryInsert = "INSERT INTO switch_voltages (voltage) VALUES ('" + voltage + "V" + type + "')";
 		this.insert(queryInsert);
 		
 		return (this.getInsertId() > 0)? true:false;
@@ -191,7 +191,7 @@ public class Db extends MysqlDriver {
 	public boolean removeVoltage(String voltage) {
 		String queryDelete;
 		
-		queryDelete = "DELETE FROM voltages WHERE voltage = '" + voltage + "'";
+		queryDelete = "DELETE FROM switch_voltages WHERE voltage = '" + voltage + "'";
 		return this.delete(queryDelete);
 	}
 	
