@@ -2971,6 +2971,12 @@ public class MainView extends JFrame{
 				});
 			} else if (panelBoxEdit.isVisible()) {
 				buttonBoxAdd.setEnabled(true);
+				textBoxEditPairs.setText("");
+				textBoxEditHeight.setText("");
+				textBoxEditWidth.setText("");
+				textBoxEditDepth.setText("");
+				textBoxEditCaliberComments.setText("");
+				textBoxEditPrice.setText("");
 				loadBoxTable("");
 				SwingUtilities.invokeLater(new Runnable(){
 					@Override
@@ -3432,63 +3438,7 @@ public class MainView extends JFrame{
 			
 			@Override
 			public void keyReleased(KeyEvent e) {
-				String whereQuery = "";
-				if(null != textBoardSearchNames && !textBoardSearchNames.getText().isEmpty()) {
-					whereQuery += " AND " + MainView.BOARD_TABLE + ".name LIKE '%" + textBoardSearchNames.getText() + "%'";
-				}
-				if(null != searchSelectedBoardType  && !searchSelectedBoardType.equalsIgnoreCase("Todas") &&
-						!searchSelectedBoardType.isEmpty()) {
-					whereQuery += " AND " + MainView.BOARD_TYPES_TABLE + ".type = '" + searchSelectedBoardType + "'";
-				}
-				if(searchSelectedBoardInstallation != null && !searchSelectedBoardInstallation.equalsIgnoreCase("Todas") &&
-						!searchSelectedBoardInstallation.isEmpty()) {
-					whereQuery += " AND " + MainView.BOARD_TABLE + ".installation_id = " + MainView.INSTALLATIONS_TABLE + ".id ";
-					whereQuery += " AND " + MainView.INSTALLATIONS_TABLE + ".installation = '" + searchSelectedBoardInstallation + "'";
-				}
-				if(searchSelectedBoardNema != null && !searchSelectedBoardNema.equalsIgnoreCase("Todas") &&
-						!searchSelectedBoardNema.isEmpty()) {
-					whereQuery += " AND " + MainView.BOARD_TABLE + ".nema_id = " + MainView.NEMAS_TABLE + ".id ";
-					whereQuery += " AND " + MainView.NEMAS_TABLE + ".nema = '" + searchSelectedBoardNema + "'";
-				}
-				if(searchSelectedBoardBarCapacity != null && !searchSelectedBoardBarCapacity.equalsIgnoreCase("Todas") &&
-						!searchSelectedBoardBarCapacity.isEmpty()) {
-					whereQuery += " AND " + MainView.BOARD_TABLE + ".bar_capacity_id = " + MainView.BOARD_BAR_CAPACITIES_TABLE + ".id ";
-					whereQuery += " AND " + MainView.BOARD_BAR_CAPACITIES_TABLE + ".bar_capacity = '" + searchSelectedBoardBarCapacity + "'";
-				}
-				if(searchSelectedBoardBarType != null && !searchSelectedBoardBarType.equalsIgnoreCase("Todas") &&
-						!searchSelectedBoardBarType.isEmpty()) {
-					whereQuery += " AND " + MainView.BOARD_TABLE + ".bar_type_id = " + MainView.BOARD_BAR_TYPES_TABLE + ".id ";
-					whereQuery += " AND " + MainView.BOARD_BAR_TYPES_TABLE + ".bar_type = '" + searchSelectedBoardBarType + "'";
-				}
-				if(searchSelectedBoardCircuits != null && !searchSelectedBoardCircuits.equalsIgnoreCase("Todas") &&
-						!searchSelectedBoardCircuits.isEmpty()) {
-					whereQuery += " AND " + MainView.BOARD_TABLE + ".circuits_id = " + MainView.BOARD_CIRCUITS_TABLE + ".id ";
-					whereQuery += " AND " + MainView.BOARD_CIRCUITS_TABLE + ".circuits = '" + searchSelectedBoardCircuits + "'";
-				}
-				if(searchSelectedBoardVoltage != null && !searchSelectedBoardVoltage.equalsIgnoreCase("Todas") &&
-						!searchSelectedBoardVoltage.isEmpty()) {
-					whereQuery += " AND " + MainView.BOARD_TABLE + ".voltage_id = " + MainView.BOARD_VOLTAGES_TABLE + ".id ";
-					whereQuery += " AND " + MainView.BOARD_VOLTAGES_TABLE + ".voltage = '" + searchSelectedBoardVoltage + "'";
-				}
-				if(searchSelectedBoardPhases != null && !searchSelectedBoardPhases.equalsIgnoreCase("Todas") &&
-						!searchSelectedBoardPhases.isEmpty()) {
-					whereQuery += " AND " + MainView.BOARD_TABLE + ".phases = '" + searchSelectedBoardPhases + "'";
-				}
-				if(searchSelectedBoardGround != null && !searchSelectedBoardGround.equalsIgnoreCase("Todas") &&
-						!searchSelectedBoardGround.isEmpty()) {
-					whereQuery += " AND " + MainView.BOARD_TABLE + ".ground = '" + (searchSelectedBoardGround.equalsIgnoreCase("SI")?"1":"0") + "'";
-				}
-				if(searchSelectedBoardInterruption != null && !searchSelectedBoardInterruption.equalsIgnoreCase("Todas") &&
-						!searchSelectedBoardInterruption.isEmpty()) {
-					whereQuery += " AND " + MainView.BOARD_TABLE + ".interruption_id = " + MainView.INTERRUPTIONS_TABLE + ".id ";
-					whereQuery += " AND " + MainView.INTERRUPTIONS_TABLE + ".interruption = '" + searchSelectedBoardInterruption + "'";
-				}
-				if(searchSelectedBoardLockType != null && !searchSelectedBoardLockType.equalsIgnoreCase("Todas") &&
-						!searchSelectedBoardLockType.isEmpty()) {
-					whereQuery += " AND " + MainView.BOARD_TABLE + ".lock_type_id = " + MainView.LOCK_TYPES_TABLE + ".id ";
-					whereQuery += " AND " + MainView.LOCK_TYPES_TABLE + ".lock_type = '" + searchSelectedBoardLockType + "'";
-				}
-				loadBoardTable(whereQuery);
+				loadBoardTable("");
 				textBoardDescriptionName.setText("");
 				textBoardDescriptionType.setText("");
 				textBoardDescriptionInstallation.setText("");
@@ -3662,7 +3612,7 @@ public class MainView extends JFrame{
 						+ "AND boards.active = '1' "
 						+ "GROUP BY boards.id";
 		
-		String[] boxesColumnNames = { "Id", "Nombre", "Tipo", "Instalacion", "Nema", "Cap. Barra", "Tipo Barra", "Circuitos", "Voltaje", "Fases", "Tierra", "Interrupcion", "Cerradura", "Precio"};
+		String[] boardsColumnNames = { "Id", "Nombre", "Tipo", "Instalacion", "Nema", "Cap. Barra", "Tipo Barra", "Circuitos", "Voltaje", "Fases", "Tierra", "Interrupcion", "Cerradura", "Precio"};
 //		ArrayList<String> listBoxesColumnNames = new ArrayList<String>(Arrays.asList(originalColumns));
 //		listBoxesColumnNames.add("Button");
 //		String [] boxesColumnNames = listBoxesColumnNames.toArray(new String[0]);
@@ -3671,7 +3621,7 @@ public class MainView extends JFrame{
 		tableBoardsResult = new JTable();
 //		boxesData = db.fetchAllAddButton(db.select(boxesQuery), boxesColumnNames.length);
 		
-		tableBoardsResult.setModel(new MyTableModel(boardsData, boxesColumnNames));
+		tableBoardsResult.setModel(new MyTableModel(boardsData, boardsColumnNames));
 		tableBoardsResult.setAutoCreateRowSorter(true);
 		tableBoardsResult.getTableHeader().setReorderingAllowed(false);
 		
@@ -5304,6 +5254,73 @@ public class MainView extends JFrame{
 	}
 
 	private void loadBoardTable(String whereQuery) {
+		searchSelectedBoardType = comboBoardTypes.getSelectedItem().toString();
+		searchSelectedBoardInstallation = comboBoardInstallations.getSelectedItem().toString();
+		searchSelectedBoardNema = comboBoardNemas.getSelectedItem().toString();
+		searchSelectedBoardBarCapacity = comboBoardBarCapacities.getSelectedItem().toString();
+		searchSelectedBoardBarType = comboBoardBarTypes.getSelectedItem().toString();
+		searchSelectedBoardCircuits = comboBoardCircuits.getSelectedItem().toString();
+		searchSelectedBoardVoltage = comboBoardVoltages.getSelectedItem().toString();
+		searchSelectedBoardVoltage = comboBoardPhases.getSelectedItem().toString();
+		searchSelectedBoardGround = comboBoardGround.getSelectedItem().toString();
+		searchSelectedBoardInterruption = comboBoardInterruptions.getSelectedItem().toString();
+		searchSelectedBoardLockType = comboBoardLockTypes.getSelectedItem().toString();
+		if(null != textBoardSearchNames && !textBoardSearchNames.getText().isEmpty()) {
+			whereQuery += " AND " + MainView.BOARD_TABLE + ".name LIKE '%" + textBoardSearchNames.getText() + "%'";
+		}
+		if(null != searchSelectedBoardType  && !searchSelectedBoardType.equalsIgnoreCase("Todas") &&
+				!searchSelectedBoardType.isEmpty()) {
+			whereQuery += " AND " + MainView.BOARD_TYPES_TABLE + ".type = '" + searchSelectedBoardType + "'";
+		}
+		if(searchSelectedBoardInstallation != null && !searchSelectedBoardInstallation.equalsIgnoreCase("Todas") &&
+				!searchSelectedBoardInstallation.isEmpty()) {
+			whereQuery += " AND " + MainView.BOARD_TABLE + ".installation_id = " + MainView.INSTALLATIONS_TABLE + ".id ";
+			whereQuery += " AND " + MainView.INSTALLATIONS_TABLE + ".installation = '" + searchSelectedBoardInstallation + "'";
+		}
+		if(searchSelectedBoardNema != null && !searchSelectedBoardNema.equalsIgnoreCase("Todas") &&
+				!searchSelectedBoardNema.isEmpty()) {
+			whereQuery += " AND " + MainView.BOARD_TABLE + ".nema_id = " + MainView.NEMAS_TABLE + ".id ";
+			whereQuery += " AND " + MainView.NEMAS_TABLE + ".nema = '" + searchSelectedBoardNema + "'";
+		}
+		if(searchSelectedBoardBarCapacity != null && !searchSelectedBoardBarCapacity.equalsIgnoreCase("Todas") &&
+				!searchSelectedBoardBarCapacity.isEmpty()) {
+			whereQuery += " AND " + MainView.BOARD_TABLE + ".bar_capacity_id = " + MainView.BOARD_BAR_CAPACITIES_TABLE + ".id ";
+			whereQuery += " AND " + MainView.BOARD_BAR_CAPACITIES_TABLE + ".bar_capacity = '" + searchSelectedBoardBarCapacity + "'";
+		}
+		if(searchSelectedBoardBarType != null && !searchSelectedBoardBarType.equalsIgnoreCase("Todas") &&
+				!searchSelectedBoardBarType.isEmpty()) {
+			whereQuery += " AND " + MainView.BOARD_TABLE + ".bar_type_id = " + MainView.BOARD_BAR_TYPES_TABLE + ".id ";
+			whereQuery += " AND " + MainView.BOARD_BAR_TYPES_TABLE + ".bar_type = '" + searchSelectedBoardBarType + "'";
+		}
+		if(searchSelectedBoardCircuits != null && !searchSelectedBoardCircuits.equalsIgnoreCase("Todas") &&
+				!searchSelectedBoardCircuits.isEmpty()) {
+			whereQuery += " AND " + MainView.BOARD_TABLE + ".circuits_id = " + MainView.BOARD_CIRCUITS_TABLE + ".id ";
+			whereQuery += " AND " + MainView.BOARD_CIRCUITS_TABLE + ".circuits = '" + searchSelectedBoardCircuits + "'";
+		}
+		if(searchSelectedBoardVoltage != null && !searchSelectedBoardVoltage.equalsIgnoreCase("Todas") &&
+				!searchSelectedBoardVoltage.isEmpty()) {
+			whereQuery += " AND " + MainView.BOARD_TABLE + ".voltage_id = " + MainView.BOARD_VOLTAGES_TABLE + ".id ";
+			whereQuery += " AND " + MainView.BOARD_VOLTAGES_TABLE + ".voltage = '" + searchSelectedBoardVoltage + "'";
+		}
+		if(searchSelectedBoardPhases != null && !searchSelectedBoardPhases.equalsIgnoreCase("Todas") &&
+				!searchSelectedBoardPhases.isEmpty()) {
+			whereQuery += " AND " + MainView.BOARD_TABLE + ".phases = '" + searchSelectedBoardPhases + "'";
+		}
+		if(searchSelectedBoardGround != null && !searchSelectedBoardGround.equalsIgnoreCase("Todas") &&
+				!searchSelectedBoardGround.isEmpty()) {
+			whereQuery += " AND " + MainView.BOARD_TABLE + ".ground = '" + (searchSelectedBoardGround.equalsIgnoreCase("SI")?"1":"0") + "'";
+		}
+		if(searchSelectedBoardInterruption != null && !searchSelectedBoardInterruption.equalsIgnoreCase("Todas") &&
+				!searchSelectedBoardInterruption.isEmpty()) {
+			whereQuery += " AND " + MainView.BOARD_TABLE + ".interruption_id = " + MainView.INTERRUPTIONS_TABLE + ".id ";
+			whereQuery += " AND " + MainView.INTERRUPTIONS_TABLE + ".interruption = '" + searchSelectedBoardInterruption + "'";
+		}
+		if(searchSelectedBoardLockType != null && !searchSelectedBoardLockType.equalsIgnoreCase("Todas") &&
+				!searchSelectedBoardLockType.isEmpty()) {
+			whereQuery += " AND " + MainView.BOARD_TABLE + ".lock_type_id = " + MainView.LOCK_TYPES_TABLE + ".id ";
+			whereQuery += " AND " + MainView.LOCK_TYPES_TABLE + ".lock_type = '" + searchSelectedBoardLockType + "'";
+		}
+		
 		ArrayList<String> fields = new ArrayList<String>();
 		fields.add(MainView.BOARD_ID_FIELD);
 		fields.add(MainView.BOARD_NAME_FIELD);
@@ -5331,27 +5348,6 @@ public class MainView extends JFrame{
 		tables.add(MainView.BOARD_VOLTAGES_TABLE);
 		tables.add(MainView.INTERRUPTIONS_TABLE);
 		tables.add(MainView.LOCK_TYPES_TABLE);
-		
-//		if(whereQuery.isEmpty()) {
-//			whereQuery += " AND ( (boxes.sheet_id > 0 "
-//							+ " AND boxes.sheet_id = " + MainView.BOX_SHEETS_TABLE + ".id) "
-//							+ " OR boxes.sheet_id = 0) "
-//						+ " AND ( (boxes.finish_id > 0 "
-//							+ " AND boxes.finish_id = " + MainView.BOX_FINISHES_TABLE + ".id) "
-//							+ " OR boxes.finish_id = 0) "
-//						+ " AND ( (boxes.color_id > 0 "
-//							+ " AND boxes.color_id = " + MainView.BOX_COLORS_TABLE + ".id) "
-//							+ " OR boxes.color_id = 0) "
-//						+ " AND ( (boxes.units_id > 0 "
-//							+ " AND boxes.units_id = " + MainView.BOX_UNITS_TABLE + ".id) "
-//							+ " OR boxes.units_id = 0) "
-//						+ " AND ( (boxes.caliber_id > 0 "
-//							+ " AND boxes.caliber_id = " + MainView.BOX_CALIBERS_TABLE + ".id) "
-//							+ " OR boxes.caliber_id = 0) "
-//						+ " AND ( (boxes.lock_type_id > 0 "
-//							+ " AND boxes.lock_type_id = " + MainView.LOCK_TYPES_TABLE + ".id) "
-//							+ " OR boxes.lock_type_id = 0) ";
-//		}
 		
 		String fieldsQuery = StringTools.implode(",", fields);
 		String tablesQuery = StringTools.implode(",", tables);
@@ -5401,7 +5397,8 @@ public class MainView extends JFrame{
 			+ " AND switches.id = board_switches.switch_id "
 			+ " AND switches.current_id = currents.id"
 			+ " AND switches.type_id = switch_types.id"
-			+ " AND switches.brand_id = switch_brands.id";
+			+ " AND switches.brand_id = switch_brands.id"
+			+ " ORDER BY principal DESC, switches.phases DESC, currents.current DESC ";
 		
 		String[] boardSwitchesColumnNames = { "Id", "Descripcion", "Cantidad", "Precio", "Total", "Principal"};
 		boardSwitchesData = db.fetchAllAddBoolean(db.select(boardSwitchesQuery), boardSwitchesColumnNames.length);
@@ -7436,63 +7433,7 @@ public class MainView extends JFrame{
 				
 				loadBoxTable(whereQuery);
 			} else if (actionCommand.equalsIgnoreCase("board.search.bar.button")) {
-				whereQuery = "";
-				if(null != textBoardSearchNames && !textBoardSearchNames.getText().isEmpty()) {
-					whereQuery += " AND " + MainView.BOARD_TABLE + ".name LIKE '%" + textBoardSearchNames.getText() + "%'";
-				}
-				if(null != searchSelectedBoardType  && !searchSelectedBoardType.equalsIgnoreCase("Todas") &&
-						!searchSelectedBoardType.isEmpty()) {
-					whereQuery += " AND " + MainView.BOARD_TYPES_TABLE + ".type = '" + searchSelectedBoardType + "'";
-				}
-				if(searchSelectedBoardInstallation != null && !searchSelectedBoardInstallation.equalsIgnoreCase("Todas") &&
-						!searchSelectedBoardInstallation.isEmpty()) {
-					whereQuery += " AND " + MainView.BOARD_TABLE + ".installation_id = " + MainView.INSTALLATIONS_TABLE + ".id ";
-					whereQuery += " AND " + MainView.INSTALLATIONS_TABLE + ".installation = '" + searchSelectedBoardInstallation + "'";
-				}
-				if(searchSelectedBoardNema != null && !searchSelectedBoardNema.equalsIgnoreCase("Todas") &&
-						!searchSelectedBoardNema.isEmpty()) {
-					whereQuery += " AND " + MainView.BOARD_TABLE + ".nema_id = " + MainView.NEMAS_TABLE + ".id ";
-					whereQuery += " AND " + MainView.NEMAS_TABLE + ".nema = '" + searchSelectedBoardNema + "'";
-				}
-				if(searchSelectedBoardBarCapacity != null && !searchSelectedBoardBarCapacity.equalsIgnoreCase("Todas") &&
-						!searchSelectedBoardBarCapacity.isEmpty()) {
-					whereQuery += " AND " + MainView.BOARD_TABLE + ".bar_capacity_id = " + MainView.BOARD_BAR_CAPACITIES_TABLE + ".id ";
-					whereQuery += " AND " + MainView.BOARD_BAR_CAPACITIES_TABLE + ".bar_capacity = '" + searchSelectedBoardBarCapacity + "'";
-				}
-				if(searchSelectedBoardBarType != null && !searchSelectedBoardBarType.equalsIgnoreCase("Todas") &&
-						!searchSelectedBoardBarType.isEmpty()) {
-					whereQuery += " AND " + MainView.BOARD_TABLE + ".bar_type_id = " + MainView.BOARD_BAR_TYPES_TABLE + ".id ";
-					whereQuery += " AND " + MainView.BOARD_BAR_TYPES_TABLE + ".bar_type = '" + searchSelectedBoardBarType + "'";
-				}
-				if(searchSelectedBoardCircuits != null && !searchSelectedBoardCircuits.equalsIgnoreCase("Todas") &&
-						!searchSelectedBoardCircuits.isEmpty()) {
-					whereQuery += " AND " + MainView.BOARD_TABLE + ".circuits_id = " + MainView.BOARD_CIRCUITS_TABLE + ".id ";
-					whereQuery += " AND " + MainView.BOARD_CIRCUITS_TABLE + ".circuits = '" + searchSelectedBoardCircuits + "'";
-				}
-				if(searchSelectedBoardVoltage != null && !searchSelectedBoardVoltage.equalsIgnoreCase("Todas") &&
-						!searchSelectedBoardVoltage.isEmpty()) {
-					whereQuery += " AND " + MainView.BOARD_TABLE + ".voltage_id = " + MainView.BOARD_VOLTAGES_TABLE + ".id ";
-					whereQuery += " AND " + MainView.BOARD_VOLTAGES_TABLE + ".voltage = '" + searchSelectedBoardVoltage + "'";
-				}
-				if(searchSelectedBoardPhases != null && !searchSelectedBoardPhases.equalsIgnoreCase("Todas") &&
-						!searchSelectedBoardPhases.isEmpty()) {
-					whereQuery += " AND " + MainView.BOARD_TABLE + ".phases = '" + searchSelectedBoardPhases + "'";
-				}
-				if(searchSelectedBoardGround != null && !searchSelectedBoardGround.equalsIgnoreCase("Todas") &&
-						!searchSelectedBoardGround.isEmpty()) {
-					whereQuery += " AND " + MainView.BOARD_TABLE + ".ground = '" + (searchSelectedBoardGround.equalsIgnoreCase("SI")?"1":"0") + "'";
-				}
-				if(searchSelectedBoardInterruption != null && !searchSelectedBoardInterruption.equalsIgnoreCase("Todas") &&
-						!searchSelectedBoardInterruption.isEmpty()) {
-					whereQuery += " AND " + MainView.BOARD_TABLE + ".interruption_id = " + MainView.INTERRUPTIONS_TABLE + ".id ";
-					whereQuery += " AND " + MainView.INTERRUPTIONS_TABLE + ".interruption = '" + searchSelectedBoardInterruption + "'";
-				}
-				if(searchSelectedBoardLockType != null && !searchSelectedBoardLockType.equalsIgnoreCase("Todas") &&
-						!searchSelectedBoardLockType.isEmpty()) {
-					whereQuery += " AND " + MainView.BOARD_TABLE + ".lock_type_id = " + MainView.LOCK_TYPES_TABLE + ".id ";
-					whereQuery += " AND " + MainView.LOCK_TYPES_TABLE + ".lock_type = '" + searchSelectedBoardLockType + "'";
-				}
-				loadBoardTable(whereQuery);
+				loadBoardTable("");
 				textBoardDescriptionName.setText("");
 				textBoardDescriptionType.setText("");
 				textBoardDescriptionInstallation.setText("");
@@ -7765,6 +7706,55 @@ public class MainView extends JFrame{
 				selectedBoardSwitchId = Integer.valueOf((String) tableBoardSwitchesResult.getValueAt(boardSwitchesTableSelectedIndex, BOARD_ID_COLUMN));
 				buttonRemoveBoardSwitch.setEnabled(true);
 			}
+			
+			if(lsm.isSelectionEmpty() && null != panelSwitchDescription && tableSwitchesResult.getSelectedRow() == -1) {
+				buttonSwitchEdit.setEnabled(false);
+				textSwitchPrice.setText("");
+				textSwitchPhases.setText("");
+				textSwitchCurrent.setText("");
+				textSwitchType.setText("");
+				textSwitchBrand.setText("");
+				textSwitchDescription.setText("");
+			} else if(lsm.isSelectionEmpty() && null != panelBoxDescription && tableBoxesResult.getSelectedRow() == -1) {
+				buttonBoxEdit.setEnabled(false);
+				textBoxDescriptionType.setText("");
+				textBoxDescriptionInstallation.setText("");
+				textBoxDescriptionNema.setText("");
+				textBoxDescriptionPairs.setText("");
+				textBoxDescriptionSheet.setText("");
+				textBoxDescriptionFinish.setText("");
+				textBoxDescriptionColor.setText("");
+				textBoxDescriptionHeight.setText("");
+				textBoxDescriptionWidth.setText("");
+				textBoxDescriptionDepth.setText("");
+				textBoxDescriptionUnits.setText("");
+				textBoxDescriptionCaliber.setText("");
+				textBoxDescriptionLockType.setText("");
+				textBoxDescriptionPrice.setText("");
+				textBoxDescription.setText("");
+			} else if(lsm.isSelectionEmpty() && null != panelBoardDescription && tableBoardsResult.getSelectedRow() == -1) {
+				buttonBoardEdit.setEnabled(false);
+				textMaterials.setText("");
+				textMaterials.setEditable(false);
+				textMaterialsPrice.setText("");
+				textMaterialsPrice.setEditable(false);
+				buttonBoardMaterialsEdit.setEnabled(false);
+				textBoardDescriptionName.setText("");
+				textBoardDescriptionType.setText("");
+				textBoardDescriptionInstallation.setText("");
+				textBoardDescriptionNema.setText("");
+				textBoardDescriptionBarCapacity.setText("");
+				textBoardDescriptionBarType.setText("");
+				textBoardDescriptionCircuits.setText("");
+				textBoardDescriptionVoltage.setText("");
+				textBoardDescriptionPhases.setText("");
+				textBoardDescriptionGround.setText("");
+				textBoardDescriptionInterruption.setText("");
+				textBoardDescriptionLockType.setText("");
+				textBoardDescriptionPrice.setText("");
+				textBoardDescription.setText("");
+			}
+			
 		}
 	}
 	
