@@ -269,7 +269,7 @@ public class Db extends MysqlDriver {
 	public int getVoltageId(String voltage) {
 		ResultSet setVoltage;
 		int voltageId = 0;
-		setVoltage = this.select("SELECT id FROM voltages WHERE voltage = '" + voltage + "'");
+		setVoltage = this.select("SELECT id FROM switch_voltages WHERE voltage = '" + voltage + "'");
 		
 		try {
 			setVoltage.first();

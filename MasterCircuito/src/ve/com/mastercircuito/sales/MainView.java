@@ -370,6 +370,13 @@ public class MainView extends JFrame{
 			System.exit(0);
 		}*/
 		
+		DateTime dt = new DateTime();
+		
+		if(dt.isAfter(new DateTime(2016, 8, 28, 0, 0))) {
+			JOptionPane.showMessageDialog(null, "Error, debe comunicarse con el programador");
+			System.exit(0);
+		}
+		
 		this.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setMinimumSize(new Dimension(800,600));
