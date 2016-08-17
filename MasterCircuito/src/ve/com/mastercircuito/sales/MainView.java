@@ -355,6 +355,12 @@ public class MainView extends JFrame{
 	private String editBudgetCompanyRepresentative, editBudgetCompany, editBudgetExpirydays,editBudgetClient;
 	private JComboBox<String> comboBudgetEditDispatchPlace,comboBudgetEditDeliveryTime, comboBudgetEditSeller, comboBudgetEditPaymentMethod, comboBudgetEditStage;
 	private JButton buttonBudgetAddCompany, buttonBudgetAddSeller;
+	// Budget Company Add
+	private JDialog dialogBudgetCompanyAdd;
+	private JTextField textBudgetCompanySearchClient;
+	private Object[][] budgetCompaniesData = {};
+	private JTable tableBudgetCompaniesSearchResult;
+	private ListSelectionModel listBudgetCompaniesSearchSelectionModel;
 	
 	
 	public static void main(String[] args) {
@@ -6234,6 +6240,133 @@ public class MainView extends JFrame{
 		return panelBudgetSearch;
 	}
 	
+	private JPanel createBudgetCompanyAddSearchPanel() {
+		JPanel panelBudgetCompanyAddSearch = new JPanel();
+		
+		panelBudgetCompanyAddSearch.setLayout(new FlowLayout(FlowLayout.CENTER));
+		
+		JLabel clientLabel = new JLabel("Empresa:");
+		JLabel clientCodeLabel = new JLabel("Codigo Cliente:");
+		
+		ComboBoxListener lForCombo = new ComboBoxListener();
+		
+		textBudgetCompanySearchClient = new JTextField(6);
+		textBudgetCompanySearchClient.setActionCommand("budget.company.search.client");
+		textBudgetCompanySearchClient.addKeyListener(new KeyListener() {
+			
+			@Override
+			public void keyTyped(KeyEvent e) {
+				
+			}
+			
+			@Override
+			public void keyReleased(KeyEvent e) {
+				loadBudgetCompanyTable("");
+//				textBoardDescriptionName.setText("");
+//				textBoardDescriptionType.setText("");
+//				textBoardDescriptionInstallation.setText("");
+//				textBoardDescriptionNema.setText("");
+//				textBoardDescriptionBarCapacity.setText("");
+//				textBoardDescriptionBarType.setText("");
+//				textBoardDescriptionCircuits.setText("");
+//				textBoardDescriptionVoltage.setText("");
+//				textBoardDescriptionPhases.setText("");
+//				textBoardDescriptionGround.setText("");
+//				textBoardDescriptionInterruption.setText("");
+//				textBoardDescriptionLockType.setText("");
+//				textBoardDescriptionPrice.setText("");
+//				textBoardDescription.setText("");
+//				buttonBoardAdd.setEnabled(true);
+//				buttonBoardEdit.setEnabled(false);
+//				textMaterials.setText("");
+//				textMaterials.setEditable(false);
+//				textMaterialsPrice.setText("");
+//				textMaterialsPrice.setEditable(false);
+//				buttonBoardMaterialsEdit.setEnabled(false);
+//				textComments.setEditable(false);
+//				buttonBoardCommentsEdit.setEnabled(false);
+			}
+			
+			@Override
+			public void keyPressed(KeyEvent e) {
+				
+			}
+		});
+		panelBudgetCompanyAddSearch.add(clientLabel);
+		panelBudgetCompanyAddSearch.add(textBudgetCompanySearchClient);
+		
+		panelBudgetCompanyAddSearch.add(separator());
+		
+		JButton searchButton = new JButton("Buscar");
+		searchButton.setActionCommand("board.switch.search.bar.button");
+		SearchButtonListener lForSearchButton = new SearchButtonListener();
+		searchButton.addActionListener(lForSearchButton);
+		panelBudgetCompanyAddSearch.add(searchButton);
+		
+		return panelBudgetCompanyAddSearch;
+	}
+	
+	private JPanel createBudgetCompanyAddTablePanel() {
+		String budgetCompaniesQuery = "SELECT clients.id, "
+						+ "clients.client, "
+						+ "clients.client_code, "
+						+ "clients.representative, "
+						+ "clients.rif "
+					+ "FROM clients "
+					+ "ORDER BY clients.id ASC "
+					+ "LIMIT 5";
+		
+		String[] budgetCompaniesColumnNames = { "Id", "Empresa", "Codigo", "Representante", "Rif"};
+		
+		budgetCompaniesData = db.fetchAllAddBoolean(db.select(budgetCompaniesQuery), budgetCompaniesColumnNames.length);
+		
+		MyTableModel mForTable = new MyTableModel(budgetCompaniesData, budgetCompaniesColumnNames);
+		
+		tableBudgetCompaniesSearchResult = new JTable();
+		tableBudgetCompaniesSearchResult.setModel(mForTable);
+		tableBudgetCompaniesSearchResult.setAutoCreateRowSorter(true);
+		tableBudgetCompaniesSearchResult.getTableHeader().setReorderingAllowed(false);
+		
+		SharedListSelectionListener lForList = new SharedListSelectionListener();
+		
+		listBudgetCompaniesSearchSelectionModel = tableBudgetCompaniesSearchResult.getSelectionModel();
+		listBudgetCompaniesSearchSelectionModel.addListSelectionListener(lForList);
+		tableBudgetCompaniesSearchResult.setSelectionModel(listBudgetCompaniesSearchSelectionModel);
+		tableBudgetCompaniesSearchResult.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		
+		JPanel panelBudgetCompanyAddTable = new JPanel(new BorderLayout());
+		panelBudgetCompanyAddTable.add(tableBudgetCompaniesSearchResult.getTableHeader(), BorderLayout.PAGE_START);
+		panelBudgetCompanyAddTable.add(tableBudgetCompaniesSearchResult, BorderLayout.CENTER);
+		
+		return panelBudgetCompanyAddTable;
+	}
+	
+	private void loadBudgetCompanyTable(String whereQuery) {
+		
+		if(null != textBudgetCompanySearchClient && !textBudgetCompanySearchClient.getText().isEmpty()) {
+			whereQuery += " WHERE " + MainView.CLIENTS_TABLE + ".client LIKE '%" + textBudgetCompanySearchClient.getText() + "%'";
+		}
+		
+		String budgetCompaniesQuery = "SELECT clients.id, "
+				+ " clients.client, "
+				+ " clients.client_code, "
+				+ " clients.representative, "
+				+ " clients.rif "
+			+ " FROM clients "
+			+ whereQuery
+			+ " ORDER BY id ASC";
+		
+		String[] budgetCompaniesColumnNames = { "Id", "Empresa", "Codigo", "Representante", "Rif"};
+		budgetCompaniesData = db.fetchAllAddBoolean(db.select(budgetCompaniesQuery), budgetCompaniesColumnNames.length);
+		
+		if(budgetCompaniesData.length > 0) {
+			MyTableModel mForTable = new MyTableModel(budgetCompaniesData, budgetCompaniesColumnNames);
+			tableBudgetCompaniesSearchResult.setModel(mForTable);
+		} else {
+			tableBudgetCompaniesSearchResult.setModel(new DefaultTableModel());
+		}
+	}
+	
 	private List<String> loadComboList(String queryString, String columnName) {
 		List<String> comboList = new ArrayList<String>();
 		comboList.add("Todas");
@@ -8513,7 +8646,34 @@ public class MainView extends JFrame{
 			else if (actionCommand.equalsIgnoreCase("budget.description.buttons.edit")) {
 				setBudgetsMode(MainView.EDIT_MODE);
 			} else if(actionCommand.equalsIgnoreCase("budget.description.add.company")) {
+				dialogBudgetCompanyAdd = new JDialog(null, "Agregar Compañia", Dialog.DEFAULT_MODALITY_TYPE);
+				dialogBudgetCompanyAdd.setMinimumSize(new Dimension(800, 300));
+				dialogBudgetCompanyAdd.setSize(800, 300);
+				dialogBudgetCompanyAdd.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 				
+				Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+				int x = (dim.width / 2) - (dialogBudgetCompanyAdd.getWidth() / 2);
+				int y = (dim.height / 2) - (dialogBudgetCompanyAdd.getHeight() / 2);
+				dialogBudgetCompanyAdd.setLocation(x, y);
+				// finish the createBoardSwitchAddPanel() method and replace it at the line below
+				// add the listener to handle the accept button
+				JPanel panelCenter = new JPanel();
+				panelCenter.setLayout(new BoxLayout(panelCenter, BoxLayout.PAGE_AXIS));
+				panelCenter.add(createBudgetCompanyAddSearchPanel());
+				panelCenter.add(Box.createRigidArea(new Dimension(0, 10)));
+				panelCenter.add(createBudgetCompanyAddTablePanel());
+				dialogBudgetCompanyAdd.add(panelCenter, BorderLayout.CENTER);
+				
+				JPanel panelLower = new JPanel();
+				panelLower.setLayout(new BoxLayout(panelLower, BoxLayout.LINE_AXIS));
+//				panelLower.add(createBudgetCompanyAddCountPanel());
+//				panelLower.add(createBudgetCompanyAddButtonPanel());
+				dialogBudgetCompanyAdd.add(panelLower, BorderLayout.SOUTH);
+				
+				WindowsListener lForWindow = new WindowsListener();
+				dialogBudgetCompanyAdd.addWindowListener(lForWindow);
+				
+				dialogBudgetCompanyAdd.setVisible(true);
 			} else if(actionCommand.equalsIgnoreCase("budget.description.add.seller")) {
 				
 			} else if(actionCommand.equalsIgnoreCase("budget.description.add.save")) {
