@@ -160,7 +160,9 @@ public class MainView extends JFrame{
 	private static final String USERNAME_FIELD = "users.username";
 	private static final String PLACE_FIELD = "budget_dispatch_places.place";
 	private static final String STAGE_FIELD = "stages.stage";
+	private static final String CLIENT_CODE_FIELD = "clients.client_code";
 	private static final String CLIENT_FIELD = "clients.client";
+	private static final String CLIENT_REPRESENTATIVE_FIELD = "clients.representative";
 	private static final String SELLER_FIELD = "budget_sellers.seller";
 	
 	private Db db;
@@ -307,6 +309,7 @@ public class MainView extends JFrame{
 	private MyInternalFrame tracingFrame = new MyInternalFrame();
 	
 	//Budget add Objects
+	private UtilDateModel dateModel;
 	private JButton buttonBudgetAdd;
 	private JButton buttonBudgetEdit;
 	private JPanel budgetSwitchesPanel;
@@ -4997,8 +5000,8 @@ public class MainView extends JFrame{
 		
 		if(mode == MainView.VIEW_MODE) {
 			if(panelBudgetAddNew.isVisible()) {
+				dateModel.setSelected(false);
 				buttonBudgetAdd.setEnabled(true);
-				textBudgetAddId.setText("");
 				textBudgetAddCode.setText("");
 				textBudgetAddClientCode.setText("");
 				textBudgetAddCompany.setText("");
@@ -5212,13 +5215,15 @@ public class MainView extends JFrame{
 		fields.add(MainView.BUDGET_CODE_FIELD);
 		fields.add(MainView.BUDGET_DATE_FIELD);
 		fields.add(MainView.BUDGET_EXPIRY_DAYS_FIELD);
+		fields.add(MainView.CLIENT_CODE_FIELD);
 		fields.add(MainView.CLIENT_FIELD);
+		fields.add(MainView.CLIENT_REPRESENTATIVE_FIELD);
 		fields.add(MainView.BUDGET_WORK_NAME_FIELD);
 		fields.add(MainView.METHOD_FIELD);
 		fields.add(MainView.USERNAME_FIELD);
 		fields.add(MainView.PLACE_FIELD);
 		fields.add(MainView.BUDGET_DELIVERY_TIME_FIELD);
-		fields.add(MainView.BUDGET_TRACING_FIELD);
+		//fields.add(MainView.BUDGET_TRACING_FIELD);
 		
 		ArrayList<String> tables = new ArrayList<String>();
 		tables.add(MainView.BUDGET_TABLE);
@@ -5239,16 +5244,15 @@ public class MainView extends JFrame{
 						
 						+ "AND budgets.client_id = clients.id "
 						+ "AND budgets.payment_method_id = budget_payment_methods.id "
-						+ "AND budgets.seller_id = budget_sellers.id "
+						+ "AND budgets.seller_id = users.id "
 						+ "AND budgets.dispatch_place_id = budget_dispatch_places.id "
-						+ "AND budgets.stage_id = stages.id "
-						+ "AND budgets.active = '1' "
+						+ "AND budgets.stage_id = budget_stages.id "
 						+ whereQuery
 						+ " GROUP BY budgets.id ";
 
 		budgetsData = db.fetchAll(db.select(budgetsQuery));
 		
-		String[] budgetsColumnNames = { "Id", "Codigo", "Fecha", "Vencimiento", "Codigo Cliente", "Nombre Empresa", "Representante", "Nombre Obra", "Vendedor", "Lugar de entrega", "Forma de Pago", "Seguimiento"};
+		String[] budgetsColumnNames = { "Id", "Codigo", "Fecha", "Vencimiento", "Codigo Cliente", "Empresa", "Representante", "Nombre Obra", "Forma de Pago", "Vendedor", "Sitio Entrega",  "Tiempo Entrega"};
 		
 		if(budgetsData.length > 0) {
 			tableBudgetsResult.setModel(new MyTableModel(budgetsData, budgetsColumnNames));
@@ -5606,65 +5610,79 @@ public class MainView extends JFrame{
 				+ "FROM  budget_delivery_time "
 				+ "GROUP BY budget_delivery_time.delivery_time";
 		
+		JLabel labelCode = new JLabel("Codigo");
+		cs.gridx = 0;
+		cs.gridy = 0;
+		cs.gridwidth = 1;
+		addPanel.add(labelCode, cs);
+		
+		textBudgetAddCode = new JTextField("", 4);
+		textBudgetAddCode.setEditable(false);
+		cs.gridx = 1;
+		cs.gridy = 0;
+		cs.gridwidth = 4;
+		addPanel.add(textBudgetAddCode, cs);
 		
 		JLabel labelDate = new JLabel("Fecha:");
-		cs.gridx = 0;
+		cs.gridx = 5;
 		cs.gridy = 0;
 		cs.gridwidth = 1;
 		addPanel.add(labelDate, cs);                   
 		
 		//creating an object date picker to display a  calendar component 
 		
-		UtilDateModel model = new UtilDateModel();
+		dateModel = new UtilDateModel();
 		
 		Properties p = new Properties();
 		p.put("text.today",	"Hoy");
 		p.put("text.month", "Mes");
 		p.put("text.year", "Año");
-		JDatePanelImpl datePanel = new JDatePanelImpl(model, p);
+		JDatePanelImpl datePanel = new JDatePanelImpl(dateModel, p);
 		JDatePickerImpl datePicker = new JDatePickerImpl(datePanel, new DateLabelFormatter());
 		
-		model.setDate(2016, 7, 1);
-		cs.gridx = 1;
+		DateTime dt = new DateTime();
+		
+		dateModel.setDate(dt.getYear(), dt.getMonthOfYear() - 1, dt.getDayOfMonth());
+		cs.gridx = 6;
 		cs.gridy = 0;
 		cs.gridwidth = 4;
 		addPanel.add(datePicker);
 		
 		JLabel labelExpiryDays = new JLabel("  Días de Vencimiento:");
-		cs.gridx = 5;
+		cs.gridx = 10;
 		cs.gridy = 0;
 		cs.gridwidth = 1;
 		addPanel.add(labelExpiryDays, cs);
 		
 		textBudgetAddExpiryDays = new JTextField("", 4);
 		textBudgetAddExpiryDays.setEditable(false);
-		cs.gridx = 6;
+		cs.gridx = 11;
 		cs.gridy = 0;
 		cs.gridwidth = 4;
 		addPanel.add(textBudgetAddExpiryDays, cs);
 				
 		JLabel labelClientCode = new JLabel(" Codigo Cliente :");
-		cs.gridx = 10;
+		cs.gridx = 15;
 		cs.gridy = 0;
 		cs.gridwidth = 1;
 		addPanel.add(labelClientCode, cs);
 		
 		textBudgetAddClientCode = new JTextField("", 6);
 		textBudgetAddClientCode.setEditable(false);
-		cs.gridx = 11;
+		cs.gridx = 16;
 		cs.gridy = 0;
 		cs.gridwidth = 6;
 		addPanel.add(textBudgetAddClientCode, cs);
 		
 		JLabel labelCompany = new JLabel(" Empresa:");
-		cs.gridx = 17;
+		cs.gridx = 22;
 		cs.gridy = 0;
 		cs.gridwidth = 1;
 		addPanel.add(labelCompany, cs);
 		
 		textBudgetAddCompany = new JTextField("", 8);
 		textBudgetAddCompany.setEditable(false);
-		cs.gridx = 18;
+		cs.gridx = 23;
 		cs.gridy = 0;
 		cs.gridwidth = 8;
 		addPanel.add(textBudgetAddCompany, cs);
@@ -5675,7 +5693,7 @@ public class MainView extends JFrame{
 		buttonBudgetAddCompany.setActionCommand("budget.description.add.company");
 		buttonBudgetAddCompany.addActionListener(lForButton);
 				
-		cs.gridx = 26;
+		cs.gridx = 31;
 		cs.gridy = 0;
 		cs.gridwidth = 1;
 		addPanel.add(buttonBudgetAddCompany, cs);
