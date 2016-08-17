@@ -703,16 +703,16 @@ public class MainView extends JFrame{
 		
 		JPanel panelButtons = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 20));
 		
-		ButtonListener lForButton = new ButtonListener();
+		SwitchButtonListener lForSwitchButton = new SwitchButtonListener();
 		
 		buttonSwitchAdd = new JButton("Agregar");
 		buttonSwitchAdd.setActionCommand("switch.search.buttons.add");
-		buttonSwitchAdd.addActionListener(lForButton);
+		buttonSwitchAdd.addActionListener(lForSwitchButton);
 		panelButtons.add(buttonSwitchAdd);
 		
 		buttonSwitchEdit = new JButton("Editar");
 		buttonSwitchEdit.setActionCommand("switch.search.buttons.edit");
-		buttonSwitchEdit.addActionListener(lForButton);
+		buttonSwitchEdit.addActionListener(lForSwitchButton);
 		buttonSwitchEdit.setEnabled(false);
 		
 		panelButtons.add(buttonSwitchEdit);
@@ -1296,18 +1296,18 @@ public class MainView extends JFrame{
 		cs.gridwidth = 14;
 		addPanel.add(textSwitchAddDescription, cs);
 		
-		ButtonListener lForButton = new ButtonListener();
+		SwitchButtonListener lForSwitchButton = new SwitchButtonListener();
 		
 		JPanel panelButtons = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		
 		buttonSwitchAddSave = new JButton("Guardar");
 		buttonSwitchAddSave.setActionCommand("switch.description.add.save");
-		buttonSwitchAddSave.addActionListener(lForButton);
+		buttonSwitchAddSave.addActionListener(lForSwitchButton);
 		panelButtons.add(buttonSwitchAddSave);
 		
 		buttonSwitchAddCancel = new JButton("Cancelar");
 		buttonSwitchAddCancel.setActionCommand("switch.description.add.cancel");
-		buttonSwitchAddCancel.addActionListener(lForButton);
+		buttonSwitchAddCancel.addActionListener(lForSwitchButton);
 		panelButtons.add(buttonSwitchAddCancel);
 		
 		cs.gridx = 0;
@@ -1439,18 +1439,18 @@ public class MainView extends JFrame{
 		cs.gridwidth = 16;
 		editPanel.add(textSwitchEditDescription, cs);
 		
-		ButtonListener lForButton = new ButtonListener();
+		SwitchButtonListener lForSwitchButton = new SwitchButtonListener();
 		
 		JPanel panelButtons = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		
 		JButton buttonSwitchEditSave = new JButton("Guardar");
 		buttonSwitchEditSave.setActionCommand("switch.description.edit.save");
-		buttonSwitchEditSave.addActionListener(lForButton);
+		buttonSwitchEditSave.addActionListener(lForSwitchButton);
 		panelButtons.add(buttonSwitchEditSave);
 		
 		JButton buttonSwitchEditCancel = new JButton("Cancelar");
 		buttonSwitchEditCancel.setActionCommand("switch.description.edit.cancel");
-		buttonSwitchEditCancel.addActionListener(lForButton);
+		buttonSwitchEditCancel.addActionListener(lForSwitchButton);
 		panelButtons.add(buttonSwitchEditCancel);
 		
 		cs.gridx = 0;
@@ -1772,16 +1772,16 @@ public class MainView extends JFrame{
 		
 		JPanel panelButtons = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 20));
 		
-		ButtonListener lForButton = new ButtonListener();
+		BoxButtonListener lForBoxButton = new BoxButtonListener();
 		
 		buttonBoxAdd = new JButton("Agregar");
 		buttonBoxAdd.setActionCommand("box.description.buttons.add");
-		buttonBoxAdd.addActionListener(lForButton);
+		buttonBoxAdd.addActionListener(lForBoxButton);
 		panelButtons.add(buttonBoxAdd);
 		
 		buttonBoxEdit = new JButton("Editar");
 		buttonBoxEdit.setActionCommand("box.description.buttons.edit");
-		buttonBoxEdit.addActionListener(lForButton);
+		buttonBoxEdit.addActionListener(lForBoxButton);
 		buttonBoxEdit.setEnabled(false);
 		panelButtons.add(buttonBoxEdit);
 		
@@ -2624,18 +2624,18 @@ public class MainView extends JFrame{
 		cs.gridwidth = 16;
 		addPanel.add(textBoxAddDescription, cs);
 		
-		ButtonListener lForButton = new ButtonListener();
+		BoxButtonListener lForBoxButton = new BoxButtonListener();
 		
 		JPanel panelButtons = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		
 		buttonBoxAddSave = new JButton("Guardar");
 		buttonBoxAddSave.setActionCommand("box.description.add.save");
-		buttonBoxAddSave.addActionListener(lForButton);
+		buttonBoxAddSave.addActionListener(lForBoxButton);
 		panelButtons.add(buttonBoxAddSave);
 		
 		buttonBoxAddCancel = new JButton("Cancelar");
 		buttonBoxAddCancel.setActionCommand("box.description.add.cancel");
-		buttonBoxAddCancel.addActionListener(lForButton);
+		buttonBoxAddCancel.addActionListener(lForBoxButton);
 		panelButtons.add(buttonBoxAddCancel);
 		
 		cs.gridx = 0;
@@ -2926,18 +2926,18 @@ public class MainView extends JFrame{
 		cs.gridwidth = 16;
 		editPanel.add(textBoxEditDescription, cs);
 		
-		ButtonListener lForButton = new ButtonListener();
+		BoxButtonListener lForBoxButton = new BoxButtonListener();
 		
 		JPanel panelButtons = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		
 		buttonBoxEditSave = new JButton("Guardar");
 		buttonBoxEditSave.setActionCommand("box.description.edit.save");
-		buttonBoxEditSave.addActionListener(lForButton);
+		buttonBoxEditSave.addActionListener(lForBoxButton);
 		panelButtons.add(buttonBoxEditSave);
 		
 		buttonBoxEditCancel = new JButton("Cancelar");
 		buttonBoxEditCancel.setActionCommand("box.description.edit.cancel");
-		buttonBoxEditCancel.addActionListener(lForButton);
+		buttonBoxEditCancel.addActionListener(lForBoxButton);
 		panelButtons.add(buttonBoxEditCancel);
 		
 		cs.gridx = 0;
@@ -3310,16 +3310,16 @@ public class MainView extends JFrame{
 		
 		JPanel panelButtons = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 20));
 		
-		ButtonListener lForButton = new ButtonListener();
+		BoardButtonListener lForBoardButton = new BoardButtonListener();
 		
 		buttonBoardAdd = new JButton("Agregar");
 		buttonBoardAdd.setActionCommand("board.description.buttons.add");
-		buttonBoardAdd.addActionListener(lForButton);
+		buttonBoardAdd.addActionListener(lForBoardButton);
 		panelButtons.add(buttonBoardAdd);
 		
 		buttonBoardEdit = new JButton("Editar");
 		buttonBoardEdit.setActionCommand("board.description.buttons.edit");
-		buttonBoardEdit.addActionListener(lForButton);
+		buttonBoardEdit.addActionListener(lForBoardButton);
 		buttonBoardEdit.setEnabled(false);
 		panelButtons.add(buttonBoardEdit);
 		
@@ -3690,7 +3690,7 @@ public class MainView extends JFrame{
 			e.printStackTrace();
 		}
 		
-		ButtonListener lForButton = new ButtonListener();
+		BoardButtonListener lForBoardButton = new BoardButtonListener();
 		
 		JPanel panelButtons = new JPanel(new FlowLayout(FlowLayout.TRAILING));
 		// Add the add & remove buttons here for the Board Switches
@@ -3698,7 +3698,7 @@ public class MainView extends JFrame{
 		buttonAddBoardSwitch.setFont(fa);
 		buttonAddBoardSwitch.setForeground(Color.GREEN);
 		buttonAddBoardSwitch.setActionCommand("board.switch.add");
-		buttonAddBoardSwitch.addActionListener(lForButton);
+		buttonAddBoardSwitch.addActionListener(lForBoardButton);
 		buttonAddBoardSwitch.setEnabled(false);
 		panelButtons.add(buttonAddBoardSwitch);
 		
@@ -3706,7 +3706,7 @@ public class MainView extends JFrame{
 		buttonRemoveBoardSwitch.setFont(fa);
 		buttonRemoveBoardSwitch.setForeground(Color.RED);
 		buttonRemoveBoardSwitch.setActionCommand("board.switch.remove");
-		buttonRemoveBoardSwitch.addActionListener(lForButton);
+		buttonRemoveBoardSwitch.addActionListener(lForBoardButton);
 		buttonRemoveBoardSwitch.setEnabled(false);
 		panelButtons.add(buttonRemoveBoardSwitch);
 		
@@ -4360,18 +4360,18 @@ public class MainView extends JFrame{
 		cs.gridwidth = 16;
 		addPanel.add(textBoardAddDescription, cs);
 		
-		ButtonListener lForButton = new ButtonListener();
+		BoardButtonListener lForBoardButton = new BoardButtonListener();
 		
 		JPanel panelButtons = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		
 		buttonBoardAddSave = new JButton("Guardar");
 		buttonBoardAddSave.setActionCommand("board.description.add.save");
-		buttonBoardAddSave.addActionListener(lForButton);
+		buttonBoardAddSave.addActionListener(lForBoardButton);
 		panelButtons.add(buttonBoardAddSave);
 		
 		buttonBoardAddCancel = new JButton("Cancelar");
 		buttonBoardAddCancel.setActionCommand("board.description.add.cancel");
-		buttonBoardAddCancel.addActionListener(lForButton);
+		buttonBoardAddCancel.addActionListener(lForBoardButton);
 		panelButtons.add(buttonBoardAddCancel);
 		
 		cs.gridx = 0;
@@ -4613,18 +4613,18 @@ public class MainView extends JFrame{
 		cs.gridwidth = 16;
 		editPanel.add(textBoardEditDescription, cs);
 		
-		ButtonListener lForButton = new ButtonListener();
+		BoardButtonListener lForBoardButton = new BoardButtonListener();
 		
 		JPanel panelButtons = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		
 		buttonBoardEditSave = new JButton("Guardar");
 		buttonBoardEditSave.setActionCommand("board.description.edit.save");
-		buttonBoardEditSave.addActionListener(lForButton);
+		buttonBoardEditSave.addActionListener(lForBoardButton);
 		panelButtons.add(buttonBoardEditSave);
 		
 		buttonBoardEditCancel = new JButton("Cancelar");
 		buttonBoardEditCancel.setActionCommand("board.description.edit.cancel");
-		buttonBoardEditCancel.addActionListener(lForButton);
+		buttonBoardEditCancel.addActionListener(lForBoardButton);
 		panelButtons.add(buttonBoardEditCancel);
 		
 		cs.gridx = 0;
@@ -4676,17 +4676,17 @@ public class MainView extends JFrame{
 		textMaterialsPrice.setHorizontalAlignment(JTextField.TRAILING);
 		textMaterialsPrice.setEditable(false);
 		
-		ButtonListener lForButton = new ButtonListener();
+		BoardButtonListener lForBoardButton = new BoardButtonListener();
 		
 		panelBoardMaterialsEditSaveCancel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		
 		buttonBoardMaterialsEditSave = new JButton("Guardar");
 		buttonBoardMaterialsEditSave.setEnabled(false);
 		buttonBoardMaterialsEditSave.setActionCommand("board.materials.edit.save");
-		buttonBoardMaterialsEditSave.addActionListener(lForButton);
+		buttonBoardMaterialsEditSave.addActionListener(lForBoardButton);
 		buttonBoardMaterialsEditCancel = new JButton("Cancelar");
 		buttonBoardMaterialsEditCancel.setActionCommand("board.materials.edit.cancel");
-		buttonBoardMaterialsEditCancel.addActionListener(lForButton);
+		buttonBoardMaterialsEditCancel.addActionListener(lForBoardButton);
 		buttonBoardMaterialsEditCancel.setEnabled(false);
 		panelBoardMaterialsEditSaveCancel.add(buttonBoardMaterialsEditSave);
 		panelBoardMaterialsEditSaveCancel.add(buttonBoardMaterialsEditCancel);
@@ -4701,7 +4701,7 @@ public class MainView extends JFrame{
 		
 		buttonBoardMaterialsEdit = new JButton("Editar");
 		buttonBoardMaterialsEdit.setActionCommand("board.materials.edit");
-		buttonBoardMaterialsEdit.addActionListener(lForButton);
+		buttonBoardMaterialsEdit.addActionListener(lForBoardButton);
 		buttonBoardMaterialsEdit.setEnabled(false);
 		
 		JPanel panelMaterialsButtons = new JPanel();
@@ -4737,17 +4737,17 @@ public class MainView extends JFrame{
 		textComments.setEditable(false);
 		panelCommentsCenter.add(textComments, cs);
 		
-		ButtonListener lForButton = new ButtonListener();
+		BoardButtonListener lForBoardButton = new BoardButtonListener();
 		
 		panelBoardCommentsEditSaveCancel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		
 		buttonBoardCommentsEditSave = new JButton("Guardar");
 		buttonBoardCommentsEditSave.setEnabled(false);
 		buttonBoardCommentsEditSave.setActionCommand("board.comments.edit.save");
-		buttonBoardCommentsEditSave.addActionListener(lForButton);
+		buttonBoardCommentsEditSave.addActionListener(lForBoardButton);
 		buttonBoardCommentsEditCancel = new JButton("Cancelar");
 		buttonBoardCommentsEditCancel.setActionCommand("board.comments.edit.cancel");
-		buttonBoardCommentsEditCancel.addActionListener(lForButton);
+		buttonBoardCommentsEditCancel.addActionListener(lForBoardButton);
 		buttonBoardCommentsEditCancel.setEnabled(false);
 		panelBoardCommentsEditSaveCancel.add(buttonBoardCommentsEditSave);
 		panelBoardCommentsEditSaveCancel.add(buttonBoardCommentsEditCancel);
@@ -4762,7 +4762,7 @@ public class MainView extends JFrame{
 		
 		buttonBoardCommentsEdit = new JButton("Editar");
 		buttonBoardCommentsEdit.setActionCommand("board.comments.edit");
-		buttonBoardCommentsEdit.addActionListener(lForButton);
+		buttonBoardCommentsEdit.addActionListener(lForBoardButton);
 		buttonBoardCommentsEdit.setEnabled(false);
 		
 		JPanel panelMaterialsButtons = new JPanel();
@@ -5513,16 +5513,16 @@ public class MainView extends JFrame{
 		
 		JPanel panelButtons = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 20));
 		
-		ButtonListener lForButton = new ButtonListener();
+		BudgetButtonListener lForBudgetButton = new BudgetButtonListener();
 		
 		buttonBudgetAdd = new JButton("Agregar");
 		buttonBudgetAdd.setActionCommand("budget.description.buttons.add");
-		buttonBudgetAdd.addActionListener(lForButton);
+		buttonBudgetAdd.addActionListener(lForBudgetButton);
 		panelButtons.add(buttonBudgetAdd);
 		
 		buttonBudgetEdit = new JButton("Editar");
 		buttonBudgetEdit.setActionCommand("budget.description.buttons.edit");
-		buttonBudgetEdit.addActionListener(lForButton);
+		buttonBudgetEdit.addActionListener(lForBudgetButton);
 		buttonBudgetEdit.setEnabled(false);
 		panelButtons.add(buttonBudgetEdit);
 		
@@ -5687,11 +5687,11 @@ public class MainView extends JFrame{
 		cs.gridwidth = 8;
 		addPanel.add(textBudgetAddCompany, cs);
 		
-		ButtonListener lForButton = new ButtonListener();
+		BudgetButtonListener lForBudgetButton = new BudgetButtonListener();
 				
 		buttonBudgetAddCompany = new JButton("...");
 		buttonBudgetAddCompany.setActionCommand("budget.description.add.company");
-		buttonBudgetAddCompany.addActionListener(lForButton);
+		buttonBudgetAddCompany.addActionListener(lForBudgetButton);
 				
 		cs.gridx = 31;
 		cs.gridy = 0;
@@ -5771,7 +5771,7 @@ public class MainView extends JFrame{
 		
 		buttonBudgetAddSeller = new JButton("...");
 		buttonBudgetAddSeller.setActionCommand("budget.description.add.seller");
-		buttonBudgetAddSeller.addActionListener(lForButton);
+		buttonBudgetAddSeller.addActionListener(lForBudgetButton);
 		
 		cs.gridx = 9;
 		cs.gridy = 2;
@@ -5837,12 +5837,12 @@ public class MainView extends JFrame{
 		
 		buttonBudgetAddSave = new JButton("Guardar");
 		buttonBudgetAddSave.setActionCommand("budget.description.add.save");
-		buttonBudgetAddSave.addActionListener(lForButton);
+		buttonBudgetAddSave.addActionListener(lForBudgetButton);
 		panelButtons.add(buttonBudgetAddSave);
 		
 		buttonBudgetAddCancel = new JButton("Cancelar");
 		buttonBudgetAddCancel.setActionCommand("budget.description.add.cancel");
-		buttonBudgetAddCancel.addActionListener(lForButton);
+		buttonBudgetAddCancel.addActionListener(lForBudgetButton);
 		panelButtons.add(buttonBudgetAddCancel);
 		
 		cs.gridx = 0;
@@ -7783,7 +7783,7 @@ public class MainView extends JFrame{
 		}
 	}
 	
-	private class ButtonListener implements ActionListener {
+	private class SwitchButtonListener implements ActionListener {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -7890,7 +7890,17 @@ public class MainView extends JFrame{
 				}
 			} else if (actionCommand.equalsIgnoreCase("switch.description.edit.cancel")) {
 				setSwitchesMode(MainView.VIEW_MODE);
-			} else if (actionCommand.equalsIgnoreCase("box.description.buttons.add")) {
+			}
+		}
+		
+	}
+	
+	private class BoxButtonListener implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			String actionCommand = e.getActionCommand();
+			if (actionCommand.equalsIgnoreCase("box.description.buttons.add")) {
 				setBoxesMode(MainView.ADD_MODE);
 			} else if (actionCommand.equalsIgnoreCase("box.description.buttons.edit")) {
 				setBoxesMode(MainView.EDIT_MODE);
@@ -8143,7 +8153,17 @@ public class MainView extends JFrame{
 				}
 			} else if (actionCommand.equalsIgnoreCase("box.description.edit.cancel")) {
 				setBoxesMode(MainView.VIEW_MODE);
-			} else if (actionCommand.equalsIgnoreCase("board.description.buttons.add")) {
+			}
+		}
+		
+	}
+	
+	private class BoardButtonListener implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			String actionCommand = e.getActionCommand();
+			if (actionCommand.equalsIgnoreCase("board.description.buttons.add")) {
 				setBoardsMode(MainView.ADD_MODE);
 			} else if (actionCommand.equalsIgnoreCase("board.description.buttons.edit")) {
 				setBoardsMode(MainView.EDIT_MODE);
@@ -8478,55 +8498,34 @@ public class MainView extends JFrame{
 				buttonBoardCommentsEditCancel.setEnabled(false);
 				panelBoardCommentsEditSaveCancel.setVisible(false);
 			}
-			else if (actionCommand.equalsIgnoreCase("budget.description.buttons.add")) {
+		}
+		
+	}
+	
+	private class BudgetButtonListener implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			String actionCommand = e.getActionCommand();
+			if (actionCommand.equalsIgnoreCase("budget.description.buttons.add")) {
 				setBudgetsMode(MainView.ADD_MODE);
 			}
 			else if (actionCommand.equalsIgnoreCase("budget.description.buttons.edit")) {
 				setBudgetsMode(MainView.EDIT_MODE);
-			}
-//			 else if (actionCommand.equalsIgnoreCase("budget.description.add.save")) {
-//					String budgetName = textBoardAddName.getText();
-//					String boardType = comboBoardAddType.getSelectedItem().toString();
-//					String boardInstallation = comboBoardAddInstallation.getSelectedItem().toString();
-//					String boardNema = comboBoardAddNema.getSelectedItem().toString();
-//					String boardBarCapacity = comboBoardAddBarCapacity.getSelectedItem().toString();
-//					String boardBarType = comboBoardAddBarType.getSelectedItem().toString();
-//					String boardCircuits = comboBoardAddCircuits.getSelectedItem().toString();
-//					String boardVoltage = comboBoardAddVoltage.getSelectedItem().toString();
-//					String boardPhases = comboBoardAddPhases.getSelectedItem().toString();
-//					String boardGround = (checkBoardAddGround.isSelected())?"1":"0";
-//					String boardInterruption = comboBoardAddInterruption.getSelectedItem().toString();
-//					String boardLockType = comboBoardAddLockType.getSelectedItem().toString();
-//					String boardPrice = textBoardAddPrice.getText();
-//					Errors err = new Errors();
-//					
-//					if(boardName.isEmpty()) {
-//						err.add("Debe escribir un nombre para el tablero");
-//					}
-//					if(boardPrice.isEmpty() || !Numbers.isNumeric(boardPrice)) {
-//						err.add("El precio no puede estar vacio y solo debe contener digitos numericos");
-//					}
-//					if(err.isEmpty()) {
-//						boolean saved = db.addBoard(boardName, boardType, boardInstallation, boardNema, Integer.valueOf(boardBarCapacity), boardBarType, Integer.valueOf(boardCircuits), boardVoltage, Integer.valueOf(boardPhases), boardGround, Integer.valueOf(boardInterruption), boardLockType, Double.valueOf(boardPrice));
-//						if(saved) {
-//							JOptionPane.showMessageDialog(null, "Tablero creado exitosamente");
-//							setBoardsMode(MainView.VIEW_MODE);
-//						}
-//					} else {
-//						err.dump();
-//					}
-//				} 
-				else if (actionCommand.equalsIgnoreCase("budget.description.add.cancel")) {
-					setBudgetsMode(MainView.VIEW_MODE);
-				} 
-//				else if (actionCommand.equalsIgnoreCase("budget.description.edit.save")) {
-//				
-//				}
-//				} 
-				else if (actionCommand.equalsIgnoreCase("budget.description.edit.cancel")) {
-					setBudgetsMode(MainView.VIEW_MODE);
-				}
+			} else if(actionCommand.equalsIgnoreCase("budget.description.add.company")) {
 				
+			} else if(actionCommand.equalsIgnoreCase("budget.description.add.seller")) {
+				
+			} else if(actionCommand.equalsIgnoreCase("budget.description.add.save")) {
+				
+			} else if(actionCommand.equalsIgnoreCase("budget.description.add.cancel")) {
+				setBudgetsMode(MainView.VIEW_MODE);
+			} else if (actionCommand.equalsIgnoreCase("budget.description.edit.save")) {
+				
+			} else if (actionCommand.equalsIgnoreCase("budget.description.edit.cancel")) {
+				setBudgetsMode(MainView.VIEW_MODE);
+			}
+			
 		}
 		
 	}
