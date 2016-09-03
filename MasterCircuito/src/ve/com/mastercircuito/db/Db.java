@@ -828,5 +828,65 @@ public class Db extends MysqlDriver {
 		}
 		return comments;
 	}
+
+	public String getBudgetClientCode(int budgetId) {
+		String queryString;
+		ResultSet setBudgetClientCode;
+		
+		queryString = "SELECT clients.client_code FROM budgets, clients "
+					+ "WHERE budgets.id = '" + budgetId + "' "
+					+ "AND budgets.client_id = clients.id";
+		
+		setBudgetClientCode = this.select(queryString);
+		
+		try {
+			if (setBudgetClientCode.next()) {
+				return setBudgetClientCode.getString("clients.client_code");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public String getBudgetClientName(int budgetId) {
+		String queryString;
+		ResultSet setBudgetClientName;
+		
+		queryString = "SELECT clients.client FROM budgets, clients "
+					+ "WHERE budgets.id = '" + budgetId + "' "
+					+ "AND budgets.client_id = clients.id";
+		
+		setBudgetClientName = this.select(queryString);
+		
+		try {
+			if (setBudgetClientName.next()) {
+				return setBudgetClientName.getString("clients.client");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public String getBudgetClientRepresentative(int budgetId) {
+		String queryString;
+		ResultSet setBudgetClientRepresentative;
+		
+		queryString = "SELECT clients.representative FROM budgets, clients "
+					+ "WHERE budgets.id = '" + budgetId + "' "
+					+ "AND budgets.client_id = clients.id";
+		
+		setBudgetClientRepresentative = this.select(queryString);
+		
+		try {
+			if (setBudgetClientRepresentative.next()) {
+				return setBudgetClientRepresentative.getString("clients.representative");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 	
 }
