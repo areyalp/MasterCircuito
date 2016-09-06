@@ -1,4 +1,4 @@
-package ve.com.mastercircuito.sales;
+package ve.com.mastercircuito.common;
 
 import java.awt.BorderLayout;
 import java.awt.Color;

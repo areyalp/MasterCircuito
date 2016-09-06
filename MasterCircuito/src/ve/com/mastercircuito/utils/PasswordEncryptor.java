@@ -1,4 +1,4 @@
-package ve.com.mastercircuito.sales;
+package ve.com.mastercircuito.utils;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

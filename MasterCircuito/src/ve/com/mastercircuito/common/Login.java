@@ -1,8 +1,9 @@
-package ve.com.mastercircuito.sales;
+package ve.com.mastercircuito.common;
 
 import java.sql.ResultSet;
 
 import ve.com.mastercircuito.db.MysqlDriver;
+import ve.com.mastercircuito.utils.PasswordEncryptor;
 
 public class Login {
 
