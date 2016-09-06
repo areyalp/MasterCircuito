@@ -669,6 +669,26 @@ public class Db extends MysqlDriver {
 		return (this.getInsertId() > 0)? true:false;
 	}
 	
+	public boolean addBudget(String budgetDate, Integer budgetExpiryDays, String budgetClientId, 
+			String budgetWorkName, String budgetPaymentMethod, String budgetSellerId,
+			String budgetDispatchPlace, Integer budgetDeliveryTime, String budgetDeliveryPeriod) {
+		// TODO Finish this
+		int paymentMethodId = this.getBudgetPaymentMethodId(budgetPaymentMethod);
+		int barCapacityId = this.getBoardBarCapacityId(barCapacity);
+		int barTypeId = this.getBoardBarTypeId(barType);
+		int circuitsId = this.getBoardCircuitsId(circuits);
+		int voltageId = this.getBoardVoltageId(voltage);
+		int interruptionId = this.getInterruptionId(interruption);
+		int lockTypeId = this.getLockTypeId(lockType);
+
+		String queryInsert = "INSERT INTO boards (name, type_id, installation_id, nema_id, bar_capacity_id, bar_type_id, circuits_id, voltage_id, phases, ground, interruption_id, lock_type_id, price) "
+				+ "VALUES('" + name + "', " + typeId + ", " + installationId + ", " + nemaId + ", " + barCapacityId + ", " + barTypeId + ", " + circuitsId + ", " + voltageId + ", '" + phases + "', '" + ground + "', " + interruptionId + ", " + lockTypeId + ", " + price + ")";
+		
+		this.insert(queryInsert);
+		
+		return (this.getInsertId() > 0)? true:false;
+	}
+	
 	public boolean removeBoardSwitch(int switchId) {
 		String queryDelete;
 		queryDelete = "DELETE FROM board_switches WHERE id = '" + switchId + "'";
