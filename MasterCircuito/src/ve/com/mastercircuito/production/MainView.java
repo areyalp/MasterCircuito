@@ -5013,11 +5013,6 @@ public class MainView extends JFrame{
 		
 	}
 	
-	private void updateBudgetTextEditDescription() {
-		// TODO Auto-generated method stub
-		
-	}
-	
 	private void loadBoardTable(String whereQuery) {
 		searchSelectedBoardType = comboBoardTypes.getSelectedItem().toString();
 		searchSelectedBoardInstallation = comboBoardInstallations.getSelectedItem().toString();
@@ -5653,7 +5648,7 @@ public class MainView extends JFrame{
 		cs.gridwidth = 30;
 		editPanel.add(panelButtons, cs);
 		
-		updateBudgetTextEditDescription();
+//		updateBudgetTextEditDescription();
 		
 		return editPanel;
 	}
@@ -5959,7 +5954,7 @@ public class MainView extends JFrame{
 	}
 
 	private JPanel createBudgetSwitchesSearchPanel() {
-		// TODO Finish budget switches search panel
+		
 		return null;
 	}
 	
@@ -6645,7 +6640,7 @@ public class MainView extends JFrame{
 	}
 	
 	private void updateBudgetTextAddDescription() {
-		// TODO Finish budget text add description
+		
 	}
 	
 	private void setBudgetsMode(int mode){
@@ -6807,7 +6802,7 @@ public class MainView extends JFrame{
 					budgetsFrame.repaint();
 				}
 			});
-			this.updateBudgetTextEditDescription();
+//			this.updateBudgetTextEditDescription();
 			textBudgetDescriptionId.setText("");
 			textBudgetDescriptionCode.setText("");
 			textBudgetDescriptionClientCode.setText("");
@@ -9194,7 +9189,7 @@ public class MainView extends JFrame{
 				
 				JPanel panelLower = new JPanel();
 				panelLower.setLayout(new BoxLayout(panelLower, BoxLayout.LINE_AXIS));
-				// TODO Need to make this panel below to add a company that doesn't exists
+				
 //				panelLower.add(createBudgetCompanyAddNewPanel());
 				panelLower.add(createBudgetCompanyAddButtonPanel());
 				dialogBudgetCompanyAdd.add(panelLower, BorderLayout.SOUTH);
@@ -9223,7 +9218,7 @@ public class MainView extends JFrame{
 				
 				JPanel panelLower = new JPanel();
 				panelLower.setLayout(new BoxLayout(panelLower, BoxLayout.LINE_AXIS));
-				// TODO Need to make this panel below to add a company that doesn't exists
+				
 //				panelLower.add(createBudgetCompanyAddNewPanel());
 				panelLower.add(createBudgetSellerAddButtonPanel());
 				dialogBudgetSellerAdd.add(panelLower, BorderLayout.SOUTH);
@@ -9266,7 +9261,7 @@ public class MainView extends JFrame{
 				if(null == budgetDispatchPlace || budgetDispatchPlace.isEmpty()) {
 					err.add("Debe especificar un sitio de entrega valido");
 				}
-				// TODO Finish this
+				
 				if(budgetWorkName.isEmpty()) {
 					err.add("Debe especificar el nombre de la obra");
 				}

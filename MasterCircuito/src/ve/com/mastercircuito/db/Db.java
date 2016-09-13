@@ -672,7 +672,7 @@ public class Db extends MysqlDriver {
 	public boolean addBudget(String budgetDate, Integer budgetExpiryDays, String budgetClientId, 
 			String budgetWorkName, String budgetPaymentMethod, String budgetSellerId,
 			String budgetDispatchPlace, Integer budgetDeliveryTime, String budgetDeliveryPeriod) {
-		// TODO Finish this
+		// TODO Finish this(Add budget method)
 		int paymentMethodId = this.getBudgetPaymentMethodId(budgetPaymentMethod);
 		int barCapacityId = this.getBoardBarCapacityId(barCapacity);
 		int barTypeId = this.getBoardBarTypeId(barType);
