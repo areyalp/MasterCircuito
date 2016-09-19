@@ -347,7 +347,7 @@ public class MainView extends JFrame{
 //	private String queryUser;
 //	private String username;
 	private Object [][] budgetsData={};
-	private JComboBox<String> comboBudgetAddPaymentMethod, comboBudgetAddDispatchPlace,comboBugetAddDeliveryPeriod;
+	private JComboBox<String> comboBudgetAddPaymentMethod, comboBudgetAddDispatchPlace,comboBudgetAddDeliveryPeriod;
 //	private List<String> comboListResult;
 	private int editBudgetId, editBudgetClientCode, editBudgetExpiryDays,editBudgetDeliveryTime;
 	private String editBudgetCode, editBudgetDate, editBudgetDeliveryPeriod;
@@ -5872,14 +5872,14 @@ public class MainView extends JFrame{
 		cs.gridwidth = 4;
 		addPanel.add(textBudgetAddDeliveryTime, cs);
 		
-		comboBugetAddDeliveryPeriod = new JComboBox<String>(new Vector<String>(loadComboList(queryDeliveryPeriod, "delivery_period")));
-		comboBugetAddDeliveryPeriod.removeItem("Todas");
-		comboBugetAddDeliveryPeriod.setActionCommand("budget.add.delivery_period");
-		comboBugetAddDeliveryPeriod.addActionListener(lForCombo);
+		comboBudgetAddDeliveryPeriod = new JComboBox<String>(new Vector<String>(loadComboList(queryDeliveryPeriod, "delivery_period")));
+		comboBudgetAddDeliveryPeriod.removeItem("Todas");
+		comboBudgetAddDeliveryPeriod.setActionCommand("budget.add.delivery_period");
+		comboBudgetAddDeliveryPeriod.addActionListener(lForCombo);
 		cs.gridx = 24;
 		cs.gridy = 2;
 		cs.gridwidth = 4;
-		addPanel.add(comboBugetAddDeliveryPeriod, cs);
+		addPanel.add(comboBudgetAddDeliveryPeriod, cs);
 							
 //		checkBudgetAddTracing = new JCheckBox("Seguimiento");
 //		cs.gridx = 28;
@@ -9271,14 +9271,26 @@ public class MainView extends JFrame{
 				dialogBudgetSellerAdd.setVisible(true);
 			} else if(actionCommand.equalsIgnoreCase("budget.description.add.save")) {
 				String budgetDate = addBudgetDateModel.toString();
-				String budgetExpiryDays = comboBoardAddType.getSelectedItem().toString();
-				String budgetClientId = String.valueOf(budgetCompanyAddSearchId);
-				String budgetWorkName = comboBoardAddBarType.getSelectedItem().toString();
-				String budgetPaymentMethod = comboBoardAddCircuits.getSelectedItem().toString();
+//				String budgetExpiryDays = comboBoardAddType.getSelectedItem().toString();
+				
+				String budgetExpiryDays = textBudgetAddExpiryDays.getText().toString();
+				String budgetClientId = textBudgetAddClientCode.getText().toString();
+				String budgetCompanyRepresentative = textBudgetAddCompanyRepresentative.getText();
+				String budgetWorkName = textBudgetAddWorkName.getText();
+				String budgetPaymentMethod = comboBudgetAddPaymentMethod.getSelectedItem().toString();
+				String budgetDispatchPlace = comboBudgetAddDispatchPlace.getSelectedItem().toString();
+				String budgetDeliveryTime = textBudgetAddDeliveryTime.getText().toString();
+				String budgetDeliveryPeriod = comboBudgetAddDeliveryPeriod.getSelectedItem().toString();
+//				String budgetSeller = textBudgetAddSeller.getText().toString();
+
+//				String budgetClientId = String.valueOf(budgetCompanyAddSearchId);
+//				String budgetWorkName = comboBoardAddBarType.getSelectedItem().toString();
+//				String budgetPaymentMethod = comboBoardAddCircuits.getSelectedItem().toString();
+				
 				String budgetSellerId = String.valueOf(budgetSellerAddSearchId);
-				String budgetDispatchPlace = comboBoardAddPhases.getSelectedItem().toString();
-				String budgetDeliveryTime = (checkBoardAddGround.isSelected())?"1":"0";
-				String budgetDeliveryPeriod = comboBoardAddInterruption.getSelectedItem().toString();
+//				String budgetDispatchPlace = comboBoardAddPhases.getSelectedItem().toString();
+//				String budgetDeliveryTime = (checkBoardAddGround.isSelected())?"1":"0";
+//				String budgetDeliveryPeriod = comboBudgetAddDeliveryPeriod.getSelectedItem().toString();
 				
 				Errors err = new Errors();
 				
@@ -9298,24 +9310,13 @@ public class MainView extends JFrame{
 					err.add("Debe especificar un metodo de pago valido");
 				}
 				if(null == budgetSellerId || budgetSellerId.isEmpty() || !Numbers.isNumeric(budgetSellerId)) {
-					err.add("Los dias de vencimiento solo debe contener digitos numericos");
+					err.add("Debe ingresar el vendedor");
 				}
 				if(null == budgetDispatchPlace || budgetDispatchPlace.isEmpty()) {
 					err.add("Debe especificar un sitio de entrega valido");
 				}
 				// TODO Finish this(Add budget save button)
-				if(budgetWorkName.isEmpty()) {
-					err.add("Debe especificar el nombre de la obra");
-				}
-				if(null == budgetPaymentMethod || budgetPaymentMethod.isEmpty()) {
-					err.add("Debe especificar un metodo de pago valido");
-				}
-//				if(budgetSeller.isEmpty()) {
-//					err.add("Debe especificar un vendedor");
-//				}
-				if(null == budgetDispatchPlace || budgetDispatchPlace.isEmpty()) {
-					err.add("Debe especificar un sitio de entrega valido");
-				}
+
 				if(budgetDeliveryTime.isEmpty() || !Numbers.isNumeric(budgetDeliveryTime)) {
 					err.add("El tiempo de entrega solo debe contener digitos numericos");
 				}
@@ -9335,6 +9336,101 @@ public class MainView extends JFrame{
 			} else if(actionCommand.equalsIgnoreCase("budget.description.add.cancel")) {
 				setBudgetsMode(MainView.VIEW_MODE);
 			} else if (actionCommand.equalsIgnoreCase("budget.description.edit.save")) {
+				ArrayList<Object> listFields = new ArrayList<Object>();
+				ArrayList<Object> listValues = new ArrayList<Object>();
+				Errors err = new Errors();
+				
+				if(!textBudgetEditExpiryDays.getText().isEmpty()) {
+					if (!String.valueOf(editBudgetExpiryDays).equals(textBudgetEditExpiryDays.getText())) {
+						listFields.add("`expiry_days`");
+						listValues.add("'" + textBudgetEditExpiryDays.getText() + "'");
+					}
+				} else {
+					err.add("Debe ingresar los días de vencimiento");
+				}
+				if(!textBudgetEditClientCode.getText().isEmpty()) {
+					if (!String.valueOf(editBudgetClientCode).equals(textBudgetEditClientCode.getText())) {
+						listFields.add("`client__id`");
+						listValues.add("'" + textBudgetEditClientCode.getText() + "'");
+					}
+				} else {
+					err.add("Debe ingresar el codigo del cliente");
+				}
+				if(!textBudgetEditWorkName.getText().isEmpty()) {
+					if (!String.valueOf(editBudgetWorkName).equals(textBudgetEditWorkName.getText())) {
+						listFields.add("`work_name`");
+						listValues.add("'" + textBudgetEditWorkName.getText() + "'");
+					}
+				} else {
+					err.add("Debe ingresar el nombre de la obra");
+				}		
+				if(!textBudgetEditDeliveryTime.getText().isEmpty()) {
+					if (!String.valueOf(editBudgetDeliveryTime).equals(textBudgetEditDeliveryTime.getText())) {
+						listFields.add("`delivery_time`");
+						listValues.add("'" + textBudgetEditDeliveryTime.getText() + "'");
+					}
+				} else {
+					err.add("Debe ingresar el tiempo de entrega");
+				}
+				if(!textBudgetEditSeller.getText().isEmpty()) {
+					if (!String.valueOf(textBudgetEditSeller).equals(textBudgetEditSeller.getText())) {
+						listFields.add("`seller_id`");
+						listValues.add("'" + textBudgetEditSeller.getText() + "'");
+					}
+				} else {
+					err.add("Debe ingresar el vendedor");
+				}
+				//check the others text that could generate errors from the user...
+				if(comboBudgetEditDeliveryPeriod.getItemCount() > 0) {
+					if (comboBudgetEditDeliveryPeriod.getSelectedIndex() > -1) {
+						if (!editBudgetDeliveryPeriod.equals(comboBudgetEditDeliveryPeriod.getSelectedItem().toString())) {
+							listFields.add("delivery_period");
+							listValues.add("'" + db.getDeliveryPeriodId(comboBudgetEditDeliveryPeriod.getSelectedItem().toString()) + "'");
+						}
+					} else {
+						err.add("Debe seleccionar un tiempo de entrega");
+					}
+				} else {
+					err.add("No hay ningun tiempo de entrega registrado, debe registrar uno primero");
+				}
+				if(comboBudgetEditPaymentMethod.getItemCount() > 0) {
+					if (comboBudgetEditPaymentMethod.getSelectedIndex() > -1) {
+						if (!editBudgetPaymentMethod.equals(comboBudgetEditPaymentMethod.getSelectedItem().toString())) {
+							listFields.add("payment_method_id");
+							listValues.add("'" + db.getPaymentMethodId(comboBudgetEditPaymentMethod.getSelectedItem().toString()) + "'");
+						}
+					} else {
+						err.add("Debe seleccionar un metodo de pago");
+					}
+				} else {
+					err.add("No hay ningun tipo de metodo de pago registrado, debe registrar uno primero");
+				}
+				if(comboBudgetEditDispatchPlace.getItemCount() > 0) {
+					if (comboBudgetEditDispatchPlace.getSelectedIndex() > -1) {
+						if (!editBudgetDispatchPlace.equals(comboBudgetEditDispatchPlace.getSelectedItem().toString())) {
+							listFields.add("dispatch_place_id");
+							listValues.add("'" + db.getDispachPlaceId(comboBudgetEditDispatchPlace.getSelectedItem().toString()) + "'");
+						}
+					} else {
+						err.add("Debe seleccionar un sitio de entrega");
+					}
+				} else {
+					err.add("No hay ningun sitio de entrega registrado, debe registrar uno primero");
+				}
+				if(err.isEmpty()) {
+					if(listFields.size() > 0 && listValues.size() > 0) {
+						boolean budgetEdited = db.editBudget(editBudgetId, listFields, listValues);
+						if (budgetEdited) {
+							setBudgetsMode(MainView.VIEW_MODE);
+						} else {
+							JOptionPane.showMessageDialog(null, "No se pudo actualizar el presupuesto debido a un error");
+						}
+					} else {
+						setBudgetsMode(MainView.VIEW_MODE);
+					}
+				} else {
+					err.dump();
+				}
 				
 			} else if (actionCommand.equalsIgnoreCase("budget.description.edit.cancel")) {
 				setBudgetsMode(MainView.VIEW_MODE);

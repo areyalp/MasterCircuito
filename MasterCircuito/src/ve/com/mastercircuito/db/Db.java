@@ -871,7 +871,6 @@ public class Db extends MysqlDriver {
 		}
 		return false;
 	}
-
 	
 	public boolean removeBoardSwitch(int switchId) {
 		String queryDelete;
