@@ -616,6 +616,127 @@ public class Db extends MysqlDriver {
 		return switchId;
 	}
 	
+	public int getDispachPlaceId (String place){
+		ResultSet setDispatchPlace;
+		int dispatchPlaceId = 0;
+		setDispatchPlace = this.select("SELECT id FROM budget_dispatch_places WHERE place = '" + place + "'");
+	
+		try {
+			setDispatchPlace.first();
+			dispatchPlaceId = setDispatchPlace.getInt("id");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener el id de el sitio de entrega");
+		}
+		return dispatchPlaceId;
+	}
+	
+	public int getPaymentMethodId (String method){
+		ResultSet setPaymentMethod;
+		int paymentMethodId = 0;
+		setPaymentMethod = this.select("SELECT id FROM budget_payment_methods WHERE method = '" + method + "'");
+	
+		try {
+			setPaymentMethod.first();
+			paymentMethodId = setPaymentMethod.getInt("id");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener el id de el metodo de pago");
+		}
+		return paymentMethodId;
+	}
+	
+	public int getSellerId (String seller){
+		ResultSet setSeller;
+		int sellerId = 0;
+		setSeller = this.select("SELECT id FROM budget_sellers WHERE seller = '" + seller + "'");
+	
+		try {
+			setSeller.first();
+			sellerId = setSeller.getInt("id");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener el id de el vendedor");
+		}
+		return sellerId;
+	}
+	
+	public int getDeliveryPeriodId(String delivery_period) {
+		ResultSet setDeliveryPeriod;
+		int deliveryPeriodId = 0;
+		setDeliveryPeriod = this.select("SELECT id FROM budget_delivery_period WHERE delivery_period = '" + delivery_period + "'");
+		
+		try {
+			setDeliveryPeriod.first();
+			deliveryPeriodId = setDeliveryPeriod.getInt("id");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener el id de el tiempo de entrega");
+		}
+		return deliveryPeriodId;
+	}
+	
+	public String getBudgetCode(int budgetId) {
+		ResultSet setBudgetCode;
+		String code = "";
+		setBudgetCode = this.select("SELECT code FROM budgets WHERE id = '" + budgetId + "'");
+		
+		try {
+			setBudgetCode.first();
+			code = setBudgetCode.getString("code");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener el codigo del presupuesto");
+		}
+		return code;
+	}
+	
+	public Integer getBudgetExpiryDays(int budgetId) {
+		ResultSet setBudgetExpiryDays;
+		int expiryDays = 0;
+		setBudgetExpiryDays = this.select("SELECT expiry_days FROM budgets WHERE id = '" + budgetId + "'");
+		
+		try {
+			setBudgetExpiryDays.first();
+			expiryDays = setBudgetExpiryDays.getInt("expiry_days");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener los días de vencimiento");
+		}
+		return expiryDays;
+	}	
+	
+	public String getBudgetWorkName(int budgetId) {
+		ResultSet setBudgetWorkName;
+		String workName = "";
+		setBudgetWorkName = this.select("SELECT work_name FROM budgets WHERE id = '" + budgetId + "'");
+		
+		try {
+			setBudgetWorkName.first();
+			workName = setBudgetWorkName.getString("work_name");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener el nombre de la obra");
+		}
+		return workName;
+	}
+	
+	public String getBudgetDate(int budgetId) {
+		ResultSet setBudgetDate;
+		String date = "";
+		setBudgetDate = this.select("SELECT date FROM budgets WHERE id = '" + budgetId + "'");
+		
+		try {
+			setBudgetDate.first();
+			date = setBudgetDate.getString("date");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener la fecha");
+		}
+		return date;
+	}
+	
+	
 	public boolean addSwitch(String model, String brand, String type, String phases, int current, String voltage, int interruption, String price) {
 		int brandId = this.getSwitchBrandId(brand);
 		int typeId = this.getSwitchTypeId(type);
@@ -669,25 +790,85 @@ public class Db extends MysqlDriver {
 		return (this.getInsertId() > 0)? true:false;
 	}
 	
-	public boolean addBudget(String budgetDate, Integer budgetExpiryDays, String budgetClientId, 
-			String budgetWorkName, String budgetPaymentMethod, String budgetSellerId,
-			String budgetDispatchPlace, Integer budgetDeliveryTime, String budgetDeliveryPeriod) {
-		// TODO Finish this(Add budget method)
-		int paymentMethodId = this.getBudgetPaymentMethodId(budgetPaymentMethod);
-		int barCapacityId = this.getBoardBarCapacityId(barCapacity);
-		int barTypeId = this.getBoardBarTypeId(barType);
-		int circuitsId = this.getBoardCircuitsId(circuits);
-		int voltageId = this.getBoardVoltageId(voltage);
-		int interruptionId = this.getInterruptionId(interruption);
-		int lockTypeId = this.getLockTypeId(lockType);
 
-		String queryInsert = "INSERT INTO boards (name, type_id, installation_id, nema_id, bar_capacity_id, bar_type_id, circuits_id, voltage_id, phases, ground, interruption_id, lock_type_id, price) "
-				+ "VALUES('" + name + "', " + typeId + ", " + installationId + ", " + nemaId + ", " + barCapacityId + ", " + barTypeId + ", " + circuitsId + ", " + voltageId + ", '" + phases + "', '" + ground + "', " + interruptionId + ", " + lockTypeId + ", " + price + ")";
+	public boolean addBudget(String date, Integer expiryDays, String clientId, 
+			String workName, String method, String seller,
+			String place, Integer deliveryTime, String deliveryPeriod) {
+		// TODO Finish this(Add budget method)
+			
+		int paymentMethodId = this.getPaymentMethodId(method);
+		int sellerId = this.getSellerId(seller);
+		int dispatchPlaceId = this.getDispachPlaceId(place);
+		int deliveryPeriodId= this.getDeliveryPeriodId(deliveryPeriod);	
+		
+		String queryInsert = "INSERT INTO budgets (code, `date`, expiry_days, client_id, work_name, payment_method_id, seller_id, dispatch_place_id, delivery_time, delivery_period_id) "
+				+ "VALUES('" + date + "', " + expiryDays + ", " + clientId + ", '" + workName + "', " + paymentMethodId + ", " + sellerId + ", '" + dispatchPlaceId + "', '" + deliveryTime + "', " + deliveryPeriod + ")";
 		
 		this.insert(queryInsert);
+		int insertedId = this.getInsertId();
+		if(insertedId > 0) {
+			
+			DecimalFormat df = new DecimalFormat("00");
+			DateTime dt = new DateTime();
+			String month = df.format(dt.getMonthOfYear());
+			String year = df.format(dt.getYearOfCentury());
+			
+			String leadingBudgetCode = "p-" + month + year ;
+			int lastBudgetCode = Integer.valueOf(this.getLastBudgetCode(insertedId));
+			int newBudgetCode = lastBudgetCode + 1;
+			
+			String trailingBudgetCode = StringTools.fillWithZeros(newBudgetCode, 5);
+			
+			this.update("UPDATE budgets SET code = '" + leadingBudgetCode + trailingBudgetCode + "' WHERE id = " + insertedId);
+		}		
+
+		return (insertedId > 0)? true:false;		
 		
-		return (this.getInsertId() > 0)? true:false;
 	}
+	
+	private String getLastBudgetCode(int insertId) {
+		ResultSet setBudgetCode;
+		String fullCode = "";
+		setBudgetCode = this.select("SELECT code FROM budgets WHERE code <> '' ORDER BY id DESC LIMIT 1");
+		
+		try {
+			//setBudgetCode.first();
+			if(setBudgetCode.next()) {
+				fullCode = setBudgetCode.getString("code");
+			} else {
+				fullCode = "00000";
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener la fecha");
+		}
+		if(null != fullCode && !fullCode.isEmpty()) {
+			return fullCode.substring(6);
+		} else {
+			// For revision, I'm not sure if this is the correct value that should be returned when
+			// fullCode contains null or it's empty
+			return "";
+		}
+	}
+	
+	public boolean editBudget(int budgetId, ArrayList<Object> listFields, ArrayList<Object> listValues) {
+		if (listFields.size() > 0) {
+			String queryFields = "";
+			Iterator<Object> it1 = listFields.iterator();
+			Iterator<Object> it2 = listValues.iterator();
+			while (it1.hasNext() && it2.hasNext()) {
+				queryFields += it1.next().toString() + " = " + it2.next().toString() + ",";
+			}
+			queryFields = StringTools.removeLastChar(queryFields);
+			String queryString = "UPDATE budgets SET " + queryFields + " WHERE id = " + budgetId;
+			if (this.update(queryString)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	
 	public boolean removeBoardSwitch(int switchId) {
 		String queryDelete;

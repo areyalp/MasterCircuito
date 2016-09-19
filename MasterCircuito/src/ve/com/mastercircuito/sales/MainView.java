@@ -2,6 +2,7 @@ package ve.com.mastercircuito.sales;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dialog;
 import java.awt.Dimension;
@@ -310,6 +311,7 @@ public class MainView extends JFrame{
 	private MyInternalFrame tracingFrame = new MyInternalFrame();
 	
 	//Budget add Objects
+	private String searchSelectedBudgetClient, searchSelectedBudgetId,searchSelectedBudgetDays,searchSelectedBudgetMonths,searchSelectedBudgetYears;
 	private UtilDateModel addBudgetDateModel;
 	private JButton buttonBudgetAdd;
 	private JButton buttonBudgetEdit;
@@ -376,6 +378,7 @@ public class MainView extends JFrame{
 	private JTextField textBudgetEditCompanyRepresentative, textBudgetEditExpiryDays,textBudgetEditDate;
 	private String editBudgetCompanyRepresentative, editBudgetCompany,editBudgetClient;
 	private JComboBox<String> comboBudgetEditWorkName, comboBudgetEditDispatchPlace,comboBudgetEditDeliveryPeriod, comboBudgetEditSeller, comboBudgetEditPaymentMethod, comboBudgetEditStage;
+	private Component textBudgetSearchCode;
 	
 	
 	public static void main(String[] args) {
@@ -5330,6 +5333,19 @@ public class MainView extends JFrame{
 		
 		JPanel panelBudgetSearch = new JPanel();		
 		panelBudgetSearch.setLayout(new FlowLayout(FlowLayout.CENTER));
+		//Insert here query for the budget search bar clients, code, date
+		String queryClients = "SELECT clients.client "
+				+ "FROM clients "
+				+ "GROUP BY clients.client ";
+		
+		String queryCode = "SELECT budgets.code "
+				+ "FROM budgets "
+				+ "GROUP BY budgets.code ";
+		
+		String queryDate = "SELECT budgets.`date` "
+				+ "FROM budgets "
+				+ "GROUP BY budgets.`date` ";
+		
 		JLabel labelClient = new JLabel("Cliente: ");
 		JLabel labelId = new JLabel("Codigo:");
 		JLabel labelDay = new JLabel("Dia:");
@@ -5378,6 +5394,7 @@ public class MainView extends JFrame{
 		panelBudgetSearch.add(labelClient);
 		panelBudgetSearch.add(textBudgetSearchClient);
 		
+		//ask if we are going to search for id or code
 		textBudgetSearchId = new JTextField(6);
 		textBudgetSearchId.addKeyListener(new KeyListener() {
 
@@ -7889,7 +7906,7 @@ public class MainView extends JFrame{
 	private class SearchButtonListener implements ActionListener {
 		
 		String whereQuery = "";
-		
+				
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			String actionCommand = e.getActionCommand();
@@ -8083,6 +8100,35 @@ public class MainView extends JFrame{
 				}
 				
 				loadBoardSwitchSearchTable(whereQuery);
+			}
+			else if (actionCommand.equalsIgnoreCase("budget.search.bar.button")) {
+				whereQuery = "";
+				searchSelectedBudgetClient = textBudgetSearchClient.getText();
+				searchSelectedBudgetId = textBudgetSearchId.getText();	
+				
+				//TODO check the code below...
+				searchSelectedBudgetDays = comboBudgetDays.getSelectedItem().toString();
+				searchSelectedBudgetMonths = comboBudgetMonths.getSelectedItem().toString();
+				searchSelectedBudgetYears = comboBudgetYears.getSelectedItem().toString();
+				
+				String budgetDate =  searchSelectedBudgetDays + "/" + searchSelectedBudgetMonths + "/" + searchSelectedBudgetYears; 
+				
+				if(searchSelectedBudgetClient != null && !searchSelectedBudgetClient.equalsIgnoreCase("Todas") &&
+						!searchSelectedBudgetClient.isEmpty()) {
+					whereQuery += " AND " + MainView.CLIENTS_TABLE + ".client = '" + searchSelectedBudgetClient + "'";
+				}
+				if(searchSelectedBudgetId != null && !searchSelectedBudgetId.equalsIgnoreCase("Todas") &&
+						!searchSelectedBudgetId.isEmpty()) {
+					whereQuery += " AND " + MainView.BUDGET_TABLE + ".code = '" + searchSelectedBudgetId + "'";
+				}
+				
+				if(searchSelectedBudgetDays != null && searchSelectedBudgetMonths != null &&
+						searchSelectedBudgetYears != null) {
+					
+					whereQuery += " AND " + MainView.BUDGET_TABLE + ".date = '" + searchSelectedBudgetDays + "'";
+				}
+				//
+				loadBudgetTable(whereQuery);
 			}
 		}
 		
