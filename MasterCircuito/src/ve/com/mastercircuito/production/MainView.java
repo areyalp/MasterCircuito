@@ -9282,11 +9282,11 @@ public class MainView extends JFrame{
 				}
 				
 				if(err.isEmpty()) {
-					boolean saved = db.addBudget(budgetDate, Integer.valueOf(budgetExpiryDays), budgetClientId, budgetWorkName, budgetPaymentMethod, budgetSellerId, budgetDispatchPlace, Integer.valueOf(budgetDeliveryTime), budgetDeliveryPeriod);
-					if(saved) {
-						JOptionPane.showMessageDialog(null, "Presupuesto creado exitosamente");
-						setBudgetsMode(MainView.VIEW_MODE);
-					}
+//					boolean saved = db.addBudget(budgetDate, Integer.valueOf(budgetExpiryDays), budgetClientId, budgetWorkName, budgetPaymentMethod, budgetSellerId, budgetDispatchPlace, Integer.valueOf(budgetDeliveryTime), budgetDeliveryPeriod);
+//					if(saved) {
+//						JOptionPane.showMessageDialog(null, "Presupuesto creado exitosamente");
+//						setBudgetsMode(MainView.VIEW_MODE);
+//					}
 				} else {
 					err.dump();
 				}

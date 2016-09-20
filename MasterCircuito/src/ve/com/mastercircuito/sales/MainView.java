@@ -151,8 +151,8 @@ public class MainView extends JFrame{
 	
 	//Budget Fields
 	private static final String BUDGET_ID_FIELD = "budgets.id";
-	private static final String BUDGET_CODE_FIELD = "budgets.code";
-	private static final String BUDGET_DATE_FIELD = "budgets.date";
+	private static final String BUDGET_CODE_FIELD = "budgets.`code`";
+	private static final String BUDGET_DATE_FIELD = "budgets.`date`";
 	private static final String BUDGET_EXPIRY_DAYS_FIELD = "budgets.expiry_days";
 	private static final String BUDGET_WORK_NAME_FIELD = "budgets.work_name";
 	private static final String BUDGET_DELIVERY_TIME_FIELD = "budgets.delivery_time";
@@ -6562,15 +6562,15 @@ public class MainView extends JFrame{
 		String budgetsQuery = "SELECT " + fieldsQuery
 						+ " FROM "
 						+ tablesQuery
-						+ " WHERE budgets.id = budgets.id "
+						+ " WHERE budgets.client_id = clients.id "
 						// Fix these conditions to make them disappear when filtering
 						
-						+ "AND budgets.client_id = clients.id "
+//						+ "AND budgets.client_id = clients.id "
 						+ "AND budgets.payment_method_id = budget_payment_methods.id "
 						+ "AND budgets.seller_id = users.id "
 						+ "AND budgets.dispatch_place_id = budget_dispatch_places.id "
 						+ "AND budgets.delivery_period_id = budget_delivery_period.id "
-						+ "AND budgets.stage_id = budget_stages.id "
+//						+ "AND budgets.stage_id = budget_stages.id "
 						+ whereQuery
 						+ " GROUP BY budgets.id ";
 
@@ -9270,27 +9270,19 @@ public class MainView extends JFrame{
 				
 				dialogBudgetSellerAdd.setVisible(true);
 			} else if(actionCommand.equalsIgnoreCase("budget.description.add.save")) {
-				String budgetDate = addBudgetDateModel.toString();
+				String budgetDate = addBudgetDateModel.getYear() + "-" + (addBudgetDateModel.getMonth() + 1) + "-" + addBudgetDateModel.getDay();
 //				String budgetExpiryDays = comboBoardAddType.getSelectedItem().toString();
 				
 				String budgetExpiryDays = textBudgetAddExpiryDays.getText().toString();
-				String budgetClientId = textBudgetAddClientCode.getText().toString();
+				// TODO Fix the budget client id (not the code)
+				String budgetClientId = String.valueOf(budgetCompanyAddSearchId);
 				String budgetCompanyRepresentative = textBudgetAddCompanyRepresentative.getText();
 				String budgetWorkName = textBudgetAddWorkName.getText();
 				String budgetPaymentMethod = comboBudgetAddPaymentMethod.getSelectedItem().toString();
 				String budgetDispatchPlace = comboBudgetAddDispatchPlace.getSelectedItem().toString();
 				String budgetDeliveryTime = textBudgetAddDeliveryTime.getText().toString();
 				String budgetDeliveryPeriod = comboBudgetAddDeliveryPeriod.getSelectedItem().toString();
-//				String budgetSeller = textBudgetAddSeller.getText().toString();
-
-//				String budgetClientId = String.valueOf(budgetCompanyAddSearchId);
-//				String budgetWorkName = comboBoardAddBarType.getSelectedItem().toString();
-//				String budgetPaymentMethod = comboBoardAddCircuits.getSelectedItem().toString();
-				
-				String budgetSellerId = String.valueOf(budgetSellerAddSearchId);
-//				String budgetDispatchPlace = comboBoardAddPhases.getSelectedItem().toString();
-//				String budgetDeliveryTime = (checkBoardAddGround.isSelected())?"1":"0";
-//				String budgetDeliveryPeriod = comboBudgetAddDeliveryPeriod.getSelectedItem().toString();
+				Integer budgetSellerId = budgetSellerAddSearchId;
 				
 				Errors err = new Errors();
 				
@@ -9309,7 +9301,7 @@ public class MainView extends JFrame{
 				if(null == budgetPaymentMethod || budgetPaymentMethod.isEmpty()) {
 					err.add("Debe especificar un metodo de pago valido");
 				}
-				if(null == budgetSellerId || budgetSellerId.isEmpty() || !Numbers.isNumeric(budgetSellerId)) {
+				if(null == budgetSellerId || budgetSellerId < 1) {
 					err.add("Debe ingresar el vendedor");
 				}
 				if(null == budgetDispatchPlace || budgetDispatchPlace.isEmpty()) {

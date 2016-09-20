@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 
 import javax.swing.JOptionPane;
@@ -739,7 +740,6 @@ public class Db extends MysqlDriver {
 		return date;
 	}
 	
-	
 	public boolean addSwitch(String model, String brand, String type, String phases, int current, String voltage, int interruption, String price) {
 		int brandId = this.getSwitchBrandId(brand);
 		int typeId = this.getSwitchTypeId(type);
@@ -792,67 +792,60 @@ public class Db extends MysqlDriver {
 		
 		return (this.getInsertId() > 0)? true:false;
 	}
-	
 
-	public boolean addBudget(String date, Integer expiryDays, String clientId, 
-			String workName, String method, String seller,
+	public Boolean addBudget(String date, Integer expiryDays, String clientId, 
+			String workName, String method, Integer sellerId,
 			String place, Integer deliveryTime, String deliveryPeriod) {
-		// TODO Finish this(Add budget method)
-			
-		int paymentMethodId = this.getPaymentMethodId(method);
-		int sellerId = this.getSellerId(seller);
-		int dispatchPlaceId = this.getDispachPlaceId(place);
-		int deliveryPeriodId= this.getDeliveryPeriodId(deliveryPeriod);	
 		
-		String queryInsert = "INSERT INTO budgets (code, `date`, expiry_days, client_id, work_name, payment_method_id, seller_id, dispatch_place_id, delivery_time, delivery_period_id) "
-				+ "VALUES('" + date + "', " + expiryDays + ", " + clientId + ", '" + workName + "', " + paymentMethodId + ", " + sellerId + ", '" + dispatchPlaceId + "', '" + deliveryTime + "', " + deliveryPeriod + ")";
+		Integer paymentMethodId = this.getPaymentMethodId(method);
+		Integer dispatchPlaceId = this.getDispachPlaceId(place);
+		Integer deliveryPeriodId= this.getDeliveryPeriodId(deliveryPeriod);
+		Integer budgetCodeId = 0;
+		Integer budgetId = 0;
 		
-		this.insert(queryInsert);
-		int insertedId = this.getInsertId();
-		if(insertedId > 0) {
+		try {
+			DateTime serverDateTime = new DateTime(new Date());
+			Integer serverYear = serverDateTime.getYear();
 			
-			DecimalFormat df = new DecimalFormat("00");
-			DateTime dt = new DateTime();
-			String month = df.format(dt.getMonthOfYear());
-			String year = df.format(dt.getYearOfCentury());
-			
-			String leadingBudgetCode = "p-" + month + year ;
-			int lastBudgetCode = Integer.valueOf(this.getLastBudgetCode(insertedId));
-			int newBudgetCode = lastBudgetCode + 1;
-			
-			String trailingBudgetCode = StringTools.fillWithZeros(newBudgetCode, 5);
-			
-			this.update("UPDATE budgets SET code = '" + leadingBudgetCode + trailingBudgetCode + "' WHERE id = " + insertedId);
-		}		
-
-		return (insertedId > 0)? true:false;		
+			Boolean deleteResult = this.delete("DELETE FROM budget_code_ids WHERE year < " + serverYear);
+			this.select("SELECT * FROM budget_code_ids");
+			Integer totalRows = this.getNumRows();
+			if (deleteResult && totalRows == 0) {
+				this.query("ALTER TABLE budget_code_ids AUTO_INCREMENT=1");
+			}
+			if((deleteResult && totalRows == 0) || (!deleteResult && totalRows == 0) 
+					|| (!deleteResult && totalRows > 0)){
+				String queryInsertBudgetCode = "INSERT INTO budget_code_ids (year) VALUES(" + serverYear + ")";
+				this.insert(queryInsertBudgetCode);
+				budgetCodeId = this.getInsertId();
+				String stringBudgetCodeId = this.prepareBudgetCode(serverDateTime, budgetCodeId);
+				
+				String queryInsertBudget = "INSERT INTO budgets (code, `date`, expiry_days, client_id, work_name, payment_method_id, seller_id, dispatch_place_id, delivery_time, delivery_period_id) "
+						+ "VALUES('" + stringBudgetCodeId + "', '" + date + "', " + expiryDays + ", " + clientId + ", '" + workName + "', " + paymentMethodId + ", " + sellerId + ", '" + dispatchPlaceId + "', '" + deliveryTime + "', " + deliveryPeriodId + ")";
+				this.insert(queryInsertBudget);
+				budgetId = this.getInsertId();
+				
+				String queryUpdateBudgetCodeId = "UPDATE budget_code_ids SET budget_code_id = " + budgetId + " WHERE id = " + budgetCodeId;
+				this.update(queryUpdateBudgetCodeId);
+			}
+		} catch(Exception e) {
+			JOptionPane.showMessageDialog(null, "Ha ocurrido un error al agregar el presupuesto, por favor contacte al programador");
+		}
+		
+		return (budgetId > 0)? true:false;		
 		
 	}
 	
-	private String getLastBudgetCode(int insertId) {
-		ResultSet setBudgetCode;
-		String fullCode = "";
-		setBudgetCode = this.select("SELECT code FROM budgets WHERE code <> '' ORDER BY id DESC LIMIT 1");
+	private String prepareBudgetCode(DateTime serverDateTime, int budgetCodeId) {
+		DecimalFormat df = new DecimalFormat("00");
+		String serverDay = df.format(serverDateTime.getDayOfMonth());
+		String serverMonth = df.format(serverDateTime.getMonthOfYear());
+		String serverYear = df.format(serverDateTime.getYearOfCentury());
+		DecimalFormat df2 = new DecimalFormat("000000");
+		String stringBudgetCodeId = df2.format(budgetCodeId);
 		
-		try {
-			//setBudgetCode.first();
-			if(setBudgetCode.next()) {
-				fullCode = setBudgetCode.getString("code");
-			} else {
-				fullCode = "00000";
-			}
-			
-		} catch (SQLException e) {
-			e.printStackTrace();
-			JOptionPane.showMessageDialog(null, "Error al obtener la fecha");
-		}
-		if(null != fullCode && !fullCode.isEmpty()) {
-			return fullCode.substring(6);
-		} else {
-			// For revision, I'm not sure if this is the correct value that should be returned when
-			// fullCode contains null or it's empty
-			return "";
-		}
+		String budgetCode = "p-" + serverDay + serverMonth + serverYear + stringBudgetCodeId;
+		return budgetCode;
 	}
 	
 	public boolean editBudget(int budgetId, ArrayList<Object> listFields, ArrayList<Object> listValues) {

@@ -69,6 +69,21 @@ public class MysqlDriver {
 		return conn;
 	}
 	
+	public boolean query(String queryString) {
+		Boolean queryResult = false;
+		Statement sqlState;
+		try {
+			sqlState = conn.createStatement();
+			queryResult = sqlState.execute(conn.nativeSQL(queryString));
+		} catch (SQLException e) {
+			this.setInsertId(0);
+			queryResult = false;
+			e.printStackTrace();
+		}
+		this.setInsertId(0);
+		return queryResult;
+	}
+	
 	public ResultSet select(String queryString) {
 		ResultSet queryResult = null;
 		Statement sqlState;
@@ -255,6 +270,7 @@ public class MysqlDriver {
 			this.numRows = set.getRow();
 			set.beforeFirst();;
 		} catch (SQLException e) {
+			this.numRows = 0;
 			e.printStackTrace();
 		}
 	}
