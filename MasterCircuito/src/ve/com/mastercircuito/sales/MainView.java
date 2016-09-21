@@ -35,7 +35,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
 
-import javax.swing.AbstractButton;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
@@ -302,7 +301,7 @@ public class MainView extends JFrame{
 		private JPanel panelBoardMaterialsEditSaveCancel;
 	// Board Comments Objects
 		private JPanel boardCommentsPanel;
-		private JTextArea textComments;
+		private JTextArea textBoardComments;
 		private JButton buttonBoardCommentsEdit, buttonBoardCommentsEditSave, buttonBoardCommentsEditCancel;
 		private JPanel panelBoardCommentsEditSaveCancel;
 	//*** Budget Global Variables and objects ***//
@@ -381,6 +380,7 @@ public class MainView extends JFrame{
 		private JButton buttonAddBudgetSwitch, buttonRemoveBudgetSwitch;
 		private int selectedBudgetSwitchId;
 	// Budget Switches Add Objects
+		private Object[][] budgetSwitchesData;
 		private String searchSelectedBudgetSwitchBrand, searchSelectedBudgetSwitchType, searchSelectedBudgetSwitchPhases, searchSelectedBudgetSwitchCurrent, searchSelectedBudgetSwitchInterruption;
 		private JDialog dialogBudgetSwitchAdd;
 		private Object[][] budgetSwitchesSearchData;
@@ -407,14 +407,14 @@ public class MainView extends JFrame{
 		private int budgetBoxAddQuantity = 1;
 		private int budgetBoxSearchQuantity = 1;
 		private int budgetBoxSearchId = 0;
-	// Budget Boxes Objects
+	// Budget Boards Objects
 		private JPanel budgetBoardsPanel;
 		private JTable tableBudgetBoardsResult;
 		private ListSelectionModel listBudgetBoardsSelectionModel;
 		private int budgetBoardsTableSelectedIndex;
 		private JButton buttonAddBudgetBoard, buttonRemoveBudgetBoard;
 		private int selectedBudgetBoardId;
-	// Budget Boxes Add Objects
+	// Budget Boards Add Objects
 		private String searchSelectedBudgetBoardBrand, searchSelectedBudgetBoardType, searchSelectedBudgetBoardPhases, searchSelectedBudgetBoardCurrent, searchSelectedBudgetBoardInterruption;
 		private JDialog dialogBudgetBoardAdd;
 		private Object[][] budgetBoardsSearchData;
@@ -424,6 +424,11 @@ public class MainView extends JFrame{
 		private int budgetBoardAddQuantity = 1;
 		private int budgetBoardSearchQuantity = 1;
 		private int budgetBoardSearchId = 0;
+	// Budget Notes Edit Objects
+		private JPanel budgetNotesPanel;
+		private JTextArea textBudgetNotes;
+		private JPanel panelBudgetNotesEditSaveCancel;
+		private JButton buttonBudgetNotesEdit, buttonBudgetNotesEditSave, buttonBudgetNotesEditCancel;
 		
 	public static void main(String[] args) {
 		new MainView();
@@ -690,13 +695,8 @@ public class MainView extends JFrame{
 		int x = (desktop.getWidth() / 2) - (budgetsFrame.getWidth() / 2);
 		int y = (desktop.getHeight() / 2) - (budgetsFrame.getHeight() / 2);
 		budgetsFrame.setLocation(new Point(x, y));
-		
 		budgetsFrame.setLayout(new GridLayout(1, 1));
-						
-		Font fa = null;
-		
 		budgetsFrame.add(createBudgetMainPanel());
-		
 		budgetsFrame.setVisible(true);
 		
 		desktop.add(budgetsFrame);
@@ -706,11 +706,6 @@ public class MainView extends JFrame{
 			
 		}
 
-	}
-	
-	private JPanel createBudgetSettingsPanel() {
-		JPanel panelBudgetSettings = new JPanel();
-		return panelBudgetSettings;
 	}
 	
 	private void createStartersFrame() {
@@ -3534,7 +3529,7 @@ public class MainView extends JFrame{
 				textMaterialsPrice.setText("");
 				textMaterialsPrice.setEditable(false);
 				buttonBoardMaterialsEdit.setEnabled(false);
-				textComments.setEditable(false);
+				textBoardComments.setEditable(false);
 				buttonBoardCommentsEdit.setEnabled(false);
 			}
 			
@@ -4794,12 +4789,12 @@ public class MainView extends JFrame{
 		cs.gridwidth = 1;
 		panelCommentsCenter.add(labelComments, cs);
 		
-		textComments = new JTextArea(20, 50);
+		textBoardComments = new JTextArea(20, 50);
 		cs.gridx = 0;
 		cs.gridy = 1;
 		cs.gridwidth = 50;
-		textComments.setEditable(false);
-		panelCommentsCenter.add(textComments, cs);
+		textBoardComments.setEditable(false);
+		panelCommentsCenter.add(textBoardComments, cs);
 		
 		BoardButtonListener lForBoardButton = new BoardButtonListener();
 		
@@ -4829,10 +4824,10 @@ public class MainView extends JFrame{
 		buttonBoardCommentsEdit.addActionListener(lForBoardButton);
 		buttonBoardCommentsEdit.setEnabled(false);
 		
-		JPanel panelMaterialsButtons = new JPanel();
-		panelMaterialsButtons.add(buttonBoardCommentsEdit);
+		JPanel panelCommentsButtons = new JPanel();
+		panelCommentsButtons.add(buttonBoardCommentsEdit);
 		
-		panelComments.add(panelMaterialsButtons, BorderLayout.SOUTH);
+		panelComments.add(panelCommentsButtons, BorderLayout.SOUTH);
 		
 		return panelComments;
 	}
@@ -4892,8 +4887,8 @@ public class MainView extends JFrame{
 			textMaterialsPrice.setText("");
 			textMaterialsPrice.setEditable(false);
 			buttonBoardMaterialsEdit.setEnabled(false);
-			textComments.setText("");
-			textComments.setEditable(false);
+			textBoardComments.setText("");
+			textBoardComments.setEditable(false);
 			buttonBoardCommentsEdit.setEnabled(false);
 			textBoardDescriptionName.setText("");
 			textBoardDescriptionPrice.setText("");
@@ -4924,7 +4919,7 @@ public class MainView extends JFrame{
 			textMaterials.setEditable(false);
 			textMaterialsPrice.setEditable(false);
 			buttonBoardMaterialsEdit.setEnabled(false);
-			textComments.setEditable(false);
+			textBoardComments.setEditable(false);
 			buttonBoardCommentsEdit.setEnabled(false);
 			editBoardId = Integer.valueOf(String.valueOf(tableBoardsResult.getValueAt(boardsTableSelectedIndex, SharedListSelectionListener.BOARD_ID_COLUMN)));
 			editBoardName = String.valueOf(tableBoardsResult.getValueAt(boardsTableSelectedIndex, SharedListSelectionListener.BOARD_NAME_COLUMN));
@@ -5365,10 +5360,10 @@ public class MainView extends JFrame{
 //		budgetViewTabbedPane.addTab("Especiales", null, budgetSpecialsPanel, "Especiales");
 //		budgetViewTabbedPane.setFont(new Font(null, Font.BOLD, 16));
 //		
-//		budgetNotesPanel = createBudgetNotesTablePanel();
-//		
-//		budgetViewTabbedPane.addTab("Notas", null, budgetNotesPanel, "Notas");
-//		budgetViewTabbedPane.setFont(new Font(null, Font.BOLD, 16));
+		budgetNotesPanel = createBudgetNotesTablePanel();
+		
+		budgetViewTabbedPane.addTab("Notas", null, budgetNotesPanel, "Notas");
+		budgetViewTabbedPane.setFont(new Font(null, Font.BOLD, 16));
 					
 		return budgetViewTabbedPane;
 	}
@@ -6382,8 +6377,64 @@ public class MainView extends JFrame{
 	}
 
 	private JPanel createBudgetNotesTablePanel() {
-		JPanel createBudgetNotes = new JPanel();
-		return createBudgetNotes;
+		JPanel panelNotes = new JPanel();
+		panelNotes.setLayout(new BorderLayout(20, 20));
+		
+		JPanel panelNotesCenter = new JPanel();
+		panelNotesCenter.setLayout(new GridBagLayout());
+		
+		GridBagConstraints cs = new GridBagConstraints();
+		
+		cs.fill = GridBagConstraints.HORIZONTAL;
+		cs.insets = new Insets(0, 0, 5, 5);
+		
+		JLabel labelNotes = new JLabel("Notas:");
+		cs.gridx = 0;
+		cs.gridy = 0;
+		cs.gridwidth = 1;
+		panelNotesCenter.add(labelNotes, cs);
+		
+		textBudgetNotes = new JTextArea(20, 50);
+		cs.gridx = 0;
+		cs.gridy = 1;
+		cs.gridwidth = 50;
+		textBudgetNotes.setEditable(false);
+		panelNotesCenter.add(textBudgetNotes, cs);
+		
+		BudgetButtonListener lForBudgetButton = new BudgetButtonListener();
+		
+		panelBudgetNotesEditSaveCancel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		
+		buttonBudgetNotesEditSave = new JButton("Guardar");
+		buttonBudgetNotesEditSave.setEnabled(false);
+		buttonBudgetNotesEditSave.setActionCommand("budget.notes.edit.save");
+		buttonBudgetNotesEditSave.addActionListener(lForBudgetButton);
+		buttonBudgetNotesEditCancel = new JButton("Cancelar");
+		buttonBudgetNotesEditCancel.setActionCommand("budget.notes.edit.cancel");
+		buttonBudgetNotesEditCancel.addActionListener(lForBudgetButton);
+		buttonBudgetNotesEditCancel.setEnabled(false);
+		panelBudgetNotesEditSaveCancel.add(buttonBudgetNotesEditSave);
+		panelBudgetNotesEditSaveCancel.add(buttonBudgetNotesEditCancel);
+		
+		cs.gridx = 0;
+		cs.gridy = 45;
+		cs.gridwidth = 50;
+		panelNotesCenter.add(panelBudgetNotesEditSaveCancel,cs);
+		panelBudgetNotesEditSaveCancel.setVisible(false);
+		
+		panelNotes.add(panelNotesCenter, BorderLayout.CENTER);
+		
+		buttonBudgetNotesEdit = new JButton("Editar");
+		buttonBudgetNotesEdit.setActionCommand("budget.notes.edit");
+		buttonBudgetNotesEdit.addActionListener(lForBudgetButton);
+		buttonBudgetNotesEdit.setEnabled(false);
+		
+		JPanel panelNotesButtons = new JPanel();
+		panelNotesButtons.add(buttonBudgetNotesEdit);
+		
+		panelNotes.add(panelNotesButtons, BorderLayout.SOUTH);
+		
+		return panelNotes;
 	}
 	
 	private JPanel createBudgetCompanyAddSearchPanel() {
@@ -6735,6 +6786,37 @@ public class MainView extends JFrame{
 		} else {
 			tableBudgetsResult.setModel(new DefaultTableModel());
 		}
+	}
+	
+	private void loadBudgetSwitchTable() {
+		String budgetSwitchesQuery = "SELECT budget_switches.id, "
+				+ " CONCAT('Interruptor ', switches.phases, 'X', currents.current, 'A,', switch_types.type, ',', switch_brands.brand) as description, "
+				+ " budget_switches.quantity, "
+				+ " switches.price, "
+				+ " (budget_switches.quantity * switches.price) as total "
+			+ " FROM budgets, budget_switches, switches, switch_types, switch_brands, currents "
+			+ " WHERE budget_switches.budget_container_id = " + selectedBudgetId
+			+ " AND budgets.id = budget_switches.budget_container_id"
+			+ " AND switches.id = budget_switches.switch_id "
+			+ " AND switches.current_id = currents.id"
+			+ " AND switches.type_id = switch_types.id"
+			+ " AND switches.brand_id = switch_brands.id"
+			+ " ORDER BY switches.phases DESC, currents.current DESC ";
+		
+		String[] budgetSwitchesColumnNames = { "Id", "Descripcion", "Cantidad", "Precio", "Total"};
+		budgetSwitchesData = db.fetchAll(db.select(budgetSwitchesQuery));
+		
+		if(budgetSwitchesData.length > 0) {
+			MyTableModel mForTable = new MyTableModel(budgetSwitchesData, budgetSwitchesColumnNames);
+			tableBudgetSwitchesResult.setModel(mForTable);
+			if(null != tableBudgetSwitchesResult && tableBudgetSwitchesResult.getSelectedRow() == -1) {
+				buttonRemoveBudgetSwitch.setEnabled(false);
+			}
+		} else {
+			tableBudgetSwitchesResult.setModel(new DefaultTableModel());
+			buttonRemoveBudgetSwitch.setEnabled(false);
+		}
+		buttonAddBudgetSwitch.setEnabled(true);
 	}
 	
 	private void loadBudgetCompanyTable(String whereQuery) {
@@ -8225,8 +8307,8 @@ public class MainView extends JFrame{
 				textMaterialsPrice.setText("");
 				textMaterialsPrice.setEditable(false);
 				buttonBoardMaterialsEdit.setEnabled(false);
-				textComments.setText("");
-				textComments.setEditable(false);
+				textBoardComments.setText("");
+				textBoardComments.setEditable(false);
 				buttonBoardCommentsEdit.setEnabled(false);
 			} else if(actionCommand.equalsIgnoreCase("board.switch.search.bar.button")) {
 				whereQuery = "";
@@ -8468,7 +8550,7 @@ public class MainView extends JFrame{
 							textMaterials.setEditable(false);
 							textMaterialsPrice.setEditable(false);
 							buttonBoardMaterialsEdit.setEnabled(true);
-							textComments.setEditable(false);
+							textBoardComments.setEditable(false);
 							buttonBoardCommentsEdit.setEnabled(true);
 						}
 						
@@ -8492,7 +8574,7 @@ public class MainView extends JFrame{
 						textMaterials.setText(db.getBoardMaterials(selectedBoardId));
 						textMaterialsPrice.setText(String.valueOf(db.getBoardMaterialsPrice(selectedBoardId)));
 						
-						textComments.setText(db.getBoardComments(selectedBoardId));
+						textBoardComments.setText(db.getBoardComments(selectedBoardId));
 						
 						textBoardDescription.setText("Caja para Tablero, " +
 								tableBoardsResult.getValueAt(boardsTableSelectedIndex, BOARD_TYPE_COLUMN) +
@@ -8517,54 +8599,38 @@ public class MainView extends JFrame{
 				} else {
 					selectedBudgetId = Integer.valueOf((String) tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, 0));
 					
-					if(lsm.isSelectionEmpty()) {
-						buttonBudgetEdit.setEnabled(false);
-						textBudgetDescriptionId.setText("");
-						textBudgetDescriptionCode.setText("");
-						textBudgetDescriptionDate.setText("");
-						textBudgetDescriptionExpiryDays.setText("");
-						textBudgetDescriptionExpiryDate.setText("");
-						textBudgetDescriptionClientCode.setText("");
-						textBudgetDescriptionCompany.setText("");
-						textBudgetDescriptionCompanyRepresentative.setText("");
-						textBudgetDescriptionWorkName.setText("");
-						textBudgetDescriptionPaymentMethod.setText("");
-						textBudgetDescriptionSeller.setText("");
-						textBudgetDescriptionDispatchPlace.setText("");
-						textBudgetDescriptionDeliveryTime.setText("");
-						textBudgetDescriptionDeliveryPeriod.setText("");
-					} else {
-						if(panelBudgetDescription.isShowing()) {
-							buttonBudgetEdit.setEnabled(true);
-						}
-						
-						DateTime dt = new DateTime(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_DATE_COLUMN));
-						
-						Integer expiryDays = Integer.valueOf(String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_EXPIRY_DAYS_COLUMN)));
-						
-						textBudgetDescriptionId.setText((String) tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_ID_COLUMN));
-						textBudgetDescriptionCode.setText((String) tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_CODE_COLUMN));
-						textBudgetDescriptionDate.setText(dt.toLocalDate().toString());
-						textBudgetDescriptionExpiryDays.setText(expiryDays.toString());
-						textBudgetDescriptionExpiryDate.setText(dt.plusDays(expiryDays).toLocalDate().toString());
-						textBudgetDescriptionClientCode.setText(db.getBudgetClientCode(Integer.valueOf((String)tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_ID_COLUMN))));
-						textBudgetDescriptionCompany.setText(db.getBudgetClientName(Integer.valueOf((String)tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_ID_COLUMN))));
-						textBudgetDescriptionCompanyRepresentative.setText(db.getBudgetClientRepresentative(Integer.valueOf((String)tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_ID_COLUMN))));
-						textBudgetDescriptionWorkName.setText((String) tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_WORK_NAME_COLUMN));
-						textBudgetDescriptionPaymentMethod.setText((String)tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_PAYMENT_METHOD_COLUMN));
-						textBudgetDescriptionSeller.setText((String) tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_SELLER_COLUMN));
-						textBudgetDescriptionDispatchPlace.setText((String) tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_DISPATCH_PLACE_COLUMN));
-						textBudgetDescriptionDeliveryTime.setText((String)tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_DELIVERY_TIME_COLUMN));
-						textBudgetDescriptionDeliveryPeriod.setText((String)tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_DELIVERY_PERIOD_COLUMN));
-//						textBoardDescription.setText("Caja para Tablero, " +
-//								tableBoardsResult.getValueAt(boardsTableSelectedIndex, BOARD_TYPE_COLUMN) +
-//								", " +
-//								tableBoardsResult.getValueAt(boardsTableSelectedIndex, BOARD_PHASES_COLUMN) +
-//								", de " +
-//								tableBoardsResult.getValueAt(boardsTableSelectedIndex, BOARD_CIRCUITS_COLUMN) +
-//								" circuitos, " +
-//								tableBoardsResult.getValueAt(boardsTableSelectedIndex, BOARD_NEMA_COLUMN));
+					loadBudgetSwitchTable();
+					
+					if(panelBudgetDescription.isShowing()) {
+						buttonBudgetEdit.setEnabled(true);
 					}
+					
+					DateTime dt = new DateTime(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_DATE_COLUMN));
+					
+					Integer expiryDays = Integer.valueOf(String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_EXPIRY_DAYS_COLUMN)));
+					
+					textBudgetDescriptionId.setText((String) tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_ID_COLUMN));
+					textBudgetDescriptionCode.setText((String) tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_CODE_COLUMN));
+					textBudgetDescriptionDate.setText(dt.toLocalDate().toString());
+					textBudgetDescriptionExpiryDays.setText(expiryDays.toString());
+					textBudgetDescriptionExpiryDate.setText(dt.plusDays(expiryDays).toLocalDate().toString());
+					textBudgetDescriptionClientCode.setText(db.getBudgetClientCode(Integer.valueOf((String)tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_ID_COLUMN))));
+					textBudgetDescriptionCompany.setText(db.getBudgetClientName(Integer.valueOf((String)tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_ID_COLUMN))));
+					textBudgetDescriptionCompanyRepresentative.setText(db.getBudgetClientRepresentative(Integer.valueOf((String)tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_ID_COLUMN))));
+					textBudgetDescriptionWorkName.setText((String) tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_WORK_NAME_COLUMN));
+					textBudgetDescriptionPaymentMethod.setText((String)tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_PAYMENT_METHOD_COLUMN));
+					textBudgetDescriptionSeller.setText((String) tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_SELLER_COLUMN));
+					textBudgetDescriptionDispatchPlace.setText((String) tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_DISPATCH_PLACE_COLUMN));
+					textBudgetDescriptionDeliveryTime.setText((String)tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_DELIVERY_TIME_COLUMN));
+					textBudgetDescriptionDeliveryPeriod.setText((String)tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_DELIVERY_PERIOD_COLUMN));
+//					textBoardDescription.setText("Caja para Tablero, " +
+//						tableBoardsResult.getValueAt(boardsTableSelectedIndex, BOARD_TYPE_COLUMN) +
+//						", " +
+//						tableBoardsResult.getValueAt(boardsTableSelectedIndex, BOARD_PHASES_COLUMN) +
+//						", de " +
+//						tableBoardsResult.getValueAt(boardsTableSelectedIndex, BOARD_CIRCUITS_COLUMN) +
+//						" circuitos, " +
+//						tableBoardsResult.getValueAt(boardsTableSelectedIndex, BOARD_NEMA_COLUMN));
 				}
 			}
 			
@@ -9322,7 +9388,7 @@ public class MainView extends JFrame{
 			} else if(actionCommand.equalsIgnoreCase("board.comments.edit")) {
 				boardViewTabbedPane.setEnabled(false);
 				buttonBoardCommentsEdit.setEnabled(false);
-				textComments.setEditable(true);
+				textBoardComments.setEditable(true);
 				panelBoardCommentsEditSaveCancel.setVisible(true);
 				buttonBoardCommentsEditSave.setEnabled(true);
 				buttonBoardCommentsEditCancel.setEnabled(true);
@@ -9331,11 +9397,11 @@ public class MainView extends JFrame{
 					ArrayList<Object> listFields = new ArrayList<Object>();
 					ArrayList<Object> listValues = new ArrayList<Object>();
 					listFields.add("comments");
-					listValues.add("'" + textComments.getText() + "'");
+					listValues.add("'" + textBoardComments.getText() + "'");
 					db.editBoard(selectedBoardId, listFields, listValues);
 					boardViewTabbedPane.setEnabled(true);
 					buttonBoardCommentsEdit.setEnabled(true);
-					textComments.setEditable(false);
+					textBoardComments.setEditable(false);
 					buttonBoardCommentsEditSave.setEnabled(false);
 					buttonBoardCommentsEditCancel.setEnabled(false);
 					panelBoardCommentsEditSaveCancel.setVisible(false);
@@ -9345,7 +9411,7 @@ public class MainView extends JFrame{
 			} else if (actionCommand.equalsIgnoreCase("board.comments.edit.cancel")) {
 				boardViewTabbedPane.setEnabled(true);
 				buttonBoardCommentsEdit.setEnabled(true);
-				textComments.setEditable(false);
+				textBoardComments.setEditable(false);
 				buttonBoardCommentsEditSave.setEnabled(false);
 				buttonBoardCommentsEditCancel.setEnabled(false);
 				panelBoardCommentsEditSaveCancel.setVisible(false);
