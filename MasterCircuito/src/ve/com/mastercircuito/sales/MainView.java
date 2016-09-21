@@ -82,305 +82,349 @@ public class MainView extends JFrame{
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 7717733090547682708L;
+		private static final long serialVersionUID = 7717733090547682708L;
 	// Form Modes
-	private static final int VIEW_MODE = 1;
-	private static final int ADD_MODE = 2;
-	private static final int EDIT_MODE = 3;
+		private static final int VIEW_MODE = 1;
+		private static final int ADD_MODE = 2;
+		private static final int EDIT_MODE = 3;
 	// Common Tables
-	private static final String INSTALLATIONS_TABLE = "installations";
-	private static final String NEMAS_TABLE = "nemas";
-	private static final String INTERRUPTIONS_TABLE = "interruptions";
-	private static final String LOCK_TYPES_TABLE = "lock_types";
-	private static final String USERS_TABLE = "users";
-	private static final String CLIENTS_TABLE = "clients";
+		private static final String INSTALLATIONS_TABLE = "installations";
+		private static final String NEMAS_TABLE = "nemas";
+		private static final String INTERRUPTIONS_TABLE = "interruptions";
+		private static final String LOCK_TYPES_TABLE = "lock_types";
+		private static final String USERS_TABLE = "users";
+		private static final String CLIENTS_TABLE = "clients";
 	
 	// Common Fields
-	private static final String INSTALLATION_FIELD = "installations.installation";
-	private static final String NEMA_FIELD = "nemas.nema";
-	private static final String INTERRUPTION_FIELD = "interruptions.interruption";
+		private static final String INSTALLATION_FIELD = "installations.installation";
+		private static final String NEMA_FIELD = "nemas.nema";
+		private static final String INTERRUPTION_FIELD = "interruptions.interruption";
 	// Box Tables
-	private static final String BOXES_TABLE = "boxes";
-	private static final String BOX_TYPES_TABLE = "box_types";
-	private static final String BOX_SHEETS_TABLE = "box_sheets";
-	private static final String BOX_FINISHES_TABLE = "box_finishes";
-	private static final String BOX_COLORS_TABLE = "box_colors";
-	private static final String BOX_UNITS_TABLE = "box_measure_units";
-	private static final String BOX_CALIBERS_TABLE = "box_calibers";
+		private static final String BOXES_TABLE = "boxes";
+		private static final String BOX_TYPES_TABLE = "box_types";
+		private static final String BOX_SHEETS_TABLE = "box_sheets";
+		private static final String BOX_FINISHES_TABLE = "box_finishes";
+		private static final String BOX_COLORS_TABLE = "box_colors";
+		private static final String BOX_UNITS_TABLE = "box_measure_units";
+		private static final String BOX_CALIBERS_TABLE = "box_calibers";
 	// Box Fields
-	private static final String BOX_ID_FIELD = "boxes.id";
-	private static final String BOX_TYPE_FIELD = "box_types.type";
-	private static final String BOX_PAIRS_FIELD = "IF(boxes.pairs=0,'N/A',boxes.pairs) as pairs";
-	private static final String BOX_SHEET_FIELD = "IF(boxes.sheet_id=0,'N/A',box_sheets.sheet) as sheet";
-	private static final String BOX_FINISH_FIELD = "IF(boxes.finish_id=0,'N/A',box_finishes.finish) as finish";
-	private static final String BOX_COLOR_FIELD = "IF(boxes.color_id=0,'N/A',box_colors.color) as color";
-	private static final String BOX_HEIGHT_FIELD = "IF(boxes.height=0,'N/A',boxes.height) as height";
-	private static final String BOX_WIDTH_FIELD = "IF(boxes.width=0,'N/A',boxes.width) as width";
-	private static final String BOX_DEPTH_FIELD = "IF(boxes.depth=0,'N/A',boxes.depth) as depth";
-	private static final String BOX_UNITS_FIELD = "IF(boxes.units_id=0,'N/A',box_measure_units.units) as units";
-	private static final String BOX_CALIBER_FIELD = "IF(boxes.caliber_id=0,'N/A',box_calibers.caliber) as caliber";
-	private static final String BOX_LOCK_TYPE_FIELD = "IF(boxes.lock_type_id=0,'N/A',lock_types.lock_type) as lock_type";
-	private static final String BOX_PRICE_FIELD = "boxes.price";
+		private static final String BOX_ID_FIELD = "boxes.id";
+		private static final String BOX_TYPE_FIELD = "box_types.type";
+		private static final String BOX_PAIRS_FIELD = "IF(boxes.pairs=0,'N/A',boxes.pairs) as pairs";
+		private static final String BOX_SHEET_FIELD = "IF(boxes.sheet_id=0,'N/A',box_sheets.sheet) as sheet";
+		private static final String BOX_FINISH_FIELD = "IF(boxes.finish_id=0,'N/A',box_finishes.finish) as finish";
+		private static final String BOX_COLOR_FIELD = "IF(boxes.color_id=0,'N/A',box_colors.color) as color";
+		private static final String BOX_HEIGHT_FIELD = "IF(boxes.height=0,'N/A',boxes.height) as height";
+		private static final String BOX_WIDTH_FIELD = "IF(boxes.width=0,'N/A',boxes.width) as width";
+		private static final String BOX_DEPTH_FIELD = "IF(boxes.depth=0,'N/A',boxes.depth) as depth";
+		private static final String BOX_UNITS_FIELD = "IF(boxes.units_id=0,'N/A',box_measure_units.units) as units";
+		private static final String BOX_CALIBER_FIELD = "IF(boxes.caliber_id=0,'N/A',box_calibers.caliber) as caliber";
+		private static final String BOX_LOCK_TYPE_FIELD = "IF(boxes.lock_type_id=0,'N/A',lock_types.lock_type) as lock_type";
+		private static final String BOX_PRICE_FIELD = "boxes.price";
 	// Board Tables
-	private static final String BOARD_TABLE = "boards";
-	private static final String BOARD_BAR_CAPACITIES_TABLE = "board_bar_capacities";
-	private static final String BOARD_BAR_TYPES_TABLE = "board_bar_types";
-	private static final String BOARD_CIRCUITS_TABLE = "board_circuits";
-	private static final String BOARD_TYPES_TABLE = "board_types";
-	private static final String BOARD_VOLTAGES_TABLE = "board_voltages";
+		private static final String BOARD_TABLE = "boards";
+		private static final String BOARD_BAR_CAPACITIES_TABLE = "board_bar_capacities";
+		private static final String BOARD_BAR_TYPES_TABLE = "board_bar_types";
+		private static final String BOARD_CIRCUITS_TABLE = "board_circuits";
+		private static final String BOARD_TYPES_TABLE = "board_types";
+		private static final String BOARD_VOLTAGES_TABLE = "board_voltages";
 	// Board Fields
-	private static final String BOARD_ID_FIELD = "boards.id";
-	private static final String BOARD_NAME_FIELD = "boards.`name`";
-	private static final String BOARD_TYPE_FIELD = "board_types.type";
-	private static final String BOARD_BAR_CAPACITY_FIELD = "board_bar_capacities.bar_capacity";
-	private static final String BOARD_BAR_TYPE_FIELD = "board_bar_types.bar_type";
-	private static final String BOARD_CIRCUITS_FIELD = "board_circuits.circuits";
-	private static final String BOARD_VOLTAGE_FIELD = "board_voltages.voltage";
-	private static final String BOARD_PHASES_FIELD = "boards.phases";
-	private static final String BOARD_GROUND_FIELD = "IF(boards.ground=0,'NO','SI') as ground";
-	private static final String BOARD_LOCK_TYPE_FIELD = "lock_types.lock_type";
-	private static final String BOARD_PRICE_FIELD = "boards.price";
+		private static final String BOARD_ID_FIELD = "boards.id";
+		private static final String BOARD_NAME_FIELD = "boards.`name`";
+		private static final String BOARD_TYPE_FIELD = "board_types.type";
+		private static final String BOARD_BAR_CAPACITY_FIELD = "board_bar_capacities.bar_capacity";
+		private static final String BOARD_BAR_TYPE_FIELD = "board_bar_types.bar_type";
+		private static final String BOARD_CIRCUITS_FIELD = "board_circuits.circuits";
+		private static final String BOARD_VOLTAGE_FIELD = "board_voltages.voltage";
+		private static final String BOARD_PHASES_FIELD = "boards.phases";
+		private static final String BOARD_GROUND_FIELD = "IF(boards.ground=0,'NO','SI') as ground";
+		private static final String BOARD_LOCK_TYPE_FIELD = "lock_types.lock_type";
+		private static final String BOARD_PRICE_FIELD = "boards.price";
 	// Finish filling up the fields of the board table and the tables above too
 	
 	//Budget Tables	
-	private static final String BUDGET_TABLE = "budgets";
-	private static final String BUDGET_PAYMENT_METHODS_TABLE = "budget_payment_methods";
-	private static final String BUDGET_DISPATCH_PLACES_TABLE = "budget_dispatch_places";
-	private static final String BUDGET_STAGES_TABLE = "budget_stages";
-	private static final String BUDGET_DELIVERY_PERIOD_TABLE = "budget_delivery_period";
+		private static final String BUDGET_TABLE = "budgets";
+		private static final String BUDGET_PAYMENT_METHODS_TABLE = "budget_payment_methods";
+		private static final String BUDGET_DISPATCH_PLACES_TABLE = "budget_dispatch_places";
+		private static final String BUDGET_STAGES_TABLE = "budget_stages";
+		private static final String BUDGET_DELIVERY_PERIOD_TABLE = "budget_delivery_period";
 	
 	//Budget Fields
-	private static final String BUDGET_ID_FIELD = "budgets.id";
-	private static final String BUDGET_CODE_FIELD = "budgets.`code`";
-	private static final String BUDGET_DATE_FIELD = "budgets.`date`";
-	private static final String BUDGET_EXPIRY_DAYS_FIELD = "budgets.expiry_days";
-	private static final String BUDGET_WORK_NAME_FIELD = "budgets.work_name";
-	private static final String BUDGET_DELIVERY_TIME_FIELD = "budgets.delivery_time";
-	private static final String BUDGET_DELIVERY_PERIOD_FIELD = "budget_delivery_period.delivery_period";
-	private static final String BUDGET_TRACING_FIELD = "budgets.tracing";
-	private static final String METHOD_FIELD = "budget_payment_methods.method";
-	private static final String USERNAME_FIELD = "users.username";
-	private static final String PLACE_FIELD = "budget_dispatch_places.place";
-	private static final String STAGE_FIELD = "stages.stage";
-	private static final String CLIENT_CODE_FIELD = "clients.client_code";
-	private static final String CLIENT_FIELD = "clients.client";
-	private static final String CLIENT_REPRESENTATIVE_FIELD = "clients.representative";
-	private static final String SELLER_FIELD = "budget_sellers.seller";
+		private static final String BUDGET_ID_FIELD = "budgets.id";
+		private static final String BUDGET_CODE_FIELD = "budgets.`code`";
+		private static final String BUDGET_DATE_FIELD = "budgets.`date`";
+		private static final String BUDGET_EXPIRY_DAYS_FIELD = "budgets.expiry_days";
+		private static final String BUDGET_WORK_NAME_FIELD = "budgets.work_name";
+		private static final String BUDGET_DELIVERY_TIME_FIELD = "budgets.delivery_time";
+		private static final String BUDGET_DELIVERY_PERIOD_FIELD = "budget_delivery_period.delivery_period";
+		private static final String BUDGET_TRACING_FIELD = "budgets.tracing";
+		private static final String METHOD_FIELD = "budget_payment_methods.method";
+		private static final String USERNAME_FIELD = "users.username";
+		private static final String PLACE_FIELD = "budget_dispatch_places.place";
+		private static final String STAGE_FIELD = "stages.stage";
+		private static final String CLIENT_CODE_FIELD = "clients.client_code";
+		private static final String CLIENT_FIELD = "clients.client";
+		private static final String CLIENT_REPRESENTATIVE_FIELD = "clients.representative";
+		private static final String SELLER_FIELD = "budget_sellers.seller";
+		
+		private Db db;
 	
-	private Db db;
-	
-	private JDesktopPane desktop;
-	private JPanel theToolBarPanel;
-	private JToolBar toolBar;
-	private JButton toolBarButtonSwitches, toolBarButtonBoxes, toolBarButtonPanels, toolBarButtonBudgets, toolBarButtonStarters, toolBarButtonTracing;
+		private JDesktopPane desktop;
+		private JPanel theToolBarPanel;
+		private JToolBar toolBar;
+		private JButton toolBarButtonSwitches, toolBarButtonBoxes, toolBarButtonPanels, toolBarButtonBudgets, toolBarButtonStarters, toolBarButtonTracing;
 	//*** Switch Global Variables and objects ***//
-	private MyInternalFrame switchesFrame = new MyInternalFrame();
-	private Object[][] switchesData = {};
+		private MyInternalFrame switchesFrame = new MyInternalFrame();
+		private Object[][] switchesData = {};
 	// Switch View Objects
-	private JComboBox<String> comboSwitchBrands, comboSwitchTypes, comboSwitchPhases, comboSwitchCurrents, comboSwitchInterruptions;
-	private String searchSelectedSwitchBrand = "", searchSelectedSwitchType = "", searchSelectedSwitchPhases = "", searchSelectedSwitchCurrent = "", searchSelectedSwitchInterruption = "";
-	private JPanel panelSwitchRight, panelSwitchDescription, panelWrapperSwitchDescription, panelSwitchAddNew, panelSwitchEdit;
-	private JTextField textSwitchPrice, textSwitchPhases, textSwitchCurrent, textSwitchType, textSwitchBrand;
-	private JTextArea textSwitchDescription;
-	private JLabel labelSwitchCopy;
+		private JComboBox<String> comboSwitchBrands, comboSwitchTypes, comboSwitchPhases, comboSwitchCurrents, comboSwitchInterruptions;
+		private String searchSelectedSwitchBrand = "", searchSelectedSwitchType = "", searchSelectedSwitchPhases = "", searchSelectedSwitchCurrent = "", searchSelectedSwitchInterruption = "";
+		private JPanel panelSwitchRight, panelSwitchDescription, panelWrapperSwitchDescription, panelSwitchAddNew, panelSwitchEdit;
+		private JTextField textSwitchPrice, textSwitchPhases, textSwitchCurrent, textSwitchType, textSwitchBrand;
+		private JTextArea textSwitchDescription;
+		private JLabel labelSwitchCopy;
 	// Switch Table Objects
-	private JScrollPane tableSwitchScrollPane;
-	private JTable tableSwitchesResult;
-	private int switchTableSelectedIndex = -1;
-	private ListSelectionModel listSwitchSelectionModel;
+		private JScrollPane tableSwitchScrollPane;
+		private JTable tableSwitchesResult;
+		private int switchTableSelectedIndex = -1;
+		private ListSelectionModel listSwitchSelectionModel;
 	// Switch Add Objects
-	private JTextField textSwitchAddPrice, textSwitchAddModel;
-	private JTextArea textSwitchAddDescription;
-	private JButton buttonSwitchAdd, buttonSwitchEdit, buttonSwitchAddSave, buttonSwitchAddCancel;
-	private JComboBox<String> comboSwitchAddBrands, comboSwitchAddTypes, comboSwitchAddPhases, comboSwitchAddCurrents, comboSwitchAddInterruptions, comboSwitchAddVoltages;
-	private String addSelectedSwitchBrand;
+		private JTextField textSwitchAddPrice, textSwitchAddModel;
+		private JTextArea textSwitchAddDescription;
+		private JButton buttonSwitchAdd, buttonSwitchEdit, buttonSwitchAddSave, buttonSwitchAddCancel;
+		private JComboBox<String> comboSwitchAddBrands, comboSwitchAddTypes, comboSwitchAddPhases, comboSwitchAddCurrents, comboSwitchAddInterruptions, comboSwitchAddVoltages;
+		private String addSelectedSwitchBrand;
 	// Switch Edit Objects
-	private int editSwitchId = 0, editSwitchCurrent = 0, editSwitchInterruption = 0;
-	private double editSwitchPrice = 0;
-	private String editSwitchPhases, editSwitchBrand, editSwitchType, editSwitchModel, editSwitchVoltage;
-	private JTextField textSwitchEditPrice, textSwitchEditModel;
-	private JTextArea textSwitchEditDescription;
-	private JComboBox<String> comboSwitchEditPhases, comboSwitchEditCurrent, comboSwitchEditBrand, comboSwitchEditType, comboSwitchEditInterruption, comboSwitchEditVoltage;
-	private String editSelectedSwitchBrand;
+		private int editSwitchId = 0, editSwitchCurrent = 0, editSwitchInterruption = 0;
+		private double editSwitchPrice = 0;
+		private String editSwitchPhases, editSwitchBrand, editSwitchType, editSwitchModel, editSwitchVoltage;
+		private JTextField textSwitchEditPrice, textSwitchEditModel;
+		private JTextArea textSwitchEditDescription;
+		private JComboBox<String> comboSwitchEditPhases, comboSwitchEditCurrent, comboSwitchEditBrand, comboSwitchEditType, comboSwitchEditInterruption, comboSwitchEditVoltage;
+		private String editSelectedSwitchBrand;
 	// Switch Settings Objects
-	private JComboBox<String> comboSwitchSettingsBrands, comboSwitchSettingsTypes, comboSwitchSettingsCurrents, comboSwitchSettingsVoltages, comboSwitchSettingsInterruptions;
+		private JComboBox<String> comboSwitchSettingsBrands, comboSwitchSettingsTypes, comboSwitchSettingsCurrents, comboSwitchSettingsVoltages, comboSwitchSettingsInterruptions;
 	
 	//*** Box Global Variables and objects ***//
-	private MyInternalFrame boxesFrame = new MyInternalFrame();
-	private Object[][] boxesData = {};
+		private MyInternalFrame boxesFrame = new MyInternalFrame();
+		private Object[][] boxesData = {};
 	// Box View Objects
-	private JComboBox<String> comboBoxTypes, comboBoxInstallations, comboBoxNemas, comboBoxPairs, comboBoxSheets, comboBoxFinishes, comboBoxColors, comboBoxCalibers, comboBoxLockTypes;
-	private JTextField textBoxHeight, textBoxWidth, textBoxDepth;
-	private String searchSelectedBoxType = "", searchSelectedBoxInstallation = "", searchSelectedBoxNema = "", searchSelectedBoxPairs = "", searchSelectedBoxSheet = "", searchSelectedBoxFinish = "", searchSelectedBoxColor = "", searchSelectedBoxHeight = "", searchSelectedBoxWidth = "", searchSelectedBoxDepth = "", searchSelectedBoxCaliber = "", searchSelectedBoxLockType = "";
-	private JPanel panelBoxDescription, panelWrapperBoxDescription, panelBoxAddNew, panelBoxEdit;
-	private JTextField textBoxDescriptionType, textBoxDescriptionInstallation, textBoxDescriptionNema, textBoxDescriptionPairs, textBoxDescriptionSheet, textBoxDescriptionFinish, textBoxDescriptionColor, textBoxDescriptionHeight, textBoxDescriptionWidth, textBoxDescriptionDepth, textBoxDescriptionUnits, textBoxDescriptionCaliber, textBoxDescriptionLockType, textBoxDescriptionPrice;
-	private JTextArea textBoxDescription;
-	private JLabel labelBoxCopy;
+		private JComboBox<String> comboBoxTypes, comboBoxInstallations, comboBoxNemas, comboBoxPairs, comboBoxSheets, comboBoxFinishes, comboBoxColors, comboBoxCalibers, comboBoxLockTypes;
+		private JTextField textBoxHeight, textBoxWidth, textBoxDepth;
+		private String searchSelectedBoxType = "", searchSelectedBoxInstallation = "", searchSelectedBoxNema = "", searchSelectedBoxPairs = "", searchSelectedBoxSheet = "", searchSelectedBoxFinish = "", searchSelectedBoxColor = "", searchSelectedBoxHeight = "", searchSelectedBoxWidth = "", searchSelectedBoxDepth = "", searchSelectedBoxCaliber = "", searchSelectedBoxLockType = "";
+		private JPanel panelBoxDescription, panelWrapperBoxDescription, panelBoxAddNew, panelBoxEdit;
+		private JTextField textBoxDescriptionType, textBoxDescriptionInstallation, textBoxDescriptionNema, textBoxDescriptionPairs, textBoxDescriptionSheet, textBoxDescriptionFinish, textBoxDescriptionColor, textBoxDescriptionHeight, textBoxDescriptionWidth, textBoxDescriptionDepth, textBoxDescriptionUnits, textBoxDescriptionCaliber, textBoxDescriptionLockType, textBoxDescriptionPrice;
+		private JTextArea textBoxDescription;
+		private JLabel labelBoxCopy;
 	// Box Table Objects
-	private JScrollPane tableBoxScrollPane;
-	private JTable tableBoxesResult;
-	private int boxTableSelectedIndex = -1;
-	private ListSelectionModel listBoxSelectionModel;
+		private JScrollPane tableBoxScrollPane;
+		private JTable tableBoxesResult;
+		private int boxTableSelectedIndex = -1;
+		private ListSelectionModel listBoxSelectionModel;
 	// Box Add Objects
-	private JButton buttonBoxAdd, buttonBoxEdit, buttonBoxAddSave, buttonBoxAddCancel, buttonBoxEditSave, buttonBoxEditCancel;
-	private JComboBox<String> comboBoxAddTypes, comboBoxAddInstallations, comboBoxAddNemas, comboBoxAddSheets, comboBoxAddFinishes, comboBoxAddColors, comboBoxAddUnits, comboBoxAddCalibers, comboBoxAddLockTypes;
-	private JTextField textBoxAddPairs, textBoxAddHeight, textBoxAddWidth, textBoxAddDepth, textBoxAddCaliberComments, textBoxAddPrice;
-	private String addSelectedBoxType = "", addSelectedBoxSheet = "";
-	private JTextArea textBoxAddDescription;
+		private JButton buttonBoxAdd, buttonBoxEdit, buttonBoxAddSave, buttonBoxAddCancel, buttonBoxEditSave, buttonBoxEditCancel;
+		private JComboBox<String> comboBoxAddTypes, comboBoxAddInstallations, comboBoxAddNemas, comboBoxAddSheets, comboBoxAddFinishes, comboBoxAddColors, comboBoxAddUnits, comboBoxAddCalibers, comboBoxAddLockTypes;
+		private JTextField textBoxAddPairs, textBoxAddHeight, textBoxAddWidth, textBoxAddDepth, textBoxAddCaliberComments, textBoxAddPrice;
+		private String addSelectedBoxType = "", addSelectedBoxSheet = "";
+		private JTextArea textBoxAddDescription;
 	// Box Edit Objects
-	private double editBoxPrice = 0;
-	private int editBoxId = 0, editBoxPairs = 0, editBoxHeight = 0, editBoxWidth = 0, editBoxDepth = 0;
-	private String editSelectedBoxType, editSelectedBoxSheet;
-	private String editBoxType, editBoxInstallation, editBoxNema, editBoxSheet, editBoxFinish, editBoxColor, editBoxUnits, editBoxCaliber, editBoxCaliberComments, editBoxLockType;
-	private JTextField textBoxEditPairs, textBoxEditHeight, textBoxEditWidth, textBoxEditDepth, textBoxEditCaliberComments, textBoxEditPrice;
-	private JComboBox<String> comboBoxEditTypes, comboBoxEditInstallations, comboBoxEditNemas, comboBoxEditSheets, comboBoxEditFinishes, comboBoxEditColors, comboBoxEditUnits, comboBoxEditCalibers, comboBoxEditLockTypes;
-	private JTextArea textBoxEditDescription;
+		private double editBoxPrice = 0;
+		private int editBoxId = 0, editBoxPairs = 0, editBoxHeight = 0, editBoxWidth = 0, editBoxDepth = 0;
+		private String editSelectedBoxType, editSelectedBoxSheet;
+		private String editBoxType, editBoxInstallation, editBoxNema, editBoxSheet, editBoxFinish, editBoxColor, editBoxUnits, editBoxCaliber, editBoxCaliberComments, editBoxLockType;
+		private JTextField textBoxEditPairs, textBoxEditHeight, textBoxEditWidth, textBoxEditDepth, textBoxEditCaliberComments, textBoxEditPrice;
+		private JComboBox<String> comboBoxEditTypes, comboBoxEditInstallations, comboBoxEditNemas, comboBoxEditSheets, comboBoxEditFinishes, comboBoxEditColors, comboBoxEditUnits, comboBoxEditCalibers, comboBoxEditLockTypes;
+		private JTextArea textBoxEditDescription;
 	// Box Settings Objects
-	private JComboBox<String> comboBoxSettingsColors, comboBoxSettingsCalibers;
+		private JComboBox<String> comboBoxSettingsColors, comboBoxSettingsCalibers;
 	
 	//*** Board Global Variables and objects ***//
-	private MyInternalFrame boardsFrame = new MyInternalFrame();
-	private Object[][] boardsData = {};
-	private Object[][] boardSwitchesData = {};
-	private JTabbedPane boardViewTabbedPane;
+		private MyInternalFrame boardsFrame = new MyInternalFrame();
+		private Object[][] boardsData = {};
+		private Object[][] boardSwitchesData = {};
+		private JTabbedPane boardViewTabbedPane;
 	// Board View Objects
-	private JPanel panelBoardDescription, panelWrapperBoardDescription;
-	private JButton buttonBoardAdd, buttonBoardEdit;
-	private JTextField textBoardSearchNames;
-	private JComboBox<String> comboBoardTypes, comboBoardInstallations, comboBoardNemas, comboBoardBarCapacities, comboBoardBarTypes, comboBoardCircuits, comboBoardVoltages, comboBoardPhases, comboBoardGround, comboBoardInterruptions, comboBoardLockTypes;
-	private String searchSelectedBoardType = "", searchSelectedBoardInstallation = "", searchSelectedBoardNema = "", searchSelectedBoardBarCapacity = "", searchSelectedBoardBarType = "", searchSelectedBoardCircuits = "", searchSelectedBoardVoltage = "", searchSelectedBoardPhases = "", searchSelectedBoardGround = "", searchSelectedBoardInterruption = "", searchSelectedBoardLockType = "";
-	private JTextField textBoardDescriptionName, textBoardDescriptionType, textBoardDescriptionInstallation, textBoardDescriptionNema, textBoardDescriptionBarCapacity, textBoardDescriptionBarType, textBoardDescriptionCircuits, textBoardDescriptionVoltage, textBoardDescriptionPhases, textBoardDescriptionGround, textBoardDescriptionInterruption, textBoardDescriptionLockType, textBoardDescriptionPrice;
-	private JTextArea textBoardDescription;
-	private JLabel labelBoardCopy;
+		private JPanel panelBoardDescription, panelWrapperBoardDescription;
+		private JButton buttonBoardAdd, buttonBoardEdit;
+		private JTextField textBoardSearchNames;
+		private JComboBox<String> comboBoardTypes, comboBoardInstallations, comboBoardNemas, comboBoardBarCapacities, comboBoardBarTypes, comboBoardCircuits, comboBoardVoltages, comboBoardPhases, comboBoardGround, comboBoardInterruptions, comboBoardLockTypes;
+		private String searchSelectedBoardType = "", searchSelectedBoardInstallation = "", searchSelectedBoardNema = "", searchSelectedBoardBarCapacity = "", searchSelectedBoardBarType = "", searchSelectedBoardCircuits = "", searchSelectedBoardVoltage = "", searchSelectedBoardPhases = "", searchSelectedBoardGround = "", searchSelectedBoardInterruption = "", searchSelectedBoardLockType = "";
+		private JTextField textBoardDescriptionName, textBoardDescriptionType, textBoardDescriptionInstallation, textBoardDescriptionNema, textBoardDescriptionBarCapacity, textBoardDescriptionBarType, textBoardDescriptionCircuits, textBoardDescriptionVoltage, textBoardDescriptionPhases, textBoardDescriptionGround, textBoardDescriptionInterruption, textBoardDescriptionLockType, textBoardDescriptionPrice;
+		private JTextArea textBoardDescription;
+		private JLabel labelBoardCopy;
 	// Board Table Objects
-	private JScrollPane tableBoardScrollPane;
-	private JTable tableBoardsResult;
-	private ListSelectionModel listBoardSelectionModel;
-	private int boardsTableSelectedIndex;
-	private int selectedBoardId = 0;
+		private JScrollPane tableBoardScrollPane;
+		private JTable tableBoardsResult;
+		private ListSelectionModel listBoardSelectionModel;
+		private int boardsTableSelectedIndex;
+		private int selectedBoardId = 0;
 	// Board Switches Objects
-	private JPanel boardSwitchesPanel;
-	private JTable tableBoardSwitchesResult;
-	private ListSelectionModel listBoardSwitchesSelectionModel;
-	private int boardSwitchesTableSelectedIndex;
-	private JButton buttonAddBoardSwitch, buttonRemoveBoardSwitch;
-	private int selectedBoardSwitchId;
+		private JPanel boardSwitchesPanel;
+		private JTable tableBoardSwitchesResult;
+		private ListSelectionModel listBoardSwitchesSelectionModel;
+		private int boardSwitchesTableSelectedIndex;
+		private JButton buttonAddBoardSwitch, buttonRemoveBoardSwitch;
+		private int selectedBoardSwitchId;
 	// Board Switches Add Objects
-	private int selectedTableBoardCircuits = 0;
-	private String searchSelectedBoardSwitchBrand, searchSelectedBoardSwitchType, searchSelectedBoardSwitchPhases, searchSelectedBoardSwitchCurrent, searchSelectedBoardSwitchInterruption;
-	private JDialog dialogBoardSwitchAdd;
-	private Object[][] boardSwitchesSearchData;
-	private JTable tableBoardSwitchesSearchResult;
-	private ListSelectionModel listBoardSwitchSearchSelectionModel;
-	private JComboBox<String> comboBoardSwitchBrands, comboBoardSwitchTypes, comboBoardSwitchPhases, comboBoardSwitchCurrents, comboBoardSwitchInterruptions;
-	private int boardSwitchAddQuantity = 1;
-	private int boardSwitchSearchQuantity = 1;
-	private int boardSwitchSearchId = 0;
+		private int selectedTableBoardCircuits = 0;
+		private String searchSelectedBoardSwitchBrand, searchSelectedBoardSwitchType, searchSelectedBoardSwitchPhases, searchSelectedBoardSwitchCurrent, searchSelectedBoardSwitchInterruption;
+		private JDialog dialogBoardSwitchAdd;
+		private Object[][] boardSwitchesSearchData;
+		private JTable tableBoardSwitchesSearchResult;
+		private ListSelectionModel listBoardSwitchSearchSelectionModel;
+		private JComboBox<String> comboBoardSwitchBrands, comboBoardSwitchTypes, comboBoardSwitchPhases, comboBoardSwitchCurrents, comboBoardSwitchInterruptions;
+		private int boardSwitchAddQuantity = 1;
+		private int boardSwitchSearchQuantity = 1;
+		private int boardSwitchSearchId = 0;
 	// Board Add Objects
-	private JPanel panelBoardAddNew;
-	private JButton buttonBoardAddCancel;
-	private JTextField textBoardAddName, textBoardAddPrice;
-	private JComboBox<String> comboBoardAddType, comboBoardAddInstallation, comboBoardAddNema, comboBoardAddBarCapacity, comboBoardAddBarType, comboBoardAddCircuits, comboBoardAddVoltage, comboBoardAddPhases, comboBoardAddInterruption, comboBoardAddLockType;
-	private JCheckBox checkBoardAddGround;
-	private JTextArea textBoardAddDescription;
+		private JPanel panelBoardAddNew;
+		private JButton buttonBoardAddCancel;
+		private JTextField textBoardAddName, textBoardAddPrice;
+		private JComboBox<String> comboBoardAddType, comboBoardAddInstallation, comboBoardAddNema, comboBoardAddBarCapacity, comboBoardAddBarType, comboBoardAddCircuits, comboBoardAddVoltage, comboBoardAddPhases, comboBoardAddInterruption, comboBoardAddLockType;
+		private JCheckBox checkBoardAddGround;
+		private JTextArea textBoardAddDescription;
 	// Board Edit Objects
-	private JPanel panelBoardEdit;
-	private JButton buttonBoardAddSave;
-	private int editBoardId, editBoardPhases;
-	private Double editBoardPrice;
-	private String editBoardType, editBoardName, editBoardInstallation, editBoardNema, editBoardBarCapacity, editBoardBarType, editBoardCircuits, editBoardVoltage, editBoardGround, editBoardInterruption, editBoardLockType;
-	private JTextField textBoardEditName, textBoardEditPrice;
-	private JComboBox<String> comboBoardEditType, comboBoardEditInstallation, comboBoardEditNema, comboBoardEditBarCapacity, comboBoardEditBarType, comboBoardEditCircuits, comboBoardEditVoltage, comboBoardEditPhases, comboBoardEditInterruption, comboBoardEditLockType;
-	private JCheckBox checkBoardEditGround;
-	private JTextArea textBoardEditDescription;
-	private JButton buttonBoardEditSave, buttonBoardEditCancel;
+		private JPanel panelBoardEdit;
+		private JButton buttonBoardAddSave;
+		private int editBoardId, editBoardPhases;
+		private Double editBoardPrice;
+		private String editBoardType, editBoardName, editBoardInstallation, editBoardNema, editBoardBarCapacity, editBoardBarType, editBoardCircuits, editBoardVoltage, editBoardGround, editBoardInterruption, editBoardLockType;
+		private JTextField textBoardEditName, textBoardEditPrice;
+		private JComboBox<String> comboBoardEditType, comboBoardEditInstallation, comboBoardEditNema, comboBoardEditBarCapacity, comboBoardEditBarType, comboBoardEditCircuits, comboBoardEditVoltage, comboBoardEditPhases, comboBoardEditInterruption, comboBoardEditLockType;
+		private JCheckBox checkBoardEditGround;
+		private JTextArea textBoardEditDescription;
+		private JButton buttonBoardEditSave, buttonBoardEditCancel;
 	// Board Materials Objects
-	private JPanel boardMaterialsPanel;
-	private JTextArea textMaterials;
-	private JTextField textMaterialsPrice;
-	private JButton buttonBoardMaterialsEdit, buttonBoardMaterialsEditSave, buttonBoardMaterialsEditCancel;
-	private JPanel panelBoardMaterialsEditSaveCancel;
+		private JPanel boardMaterialsPanel;
+		private JTextArea textMaterials;
+		private JTextField textMaterialsPrice;
+		private JButton buttonBoardMaterialsEdit, buttonBoardMaterialsEditSave, buttonBoardMaterialsEditCancel;
+		private JPanel panelBoardMaterialsEditSaveCancel;
 	// Board Comments Objects
-	private JPanel boardCommentsPanel;
-	private JTextArea textComments;
-	private JButton buttonBoardCommentsEdit, buttonBoardCommentsEditSave, buttonBoardCommentsEditCancel;
-	private JPanel panelBoardCommentsEditSaveCancel;
+		private JPanel boardCommentsPanel;
+		private JTextArea textComments;
+		private JButton buttonBoardCommentsEdit, buttonBoardCommentsEditSave, buttonBoardCommentsEditCancel;
+		private JPanel panelBoardCommentsEditSaveCancel;
 	//*** Budget Global Variables and objects ***//
-	private MyInternalFrame budgetsFrame = new MyInternalFrame();
-	private MyInternalFrame startersFrame = new MyInternalFrame();
-	private MyInternalFrame tracingFrame = new MyInternalFrame();
+		private MyInternalFrame budgetsFrame = new MyInternalFrame();
+		private MyInternalFrame startersFrame = new MyInternalFrame();
+		private MyInternalFrame tracingFrame = new MyInternalFrame();
 	
 	//Budget add Objects
-	private String searchSelectedBudgetClient, searchSelectedBudgetId,searchSelectedBudgetDays,searchSelectedBudgetMonths,searchSelectedBudgetYears;
-	private UtilDateModel addBudgetDateModel;
-	private JButton buttonBudgetAdd;
-	private JButton buttonBudgetEdit;
-	private JPanel budgetSwitchesPanel;
-	private JScrollPane tableBudgetScrollPane;
-	private JTable tableBudgetsResult;
-	private ListSelectionModel listBudgetSelectionModel;
-	private JPanel budgetBoxesPanel;
-	private JPanel budgetBoardsPanel;
-	private JPanel budgetMaterialsPanel;
-	private JPanel budgetSpecialsPanel;
-	private JPanel budgetNotesPanel;
-	private JTextField textBudgetSearchId;
-	private JComboBox<String> comboBudgetDays;
-	private JPanel panelBudgetDescription, panelWrapperBudgetDescription;
-	private JComboBox<String> comboBudgetMonths;
-	private JComboBox<String> comboBudgetYears;
-	private Object[][] budgetData = {};
-	private JPanel panelBudgetAddNew, panelBudgetEdit;
-	private JTextField textBudgetDescriptionId, textBudgetSearchClient,textBudgetDescriptionCode;
-	private JTextField textBudgetDescriptionDate, textBudgetDescriptionExpiryDays;
-	private JTextField textBudgetDescriptionClientCode, textBudgetDescriptionCompany;
-	private JTextField textBudgetDescriptionCompanyRepresentative, textBudgetDescriptionWorkName, textBudgetDescriptionPaymentMethod;
-	private JTextField textBudgetDescriptionSeller, textBudgetDescriptionDeliveryTime, textBudgetDescriptionDeliveryPeriod, textBudgetDescriptionDispatchPlace;
-	private JButton buttonBudgetAddSave, buttonBudgetAddCancel;
-	private JTextField textBudgetAddCode, textBudgetAddId, textBudgetAddDate, textBudgetAddClientCode,textBudgetAddExpiryDays;
-	private JTextField textBudgetAddCompanyRepresentative, textBudgetAddWorkName, textBudgetAddCompany;
-	private JTextField textBudgetAddSeller, textBudgetAddDeliveryTime;
-	private JComboBox<String> comboBugetAddPaymentMethod,comboBugetAddDispatchPlace;
-	private JCheckBox checkBudgetAddTracing;
-	private JComboBox<String> comboBudgetAddSeller;
-	private JTextField textBudgetDescriptionExpiryDate;
-//	private String queryUser;
-//	private String username;
-	private Object [][] budgetsData={};
-	private JComboBox<String> comboBudgetAddPaymentMethod, comboBudgetAddDispatchPlace,comboBudgetAddDeliveryPeriod;
-//	private List<String> comboListResult;
-	private int editBudgetId, editBudgetClientCode, editBudgetExpiryDays,editBudgetDeliveryTime;
-	private String editBudgetCode, editBudgetDate, editBudgetDeliveryPeriod;
-	private String editBudgetWorkName, editBudgetPaymentMethod, editBudgetSeller, editBudgetDispatchPlace, editBudgetTracing, editBudgetStage;
-	private int budgetsTableSelectedIndex;
-	private JButton buttonBudgetAddCompany, buttonBudgetAddSeller, buttonBudgetEditSave, buttonBudgetEditCancel;
-	private int selectedBudgetId;
+		private String searchSelectedBudgetClient, searchSelectedBudgetId,searchSelectedBudgetDays,searchSelectedBudgetMonths,searchSelectedBudgetYears;
+		private UtilDateModel addBudgetDateModel;
+		private JButton buttonBudgetAdd;
+		private JButton buttonBudgetEdit;
+		private JScrollPane tableBudgetScrollPane;
+		private JTable tableBudgetsResult;
+		private ListSelectionModel listBudgetSelectionModel;
+		private JTextField textBudgetSearchId;
+		private JComboBox<String> comboBudgetDays;
+		private JPanel panelBudgetDescription, panelWrapperBudgetDescription;
+		private JComboBox<String> comboBudgetMonths;
+		private JComboBox<String> comboBudgetYears;
+		private Object[][] budgetData = {};
+		private JPanel panelBudgetAddNew, panelBudgetEdit;
+		private JTextField textBudgetDescriptionId, textBudgetSearchClient,textBudgetDescriptionCode;
+		private JTextField textBudgetDescriptionDate, textBudgetDescriptionExpiryDays;
+		private JTextField textBudgetDescriptionClientCode, textBudgetDescriptionCompany;
+		private JTextField textBudgetDescriptionCompanyRepresentative, textBudgetDescriptionWorkName, textBudgetDescriptionPaymentMethod;
+		private JTextField textBudgetDescriptionSeller, textBudgetDescriptionDeliveryTime, textBudgetDescriptionDeliveryPeriod, textBudgetDescriptionDispatchPlace;
+		private JButton buttonBudgetAddSave, buttonBudgetAddCancel;
+		private JTextField textBudgetAddCode, textBudgetAddId, textBudgetAddDate, textBudgetAddClientCode,textBudgetAddExpiryDays;
+		private JTextField textBudgetAddCompanyRepresentative, textBudgetAddWorkName, textBudgetAddCompany;
+		private JTextField textBudgetAddSeller, textBudgetAddDeliveryTime;
+		private JComboBox<String> comboBugetAddPaymentMethod,comboBugetAddDispatchPlace;
+		private JCheckBox checkBudgetAddTracing;
+		private JComboBox<String> comboBudgetAddSeller;
+		private JTextField textBudgetDescriptionExpiryDate;
+	//	private String queryUser;
+	//	private String username;
+		private Object [][] budgetsData={};
+		private JComboBox<String> comboBudgetAddPaymentMethod, comboBudgetAddDispatchPlace,comboBudgetAddDeliveryPeriod;
+	//	private List<String> comboListResult;
+		private int editBudgetId, editBudgetClientCode, editBudgetExpiryDays,editBudgetDeliveryTime;
+		private String editBudgetCode, editBudgetDate, editBudgetDeliveryPeriod;
+		private String editBudgetWorkName, editBudgetPaymentMethod, editBudgetSeller, editBudgetDispatchPlace, editBudgetTracing, editBudgetStage;
+		private int budgetsTableSelectedIndex;
+		private JButton buttonBudgetAddCompany, buttonBudgetAddSeller, buttonBudgetEditSave, buttonBudgetEditCancel;
+		private int selectedBudgetId;
 	// Budget Company Add
-	private JDialog dialogBudgetCompanyAdd;
-	private JTextField textBudgetCompanySearchClient;
-	private Object[][] budgetCompaniesData = {};
-	private JTable tableBudgetCompaniesSearchResult;
-	private ListSelectionModel listBudgetCompaniesSearchSelectionModel;
-	private int budgetCompanyAddSearchId;
+		private JDialog dialogBudgetCompanyAdd;
+		private JTextField textBudgetCompanySearchClient;
+		private Object[][] budgetCompaniesData = {};
+		private JTable tableBudgetCompaniesSearchResult;
+		private ListSelectionModel listBudgetCompaniesSearchSelectionModel;
+		private int budgetCompanyAddSearchId;
 	// Budget Seller Add
-	private JDialog dialogBudgetSellerAdd;
-	private JTextField textBudgetSellerSearchUser, textBudgetSellerSearchName, textBudgetSellerSearchPassport;
-	private Object[][] budgetSellersData = {};
-	private JTable tableBudgetSellersSearchResult;
-	private ListSelectionModel listBudgetSellersSearchSelectionModel;
-	private int budgetSellerAddSearchId;
+		private JDialog dialogBudgetSellerAdd;
+		private JTextField textBudgetSellerSearchUser, textBudgetSellerSearchName, textBudgetSellerSearchPassport;
+		private Object[][] budgetSellersData = {};
+		private JTable tableBudgetSellersSearchResult;
+		private ListSelectionModel listBudgetSellersSearchSelectionModel;
+		private int budgetSellerAddSearchId;
 	// Budget Edit Objects
-	private UtilDateModel editBudgetDateModel;
-	private JButton buttonBudgetEditCompany, buttonBudgetEditSeller;
-	private JTextField textBudgetEditSeller, textBudgetEditDeliveryTime;
-	private JCheckBox checkBudgetEditTracing;
-	private JTextField textBudgetEditCode, textBudgetEditClientCode, textBudgetEditWorkName, textBudgetEditCompany;
-	private JTextField textBudgetEditCompanyRepresentative, textBudgetEditExpiryDays,textBudgetEditDate;
-	private String editBudgetCompanyRepresentative, editBudgetCompany,editBudgetClient;
-	private JComboBox<String> comboBudgetEditWorkName, comboBudgetEditDispatchPlace,comboBudgetEditDeliveryPeriod, comboBudgetEditSeller, comboBudgetEditPaymentMethod, comboBudgetEditStage;
-	private Component textBudgetSearchCode;
-	
-	
+		private UtilDateModel editBudgetDateModel;
+		private JButton buttonBudgetEditCompany, buttonBudgetEditSeller;
+		private JTextField textBudgetEditSeller, textBudgetEditDeliveryTime;
+		private JCheckBox checkBudgetEditTracing;
+		private JTextField textBudgetEditCode, textBudgetEditClientCode, textBudgetEditWorkName, textBudgetEditCompany;
+		private JTextField textBudgetEditCompanyRepresentative, textBudgetEditExpiryDays,textBudgetEditDate;
+		private String editBudgetCompanyRepresentative, editBudgetCompany,editBudgetClient;
+		private JComboBox<String> comboBudgetEditWorkName, comboBudgetEditDispatchPlace,comboBudgetEditDeliveryPeriod, comboBudgetEditSeller, comboBudgetEditPaymentMethod, comboBudgetEditStage;
+		private Component textBudgetSearchCode;
+	// Budget Switches Objects
+		private JPanel budgetSwitchesPanel;
+		private JTable tableBudgetSwitchesResult;
+		private ListSelectionModel listBudgetSwitchesSelectionModel;
+		private int budgetSwitchesTableSelectedIndex;
+		private JButton buttonAddBudgetSwitch, buttonRemoveBudgetSwitch;
+		private int selectedBudgetSwitchId;
+	// Budget Switches Add Objects
+		private String searchSelectedBudgetSwitchBrand, searchSelectedBudgetSwitchType, searchSelectedBudgetSwitchPhases, searchSelectedBudgetSwitchCurrent, searchSelectedBudgetSwitchInterruption;
+		private JDialog dialogBudgetSwitchAdd;
+		private Object[][] budgetSwitchesSearchData;
+		private JTable tableBudgetSwitchesSearchResult;
+		private ListSelectionModel listBudgetSwitchSearchSelectionModel;
+		private JComboBox<String> comboBudgetSwitchBrands, comboBudgetSwitchTypes, comboBudgetSwitchPhases, comboBudgetSwitchCurrents, comboBudgetSwitchInterruptions;
+		private int budgetSwitchAddQuantity = 1;
+		private int budgetSwitchSearchQuantity = 1;
+		private int budgetSwitchSearchId = 0;
+	// Budget Boxes Objects
+		private JPanel budgetBoxesPanel;
+		private JTable tableBudgetBoxesResult;
+		private ListSelectionModel listBudgetBoxesSelectionModel;
+		private int budgetBoxesTableSelectedIndex;
+		private JButton buttonAddBudgetBox, buttonRemoveBudgetBox;
+		private int selectedBudgetBoxId;
+	// Budget Boxes Add Objects
+		private String searchSelectedBudgetBoxBrand, searchSelectedBudgetBoxType, searchSelectedBudgetBoxPhases, searchSelectedBudgetBoxCurrent, searchSelectedBudgetBoxInterruption;
+		private JDialog dialogBudgetBoxAdd;
+		private Object[][] budgetBoxesSearchData;
+		private JTable tableBudgetBoxesSearchResult;
+		private ListSelectionModel listBudgetBoxSearchSelectionModel;
+		private JComboBox<String> comboBudgetBoxBrands, comboBudgetBoxTypes, comboBudgetBoxPhases, comboBudgetBoxCurrents, comboBudgetBoxInterruptions;
+		private int budgetBoxAddQuantity = 1;
+		private int budgetBoxSearchQuantity = 1;
+		private int budgetBoxSearchId = 0;
+	// Budget Boxes Objects
+		private JPanel budgetBoardsPanel;
+		private JTable tableBudgetBoardsResult;
+		private ListSelectionModel listBudgetBoardsSelectionModel;
+		private int budgetBoardsTableSelectedIndex;
+		private JButton buttonAddBudgetBoard, buttonRemoveBudgetBoard;
+		private int selectedBudgetBoardId;
+	// Budget Boxes Add Objects
+		private String searchSelectedBudgetBoardBrand, searchSelectedBudgetBoardType, searchSelectedBudgetBoardPhases, searchSelectedBudgetBoardCurrent, searchSelectedBudgetBoardInterruption;
+		private JDialog dialogBudgetBoardAdd;
+		private Object[][] budgetBoardsSearchData;
+		private JTable tableBudgetBoardsSearchResult;
+		private ListSelectionModel listBudgetBoardSearchSelectionModel;
+		private JComboBox<String> comboBudgetBoardBrands, comboBudgetBoardTypes, comboBudgetBoardPhases, comboBudgetBoardCurrents, comboBudgetBoardInterruptions;
+		private int budgetBoardAddQuantity = 1;
+		private int budgetBoardSearchQuantity = 1;
+		private int budgetBoardSearchId = 0;
+		
 	public static void main(String[] args) {
 		new MainView();
 	}
@@ -5296,35 +5340,35 @@ public class MainView extends JFrame{
 		budgetMainPanel.add(panelBudgetLower, BorderLayout.SOUTH);
 		budgetViewTabbedPane.addTab("Buscar", null, budgetMainPanel, "Buscar");
 		
-		budgetSwitchesPanel = createBudgetSwitchesPanel();
+		budgetSwitchesPanel = createBudgetSwitchesTablePanel();
 		
 		budgetViewTabbedPane.addTab("Interruptores", null, budgetSwitchesPanel, "Interruptores");
 		budgetViewTabbedPane.setFont(new Font(null, Font.BOLD, 16));
 	
-		budgetBoxesPanel = createBudgetBoxesPanel();
+		budgetBoxesPanel = createBudgetBoxesTablePanel();
 		
 		budgetViewTabbedPane.addTab("Cajas", null, budgetBoxesPanel, "Cajas");
 		budgetViewTabbedPane.setFont(new Font(null, Font.BOLD, 16));
 		
-		budgetBoardsPanel = createBudgetBoardsPanel();
+		budgetBoardsPanel = createBudgetBoardsTablePanel();
 		
 		budgetViewTabbedPane.addTab("Tableros", null, budgetBoardsPanel, "Tableros");
 		budgetViewTabbedPane.setFont(new Font(null, Font.BOLD, 16));
-		
-		budgetMaterialsPanel = createBudgetMaterialsPanel();
-		
-		budgetViewTabbedPane.addTab("Materiales", null, budgetMaterialsPanel, "Materiales");
-		budgetViewTabbedPane.setFont(new Font(null, Font.BOLD, 16));
-		
-		budgetSpecialsPanel = createBudgetSpecialsPanel();
-		
-		budgetViewTabbedPane.addTab("Especiales", null, budgetSpecialsPanel, "Especiales");
-		budgetViewTabbedPane.setFont(new Font(null, Font.BOLD, 16));
-		
-		budgetNotesPanel = createBudgetNotesPanel();
-		
-		budgetViewTabbedPane.addTab("Notas", null, budgetNotesPanel, "Notas");
-		budgetViewTabbedPane.setFont(new Font(null, Font.BOLD, 16));
+		// Uncomment this when creating the tabs
+//		budgetMaterialsPanel = createBudgetMaterialsTablePanel();
+//		
+//		budgetViewTabbedPane.addTab("Materiales", null, budgetMaterialsPanel, "Materiales");
+//		budgetViewTabbedPane.setFont(new Font(null, Font.BOLD, 16));
+//		
+//		budgetSpecialsPanel = createBudgetSpecialsTablePanel();
+//		
+//		budgetViewTabbedPane.addTab("Especiales", null, budgetSpecialsPanel, "Especiales");
+//		budgetViewTabbedPane.setFont(new Font(null, Font.BOLD, 16));
+//		
+//		budgetNotesPanel = createBudgetNotesTablePanel();
+//		
+//		budgetViewTabbedPane.addTab("Notas", null, budgetNotesPanel, "Notas");
+//		budgetViewTabbedPane.setFont(new Font(null, Font.BOLD, 16));
 					
 		return budgetViewTabbedPane;
 	}
@@ -5912,74 +5956,11 @@ public class MainView extends JFrame{
 		
 	}
 	
-	private JPanel createBudgetBoardsPanel() {
-		JPanel createBudgetBoardsPanel = new JPanel();
-		return createBudgetBoardsPanel;
-	}
-
-	private JPanel createBudgetMaterialsPanel() {
-		JPanel createBudgetMaterialsPanel = new JPanel();
-		return createBudgetMaterialsPanel;
-	}
-
-	private JPanel createBudgetSpecialsPanel() {
-		JPanel createBudgetSpecialsPanel = new JPanel();
-		return createBudgetSpecialsPanel;
-	}
-
-	private JPanel createBudgetNotesPanel() {
-		JPanel createBudgetNotes = new JPanel();
-		return createBudgetNotes;
-	}
-
-	private JPanel createBudgetBoxesPanel() {
-		JPanel panelBudgetBoxes = new JPanel();
-		return panelBudgetBoxes;
-	}
-
-	private JPanel createBudgetSwitchesPanel() {
-		JPanel panelBudgetSwitches = new JPanel();		
-		panelBudgetSwitches.setLayout(new BorderLayout());
-//		panelBudgetSwitches.add(createBudgetSwitchesSearchPanel(), BorderLayout.NORTH);
-		
-//		JLabel labelClient = new JLabel("Cliente:");
-//		JTextField textClient = new JTextField(6);
-//		ArrayList<Integer> listYears = new ArrayList<Integer>();
-//		Date nowDate = new Date();
-//		DateTime dt = new DateTime(nowDate);
-//		int todayYear = dt.getYear();
-//		for(int i = 2015; i <= todayYear; i++) {
-//			listYears.add(i);
-//		}
-//		
-//		String queryYears = "SELECT year FROM years ORDER BY year DESC";
-//		
-//		loadComboList(queryYears, "year");
-//		
-//		Object[] columnNames = {"Enero", "Febrero"};
-//		
-//		JTable tableTest = new JTable();
-//		
-//		tableTest.setModel(new DefaultTableModel(data, columnNames));
-//		
-//		JComboBox<Integer> comboYear = new JComboBox<Integer>(new Vector<Integer>(listYears));
-//		
-//		budgetSwitchesPanel.setLayout(new BorderLayout(20, 20));		
-//		budgetSwitchesPanel.add(createBudgetSwitchesTablePanel(), BorderLayout.CENTER);		
-//		
-		return panelBudgetSwitches;
-	}
-
 	private JPanel createBudgetSwitchesSearchPanel() {
 		// TODO Finish budget switches search panel
 		return null;
 	}
 	
-	private JPanel createBudgetSwitchesTablePanel() {
-		JPanel tablePanel = new JPanel();
-		return tablePanel;
-	}
-
 	private JPanel createBudgetDescriptionPanel() {
 		
 		panelBudgetDescription = new JPanel();
@@ -6232,6 +6213,177 @@ public class MainView extends JFrame{
 		panelBudgetTable.add(tableBudgetsResult, BorderLayout.CENTER);
 		
 		return panelBudgetTable;
+	}
+	
+	private JPanel createBudgetSwitchesTablePanel() {
+		tableBudgetSwitchesResult = new JTable();
+		tableBudgetSwitchesResult.setModel(new DefaultTableModel());
+		tableBudgetSwitchesResult.setAutoCreateRowSorter(true);
+		tableBudgetSwitchesResult.getTableHeader().setReorderingAllowed(false);
+		
+		listBudgetSwitchesSelectionModel = tableBudgetSwitchesResult.getSelectionModel();
+		listBudgetSwitchesSelectionModel.addListSelectionListener(new SharedListSelectionListener());
+		tableBudgetSwitchesResult.setSelectionModel(listBudgetSwitchesSelectionModel);
+		tableBudgetSwitchesResult.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		
+		JPanel tablePanel = new JPanel(new BorderLayout());
+		tablePanel.add(tableBudgetSwitchesResult.getTableHeader(), BorderLayout.PAGE_START);
+		tablePanel.add(tableBudgetSwitchesResult, BorderLayout.CENTER);
+		
+		Font fa = null;
+		
+		try {
+			URL url = getClass().getResource("fontawesome-webfont.ttf");
+			InputStream is;
+			is = url.openStream();
+			fa = Font.createFont(Font.TRUETYPE_FONT, is);
+			fa = fa.deriveFont(Font.PLAIN, 36f);
+		} catch (IOException | FontFormatException e) {
+			e.printStackTrace();
+		}
+		
+		BudgetButtonListener lForBudgetButton = new BudgetButtonListener();
+		
+		JPanel panelButtons = new JPanel(new FlowLayout(FlowLayout.TRAILING));
+		// Add the add & remove buttons here for the Board Switches
+		buttonAddBudgetSwitch = new JButton(Fa.fa_plus);
+		buttonAddBudgetSwitch.setFont(fa);
+		buttonAddBudgetSwitch.setForeground(Color.GREEN);
+		buttonAddBudgetSwitch.setActionCommand("budget.switch.add");
+		buttonAddBudgetSwitch.addActionListener(lForBudgetButton);
+		buttonAddBudgetSwitch.setEnabled(false);
+		panelButtons.add(buttonAddBudgetSwitch);
+		
+		buttonRemoveBudgetSwitch = new JButton(Fa.fa_remove);
+		buttonRemoveBudgetSwitch.setFont(fa);
+		buttonRemoveBudgetSwitch.setForeground(Color.RED);
+		buttonRemoveBudgetSwitch.setActionCommand("budget.switch.remove");
+		buttonRemoveBudgetSwitch.addActionListener(lForBudgetButton);
+		buttonRemoveBudgetSwitch.setEnabled(false);
+		panelButtons.add(buttonRemoveBudgetSwitch);
+		
+		tablePanel.add(panelButtons, BorderLayout.PAGE_END);
+		
+		return tablePanel;
+	}
+	
+	private JPanel createBudgetBoxesTablePanel() {
+		tableBudgetBoxesResult = new JTable();
+		tableBudgetBoxesResult.setModel(new DefaultTableModel());
+		tableBudgetBoxesResult.setAutoCreateRowSorter(true);
+		tableBudgetBoxesResult.getTableHeader().setReorderingAllowed(false);
+		
+		listBudgetBoxesSelectionModel = tableBudgetBoxesResult.getSelectionModel();
+		listBudgetBoxesSelectionModel.addListSelectionListener(new SharedListSelectionListener());
+		tableBudgetBoxesResult.setSelectionModel(listBudgetBoxesSelectionModel);
+		tableBudgetBoxesResult.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		
+		JPanel tablePanel = new JPanel(new BorderLayout());
+		tablePanel.add(tableBudgetBoxesResult.getTableHeader(), BorderLayout.PAGE_START);
+		tablePanel.add(tableBudgetBoxesResult, BorderLayout.CENTER);
+		
+		Font fa = null;
+		
+		try {
+			URL url = getClass().getResource("fontawesome-webfont.ttf");
+			InputStream is;
+			is = url.openStream();
+			fa = Font.createFont(Font.TRUETYPE_FONT, is);
+			fa = fa.deriveFont(Font.PLAIN, 36f);
+		} catch (IOException | FontFormatException e) {
+			e.printStackTrace();
+		}
+		
+		BudgetButtonListener lForBudgetButton = new BudgetButtonListener();
+		
+		JPanel panelButtons = new JPanel(new FlowLayout(FlowLayout.TRAILING));
+		// Add the add & remove buttons here for the Board Switches
+		buttonAddBudgetBox = new JButton(Fa.fa_plus);
+		buttonAddBudgetBox.setFont(fa);
+		buttonAddBudgetBox.setForeground(Color.GREEN);
+		buttonAddBudgetBox.setActionCommand("budget.box.add");
+		buttonAddBudgetBox.addActionListener(lForBudgetButton);
+		buttonAddBudgetBox.setEnabled(false);
+		panelButtons.add(buttonAddBudgetBox);
+		
+		buttonRemoveBudgetBox = new JButton(Fa.fa_remove);
+		buttonRemoveBudgetBox.setFont(fa);
+		buttonRemoveBudgetBox.setForeground(Color.RED);
+		buttonRemoveBudgetBox.setActionCommand("budget.box.remove");
+		buttonRemoveBudgetBox.addActionListener(lForBudgetButton);
+		buttonRemoveBudgetBox.setEnabled(false);
+		panelButtons.add(buttonRemoveBudgetBox);
+		
+		tablePanel.add(panelButtons, BorderLayout.PAGE_END);
+		
+		return tablePanel;
+	}
+	
+	private JPanel createBudgetBoardsTablePanel() {
+		tableBudgetBoardsResult = new JTable();
+		tableBudgetBoardsResult.setModel(new DefaultTableModel());
+		tableBudgetBoardsResult.setAutoCreateRowSorter(true);
+		tableBudgetBoardsResult.getTableHeader().setReorderingAllowed(false);
+		
+		listBudgetBoardsSelectionModel = tableBudgetBoardsResult.getSelectionModel();
+		listBudgetBoardsSelectionModel.addListSelectionListener(new SharedListSelectionListener());
+		tableBudgetBoardsResult.setSelectionModel(listBudgetBoardsSelectionModel);
+		tableBudgetBoardsResult.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		
+		JPanel tablePanel = new JPanel(new BorderLayout());
+		tablePanel.add(tableBudgetBoardsResult.getTableHeader(), BorderLayout.PAGE_START);
+		tablePanel.add(tableBudgetBoardsResult, BorderLayout.CENTER);
+		
+		Font fa = null;
+		
+		try {
+			URL url = getClass().getResource("fontawesome-webfont.ttf");
+			InputStream is;
+			is = url.openStream();
+			fa = Font.createFont(Font.TRUETYPE_FONT, is);
+			fa = fa.deriveFont(Font.PLAIN, 36f);
+		} catch (IOException | FontFormatException e) {
+			e.printStackTrace();
+		}
+		
+		BudgetButtonListener lForBudgetButton = new BudgetButtonListener();
+		
+		JPanel panelButtons = new JPanel(new FlowLayout(FlowLayout.TRAILING));
+		// Add the add & remove buttons here for the Board Switches
+		buttonAddBudgetBoard = new JButton(Fa.fa_plus);
+		buttonAddBudgetBoard.setFont(fa);
+		buttonAddBudgetBoard.setForeground(Color.GREEN);
+		buttonAddBudgetBoard.setActionCommand("budget.board.add");
+		buttonAddBudgetBoard.addActionListener(lForBudgetButton);
+		buttonAddBudgetBoard.setEnabled(false);
+		panelButtons.add(buttonAddBudgetBoard);
+		
+		buttonRemoveBudgetBoard = new JButton(Fa.fa_remove);
+		buttonRemoveBudgetBoard.setFont(fa);
+		buttonRemoveBudgetBoard.setForeground(Color.RED);
+		buttonRemoveBudgetBoard.setActionCommand("budget.board.remove");
+		buttonRemoveBudgetBoard.addActionListener(lForBudgetButton);
+		buttonRemoveBudgetBoard.setEnabled(false);
+		panelButtons.add(buttonRemoveBudgetBoard);
+		
+		tablePanel.add(panelButtons, BorderLayout.PAGE_END);
+		
+		return tablePanel;
+	}
+
+	private JPanel createBudgetMaterialsTablePanel() {
+		JPanel createBudgetMaterialsPanel = new JPanel();
+		return createBudgetMaterialsPanel;
+	}
+
+	private JPanel createBudgetSpecialsTablePanel() {
+		JPanel createBudgetSpecialsPanel = new JPanel();
+		return createBudgetSpecialsPanel;
+	}
+
+	private JPanel createBudgetNotesTablePanel() {
+		JPanel createBudgetNotes = new JPanel();
+		return createBudgetNotes;
 	}
 	
 	private JPanel createBudgetCompanyAddSearchPanel() {
@@ -8111,6 +8263,7 @@ public class MainView extends JFrame{
 				searchSelectedBudgetMonths = comboBudgetMonths.getSelectedItem().toString();
 				searchSelectedBudgetYears = comboBudgetYears.getSelectedItem().toString();
 				
+				// TODO The date here should be separated by dashes, not slashes
 				String budgetDate =  searchSelectedBudgetDays + "/" + searchSelectedBudgetMonths + "/" + searchSelectedBudgetYears; 
 				
 				if(searchSelectedBudgetClient != null && !searchSelectedBudgetClient.equalsIgnoreCase("Todas") &&
@@ -9276,7 +9429,7 @@ public class MainView extends JFrame{
 				String budgetExpiryDays = textBudgetAddExpiryDays.getText().toString();
 				// TODO Fix the budget client id (not the code)
 				String budgetClientId = String.valueOf(budgetCompanyAddSearchId);
-				String budgetCompanyRepresentative = textBudgetAddCompanyRepresentative.getText();
+//				String budgetCompanyRepresentative = textBudgetAddCompanyRepresentative.getText();
 				String budgetWorkName = textBudgetAddWorkName.getText();
 				String budgetPaymentMethod = comboBudgetAddPaymentMethod.getSelectedItem().toString();
 				String budgetDispatchPlace = comboBudgetAddDispatchPlace.getSelectedItem().toString();
