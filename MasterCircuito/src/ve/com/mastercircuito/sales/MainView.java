@@ -70,6 +70,7 @@ import org.joda.time.DateTime;
 import ve.com.mastercircuito.components.DateLabelFormatter;
 import ve.com.mastercircuito.components.MyInternalFrame;
 import ve.com.mastercircuito.components.MyTableModel;
+import ve.com.mastercircuito.components.SwitchDialog;
 import ve.com.mastercircuito.db.Db;
 import ve.com.mastercircuito.font.Fa;
 import ve.com.mastercircuito.utils.Errors;
@@ -267,7 +268,7 @@ public class MainView extends JFrame{
 	// Board Switches Add Objects
 		private int selectedTableBoardCircuits = 0;
 		private String searchSelectedBoardSwitchBrand, searchSelectedBoardSwitchType, searchSelectedBoardSwitchPhases, searchSelectedBoardSwitchCurrent, searchSelectedBoardSwitchInterruption;
-		private JDialog dialogBoardSwitchAdd;
+		private SwitchDialog dialogBoardSwitchAdd;
 		private Object[][] boardSwitchesSearchData;
 		private JTable tableBoardSwitchesSearchResult;
 		private ListSelectionModel listBoardSwitchSearchSelectionModel;
@@ -8989,6 +8990,7 @@ public class MainView extends JFrame{
 					loadBudgetSwitchTable();
 					loadBudgetBoxTable();
 					loadBudgetBoardTable();
+					buttonBudgetNotesEdit.setEnabled(true);
 					
 					if(panelBudgetDescription.isShowing()) {
 						buttonBudgetEdit.setEnabled(true);
@@ -9071,6 +9073,10 @@ public class MainView extends JFrame{
 				textBoardDescription.setText("");
 			} else if (lsm.isSelectionEmpty() && null != panelBudgetDescription && tableBudgetsResult.getSelectedRow() == -1) {
 				buttonBudgetEdit.setEnabled(false);
+				buttonBudgetNotesEdit.setEnabled(false);
+				tableBudgetSwitchesResult.setModel(new DefaultTableModel());
+				tableBudgetBoxesResult.setModel(new DefaultTableModel());
+				tableBudgetBoardsResult.setModel(new DefaultTableModel());
 				textBudgetDescriptionId.setText("");
 				textBudgetDescriptionCode.setText("");
 				textBudgetDescriptionDate.setText("");
@@ -9685,34 +9691,35 @@ public class MainView extends JFrame{
 			} else if (actionCommand.equalsIgnoreCase("board.description.edit.cancel")) {
 				setBoardsMode(MainView.VIEW_MODE);
 			} else if (actionCommand.equalsIgnoreCase("board.switch.add")) {
-				dialogBoardSwitchAdd = new JDialog(null, "Agregar Interruptor", Dialog.DEFAULT_MODALITY_TYPE);
-				dialogBoardSwitchAdd.setMinimumSize(new Dimension(800, 300));
-				dialogBoardSwitchAdd.setSize(800, 300);
-				dialogBoardSwitchAdd.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-				
-				Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-				int x = (dim.width / 2) - (dialogBoardSwitchAdd.getWidth() / 2);
-				int y = (dim.height / 2) - (dialogBoardSwitchAdd.getHeight() / 2);
-				dialogBoardSwitchAdd.setLocation(x, y);
-				// finish the createBoardSwitchAddPanel() method and replace it at the line below
-				// add the listener to handle the accept button
-				JPanel panelCenter = new JPanel();
-				panelCenter.setLayout(new BoxLayout(panelCenter, BoxLayout.PAGE_AXIS));
-				panelCenter.add(createBoardSwitchAddSearchPanel());
-				panelCenter.add(Box.createRigidArea(new Dimension(0, 10)));
-				panelCenter.add(createBoardSwitchAddTablePanel());
-				dialogBoardSwitchAdd.add(panelCenter, BorderLayout.CENTER);
-				
-				JPanel panelLower = new JPanel();
-				panelLower.setLayout(new BoxLayout(panelLower, BoxLayout.LINE_AXIS));
-				panelLower.add(createBoardSwitchAddCountPanel());
-				panelLower.add(createBoardSwitchAddButtonPanel());
-				dialogBoardSwitchAdd.add(panelLower, BorderLayout.SOUTH);
+//				dialogBoardSwitchAdd = new JDialog(null, "Agregar Interruptor", Dialog.DEFAULT_MODALITY_TYPE);
+				dialogBoardSwitchAdd = new SwitchDialog(null, "Agregar Interruptor");
+//				dialogBoardSwitchAdd.setMinimumSize(new Dimension(800, 300));
+//				dialogBoardSwitchAdd.setSize(800, 300);
+//				dialogBoardSwitchAdd.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+//				
+//				Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+//				int x = (dim.width / 2) - (dialogBoardSwitchAdd.getWidth() / 2);
+//				int y = (dim.height / 2) - (dialogBoardSwitchAdd.getHeight() / 2);
+//				dialogBoardSwitchAdd.setLocation(x, y);
+//				// finish the createBoardSwitchAddPanel() method and replace it at the line below
+//				// add the listener to handle the accept button
+//				JPanel panelCenter = new JPanel();
+//				panelCenter.setLayout(new BoxLayout(panelCenter, BoxLayout.PAGE_AXIS));
+//				panelCenter.add(createBoardSwitchAddSearchPanel());
+//				panelCenter.add(Box.createRigidArea(new Dimension(0, 10)));
+//				panelCenter.add(createBoardSwitchAddTablePanel());
+//				dialogBoardSwitchAdd.add(panelCenter, BorderLayout.CENTER);
+//				
+//				JPanel panelLower = new JPanel();
+//				panelLower.setLayout(new BoxLayout(panelLower, BoxLayout.LINE_AXIS));
+//				panelLower.add(createBoardSwitchAddCountPanel());
+//				panelLower.add(createBoardSwitchAddButtonPanel());
+//				dialogBoardSwitchAdd.add(panelLower, BorderLayout.SOUTH);
 				
 				WindowsListener lForWindow = new WindowsListener();
 				dialogBoardSwitchAdd.addWindowListener(lForWindow);
 				
-				dialogBoardSwitchAdd.setVisible(true);
+//				dialogBoardSwitchAdd.setVisible(true);
 			} else if (actionCommand.equalsIgnoreCase("board.switch.remove")) {
 				int response = JOptionPane.showConfirmDialog(null, "Esta seguro que desea remover este interruptor del tablero?", "Remover interruptor del tablero", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 				if(response == JOptionPane.YES_OPTION) {
@@ -10116,10 +10123,11 @@ public class MainView extends JFrame{
 
 		@Override
 		public void windowClosed(WindowEvent e) {
-			if(boardSwitchSearchId > 0) {
-				//JOptionPane.showMessageDialog(null, "El id seleccionado fue: " + boardSwitchSearchId + " y una cantidad de " + boardSwitchSearchQuantity + " interruptores");
-				if ((boardSwitchSearchQuantity * db.getSwitchPhases(boardSwitchSearchId)) + db.getBoardSwitchesQuantity(selectedBoardId) <= selectedTableBoardCircuits) {
-					if(db.addBoardSwitch(selectedBoardId, boardSwitchSearchId, boardSwitchSearchQuantity)) {
+			Integer switchSearchId = dialogBoardSwitchAdd.getSwitchSearchId();
+			Integer switchQuantity = dialogBoardSwitchAdd.getSwitchAddQuantity();
+			if(switchSearchId > 0) {
+				if ((switchQuantity * db.getSwitchPhases(switchSearchId)) + db.getBoardSwitchesQuantity(selectedBoardId) <= selectedTableBoardCircuits) {
+					if(db.addBoardSwitch(selectedBoardId, switchSearchId, switchQuantity)) {
 						loadBoardSwitchTable();
 					}
 				} else {
