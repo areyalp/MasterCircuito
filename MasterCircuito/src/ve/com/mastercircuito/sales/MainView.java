@@ -392,6 +392,7 @@ public class MainView extends JFrame{
 		private int budgetSwitchSearchId = 0;
 	// Budget Boxes Objects
 		private JPanel budgetBoxesPanel;
+		private Object[][] budgetBoxesData;
 		private JTable tableBudgetBoxesResult;
 		private ListSelectionModel listBudgetBoxesSelectionModel;
 		private int budgetBoxesTableSelectedIndex;
@@ -7048,6 +7049,98 @@ public class MainView extends JFrame{
 		buttonAddBudgetSwitch.setEnabled(true);
 	}
 	
+	private void loadBudgetBoxTable() {
+		ArrayList<String> fields = new ArrayList<String>();
+		fields.add("budget_boxes.id");
+		fields.add(" CONCAT('Caja ', box_types.type, ', ', IF(boxes.height=0,'N/A',boxes.height), ' x ', IF(boxes.width=0,'N/A',boxes.width), ' x ', IF(boxes.depth=0,'N/A',boxes.depth), ' ' , IF(boxes.units_id=0,'N/A',box_measure_units.units), ', ' ," + MainView.NEMA_FIELD + ") as description");
+		fields.add(MainView.INSTALLATION_FIELD);
+		fields.add(MainView.BOX_PAIRS_FIELD);
+		fields.add(MainView.BOX_FINISH_FIELD);
+		fields.add(MainView.BOX_COLOR_FIELD);
+		fields.add(MainView.BOX_CALIBER_FIELD);
+		fields.add(MainView.BOX_LOCK_TYPE_FIELD);
+		fields.add("budget_boxes.quantity");
+		fields.add(MainView.BOX_PRICE_FIELD);
+		fields.add("(budget_boxes.quantity * " + MainView.BOX_PRICE_FIELD + ") as total");
+		
+		ArrayList<String> tables = new ArrayList<String>();
+		tables.add(MainView.BOXES_TABLE);
+		tables.add(MainView.BOX_TYPES_TABLE);
+		tables.add(MainView.INSTALLATIONS_TABLE);
+		tables.add(MainView.NEMAS_TABLE);
+		tables.add(MainView.BOX_SHEETS_TABLE);
+		tables.add(MainView.BOX_FINISHES_TABLE);
+		tables.add(MainView.BOX_COLORS_TABLE);
+		tables.add(MainView.BOX_UNITS_TABLE);
+		tables.add(MainView.BOX_CALIBERS_TABLE);
+		tables.add(MainView.LOCK_TYPES_TABLE);
+		tables.add("budget_boxes");
+		
+		String whereQuery = 
+				" AND ( (boxes.sheet_id > 0 "
+					+ " AND boxes.sheet_id = " + MainView.BOX_SHEETS_TABLE + ".id) "
+					+ " OR boxes.sheet_id = 0) "
+				+ " AND ( (boxes.finish_id > 0 "
+					+ " AND boxes.finish_id = " + MainView.BOX_FINISHES_TABLE + ".id) "
+					+ " OR boxes.finish_id = 0) "
+				+ " AND ( (boxes.color_id > 0 "
+					+ " AND boxes.color_id = " + MainView.BOX_COLORS_TABLE + ".id) "
+					+ " OR boxes.color_id = 0) "
+				+ " AND ( (boxes.units_id > 0 "
+					+ " AND boxes.units_id = " + MainView.BOX_UNITS_TABLE + ".id) "
+					+ " OR boxes.units_id = 0) "
+				+ " AND ( (boxes.caliber_id > 0 "
+					+ " AND boxes.caliber_id = " + MainView.BOX_CALIBERS_TABLE + ".id) "
+					+ " OR boxes.caliber_id = 0) "
+				+ " AND ( (boxes.lock_type_id > 0 "
+					+ " AND boxes.lock_type_id = " + MainView.LOCK_TYPES_TABLE + ".id) "
+					+ " OR boxes.lock_type_id = 0) ";
+		
+		String fieldsQuery = StringTools.implode(",", fields);
+		String tablesQuery = StringTools.implode(",", tables);
+		String budgetBoxesQuery = "SELECT " + fieldsQuery
+						+ " FROM "
+						+ tablesQuery
+						+ " WHERE budget_boxes.budget_container_id = " + selectedBudgetId
+						// Fix these conditions to make them disappear when filtering
+						
+						+ " AND boxes.id = budget_boxes.box_id "
+						+ " AND boxes.type_id = box_types.id "
+						+ " AND boxes.installation_id = installations.id "
+						+ " AND boxes.nema_id = nemas.id "
+						+ " AND boxes.active = '1' "
+						+ whereQuery
+						+ " GROUP BY boxes.id";
+//		String budgetBoxesQuery = "SELECT budget_switches.id, "
+//				+ " CONCAT('Interruptor ', switches.phases, 'X', currents.current, 'A,', switch_types.type, ',', switch_brands.brand) as description, "
+//				+ " budget_switches.quantity, "
+//				+ " switches.price, "
+//				+ " (budget_switches.quantity * switches.price) as total "
+//			+ " FROM budgets, budget_switches, switches, switch_types, switch_brands, currents "
+//			+ " WHERE budget_switches.budget_container_id = " + selectedBudgetId
+//			+ " AND budgets.id = budget_switches.budget_container_id"
+//			+ " AND switches.id = budget_switches.switch_id "
+//			+ " AND switches.current_id = currents.id"
+//			+ " AND switches.type_id = switch_types.id"
+//			+ " AND switches.brand_id = switch_brands.id"
+//			+ " ORDER BY switches.phases DESC, currents.current DESC ";
+		
+		String[] budgetBoxesColumnNames = { "Id", "Descripcion", "Instalacion", "Pares Tel.", "Acabado", "Color", "Calibre", "Cerradura", "Cantidad", "Precio", "Total"};
+		budgetBoxesData = db.fetchAll(db.select(budgetBoxesQuery));
+		
+		if(budgetBoxesData.length > 0) {
+			MyTableModel mForTable = new MyTableModel(budgetBoxesData, budgetBoxesColumnNames);
+			tableBudgetBoxesResult.setModel(mForTable);
+			if(null != tableBudgetBoxesResult && tableBudgetBoxesResult.getSelectedRow() == -1) {
+				buttonRemoveBudgetBox.setEnabled(false);
+			}
+		} else {
+			tableBudgetBoxesResult.setModel(new DefaultTableModel());
+			buttonRemoveBudgetBox.setEnabled(false);
+		}
+		buttonAddBudgetBox.setEnabled(true);
+	}
+	
 	private void loadBudgetCompanyTable(String whereQuery) {
 		
 		if(null != textBudgetCompanySearchClient && !textBudgetCompanySearchClient.getText().isEmpty()) {
@@ -8829,6 +8922,7 @@ public class MainView extends JFrame{
 					selectedBudgetId = Integer.valueOf((String) tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, 0));
 					
 					loadBudgetSwitchTable();
+					loadBudgetBoxTable();
 					
 					if(panelBudgetDescription.isShowing()) {
 						buttonBudgetEdit.setEnabled(true);
