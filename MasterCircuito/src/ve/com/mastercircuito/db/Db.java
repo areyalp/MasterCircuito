@@ -1084,5 +1084,63 @@ public class Db extends MysqlDriver {
 		}
 		return null;
 	}
+
+	
+	public boolean addBudgetBox(Integer selectedBudgetId, Integer boxSearchId, Integer boxQuantity) {
+		int budgetBoxId = 0;
+		if(this.budgetBoxExists(selectedBudgetId, boxSearchId)) {
+			budgetBoxId = this.getBudgetBoxId(selectedBudgetId, boxSearchId);
+			if(budgetBoxId > 0) {
+				return this.increaseBudgetBox(budgetBoxId, boxQuantity);
+			} else {
+				return false;
+			}
+		} else {
+			String queryString = "INSERT INTO budget_boxes (busget_container_id, box_id, quantity) "
+								+ "VALUES (" + selectedBudgetId + ", " + boxSearchId + ", " + boxQuantity + ")";
+			this.insert(queryString);
+			return (this.getInsertId() > 0)? true:false;
+		}
+	}
+
+	private boolean increaseBudgetBox(int budgetBoxId, Integer boxQuantity) {
+		String queryString = "UPDATE budget_boxes SET quantity = quantity + " + boxQuantity 
+				+ " WHERE id = " + budgetBoxId;
+
+		return this.update(queryString);
+	}
+
+	private int getBudgetBoxId(Integer selectedBudgetId, Integer boxSearchId) {
+		String queryString;
+		ResultSet setBudgetBoxId;
+		
+		queryString = "SELECT budget_boxes.id FROM budget_boxes "
+					+ "WHERE budget_boxes.budget_container_id = '" + selectedBudgetId + "' "
+					+ "AND budget_boxes.box_id = '" + boxSearchId + "' "
+					+ "LIMIT 1";
+		
+		setBudgetBoxId = this.select(queryString);
+		
+		try {
+			if (setBudgetBoxId.next()) {
+				return setBudgetBoxId.getInt("budget_boxes.id");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return 0;
+	}
+	
+	private boolean budgetBoxExists(Integer selectedBudgetId, Integer boxSearchId) {
+		String queryString;
+		
+		queryString = "SELECT * FROM budget_boxes "
+					+ "WHERE budget_boxes.budget_container_id = '" + selectedBudgetId + "' "
+					+ "AND budget_boxes.box_id = '" + boxSearchId + "' ";
+		
+		this.select(queryString);
+		
+		return (this.getNumRows() > 0)? true:false;
+	}
 	
 }

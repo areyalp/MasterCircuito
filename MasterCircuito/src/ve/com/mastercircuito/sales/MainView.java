@@ -15,6 +15,7 @@ import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Toolkit;
+import java.awt.Window;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
@@ -35,6 +36,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
 
+import javax.accessibility.AccessibleContext;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
@@ -67,6 +69,7 @@ import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.UtilDateModel;
 import org.joda.time.DateTime;
 
+import ve.com.mastercircuito.components.BoxDialog;
 import ve.com.mastercircuito.components.DateLabelFormatter;
 import ve.com.mastercircuito.components.MyInternalFrame;
 import ve.com.mastercircuito.components.MyTableModel;
@@ -401,7 +404,7 @@ public class MainView extends JFrame{
 		private int selectedBudgetBoxId;
 	// Budget Boxes Add Objects
 		private String searchSelectedBudgetBoxBrand, searchSelectedBudgetBoxType, searchSelectedBudgetBoxPhases, searchSelectedBudgetBoxCurrent, searchSelectedBudgetBoxInterruption;
-		private JDialog dialogBudgetBoxAdd;
+		private BoxDialog dialogBudgetBoxAdd;
 		private Object[][] budgetBoxesSearchData;
 		private JTable tableBudgetBoxesSearchResult;
 		private ListSelectionModel listBudgetBoxSearchSelectionModel;
@@ -3793,211 +3796,6 @@ public class MainView extends JFrame{
 		tablePanel.add(panelButtons, BorderLayout.PAGE_END);
 		
 		return tablePanel;
-	}
-	
-	private JPanel createBoardSwitchAddSearchPanel() {
-		JPanel panelBoardSwitchAddSearch = new JPanel();
-		
-		panelBoardSwitchAddSearch.setLayout(new FlowLayout(FlowLayout.CENTER));
-		
-		String queryBrands = "SELECT brand "
-				+ "FROM switch_brands, switches "
-				+ "WHERE switch_brands.id = switches.brand_id "
-				+ "GROUP BY switch_brands.brand";
-		
-		String queryTypes = "SELECT type "
-				+ "FROM switch_types, switches "
-				+ "WHERE switch_types.id = switches.type_id "
-				+ "GROUP BY switch_types.type";
-		
-		String queryPhases = "SELECT phases "
-				+ "FROM switches "
-				+ "GROUP BY phases";
-		
-		String queryCurrents = "SELECT current "
-				+ "FROM currents, switches "
-				+ "WHERE currents.id = switches.current_id "
-				+ "GROUP BY currents.current";
-		
-		String queryInterruptions = "SELECT interruption "
-				+ "FROM interruptions, switches "
-				+ "WHERE interruptions.id = switches.interruption_id "
-				+ "GROUP BY interruptions.interruption";
-		
-		JLabel brandsLabel = new JLabel("Marca:");
-		JLabel typesLabel = new JLabel("Tipo:");
-		JLabel phasesLabel = new JLabel("Fases:");
-		JLabel currentsLabel = new JLabel("Amperaje:");
-		JLabel interruptionsLabel = new JLabel("Interrupcion:");
-		
-		ComboBoxListener lForCombo = new ComboBoxListener();
-		
-		comboBoardSwitchBrands = new JComboBox<String>(new Vector<String>(loadComboList(queryBrands, "brand")));
-		comboBoardSwitchBrands.setActionCommand("board.switch.bar.brand");
-		comboBoardSwitchBrands.addActionListener(lForCombo);
-		panelBoardSwitchAddSearch.add(brandsLabel);
-		panelBoardSwitchAddSearch.add(comboBoardSwitchBrands);
-		
-		comboBoardSwitchTypes = new JComboBox<String>(new Vector<String>(loadComboList(queryTypes, "type")));
-		comboBoardSwitchTypes.setActionCommand("board.switch.bar.type");
-		comboBoardSwitchTypes.addActionListener(lForCombo);
-		panelBoardSwitchAddSearch.add(typesLabel);
-		panelBoardSwitchAddSearch.add(comboBoardSwitchTypes);
-		
-		comboBoardSwitchPhases = new JComboBox<String>(new Vector<String>(loadComboList(queryPhases, "phases")));
-		comboBoardSwitchPhases.setActionCommand("board.switch.bar.phases");
-		comboBoardSwitchPhases.addActionListener(lForCombo);
-		panelBoardSwitchAddSearch.add(phasesLabel);
-		panelBoardSwitchAddSearch.add(comboBoardSwitchPhases);
-		
-		comboBoardSwitchCurrents = new JComboBox<String>(new Vector<String>(loadComboList(queryCurrents, "current")));
-		comboBoardSwitchCurrents.setActionCommand("board.switch.bar.current");
-		comboBoardSwitchCurrents.addActionListener(lForCombo);
-		panelBoardSwitchAddSearch.add(currentsLabel);
-		panelBoardSwitchAddSearch.add(comboBoardSwitchCurrents);
-		
-		comboBoardSwitchInterruptions = new JComboBox<String>(new Vector<String>(loadComboList(queryInterruptions, "interruption")));
-		comboBoardSwitchInterruptions.setActionCommand("board.switch.bar.interruption");
-		comboBoardSwitchInterruptions.addActionListener(lForCombo);
-		panelBoardSwitchAddSearch.add(interruptionsLabel);
-		panelBoardSwitchAddSearch.add(comboBoardSwitchInterruptions);
-		
-		panelBoardSwitchAddSearch.add(separator());
-		
-		JButton searchButton = new JButton("Buscar");
-		searchButton.setActionCommand("board.switch.search.bar.button");
-		SearchButtonListener lForSearchButton = new SearchButtonListener();
-		searchButton.addActionListener(lForSearchButton);
-		panelBoardSwitchAddSearch.add(searchButton);
-		
-		return panelBoardSwitchAddSearch;
-	}
-	
-	private JPanel createBoardSwitchAddTablePanel() {
-		String switchesQuery = "SELECT switches.id, "
-						+ "switches.model, "
-						+ "switch_brands.brand, "
-						+ "switch_types.type, "
-						+ "switches.phases, "
-						+ "currents.current, "
-						+ "interruptions.interruption, "
-						+ "switch_voltages.voltage, "
-						+ "switches.price "
-					+ "FROM switches, "
-						+ "switch_brands, "
-						+ "switch_types, "
-						+ "currents, "
-						+ "interruptions, "
-						+ "switch_voltages "
-					+ "WHERE switches.brand_id = switch_brands.id "
-					+ "AND switches.type_id = switch_types.id "
-					+ "AND switches.current_id = currents.id "
-					+ "AND switches.interruption_id = interruptions.id "
-					+ "AND switches.voltage_id = switch_voltages.id "
-					+ "AND switches.active = '1'";
-		
-		boardSwitchesSearchData = db.fetchAll(db.select(switchesQuery));
-		
-		String[] switchesColumnNames = { "Id", "Modelo", "Marca", "Tipo", "Fases", "Amperaje", "Interrupcion", "Voltaje", "Precio"};
-		
-		MyTableModel mForTable = new MyTableModel(boardSwitchesSearchData, switchesColumnNames);
-		
-		tableBoardSwitchesSearchResult = new JTable();
-		tableBoardSwitchesSearchResult.setModel(mForTable);
-		tableBoardSwitchesSearchResult.setAutoCreateRowSorter(true);
-		tableBoardSwitchesSearchResult.getTableHeader().setReorderingAllowed(false);
-		
-		SharedListSelectionListener lForList = new SharedListSelectionListener();
-		
-		listBoardSwitchSearchSelectionModel = tableBoardSwitchesSearchResult.getSelectionModel();
-		listBoardSwitchSearchSelectionModel.addListSelectionListener(lForList);
-		tableBoardSwitchesSearchResult.setSelectionModel(listBoardSwitchSearchSelectionModel);
-		tableBoardSwitchesSearchResult.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		
-		JPanel panelBoardSwitchAddTable = new JPanel(new BorderLayout());
-		panelBoardSwitchAddTable.add(tableBoardSwitchesSearchResult.getTableHeader(), BorderLayout.PAGE_START);
-		panelBoardSwitchAddTable.add(tableBoardSwitchesSearchResult, BorderLayout.CENTER);
-		
-		return panelBoardSwitchAddTable;
-	}
-	
-	private JPanel createBoardSwitchAddCountPanel() {
-		JPanel panelCountOuter = new JPanel(new BorderLayout());
-		JPanel panelCountInner = new JPanel();
-		
-		panelCountInner.setLayout(new FlowLayout(FlowLayout.CENTER));
-		JButton buttonDecrease = new JButton("-");
-		JButton buttonIncrease = new JButton("+");
-		JLabel labelQuantity = new JLabel("1");
-		boardSwitchAddQuantity = 1;
-		int min = 1;
-		int max = 100;
-		
-		panelCountInner.add(buttonDecrease);
-		panelCountInner.add(labelQuantity);
-		panelCountInner.add(buttonIncrease);
-		
-		buttonDecrease.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if(boardSwitchAddQuantity > min) {
-					boardSwitchAddQuantity--;
-					labelQuantity.setText(String.valueOf(boardSwitchAddQuantity));
-				}
-			}
-		});
-		
-		buttonIncrease.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if(boardSwitchAddQuantity < max) {
-					boardSwitchAddQuantity++;
-					labelQuantity.setText(String.valueOf(boardSwitchAddQuantity));
-				}
-			}
-		});
-		
-		panelCountOuter.add(panelCountInner, BorderLayout.CENTER);
-		
-		return panelCountOuter;
-	}
-	
-	private JPanel createBoardSwitchAddButtonPanel() {
-		JPanel panelOuter = new JPanel(new BorderLayout());
-		JPanel panelInner = new JPanel();
-		panelInner.setLayout(new FlowLayout(FlowLayout.CENTER));
-		JButton buttonAccept = new JButton("Aceptar");
-		JButton buttonCancel = new JButton("Cancelar");
-		panelInner.add(buttonAccept);
-		panelInner.add(buttonCancel);
-		
-		buttonAccept.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if(tableBoardSwitchesSearchResult.getSelectedRow() > -1) {
-					boardSwitchSearchId = Integer.valueOf((String)tableBoardSwitchesSearchResult.getValueAt(tableBoardSwitchesSearchResult.getSelectedRow(), 0));
-					boardSwitchSearchQuantity = boardSwitchAddQuantity;
-					dialogBoardSwitchAdd.dispose();
-					
-				}
-			}
-		});
-		
-		buttonCancel.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				boardSwitchSearchId = 0;
-				dialogBoardSwitchAdd.dispose();
-			}
-		});
-		
-		panelOuter.add(panelInner, BorderLayout.CENTER);
-		
-		return panelOuter;
 	}
 	
 	private JPanel createBoardDescriptionPanel() {
@@ -9691,35 +9489,9 @@ public class MainView extends JFrame{
 			} else if (actionCommand.equalsIgnoreCase("board.description.edit.cancel")) {
 				setBoardsMode(MainView.VIEW_MODE);
 			} else if (actionCommand.equalsIgnoreCase("board.switch.add")) {
-//				dialogBoardSwitchAdd = new JDialog(null, "Agregar Interruptor", Dialog.DEFAULT_MODALITY_TYPE);
 				dialogBoardSwitchAdd = new SwitchDialog(null, "Agregar Interruptor");
-//				dialogBoardSwitchAdd.setMinimumSize(new Dimension(800, 300));
-//				dialogBoardSwitchAdd.setSize(800, 300);
-//				dialogBoardSwitchAdd.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-//				
-//				Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-//				int x = (dim.width / 2) - (dialogBoardSwitchAdd.getWidth() / 2);
-//				int y = (dim.height / 2) - (dialogBoardSwitchAdd.getHeight() / 2);
-//				dialogBoardSwitchAdd.setLocation(x, y);
-//				// finish the createBoardSwitchAddPanel() method and replace it at the line below
-//				// add the listener to handle the accept button
-//				JPanel panelCenter = new JPanel();
-//				panelCenter.setLayout(new BoxLayout(panelCenter, BoxLayout.PAGE_AXIS));
-//				panelCenter.add(createBoardSwitchAddSearchPanel());
-//				panelCenter.add(Box.createRigidArea(new Dimension(0, 10)));
-//				panelCenter.add(createBoardSwitchAddTablePanel());
-//				dialogBoardSwitchAdd.add(panelCenter, BorderLayout.CENTER);
-//				
-//				JPanel panelLower = new JPanel();
-//				panelLower.setLayout(new BoxLayout(panelLower, BoxLayout.LINE_AXIS));
-//				panelLower.add(createBoardSwitchAddCountPanel());
-//				panelLower.add(createBoardSwitchAddButtonPanel());
-//				dialogBoardSwitchAdd.add(panelLower, BorderLayout.SOUTH);
-				
 				WindowsListener lForWindow = new WindowsListener();
 				dialogBoardSwitchAdd.addWindowListener(lForWindow);
-				
-//				dialogBoardSwitchAdd.setVisible(true);
 			} else if (actionCommand.equalsIgnoreCase("board.switch.remove")) {
 				int response = JOptionPane.showConfirmDialog(null, "Esta seguro que desea remover este interruptor del tablero?", "Remover interruptor del tablero", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 				if(response == JOptionPane.YES_OPTION) {
@@ -10100,9 +9872,12 @@ public class MainView extends JFrame{
 					err.dump();
 				}
 				
-			}
-			else if (actionCommand.equalsIgnoreCase("budget.description.edit.cancel")) {
+			} else if (actionCommand.equalsIgnoreCase("budget.description.edit.cancel")) {
 				setBudgetsMode(MainView.VIEW_MODE);
+			} else if (actionCommand.equalsIgnoreCase("budget.box.add")) {
+				dialogBudgetBoxAdd = new BoxDialog(null, "Agregar Caja");
+				WindowsListener lForWindow = new WindowsListener();
+				dialogBudgetBoxAdd.addWindowListener(lForWindow);
 			}
 			
 		}
@@ -10123,17 +9898,29 @@ public class MainView extends JFrame{
 
 		@Override
 		public void windowClosed(WindowEvent e) {
-			Integer switchSearchId = dialogBoardSwitchAdd.getSwitchSearchId();
-			Integer switchQuantity = dialogBoardSwitchAdd.getSwitchAddQuantity();
-			if(switchSearchId > 0) {
-				if ((switchQuantity * db.getSwitchPhases(switchSearchId)) + db.getBoardSwitchesQuantity(selectedBoardId) <= selectedTableBoardCircuits) {
-					if(db.addBoardSwitch(selectedBoardId, switchSearchId, switchQuantity)) {
-						loadBoardSwitchTable();
+			AccessibleContext windowAC = e.getWindow().getAccessibleContext();
+			if (windowAC.equals(dialogBoardSwitchAdd)) {
+				Integer switchSearchId = dialogBoardSwitchAdd.getSwitchSearchId();
+				Integer switchQuantity = dialogBoardSwitchAdd.getSwitchAddQuantity();
+				if(switchSearchId > 0) {
+					if ((switchQuantity * db.getSwitchPhases(switchSearchId)) + db.getBoardSwitchesQuantity(selectedBoardId) <= selectedTableBoardCircuits) {
+						if(db.addBoardSwitch(selectedBoardId, switchSearchId, switchQuantity)) {
+							loadBoardSwitchTable();
+						}
+					} else {
+						JOptionPane.showMessageDialog(null, "No puede agregar mas de " + selectedTableBoardCircuits + " circuitos");
 					}
-				} else {
-					JOptionPane.showMessageDialog(null, "No puede agregar mas de " + selectedTableBoardCircuits + " circuitos");
+				}
+			} else if (windowAC.equals(dialogBudgetBoxAdd)) {
+				Integer boxSearchId = dialogBudgetBoxAdd.getBoxSearchId();
+				Integer boxQuantity = dialogBudgetBoxAdd.getBoxAddQuantity();
+				if(boxSearchId > 0) {
+					if(db.addBudgetBox(selectedBudgetId, boxSearchId, boxQuantity)) {
+						loadBudgetBoxTable();
+					}
 				}
 			}
+			
 		}
 
 		@Override

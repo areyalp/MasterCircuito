@@ -157,12 +157,6 @@ public class SwitchDialog extends JDialog {
 		panelSwitchAddSearch.add(interruptionsLabel);
 		panelSwitchAddSearch.add(comboSwitchInterruptions);
 		
-		JButton searchButton = new JButton("Buscar");
-		searchButton.setActionCommand("switch.search.bar.button");
-		SearchButtonListener lForSearchButton = new SearchButtonListener();
-		searchButton.addActionListener(lForSearchButton);
-		panelSwitchAddSearch.add(searchButton);
-		
 		return panelSwitchAddSearch;
 	}
 	
@@ -343,6 +337,7 @@ public class SwitchDialog extends JDialog {
 				}
 				this.addSwitchCommonQuery();
 				this.loadComboSwitch("types");
+				this.dynamicSearch();
 			} else if (actionCommand.equalsIgnoreCase("switch.bar.type")) {
 				fromQuery = "switches ";
 				searchSelectedSwitchType = comboSwitchTypes.getSelectedItem().toString();
@@ -357,6 +352,7 @@ public class SwitchDialog extends JDialog {
 				this.switchBrandQuery();
 				this.addSwitchCommonQuery();
 				this.loadComboSwitch("phases");
+				this.dynamicSearch();
 			} else if (actionCommand.equalsIgnoreCase("switch.bar.phases")) {
 				fromQuery = "switches ";
 				searchSelectedSwitchPhases = comboSwitchPhases.getSelectedItem().toString();
@@ -365,6 +361,7 @@ public class SwitchDialog extends JDialog {
 				this.switchBrandQuery();
 				this.addSwitchCommonQuery();
 				this.loadComboSwitch("currents");
+				this.dynamicSearch();
 			} else if (actionCommand.equalsIgnoreCase("switch.bar.current")) {
 				fromQuery = "switches ";
 				searchSelectedSwitchCurrent = comboSwitchCurrents.getSelectedItem().toString();
@@ -378,8 +375,42 @@ public class SwitchDialog extends JDialog {
 				this.switchBrandQuery();
 				this.addSwitchCommonQuery();
 				this.loadComboSwitch("interruptions");
+				this.dynamicSearch();
 			} else if (actionCommand.equalsIgnoreCase("switch.bar.interruption")) {
 				searchSelectedSwitchInterruption = comboSwitchInterruptions.getSelectedItem().toString();
+				this.dynamicSearch();
+			}
+		}
+		
+		private void dynamicSearch() {
+			whereQuery = "";
+			if(searchSelectedSwitchBrand != null && !searchSelectedSwitchBrand.equalsIgnoreCase("Todas") &&
+					!searchSelectedSwitchBrand.isEmpty()) {
+				whereQuery += " AND switch_brands.brand = '" + searchSelectedSwitchBrand + "'";
+			}
+			if(searchSelectedSwitchType != null && !searchSelectedSwitchType.equalsIgnoreCase("Todas") &&
+					!searchSelectedSwitchType.isEmpty()) {
+				whereQuery += " AND switch_types.type = '" + searchSelectedSwitchType + "'";
+			}
+			if(searchSelectedSwitchPhases != null && !searchSelectedSwitchPhases.equalsIgnoreCase("Todas") &&
+					!searchSelectedSwitchPhases.isEmpty()) {
+				whereQuery += " AND switches.phases = '" + searchSelectedSwitchPhases + "'";
+			}
+			if(searchSelectedSwitchCurrent != null && !searchSelectedSwitchCurrent.equalsIgnoreCase("Todas") &&
+					!searchSelectedSwitchCurrent.isEmpty()) {
+				whereQuery += " AND currents.current = '" + searchSelectedSwitchCurrent + "'";
+			}
+			if(searchSelectedSwitchInterruption != null && !searchSelectedSwitchInterruption.equalsIgnoreCase("Todas") &&
+					!searchSelectedSwitchInterruption.isEmpty()) {
+				whereQuery += " AND interruptions.interruption = '" + searchSelectedSwitchInterruption + "'";
+			}
+			
+			loadSwitchSearchTable(whereQuery);
+			
+			if(switchesSearchData.length > 0) {
+				tableSwitchesSearchResult.setModel(new MyTableModel(switchesSearchData, switchesColumnNames));
+			} else {
+				tableSwitchesSearchResult.setModel(new DefaultTableModel());
 			}
 		}
 		
@@ -470,49 +501,5 @@ public class SwitchDialog extends JDialog {
 		}
 		
 	}
-	
-	private class SearchButtonListener implements ActionListener {
-		
-		private String whereQuery = "";
-		
-		@Override
-		public void actionPerformed(ActionEvent ev) {
-			String actionCommand = ev.getActionCommand();
-			
-			if(actionCommand.equalsIgnoreCase("switch.search.bar.button")) {
-				whereQuery = "";
-				if(searchSelectedSwitchBrand != null && !searchSelectedSwitchBrand.equalsIgnoreCase("Todas") &&
-						!searchSelectedSwitchBrand.isEmpty()) {
-					whereQuery += " AND switch_brands.brand = '" + searchSelectedSwitchBrand + "'";
-				}
-				if(searchSelectedSwitchType != null && !searchSelectedSwitchType.equalsIgnoreCase("Todas") &&
-						!searchSelectedSwitchType.isEmpty()) {
-					whereQuery += " AND switch_types.type = '" + searchSelectedSwitchType + "'";
-				}
-				if(searchSelectedSwitchPhases != null && !searchSelectedSwitchPhases.equalsIgnoreCase("Todas") &&
-						!searchSelectedSwitchPhases.isEmpty()) {
-					whereQuery += " AND switches.phases = '" + searchSelectedSwitchPhases + "'";
-				}
-				if(searchSelectedSwitchCurrent != null && !searchSelectedSwitchCurrent.equalsIgnoreCase("Todas") &&
-						!searchSelectedSwitchCurrent.isEmpty()) {
-					whereQuery += " AND currents.current = '" + searchSelectedSwitchCurrent + "'";
-				}
-				if(searchSelectedSwitchInterruption != null && !searchSelectedSwitchInterruption.equalsIgnoreCase("Todas") &&
-						!searchSelectedSwitchInterruption.isEmpty()) {
-					whereQuery += " AND interruptions.interruption = '" + searchSelectedSwitchInterruption + "'";
-				}
-				
-				loadSwitchSearchTable(whereQuery);
-				
-				if(switchesSearchData.length > 0) {
-					tableSwitchesSearchResult.setModel(new MyTableModel(switchesSearchData, switchesColumnNames));
-				} else {
-					tableSwitchesSearchResult.setModel(new DefaultTableModel());
-				}
-			}
-		}
-		
-	}
-
 	
 }
