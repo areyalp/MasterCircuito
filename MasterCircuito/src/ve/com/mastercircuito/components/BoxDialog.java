@@ -39,15 +39,10 @@ public class BoxDialog extends JDialog {
 	// Common Tables
 		private static final String INSTALLATIONS_TABLE = "installations";
 		private static final String NEMAS_TABLE = "nemas";
-		private static final String INTERRUPTIONS_TABLE = "interruptions";
 		private static final String LOCK_TYPES_TABLE = "lock_types";
-		private static final String USERS_TABLE = "users";
-		private static final String CLIENTS_TABLE = "clients";
-	
 	// Common Fields
 		private static final String INSTALLATION_FIELD = "installations.installation";
 		private static final String NEMA_FIELD = "nemas.nema";
-		private static final String INTERRUPTION_FIELD = "interruptions.interruption";
 	// Box Tables
 		private static final String BOXES_TABLE = "boxes";
 		private static final String BOX_TYPES_TABLE = "box_types";

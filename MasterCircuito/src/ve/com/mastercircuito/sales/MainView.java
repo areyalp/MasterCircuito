@@ -69,6 +69,7 @@ import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.UtilDateModel;
 import org.joda.time.DateTime;
 
+import ve.com.mastercircuito.components.BoardDialog;
 import ve.com.mastercircuito.components.BoxDialog;
 import ve.com.mastercircuito.components.DateLabelFormatter;
 import ve.com.mastercircuito.components.MyInternalFrame;
@@ -386,7 +387,7 @@ public class MainView extends JFrame{
 	// Budget Switches Add Objects
 		private Object[][] budgetSwitchesData;
 		private String searchSelectedBudgetSwitchBrand, searchSelectedBudgetSwitchType, searchSelectedBudgetSwitchPhases, searchSelectedBudgetSwitchCurrent, searchSelectedBudgetSwitchInterruption;
-		private JDialog dialogBudgetSwitchAdd;
+		private SwitchDialog dialogBudgetSwitchAdd;
 		private Object[][] budgetSwitchesSearchData;
 		private JTable tableBudgetSwitchesSearchResult;
 		private ListSelectionModel listBudgetSwitchSearchSelectionModel;
@@ -422,7 +423,7 @@ public class MainView extends JFrame{
 		private int selectedBudgetBoardId;
 	// Budget Boards Add Objects
 		private String searchSelectedBudgetBoardBrand, searchSelectedBudgetBoardType, searchSelectedBudgetBoardPhases, searchSelectedBudgetBoardCurrent, searchSelectedBudgetBoardInterruption;
-		private JDialog dialogBudgetBoardAdd;
+		private BoardDialog dialogBudgetBoardAdd;
 		private Object[][] budgetBoardsSearchData;
 		private JTable tableBudgetBoardsSearchResult;
 		private ListSelectionModel listBudgetBoardSearchSelectionModel;
@@ -4887,7 +4888,7 @@ public class MainView extends JFrame{
 		searchSelectedBoardBarType = comboBoardBarTypes.getSelectedItem().toString();
 		searchSelectedBoardCircuits = comboBoardCircuits.getSelectedItem().toString();
 		searchSelectedBoardVoltage = comboBoardVoltages.getSelectedItem().toString();
-		searchSelectedBoardVoltage = comboBoardPhases.getSelectedItem().toString();
+		searchSelectedBoardPhases = comboBoardPhases.getSelectedItem().toString();
 		searchSelectedBoardGround = comboBoardGround.getSelectedItem().toString();
 		searchSelectedBoardInterruption = comboBoardInterruptions.getSelectedItem().toString();
 		searchSelectedBoardLockType = comboBoardLockTypes.getSelectedItem().toString();
@@ -9987,8 +9988,7 @@ public class MainView extends JFrame{
 				dialogBudgetSellerEdit.addWindowListener(lForWindow);				
 				dialogBudgetSellerEdit.setVisible(true);
 				
-			}
-			else if (actionCommand.equalsIgnoreCase("budget.description.edit.save")) {
+			} else if (actionCommand.equalsIgnoreCase("budget.description.edit.save")) {
 				ArrayList<Object> listFields = new ArrayList<Object>();
 				ArrayList<Object> listValues = new ArrayList<Object>();
 				Errors err = new Errors();
@@ -10089,10 +10089,18 @@ public class MainView extends JFrame{
 				
 			} else if (actionCommand.equalsIgnoreCase("budget.description.edit.cancel")) {
 				setBudgetsMode(MainView.VIEW_MODE);
+			} else if (actionCommand.equalsIgnoreCase("budget.switch.add")) {
+				dialogBudgetSwitchAdd = new SwitchDialog(null, "Agregar Interruptor");
+				WindowsListener lForWindow = new WindowsListener();
+				dialogBudgetSwitchAdd.addWindowListener(lForWindow);
 			} else if (actionCommand.equalsIgnoreCase("budget.box.add")) {
 				dialogBudgetBoxAdd = new BoxDialog(null, "Agregar Caja");
 				WindowsListener lForWindow = new WindowsListener();
 				dialogBudgetBoxAdd.addWindowListener(lForWindow);
+			} else if (actionCommand.equalsIgnoreCase("budget.board.add")) {
+				dialogBudgetBoardAdd = new BoardDialog(null, "Agregar Tablero");
+				WindowsListener lForWindow = new WindowsListener();
+				dialogBudgetBoardAdd.addWindowListener(lForWindow);
 			}
 			
 		}
@@ -10113,8 +10121,8 @@ public class MainView extends JFrame{
 
 		@Override
 		public void windowClosed(WindowEvent e) {
-			AccessibleContext windowAC = e.getWindow().getAccessibleContext();
-			if (windowAC.equals(dialogBoardSwitchAdd)) {
+			Window window = (Window)e.getSource();
+			if (window.equals(dialogBoardSwitchAdd)) {
 				Integer switchSearchId = dialogBoardSwitchAdd.getSwitchSearchId();
 				Integer switchQuantity = dialogBoardSwitchAdd.getSwitchAddQuantity();
 				if(switchSearchId > 0) {
@@ -10126,12 +10134,28 @@ public class MainView extends JFrame{
 						JOptionPane.showMessageDialog(null, "No puede agregar mas de " + selectedTableBoardCircuits + " circuitos");
 					}
 				}
-			} else if (windowAC.equals(dialogBudgetBoxAdd)) {
+			} else if (window.equals(dialogBudgetSwitchAdd)) {
+				Integer switchSearchId = dialogBudgetSwitchAdd.getSwitchSearchId();
+				Integer switchQuantity = dialogBudgetSwitchAdd.getSwitchAddQuantity();
+				if(switchSearchId > 0) {
+					if(db.addBudgetSwitch(selectedBudgetId, switchSearchId, switchQuantity)) {
+						loadBudgetSwitchTable();
+					}
+				}
+			} else if (window.equals(dialogBudgetBoxAdd)) {
 				Integer boxSearchId = dialogBudgetBoxAdd.getBoxSearchId();
 				Integer boxQuantity = dialogBudgetBoxAdd.getBoxAddQuantity();
 				if(boxSearchId > 0) {
 					if(db.addBudgetBox(selectedBudgetId, boxSearchId, boxQuantity)) {
 						loadBudgetBoxTable();
+					}
+				}
+			} else if (window.equals(dialogBudgetBoardAdd)) {
+				Integer boardSearchId = dialogBudgetBoardAdd.getBoardSearchId();
+				Integer boardQuantity = dialogBudgetBoardAdd.getBoardAddQuantity();
+				if(boardSearchId > 0) {
+					if(db.addBudgetBox(selectedBudgetId, boardSearchId, boardQuantity)) {
+						loadBudgetBoardTable();
 					}
 				}
 			}

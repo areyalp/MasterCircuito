@@ -1096,7 +1096,7 @@ public class Db extends MysqlDriver {
 				return false;
 			}
 		} else {
-			String queryString = "INSERT INTO budget_boxes (busget_container_id, box_id, quantity) "
+			String queryString = "INSERT INTO budget_boxes (budget_container_id, box_id, quantity) "
 								+ "VALUES (" + selectedBudgetId + ", " + boxSearchId + ", " + boxQuantity + ")";
 			this.insert(queryString);
 			return (this.getInsertId() > 0)? true:false;
@@ -1137,6 +1137,64 @@ public class Db extends MysqlDriver {
 		queryString = "SELECT * FROM budget_boxes "
 					+ "WHERE budget_boxes.budget_container_id = '" + selectedBudgetId + "' "
 					+ "AND budget_boxes.box_id = '" + boxSearchId + "' ";
+		
+		this.select(queryString);
+		
+		return (this.getNumRows() > 0)? true:false;
+	}
+
+	
+	public boolean addBudgetSwitch(int selectedBudgetId, Integer switchSearchId, Integer switchQuantity) {
+		int budgetSwitchId = 0;
+		if(this.budgetSwitchExists(selectedBudgetId, switchSearchId)) {
+			budgetSwitchId = this.getBudgetSwitchId(selectedBudgetId, switchSearchId);
+			if(budgetSwitchId > 0) {
+				return this.increaseBudgetSwitch(budgetSwitchId, switchQuantity);
+			} else {
+				return false;
+			}
+		} else {
+			String queryString = "INSERT INTO budget_switches (budget_container_id, switch_id, quantity) "
+								+ "VALUES (" + selectedBudgetId + ", " + switchSearchId + ", " + switchQuantity + ")";
+			this.insert(queryString);
+			return (this.getInsertId() > 0)? true:false;
+		}
+	}
+
+	private boolean increaseBudgetSwitch(int budgetSwitchId, Integer switchQuantity) {
+		String queryString = "UPDATE budget_switches SET quantity = quantity + " + switchQuantity 
+				+ " WHERE id = " + budgetSwitchId;
+
+		return this.update(queryString);
+	}
+
+	private int getBudgetSwitchId(int selectedBudgetId, Integer switchSearchId) {
+		String queryString;
+		ResultSet setBudgetSwitchId;
+		
+		queryString = "SELECT budget_switches.id FROM budget_boxes "
+					+ "WHERE budget_switches.budget_container_id = '" + selectedBudgetId + "' "
+					+ "AND budget_switches.switch_id = '" + switchSearchId + "' "
+					+ "LIMIT 1";
+		
+		setBudgetSwitchId = this.select(queryString);
+		
+		try {
+			if (setBudgetSwitchId.next()) {
+				return setBudgetSwitchId.getInt("budget_switches.id");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return 0;
+	}
+
+	private boolean budgetSwitchExists(int selectedBudgetId, Integer switchSearchId) {
+		String queryString;
+		
+		queryString = "SELECT * FROM budget_switches "
+					+ "WHERE budget_switches.budget_container_id = '" + selectedBudgetId + "' "
+					+ "AND budget_switches.switch_id = '" + switchSearchId + "' ";
 		
 		this.select(queryString);
 		
