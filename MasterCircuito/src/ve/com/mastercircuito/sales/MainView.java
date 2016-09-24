@@ -5366,7 +5366,7 @@ public class MainView extends JFrame{
 		editPanel.add(labelClientCode, cs);
 		
 		textBudgetEditClientCode = new JTextField("", 6);
-		textBudgetEditClientCode.setEditable(false);
+//		textBudgetEditClientCode.setEditable(false);
 		cs.gridx = 11;
 		cs.gridy = 0;
 		cs.gridwidth = 6;
@@ -5379,7 +5379,7 @@ public class MainView extends JFrame{
 		editPanel.add(labelCompany, cs);
 		
 		textBudgetEditCompany = new JTextField("", 8);
-		textBudgetEditCompany.setEditable(false);
+//		textBudgetEditCompany.setEditable(false);
 		cs.gridx = 18;
 		cs.gridy = 0;
 		cs.gridwidth = 8;
@@ -5405,7 +5405,7 @@ public class MainView extends JFrame{
 		editPanel.add(labelCompanyRepresentative, cs);
 		
 		textBudgetEditCompanyRepresentative = new JTextField("", 8);
-		textBudgetEditCompanyRepresentative.setEditable(false);
+//		textBudgetEditCompanyRepresentative.setEditable(false);
 		cs.gridx = 1;
 		cs.gridy = 1;
 		cs.gridwidth = 8;
@@ -5453,7 +5453,7 @@ public class MainView extends JFrame{
 		editPanel.add(labelSeller, cs);
 		
 		textBudgetEditSeller = new JTextField("", 8);
-		textBudgetEditSeller.setEditable(false);
+//		textBudgetEditSeller.setEditable(false);
 		cs.gridx = 1;
 		cs.gridy = 2;
 		cs.gridwidth = 8;
@@ -8993,10 +8993,8 @@ public class MainView extends JFrame{
 				selectedBoardSwitchId = Integer.valueOf((String) tableBoardSwitchesResult.getValueAt(boardSwitchesTableSelectedIndex, BOARD_ID_COLUMN));
 				buttonRemoveBoardSwitch.setEnabled(true);
 			} else if (null != tableBudgetsResult && tableBudgetsResult.isFocusOwner() && lsm.getMinSelectionIndex() > -1) {
-				budgetsTableSelectedIndex = lsm.getMinSelectionIndex();
-				
+				budgetsTableSelectedIndex = lsm.getMinSelectionIndex();				
 				if(lsm.isSelectionEmpty()) {
-//					buttonAddBoardSwitch.setEnabled(false);
 					tableBudgetsResult.setModel(new DefaultTableModel());
 				} else {
 					selectedBudgetId = Integer.valueOf((String) tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, 0));
@@ -9013,7 +9011,6 @@ public class MainView extends JFrame{
 					DateTime dt = new DateTime(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_DATE_COLUMN));
 					
 					Integer expiryDays = Integer.valueOf(String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_EXPIRY_DAYS_COLUMN)));
-					
 					textBudgetDescriptionId.setText((String) tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_ID_COLUMN));
 					textBudgetDescriptionCode.setText((String) tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_CODE_COLUMN));
 					textBudgetDescriptionDate.setText(dt.toLocalDate().toString());
@@ -9028,14 +9025,7 @@ public class MainView extends JFrame{
 					textBudgetDescriptionDispatchPlace.setText((String) tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_DISPATCH_PLACE_COLUMN));
 					textBudgetDescriptionDeliveryTime.setText((String)tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_DELIVERY_TIME_COLUMN));
 					textBudgetDescriptionDeliveryPeriod.setText((String)tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_DELIVERY_PERIOD_COLUMN));
-//					textBoardDescription.setText("Caja para Tablero, " +
-//						tableBoardsResult.getValueAt(boardsTableSelectedIndex, BOARD_TYPE_COLUMN) +
-//						", " +
-//						tableBoardsResult.getValueAt(boardsTableSelectedIndex, BOARD_PHASES_COLUMN) +
-//						", de " +
-//						tableBoardsResult.getValueAt(boardsTableSelectedIndex, BOARD_CIRCUITS_COLUMN) +
-//						" circuitos, " +
-//						tableBoardsResult.getValueAt(boardsTableSelectedIndex, BOARD_NEMA_COLUMN));
+
 				}
 			}
 			
@@ -10025,7 +10015,7 @@ public class MainView extends JFrame{
 				} else {
 					err.add("Debe ingresar el tiempo de entrega");
 				}
-				//TODO ADD changes for the seller id
+				//TODO there is an error in the combos, client_id and seller id
 				
 //				if(!textBudgetEditSeller.getText().isEmpty()) {
 //					if (!String.valueOf(textBudgetEditSeller).equals(textBudgetEditSeller.getText())) {
