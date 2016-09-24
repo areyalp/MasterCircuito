@@ -5366,7 +5366,7 @@ public class MainView extends JFrame{
 		editPanel.add(labelClientCode, cs);
 		
 		textBudgetEditClientCode = new JTextField("", 6);
-//		textBudgetEditClientCode.setEditable(false);
+		textBudgetEditClientCode.setEditable(false);
 		cs.gridx = 11;
 		cs.gridy = 0;
 		cs.gridwidth = 6;
@@ -5379,7 +5379,7 @@ public class MainView extends JFrame{
 		editPanel.add(labelCompany, cs);
 		
 		textBudgetEditCompany = new JTextField("", 8);
-//		textBudgetEditCompany.setEditable(false);
+		textBudgetEditCompany.setEditable(false);
 		cs.gridx = 18;
 		cs.gridy = 0;
 		cs.gridwidth = 8;
@@ -5405,7 +5405,7 @@ public class MainView extends JFrame{
 		editPanel.add(labelCompanyRepresentative, cs);
 		
 		textBudgetEditCompanyRepresentative = new JTextField("", 8);
-//		textBudgetEditCompanyRepresentative.setEditable(false);
+		textBudgetEditCompanyRepresentative.setEditable(false);
 		cs.gridx = 1;
 		cs.gridy = 1;
 		cs.gridwidth = 8;
@@ -5453,7 +5453,7 @@ public class MainView extends JFrame{
 		editPanel.add(labelSeller, cs);
 		
 		textBudgetEditSeller = new JTextField("", 8);
-//		textBudgetEditSeller.setEditable(false);
+		textBudgetEditSeller.setEditable(false);
 		cs.gridx = 1;
 		cs.gridy = 2;
 		cs.gridwidth = 8;
@@ -5526,9 +5526,7 @@ public class MainView extends JFrame{
 		cs.gridy = 4;
 		cs.gridwidth = 30;
 		editPanel.add(panelButtons, cs);
-		
-//		updateBudgetTextEditDescription();
-		
+				
 		return editPanel;
 	}
 
@@ -6733,6 +6731,7 @@ public class MainView extends JFrame{
 		
 		return panelBudgetSellerEditDescription;
 	}
+	
 	private JPanel createBudgetSellerEditButtonPanel(){
 		JPanel panelOuter = new JPanel(new BorderLayout());
 		JPanel panelInner = new JPanel();
@@ -9016,7 +9015,7 @@ public class MainView extends JFrame{
 					textBudgetDescriptionDate.setText(dt.toLocalDate().toString());
 					textBudgetDescriptionExpiryDays.setText(expiryDays.toString());
 					textBudgetDescriptionExpiryDate.setText(dt.plusDays(expiryDays).toLocalDate().toString());
-					textBudgetDescriptionClientCode.setText(db.getBudgetClientCode(Integer.valueOf((String)tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_ID_COLUMN))));
+					textBudgetDescriptionClientCode.setText(db.getBudgetClientId(Integer.valueOf((String)tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_ID_COLUMN))));
 					textBudgetDescriptionCompany.setText(db.getBudgetClientName(Integer.valueOf((String)tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_ID_COLUMN))));
 					textBudgetDescriptionCompanyRepresentative.setText(db.getBudgetClientRepresentative(Integer.valueOf((String)tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_ID_COLUMN))));
 					textBudgetDescriptionWorkName.setText((String) tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_WORK_NAME_COLUMN));
@@ -9863,7 +9862,6 @@ public class MainView extends JFrame{
 			} else if(actionCommand.equalsIgnoreCase("budget.description.add.save")) {
 				String budgetDate = addBudgetDateModel.getYear() + "-" + (addBudgetDateModel.getMonth() + 1) + "-" + addBudgetDateModel.getDay();
 				String budgetExpiryDays = textBudgetAddExpiryDays.getText().toString();
-				// TODO Fix the budget client id (not the code)
 				String budgetClientId = String.valueOf(budgetCompanyAddSearchId);
 				String budgetWorkName = textBudgetAddWorkName.getText();
 				String budgetPaymentMethod = comboBudgetAddPaymentMethod.getSelectedItem().toString();
@@ -9979,9 +9977,11 @@ public class MainView extends JFrame{
 				dialogBudgetSellerEdit.setVisible(true);
 				
 			} else if (actionCommand.equalsIgnoreCase("budget.description.edit.save")) {
+				
 				ArrayList<Object> listFields = new ArrayList<Object>();
 				ArrayList<Object> listValues = new ArrayList<Object>();
 				Errors err = new Errors();
+				Integer budgetEditSellerId = budgetSellerEditSearchId;
 				
 				if(!textBudgetEditExpiryDays.getText().isEmpty()) {
 					if (!String.valueOf(editBudgetExpiryDays).equals(textBudgetEditExpiryDays.getText())) {
@@ -9993,13 +9993,13 @@ public class MainView extends JFrame{
 				}
 				if(!textBudgetEditClientCode.getText().isEmpty()) {
 					if (!String.valueOf(editBudgetClientCode).equals(textBudgetEditClientCode.getText())) {
-						listFields.add("`client__id`");
+						listFields.add("`client_id`");
 						listValues.add("'" + textBudgetEditClientCode.getText() + "'");
 					}
 				} else {
 					err.add("Debe ingresar el codigo del cliente");
 				}
-				if(!textBudgetEditWorkName.getText().isEmpty()) {
+				if(!textBudgetEditWorkName.getText().isEmpty())  {
 					if (!String.valueOf(editBudgetWorkName).equals(textBudgetEditWorkName.getText())) {
 						listFields.add("`work_name`");
 						listValues.add("'" + textBudgetEditWorkName.getText() + "'");
@@ -10007,7 +10007,7 @@ public class MainView extends JFrame{
 				} else {
 					err.add("Debe ingresar el nombre de la obra");
 				}		
-				if(!textBudgetEditDeliveryTime.getText().isEmpty()) {
+				if(!textBudgetEditDeliveryTime.getText().isEmpty())  {
 					if (!String.valueOf(editBudgetDeliveryTime).equals(textBudgetEditDeliveryTime.getText())) {
 						listFields.add("`delivery_time`");
 						listValues.add("'" + textBudgetEditDeliveryTime.getText() + "'");
@@ -10015,21 +10015,19 @@ public class MainView extends JFrame{
 				} else {
 					err.add("Debe ingresar el tiempo de entrega");
 				}
-				//TODO there is an error in the combos, client_id and seller id
-				
-//				if(!textBudgetEditSeller.getText().isEmpty()) {
-//					if (!String.valueOf(textBudgetEditSeller).equals(textBudgetEditSeller.getText())) {
-//						listFields.add("`seller_id`");
-//						listValues.add("'" + textBudgetEditSeller.getText() + "'");
-//					}
-//				} else {
-//					err.add("Debe ingresar el vendedor");
-//				}
-				//check the others text that could generate errors from the user...
+					
+				if(!textBudgetEditSeller.getText().isEmpty())  {
+					if (!String.valueOf(editBudgetSeller).equals(textBudgetEditSeller.getText())) {
+						listFields.add("`seller_id`");
+						listValues.add("'" + textBudgetEditSeller.getText() + "'");
+					}
+				} else {
+					err.add("Debe ingresar el vendedor");
+				}
 				if(comboBudgetEditDeliveryPeriod.getItemCount() > 0) {
 					if (comboBudgetEditDeliveryPeriod.getSelectedIndex() > -1) {
 						if (!editBudgetDeliveryPeriod.equals(comboBudgetEditDeliveryPeriod.getSelectedItem().toString())) {
-							listFields.add("delivery_period");
+							listFields.add("delivery_period_id");
 							listValues.add("'" + db.getDeliveryPeriodId(comboBudgetEditDeliveryPeriod.getSelectedItem().toString()) + "'");
 						}
 					} else {

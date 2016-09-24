@@ -1025,19 +1025,19 @@ public class Db extends MysqlDriver {
 		return comments;
 	}
 
-	public String getBudgetClientCode(int budgetId) {
+	public String getBudgetClientId(int budgetId) {
 		String queryString;
-		ResultSet setBudgetClientCode;
+		ResultSet setBudgetClientId;
 		
 		queryString = "SELECT clients.client_code FROM budgets, clients "
 					+ "WHERE budgets.id = '" + budgetId + "' "
 					+ "AND budgets.client_id = clients.id";
 		
-		setBudgetClientCode = this.select(queryString);
+		setBudgetClientId = this.select(queryString);
 		
 		try {
-			if (setBudgetClientCode.next()) {
-				return setBudgetClientCode.getString("clients.client_code");
+			if (setBudgetClientId.next()) {
+				return setBudgetClientId.getString("clients.client_code");
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
