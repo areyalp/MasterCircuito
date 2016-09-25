@@ -34,7 +34,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
 
-import javax.swing.AbstractButton;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
@@ -171,7 +170,7 @@ public class MainView extends JFrame{
 	private JDesktopPane desktop;
 	private JPanel theToolBarPanel;
 	private JToolBar toolBar;
-	private JButton toolBarButtonSwitches, toolBarButtonBoxes, toolBarButtonPanels, toolBarButtonBudgets, toolBarButtonStarters, toolBarButtonTracing;
+	private JButton toolBarButtonSwitches, toolBarButtonBoxes, toolBarButtonPanels, toolBarButtonBudgets, toolBarButtonTracing;
 	//*** Switch Global Variables and objects ***//
 	private MyInternalFrame switchesFrame = new MyInternalFrame();
 	private Object[][] switchesData = {};
@@ -327,7 +326,6 @@ public class MainView extends JFrame{
 	private JPanel panelBudgetDescription, panelWrapperBudgetDescription;
 	private JComboBox<String> comboBudgetMonths;
 	private JComboBox<String> comboBudgetYears;
-	private Object[][] budgetData = {};
 	private JPanel panelBudgetAddNew, panelBudgetEdit;
 	private JTextField textBudgetDescriptionId, textBudgetSearchClient,textBudgetDescriptionCode;
 	private JTextField textBudgetDescriptionDate, textBudgetDescriptionExpiryDays;
@@ -335,18 +333,15 @@ public class MainView extends JFrame{
 	private JTextField textBudgetDescriptionCompanyRepresentative, textBudgetDescriptionWorkName, textBudgetDescriptionPaymentMethod;
 	private JTextField textBudgetDescriptionSeller, textBudgetDescriptionDeliveryTime, textBudgetDescriptionDeliveryPeriod, textBudgetDescriptionDispatchPlace;
 	private JButton buttonBudgetAddSave, buttonBudgetAddCancel;
-	private JTextField textBudgetAddCode, textBudgetAddId, textBudgetAddDate, textBudgetAddClientCode,textBudgetAddExpiryDays;
+	private JTextField textBudgetAddClientCode,textBudgetAddExpiryDays;
 	private JTextField textBudgetAddCompanyRepresentative, textBudgetAddWorkName, textBudgetAddCompany;
 	private JTextField textBudgetAddSeller, textBudgetAddDeliveryTime;
-	private JComboBox<String> comboBugetAddPaymentMethod,comboBugetAddDispatchPlace;
 	private JCheckBox checkBudgetAddTracing;
-	private JComboBox<String> comboBudgetAddSeller;
 	private JTextField textBudgetDescriptionExpiryDate;
 //	private String queryUser;
 //	private String username;
 	private Object [][] budgetsData={};
 	private JComboBox<String> comboBudgetAddPaymentMethod, comboBudgetAddDispatchPlace,comboBugetAddDeliveryPeriod;
-//	private List<String> comboListResult;
 	private int editBudgetId, editBudgetClientCode, editBudgetExpiryDays,editBudgetDeliveryTime;
 	private String editBudgetCode, editBudgetDate, editBudgetDeliveryPeriod;
 	private String editBudgetWorkName, editBudgetPaymentMethod, editBudgetSeller, editBudgetDispatchPlace, editBudgetTracing, editBudgetStage;
@@ -372,10 +367,10 @@ public class MainView extends JFrame{
 	private JButton buttonBudgetEditCompany, buttonBudgetEditSeller;
 	private JTextField textBudgetEditSeller, textBudgetEditDeliveryTime;
 	private JCheckBox checkBudgetEditTracing;
-	private JTextField textBudgetEditCode, textBudgetEditClientCode, textBudgetEditWorkName, textBudgetEditCompany;
-	private JTextField textBudgetEditCompanyRepresentative, textBudgetEditExpiryDays,textBudgetEditDate;
-	private String editBudgetCompanyRepresentative, editBudgetCompany,editBudgetClient;
-	private JComboBox<String> comboBudgetEditWorkName, comboBudgetEditDispatchPlace,comboBudgetEditDeliveryPeriod, comboBudgetEditSeller, comboBudgetEditPaymentMethod, comboBudgetEditStage;
+	private JTextField textBudgetEditClientCode, textBudgetEditWorkName, textBudgetEditCompany;
+	private JTextField textBudgetEditCompanyRepresentative, textBudgetEditExpiryDays;
+	private String editBudgetCompanyRepresentative, editBudgetCompany;
+	private JComboBox<String> comboBudgetEditDispatchPlace,comboBudgetEditDeliveryPeriod, comboBudgetEditPaymentMethod, comboBudgetEditStage;
 	
 	
 	public static void main(String[] args) {
@@ -645,8 +640,6 @@ public class MainView extends JFrame{
 		budgetsFrame.setLocation(new Point(x, y));
 		
 		budgetsFrame.setLayout(new GridLayout(1, 1));
-						
-		Font fa = null;
 		
 		budgetsFrame.add(createBudgetMainPanel());
 		
@@ -5952,17 +5945,7 @@ public class MainView extends JFrame{
 //		
 		return panelBudgetSwitches;
 	}
-
-	private JPanel createBudgetSwitchesSearchPanel() {
-		
-		return null;
-	}
 	
-	private JPanel createBudgetSwitchesTablePanel() {
-		JPanel tablePanel = new JPanel();
-		return tablePanel;
-	}
-
 	private JPanel createBudgetDescriptionPanel() {
 		
 		panelBudgetDescription = new JPanel();
@@ -6223,9 +6206,6 @@ public class MainView extends JFrame{
 		panelBudgetCompanyAddSearch.setLayout(new FlowLayout(FlowLayout.CENTER));
 		
 		JLabel clientLabel = new JLabel("Empresa:");
-		JLabel clientCodeLabel = new JLabel("Codigo Cliente:");
-		
-		ComboBoxListener lForCombo = new ComboBoxListener();
 		
 		textBudgetCompanySearchClient = new JTextField(6);
 		textBudgetCompanySearchClient.setActionCommand("budget.company.search.client");
@@ -6239,29 +6219,6 @@ public class MainView extends JFrame{
 			@Override
 			public void keyReleased(KeyEvent e) {
 				loadBudgetCompanyTable("");
-//				textBoardDescriptionName.setText("");
-//				textBoardDescriptionType.setText("");
-//				textBoardDescriptionInstallation.setText("");
-//				textBoardDescriptionNema.setText("");
-//				textBoardDescriptionBarCapacity.setText("");
-//				textBoardDescriptionBarType.setText("");
-//				textBoardDescriptionCircuits.setText("");
-//				textBoardDescriptionVoltage.setText("");
-//				textBoardDescriptionPhases.setText("");
-//				textBoardDescriptionGround.setText("");
-//				textBoardDescriptionInterruption.setText("");
-//				textBoardDescriptionLockType.setText("");
-//				textBoardDescriptionPrice.setText("");
-//				textBoardDescription.setText("");
-//				buttonBoardAdd.setEnabled(true);
-//				buttonBoardEdit.setEnabled(false);
-//				textMaterials.setText("");
-//				textMaterials.setEditable(false);
-//				textMaterialsPrice.setText("");
-//				textMaterialsPrice.setEditable(false);
-//				buttonBoardMaterialsEdit.setEnabled(false);
-//				textComments.setEditable(false);
-//				buttonBoardCommentsEdit.setEnabled(false);
 			}
 			
 			@Override
@@ -8352,7 +8309,7 @@ public class MainView extends JFrame{
 						textBudgetDescriptionDate.setText(dt.toLocalDate().toString());
 						textBudgetDescriptionExpiryDays.setText(expiryDays.toString());
 						textBudgetDescriptionExpiryDate.setText(dt.plusDays(expiryDays).toLocalDate().toString());
-						textBudgetDescriptionClientCode.setText(db.getBudgetClientCode(Integer.valueOf((String)tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_ID_COLUMN))));
+//						textBudgetDescriptionClientCode.setText(db.getBudgetClientCode(Integer.valueOf((String)tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_ID_COLUMN))));
 						textBudgetDescriptionCompany.setText(db.getBudgetClientName(Integer.valueOf((String)tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_ID_COLUMN))));
 						textBudgetDescriptionCompanyRepresentative.setText(db.getBudgetClientRepresentative(Integer.valueOf((String)tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_ID_COLUMN))));
 						textBudgetDescriptionWorkName.setText((String) tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_WORK_NAME_COLUMN));
