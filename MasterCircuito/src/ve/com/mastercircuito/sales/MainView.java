@@ -67,12 +67,15 @@ import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.UtilDateModel;
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import ve.com.mastercircuito.components.BoardDialog;
 import ve.com.mastercircuito.components.BoxDialog;
 import ve.com.mastercircuito.components.DateLabelFormatter;
 import ve.com.mastercircuito.components.MyInternalFrame;
 import ve.com.mastercircuito.components.MyTableModel;
+import ve.com.mastercircuito.components.PrintDialog;
 import ve.com.mastercircuito.components.SwitchDialog;
 import ve.com.mastercircuito.db.Db;
 import ve.com.mastercircuito.font.Fa;
@@ -155,7 +158,7 @@ public class MainView extends JFrame{
 	//Budget Fields
 		private static final String BUDGET_ID_FIELD = "budgets.id";
 		private static final String BUDGET_CODE_FIELD = "budgets.`code`";
-		private static final String BUDGET_DATE_FIELD = "budgets.`date`";
+		private static final String BUDGET_DATE_FIELD = "DATE_FORMAT(budgets.`date`,'%d-%m-%Y') as `date`";
 		private static final String BUDGET_EXPIRY_DAYS_FIELD = "budgets.expiry_days";
 		private static final String BUDGET_WORK_NAME_FIELD = "budgets.work_name";
 		private static final String BUDGET_DELIVERY_TIME_FIELD = "budgets.delivery_time";
@@ -308,6 +311,8 @@ public class MainView extends JFrame{
 		private MyInternalFrame budgetsFrame = new MyInternalFrame();
 		private MyInternalFrame startersFrame = new MyInternalFrame();
 		private MyInternalFrame tracingFrame = new MyInternalFrame();
+		
+		private PrintDialog budgetPrintDialog;
 	
 	//Budget add Objects
 		private String searchSelectedBudgetClient, searchSelectedBudgetId,searchSelectedBudgetDays,searchSelectedBudgetMonths,searchSelectedBudgetYears;
@@ -339,12 +344,12 @@ public class MainView extends JFrame{
 		private Object [][] budgetsData={};
 		private JComboBox<String> comboBudgetAddPaymentMethod, comboBudgetAddDispatchPlace,comboBudgetAddDeliveryPeriod;
 	//	private List<String> comboListResult;
-		private int editBudgetId, editBudgetClientCode, editBudgetExpiryDays,editBudgetDeliveryTime;
+		private Integer editBudgetId, editBudgetClientId, editBudgetClientCode, editBudgetSellerId, editBudgetExpiryDays,editBudgetDeliveryTime;
 		private String editBudgetDate, editBudgetDeliveryPeriod;
 		private String editBudgetWorkName, editBudgetPaymentMethod, editBudgetSeller, editBudgetDispatchPlace, editBudgetTracing, editBudgetStage;
-		private int budgetsTableSelectedIndex;
+		private Integer budgetsTableSelectedIndex;
 		private JButton buttonBudgetAddCompany, buttonBudgetAddSeller, buttonBudgetEditSave, buttonBudgetEditCancel;
-		private int selectedBudgetId;
+		private Integer selectedBudgetId;
 	// Budget Company Add
 		private JDialog dialogBudgetCompanyAdd;
 		private JTextField textBudgetCompanySearchClient;
@@ -375,7 +380,8 @@ public class MainView extends JFrame{
 		private ListSelectionModel listBudgetSwitchesSelectionModel;
 		private Integer budgetSwitchesTableSelectedIndex;
 		private JButton buttonAddBudgetSwitch, buttonRemoveBudgetSwitch;
-		private int selectedBudgetSwitchId;
+		private String stringSelectedBudgetSwitch;
+		private Integer selectedBudgetSwitchId;
 	// Budget Switches Add Objects
 		private SwitchDialog dialogBudgetSwitchAdd;
 		private Object[][] budgetSwitchesSearchData;
@@ -5226,7 +5232,6 @@ public class MainView extends JFrame{
 		panelBudgetSearch.add(labelClient);
 		panelBudgetSearch.add(textBudgetSearchClient);
 		
-		//ask if we are going to search for id or code
 		textBudgetSearchId = new JTextField(6);
 		textBudgetSearchId.addKeyListener(new KeyListener() {
 
@@ -5267,6 +5272,30 @@ public class MainView extends JFrame{
 		searchButton.addActionListener(lForSearchButton);
 		panelBudgetSearch.add(searchButton);
 		
+		Font fa = null;
+		
+		try {
+			URL url = getClass().getResource("fontawesome-webfont.ttf");
+			InputStream is;
+			is = url.openStream();
+			fa = Font.createFont(Font.TRUETYPE_FONT, is);
+			fa = fa.deriveFont(Font.PLAIN, 36f);
+		} catch (IOException | FontFormatException e) {
+			e.printStackTrace();
+		}
+		
+		PrinterButtonListener lForPrinterButton = new PrinterButtonListener();
+		// TODO Add Printer button here
+		JButton buttonBudgetPrint = new JButton(Fa.fa_print);
+		buttonBudgetPrint.setContentAreaFilled(false);
+		buttonBudgetPrint.setActionCommand("budget.print");
+		buttonBudgetPrint.addActionListener(lForPrinterButton);
+		buttonBudgetPrint.setMargin(new Insets(0, 0, 0, 0));
+		buttonBudgetPrint.setFocusPainted(true);
+		buttonBudgetPrint.setBorderPainted(false);
+		buttonBudgetPrint.setFont(fa);
+		buttonBudgetPrint.setForeground(Color.GREEN);
+		panelBudgetSearch.add(buttonBudgetPrint);
 		
 		return panelBudgetSearch;
 	}
@@ -6710,7 +6739,6 @@ public class MainView extends JFrame{
 					budgetSellerEditSearchId = Integer.valueOf((String)tableBudgetSellersSearchResult.getValueAt(tableBudgetSellersSearchResult.getSelectedRow(), 0));
 					textBudgetEditSeller.setText((String)tableBudgetSellersSearchResult.getValueAt(tableBudgetSellersSearchResult.getSelectedRow(), 1));
 					dialogBudgetSellerEdit.dispose();
-					
 				}
 			}
 		});
@@ -6848,7 +6876,6 @@ public class MainView extends JFrame{
 					textBudgetEditClientCode.setText((String)tableBudgetCompaniesSearchResult.getValueAt(tableBudgetCompaniesSearchResult.getSelectedRow(), 2));
 					textBudgetEditCompanyRepresentative.setText((String)tableBudgetCompaniesSearchResult.getValueAt(tableBudgetCompaniesSearchResult.getSelectedRow(), 3));
 					dialogBudgetCompanyEdit.dispose();
-					
 				}
 			}
 		});
@@ -7306,11 +7333,13 @@ public class MainView extends JFrame{
 			editBudgetCode = String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_CODE_COLUMN));
 			editBudgetDate = String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_DATE_COLUMN));
 			editBudgetExpiryDays = Integer.valueOf(String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_EXPIRY_DAYS_COLUMN)));
+			editBudgetClientId = db.getBudgetClientId(editBudgetId);
 			editBudgetClientCode = Integer.valueOf(String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_CLIENT_ID_COLUMN)));
 			editBudgetCompany = String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_COMPANY_COLUMN));
 			editBudgetCompanyRepresentative = String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_COMPANY_REPRESENTATIVE_COLUMN));
 			editBudgetWorkName = String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_WORK_NAME_COLUMN));
 			editBudgetPaymentMethod = String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_PAYMENT_METHOD_COLUMN));
+			editBudgetSellerId = db.getBudgetSellerId(editBudgetId);
 			editBudgetSeller = String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_SELLER_COLUMN));
 			editBudgetDispatchPlace = String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_DISPATCH_PLACE_COLUMN));
 			editBudgetDeliveryTime = Integer.valueOf(String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_DELIVERY_TIME_COLUMN)));
@@ -7337,7 +7366,8 @@ public class MainView extends JFrame{
 //			String querySeller = "SELECT  budgets_sellers.seller"
 //					+ "FROM budgets_sellers  "
 //					+ "GROUP BY budgets_sellers.seller ";
-			DateTime dt = new DateTime(editBudgetDate);
+			DateTimeFormatter dtf = DateTimeFormat.forPattern("dd-MM-yyyy");
+			DateTime dt = dtf.parseDateTime(editBudgetDate);
 			editBudgetDateModel.setDate(dt.getYear(), dt.getMonthOfYear() - 1, dt.getDayOfMonth());
 			editBudgetDateModel.setSelected(true);
 			textBudgetEditExpiryDays.setText(String.valueOf(editBudgetExpiryDays));
@@ -8949,28 +8979,37 @@ public class MainView extends JFrame{
 						buttonBudgetEdit.setEnabled(true);
 					}
 					
-					DateTime dt = new DateTime(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_DATE_COLUMN));
+					DateTimeFormatter dtf = DateTimeFormat.forPattern("dd-MM-yyyy");
+					
+					DateTime dt = dtf.parseDateTime((String) tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_DATE_COLUMN));
 					
 					Integer expiryDays = Integer.valueOf(String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_EXPIRY_DAYS_COLUMN)));
 					textBudgetDescriptionId.setText((String) tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_ID_COLUMN));
 					textBudgetDescriptionCode.setText((String) tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_CODE_COLUMN));
-					textBudgetDescriptionDate.setText(dt.toLocalDate().toString());
+					textBudgetDescriptionDate.setText(dtf.print(dt));
 					textBudgetDescriptionExpiryDays.setText(expiryDays.toString());
-					textBudgetDescriptionExpiryDate.setText(dt.plusDays(expiryDays).toLocalDate().toString());
-					textBudgetDescriptionClientCode.setText(db.getBudgetClientId(Integer.valueOf((String)tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_ID_COLUMN))));
-					textBudgetDescriptionCompany.setText(db.getBudgetClientName(Integer.valueOf((String)tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_ID_COLUMN))));
-					textBudgetDescriptionCompanyRepresentative.setText(db.getBudgetClientRepresentative(Integer.valueOf((String)tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_ID_COLUMN))));
+					textBudgetDescriptionExpiryDate.setText(dtf.print(dt.plusDays(expiryDays).toLocalDate()));
+					textBudgetDescriptionClientCode.setText(db.getBudgetClientCode(selectedBudgetId));
+					textBudgetDescriptionCompany.setText(db.getBudgetClientName(selectedBudgetId));
+					textBudgetDescriptionCompanyRepresentative.setText(db.getBudgetClientRepresentative(selectedBudgetId));
 					textBudgetDescriptionWorkName.setText((String) tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_WORK_NAME_COLUMN));
 					textBudgetDescriptionPaymentMethod.setText((String)tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_PAYMENT_METHOD_COLUMN));
 					textBudgetDescriptionSeller.setText((String) tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_SELLER_COLUMN));
 					textBudgetDescriptionDispatchPlace.setText((String) tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_DISPATCH_PLACE_COLUMN));
 					textBudgetDescriptionDeliveryTime.setText((String)tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_DELIVERY_TIME_COLUMN));
 					textBudgetDescriptionDeliveryPeriod.setText((String)tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_DELIVERY_PERIOD_COLUMN));
-
+					
+					textBudgetNotes.setText(db.getBudgetNotes(selectedBudgetId));
 				}
 			} else if (null != tableBudgetSwitchesResult && tableBudgetSwitchesResult.isFocusOwner() && lsm.getMinSelectionIndex() > -1) {
 				budgetSwitchesTableSelectedIndex = lsm.getMinSelectionIndex();
-				selectedBudgetSwitchId = Integer.valueOf((String) tableBudgetSwitchesResult.getValueAt(budgetSwitchesTableSelectedIndex, BUDGET_ID_COLUMN));
+				stringSelectedBudgetSwitch = (String) tableBudgetSwitchesResult.getValueAt(budgetSwitchesTableSelectedIndex, BUDGET_ID_COLUMN);
+				if (Numbers.isNumeric(stringSelectedBudgetSwitch)) {
+					selectedBudgetSwitchId = Integer.valueOf((String) tableBudgetSwitchesResult.getValueAt(budgetSwitchesTableSelectedIndex, BUDGET_ID_COLUMN));
+				} else {
+					selectedBudgetSwitchId = 0;
+				}
+				
 				buttonRemoveBudgetSwitch.setEnabled(true);
 			} else if (null != tableBudgetBoxesResult && tableBudgetBoxesResult.isFocusOwner() && lsm.getMinSelectionIndex() > -1) {
 				budgetSwitchesTableSelectedIndex = lsm.getMinSelectionIndex();
@@ -9052,6 +9091,7 @@ public class MainView extends JFrame{
 				textBudgetDescriptionDispatchPlace.setText("");
 				textBudgetDescriptionDeliveryTime.setText("");
 				textBudgetDescriptionDeliveryPeriod.setText("");
+				textBudgetNotes.setText("");
 				
 				JTabbedPane budgetTabbedPane = (JTabbedPane) budgetSwitchesPanel.getParent();
 				for(Integer i = 1; i < budgetTabbedPane.getTabCount(); i++) {
@@ -9884,8 +9924,7 @@ public class MainView extends JFrame{
 				}
 			} else if(actionCommand.equalsIgnoreCase("budget.description.add.cancel")) {
 				setBudgetsMode(MainView.VIEW_MODE);
-			} 
-			else if(actionCommand.equalsIgnoreCase("budget.description.edit.company")) {
+			} else if(actionCommand.equalsIgnoreCase("budget.description.edit.company")) {
 				dialogBudgetCompanyEdit = new JDialog(null, "Editar Compañia", Dialog.DEFAULT_MODALITY_TYPE);
 				dialogBudgetCompanyEdit.setMinimumSize(new Dimension(800, 300));
 				dialogBudgetCompanyEdit.setSize(800, 400);
@@ -9952,66 +9991,49 @@ public class MainView extends JFrame{
 				ArrayList<Object> listFields = new ArrayList<Object>();
 				ArrayList<Object> listValues = new ArrayList<Object>();
 				Errors err = new Errors();
-				Integer budgetEditSellerId = budgetSellerEditSearchId;
 				
-				if(!textBudgetEditExpiryDays.getText().isEmpty()) {
-					if (!String.valueOf(editBudgetExpiryDays).equals(textBudgetEditExpiryDays.getText())) {
+				String editedBudgetDate = String.format("%02d", editBudgetDateModel.getDay()) + "-" + String.format("%02d", (editBudgetDateModel.getMonth() + 1)) + "-" + editBudgetDateModel.getYear();
+				Integer editedBudgetExpiryDays = Integer.valueOf(textBudgetEditExpiryDays.getText());
+				Integer editedBudgetClientId = budgetCompanyEditSearchId;
+				String editedBudgetWorkName = textBudgetEditWorkName.getText();
+				String editedBudgetPaymentMethod = comboBudgetEditPaymentMethod.getSelectedItem().toString();
+				Integer editedBudgetSellerId = budgetSellerEditSearchId;
+				String editedBudgetDispatchPlace = comboBudgetEditDispatchPlace.getSelectedItem().toString();
+				Integer editedBudgetDeliveryTime = Integer.valueOf(textBudgetEditDeliveryTime.getText());
+				String editedBudgetDeliveryPeriod = comboBudgetEditDeliveryPeriod.getSelectedItem().toString();
+				
+				if (!editBudgetDate.equals(editedBudgetDate)) {
+					DateTimeFormatter dtf = DateTimeFormat.forPattern("dd-MM-yyyy");
+					DateTimeFormatter dtf2 = DateTimeFormat.forPattern("yyyy-MM-dd");
+					DateTime newDate = dtf.parseDateTime(editedBudgetDate);
+					listFields.add("`date`");
+					listValues.add("'" + dtf2.print(newDate) + "'");
+				}
+				if (!textBudgetEditExpiryDays.getText().isEmpty()) {
+					if	(!String.valueOf(editBudgetExpiryDays).equals(editedBudgetExpiryDays)) {
 						listFields.add("`expiry_days`");
-						listValues.add("'" + textBudgetEditExpiryDays.getText() + "'");
+						listValues.add("'" + editedBudgetExpiryDays + "'");
 					}
 				} else {
 					err.add("Debe ingresar los días de vencimiento");
 				}
-				if(!textBudgetEditClientCode.getText().isEmpty()) {
-					if (!String.valueOf(editBudgetClientCode).equals(textBudgetEditClientCode.getText())) {
-						listFields.add("`client_id`");
-						listValues.add("'" + textBudgetEditClientCode.getText() + "'");
-					}
-				} else {
-					err.add("Debe ingresar el codigo del cliente");
+				if(editBudgetClientId != editedBudgetClientId && editedBudgetClientId > 0) {
+					listFields.add("`client_id`");
+					listValues.add("'" + editedBudgetClientId + "'");
 				}
-				if(!textBudgetEditWorkName.getText().isEmpty())  {
-					if (!String.valueOf(editBudgetWorkName).equals(textBudgetEditWorkName.getText())) {
+				if(!editedBudgetWorkName.isEmpty()) {
+					if (!editBudgetWorkName.equals(editedBudgetWorkName))  {
 						listFields.add("`work_name`");
-						listValues.add("'" + textBudgetEditWorkName.getText() + "'");
+						listValues.add("'" + editedBudgetWorkName + "'");
 					}
 				} else {
 					err.add("Debe ingresar el nombre de la obra");
-				}		
-				if(!textBudgetEditDeliveryTime.getText().isEmpty())  {
-					if (!String.valueOf(editBudgetDeliveryTime).equals(textBudgetEditDeliveryTime.getText())) {
-						listFields.add("`delivery_time`");
-						listValues.add("'" + textBudgetEditDeliveryTime.getText() + "'");
-					}
-				} else {
-					err.add("Debe ingresar el tiempo de entrega");
-				}
-					
-				if(!textBudgetEditSeller.getText().isEmpty())  {
-					if (!String.valueOf(editBudgetSeller).equals(textBudgetEditSeller.getText())) {
-						listFields.add("`seller_id`");
-						listValues.add("'" + textBudgetEditSeller.getText() + "'");
-					}
-				} else {
-					err.add("Debe ingresar el vendedor");
-				}
-				if(comboBudgetEditDeliveryPeriod.getItemCount() > 0) {
-					if (comboBudgetEditDeliveryPeriod.getSelectedIndex() > -1) {
-						if (!editBudgetDeliveryPeriod.equals(comboBudgetEditDeliveryPeriod.getSelectedItem().toString())) {
-							listFields.add("delivery_period_id");
-							listValues.add("'" + db.getDeliveryPeriodId(comboBudgetEditDeliveryPeriod.getSelectedItem().toString()) + "'");
-						}
-					} else {
-						err.add("Debe seleccionar un tiempo de entrega");
-					}
-				} else {
-					err.add("No hay ningun tiempo de entrega registrado, debe registrar uno primero");
 				}
 				if(comboBudgetEditPaymentMethod.getItemCount() > 0) {
 					if (comboBudgetEditPaymentMethod.getSelectedIndex() > -1) {
-						if (!editBudgetPaymentMethod.equals(comboBudgetEditPaymentMethod.getSelectedItem().toString())) {
+						if (!editBudgetPaymentMethod.equals(editedBudgetPaymentMethod)) {
 							listFields.add("payment_method_id");
-							listValues.add("'" + db.getPaymentMethodId(comboBudgetEditPaymentMethod.getSelectedItem().toString()) + "'");
+							listValues.add("'" + db.getPaymentMethodId(editedBudgetPaymentMethod) + "'");
 						}
 					} else {
 						err.add("Debe seleccionar un metodo de pago");
@@ -10019,11 +10041,15 @@ public class MainView extends JFrame{
 				} else {
 					err.add("No hay ningun tipo de metodo de pago registrado, debe registrar uno primero");
 				}
+				if(editBudgetSellerId != editedBudgetSellerId && editedBudgetSellerId > 0) {
+					listFields.add("`seller_id`");
+					listValues.add("'" + editedBudgetSellerId + "'");
+				}
 				if(comboBudgetEditDispatchPlace.getItemCount() > 0) {
 					if (comboBudgetEditDispatchPlace.getSelectedIndex() > -1) {
-						if (!editBudgetDispatchPlace.equals(comboBudgetEditDispatchPlace.getSelectedItem().toString())) {
+						if (!editBudgetDispatchPlace.equals(editedBudgetDispatchPlace)) {
 							listFields.add("dispatch_place_id");
-							listValues.add("'" + db.getDispachPlaceId(comboBudgetEditDispatchPlace.getSelectedItem().toString()) + "'");
+							listValues.add("'" + db.getDispachPlaceId(editedBudgetDispatchPlace) + "'");
 						}
 					} else {
 						err.add("Debe seleccionar un sitio de entrega");
@@ -10031,6 +10057,27 @@ public class MainView extends JFrame{
 				} else {
 					err.add("No hay ningun sitio de entrega registrado, debe registrar uno primero");
 				}
+				if(!textBudgetEditDeliveryTime.getText().isEmpty()) {
+					if (editBudgetDeliveryTime != editedBudgetDeliveryTime)  {
+						listFields.add("`delivery_time`");
+						listValues.add("'" + editedBudgetDeliveryTime + "'");
+					}
+				} else {
+					err.add("Debe ingresar el tiempo de entrega");
+				}
+				if(comboBudgetEditDeliveryPeriod.getItemCount() > 0) {
+					if (comboBudgetEditDeliveryPeriod.getSelectedIndex() > -1) {
+						if (!editBudgetDeliveryPeriod.equals(editedBudgetDeliveryPeriod)) {
+							listFields.add("delivery_period_id");
+							listValues.add("'" + db.getDeliveryPeriodId(editedBudgetDeliveryPeriod) + "'");
+						}
+					} else {
+						err.add("Debe seleccionar un tiempo de entrega");
+					}
+				} else {
+					err.add("No hay ningun tiempo de entrega registrado, debe registrar uno primero");
+				}
+				
 				if(err.isEmpty()) {
 					if(listFields.size() > 0 && listValues.size() > 0) {
 						boolean budgetEdited = db.editBudget(editBudgetId, listFields, listValues);
@@ -10052,14 +10099,89 @@ public class MainView extends JFrame{
 				dialogBudgetSwitchAdd = new SwitchDialog(null, "Agregar Interruptor");
 				WindowsListener lForWindow = new WindowsListener();
 				dialogBudgetSwitchAdd.addWindowListener(lForWindow);
+			} else if (actionCommand.equalsIgnoreCase("budget.switch.remove")) {
+				String stringSelectedBudgetSwitchId = (String) tableBudgetSwitchesResult.getValueAt(tableBudgetSwitchesResult.getSelectedRow(), 0);
+				if (stringSelectedBudgetSwitchId.contains("Tablero")) {
+					JOptionPane.showMessageDialog(null, "El interruptor pertenece a un tablero y por lo tanto no puede ser removido");
+				} else {
+					int response = JOptionPane.showConfirmDialog(null, "Esta seguro que desea remover este interruptor del presupuesto?", "Remover interruptor del presupuesto", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+					if(response == JOptionPane.YES_OPTION) {
+						if(db.removeBudgetSwitch(selectedBudgetSwitchId)) {
+							if(tableBudgetsResult.getSelectedRow() > -1) {
+								selectedBudgetId = Integer.valueOf( (String) tableBudgetsResult.getValueAt(tableBudgetsResult.getSelectedRow(), SharedListSelectionListener.BUDGET_ID_COLUMN));
+								loadBudgetSwitchTable();
+							}
+						} else {
+							JOptionPane.showMessageDialog(null, "Error al remover interruptor del presupuesto");
+						}
+					}
+				}
 			} else if (actionCommand.equalsIgnoreCase("budget.box.add")) {
 				dialogBudgetBoxAdd = new BoxDialog(null, "Agregar Caja");
 				WindowsListener lForWindow = new WindowsListener();
 				dialogBudgetBoxAdd.addWindowListener(lForWindow);
+			} else if (actionCommand.equalsIgnoreCase("budget.box.remove")) {
+				int response = JOptionPane.showConfirmDialog(null, "Esta seguro que desea remover esta caja del presupuesto?", "Remover caja del presupuesto", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+				if(response == JOptionPane.YES_OPTION) {
+					if(db.removeBudgetBox(selectedBudgetBoxId)) {
+						if(tableBudgetsResult.getSelectedRow() > -1) {
+							selectedBudgetId = Integer.valueOf( (String) tableBudgetsResult.getValueAt(tableBudgetsResult.getSelectedRow(), SharedListSelectionListener.BUDGET_ID_COLUMN));
+							loadBudgetBoxTable();
+						}
+					} else {
+						JOptionPane.showMessageDialog(null, "Error al remover caja del presupuesto");
+					}
+				}
 			} else if (actionCommand.equalsIgnoreCase("budget.board.add")) {
 				dialogBudgetBoardAdd = new BoardDialog(null, "Agregar Tablero");
 				WindowsListener lForWindow = new WindowsListener();
 				dialogBudgetBoardAdd.addWindowListener(lForWindow);
+			} else if (actionCommand.equalsIgnoreCase("budget.board.remove")) {
+				int response = JOptionPane.showConfirmDialog(null, "Esta seguro que desea remover este tablero del presupuesto?", "Remover tablero del presupuesto", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+				if(response == JOptionPane.YES_OPTION) {
+					if(db.removeBudgetBoard(selectedBudgetBoardId)) {
+						if(tableBudgetsResult.getSelectedRow() > -1) {
+							selectedBudgetId = Integer.valueOf( (String) tableBudgetsResult.getValueAt(tableBudgetsResult.getSelectedRow(), SharedListSelectionListener.BUDGET_ID_COLUMN));
+							loadBudgetBoardTable();
+						}
+					} else {
+						JOptionPane.showMessageDialog(null, "Error al remover tablero del presupuesto");
+					}
+				}
+			} else if (actionCommand.equalsIgnoreCase("budget.notes.edit")) {
+				panelBudgetNotesEditSaveCancel.setVisible(true);
+				textBudgetNotes.setEditable(true);
+				buttonBudgetNotesEditSave.setEnabled(true);
+				buttonBudgetNotesEditCancel.setEnabled(true);
+				buttonBudgetNotesEdit.setEnabled(false);
+				JTabbedPane budgetTabbedPane = (JTabbedPane) budgetNotesPanel.getParent();
+				budgetTabbedPane.setEnabled(false);
+			} else if (actionCommand.equalsIgnoreCase("budget.notes.edit.save")) {
+				if(selectedBudgetId > 0) {
+					ArrayList<Object> listFields = new ArrayList<Object>();
+					ArrayList<Object> listValues = new ArrayList<Object>();
+					listFields.add("notes");
+					listValues.add("'" + textBudgetNotes.getText() + "'");
+					db.editBudget(selectedBudgetId, listFields, listValues);
+					// TODO Finish enabling and disabling tabs here
+					JTabbedPane budgetTabbedPane = (JTabbedPane) budgetNotesPanel.getParent();
+					budgetTabbedPane.setEnabled(true);
+					buttonBudgetNotesEdit.setEnabled(true);
+					textBudgetNotes.setEditable(false);
+					buttonBudgetNotesEditSave.setEnabled(false);
+					buttonBudgetNotesEditCancel.setEnabled(false);
+					panelBudgetNotesEditSaveCancel.setVisible(false);
+				} else {
+					JOptionPane.showMessageDialog(null, "No hay ningun presupuesto seleccionado");
+				}
+			} else if (actionCommand.equalsIgnoreCase("budget.notes.edit.cancel")) {
+				JTabbedPane budgetTabbedPane = (JTabbedPane) budgetNotesPanel.getParent();
+				budgetTabbedPane.setEnabled(true);
+				buttonBudgetNotesEdit.setEnabled(true);
+				buttonBudgetNotesEditSave.setEnabled(false);
+				buttonBudgetNotesEditCancel.setEnabled(false);
+				textBudgetNotes.setEditable(false);
+				panelBudgetNotesEditSaveCancel.setVisible(false);
 			}
 			
 		}
@@ -10093,6 +10215,8 @@ public class MainView extends JFrame{
 						JOptionPane.showMessageDialog(null, "No puede agregar mas de " + selectedTableBoardCircuits + " circuitos");
 					}
 				}
+			} else if (window.equals(dialogBudgetSellerEdit)) {
+				
 			} else if (window.equals(dialogBudgetSwitchAdd)) {
 				Integer switchSearchId = dialogBudgetSwitchAdd.getSwitchSearchId();
 				Integer switchQuantity = dialogBudgetSwitchAdd.getSwitchAddQuantity();
@@ -10113,7 +10237,7 @@ public class MainView extends JFrame{
 				Integer boardSearchId = dialogBudgetBoardAdd.getBoardSearchId();
 				Integer boardQuantity = dialogBudgetBoardAdd.getBoardAddQuantity();
 				if(boardSearchId > 0) {
-					if(db.addBudgetBox(selectedBudgetId, boardSearchId, boardQuantity)) {
+					if(db.addBudgetBoard(selectedBudgetId, boardSearchId, boardQuantity)) {
 						loadBudgetBoardTable();
 					}
 				}
@@ -10434,5 +10558,24 @@ public class MainView extends JFrame{
 		}
 		
 	}
+	
+	private class PrinterButtonListener implements ActionListener {
 
+		@Override
+		public void actionPerformed(ActionEvent ev) {
+			String actionCommand = ev.getActionCommand();
+			
+			if(actionCommand.equalsIgnoreCase("budget.print")) {
+				if(tableBudgetsResult.getSelectedRow() > -1) {
+					budgetPrintDialog = new PrintDialog(null, "Imprimir Presupuesto");
+					WindowsListener lForWindow = new WindowsListener();
+					budgetPrintDialog.addWindowListener(lForWindow);
+				} else {
+					JOptionPane.showMessageDialog(null, "Debe seleccionar el presupuesto a imprimir");
+				}
+			}
+		}
+		
+	}
+	
 }

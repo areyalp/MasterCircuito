@@ -170,7 +170,7 @@ public class MainView extends JFrame{
 	private JDesktopPane desktop;
 	private JPanel theToolBarPanel;
 	private JToolBar toolBar;
-	private JButton toolBarButtonSwitches, toolBarButtonBoxes, toolBarButtonPanels, toolBarButtonBudgets, toolBarButtonTracing;
+	private JButton toolBarButtonSwitches, toolBarButtonBoxes, toolBarButtonPanels, toolBarButtonBudgets;
 	//*** Switch Global Variables and objects ***//
 	private MyInternalFrame switchesFrame = new MyInternalFrame();
 	private Object[][] switchesData = {};
@@ -342,8 +342,8 @@ public class MainView extends JFrame{
 //	private String username;
 	private Object [][] budgetsData={};
 	private JComboBox<String> comboBudgetAddPaymentMethod, comboBudgetAddDispatchPlace,comboBugetAddDeliveryPeriod;
-	private int editBudgetId, editBudgetClientCode, editBudgetExpiryDays,editBudgetDeliveryTime;
-	private String editBudgetCode, editBudgetDate, editBudgetDeliveryPeriod;
+	private int editBudgetClientCode, editBudgetExpiryDays,editBudgetDeliveryTime;
+	private String editBudgetDate, editBudgetDeliveryPeriod;
 	private String editBudgetWorkName, editBudgetPaymentMethod, editBudgetSeller, editBudgetDispatchPlace, editBudgetTracing, editBudgetStage;
 	private int budgetsTableSelectedIndex;
 	private JButton buttonBudgetAddCompany, buttonBudgetAddSeller, buttonBudgetEditSave, buttonBudgetEditCancel;
@@ -652,11 +652,6 @@ public class MainView extends JFrame{
 			
 		}
 
-	}
-	
-	private JPanel createBudgetSettingsPanel() {
-		JPanel panelBudgetSettings = new JPanel();
-		return panelBudgetSettings;
 	}
 	
 	private void createStartersFrame() {
@@ -6676,30 +6671,6 @@ public class MainView extends JFrame{
 			});
 		} else if(mode == MainView.EDIT_MODE) {
 			buttonBudgetAdd.setEnabled(false);
-			buttonBudgetEdit.setEnabled(false);
-			editBudgetId = Integer.valueOf(String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_ID_COLUMN)));
-			editBudgetCode = String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_CODE_COLUMN));
-			editBudgetDate = String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_DATE_COLUMN));
-			editBudgetExpiryDays = Integer.valueOf(String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_EXPIRY_DAYS_COLUMN)));
-			editBudgetClientCode = Integer.valueOf(String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_CLIENT_ID_COLUMN)));
-			editBudgetCompany = String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_COMPANY_COLUMN));
-			editBudgetCompanyRepresentative = String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_COMPANY_REPRESENTATIVE_COLUMN));
-			editBudgetWorkName = String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_WORK_NAME_COLUMN));
-			editBudgetPaymentMethod = String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_PAYMENT_METHOD_COLUMN));
-			editBudgetSeller = String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_SELLER_COLUMN));
-			editBudgetDispatchPlace = String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_DISPATCH_PLACE_COLUMN));
-			editBudgetDeliveryTime = Integer.valueOf(String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_DELIVERY_TIME_COLUMN)));
-			editBudgetDeliveryPeriod = String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_DELIVERY_PERIOD_COLUMN));
-//			editBudgetTracing = String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_TRACING_COLUMN));
-//			editBudgetStage = String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_STAGE_COLUMN));
-
-			String queryDeliveryPeriod = "SELECT budget_delivery_period.delivery_period "
-					+ "FROM budget_delivery_period "
-					+ "GROUP BY budget_delivery_period.delivery_period";
-			
-//			String queryStage = "SELECT  budget_stages.stage "
-//					+ "FROM budget_stages "
-//					+ "GROUP BY budget_stages.stage";
 			
 			String queryDispatchPlace = "SELECT  budget_dispatch_places.place "
 					+ "FROM budget_dispatch_places "
@@ -6709,9 +6680,6 @@ public class MainView extends JFrame{
 					+ "FROM budget_payment_methods  "
 					+ "GROUP BY budget_payment_methods.method ";
 			
-//			String querySeller = "SELECT  budgets_sellers.seller"
-//					+ "FROM budgets_sellers  "
-//					+ "GROUP BY budgets_sellers.seller ";
 			DateTime dt = new DateTime(editBudgetDate);
 			editBudgetDateModel.setDate(dt.getYear(), dt.getMonthOfYear() - 1, dt.getDayOfMonth());
 			editBudgetDateModel.setSelected(true);

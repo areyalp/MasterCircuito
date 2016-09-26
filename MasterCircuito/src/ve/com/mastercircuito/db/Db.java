@@ -792,7 +792,7 @@ public class Db extends MysqlDriver {
 		
 		return (this.getInsertId() > 0)? true:false;
 	}
-
+	
 	public Boolean addBudget(String date, Integer expiryDays, String clientId, 
 			String workName, String method, Integer sellerId,
 			String place, Integer deliveryTime, String deliveryPeriod) {
@@ -1024,25 +1024,24 @@ public class Db extends MysqlDriver {
 		}
 		return comments;
 	}
-
-	public String getBudgetClientId(int budgetId) {
+	
+	public Integer getBudgetClientId(int budgetId) {
 		String queryString;
 		ResultSet setBudgetClientId;
 		
-		queryString = "SELECT clients.client_code FROM budgets, clients "
-					+ "WHERE budgets.id = '" + budgetId + "' "
-					+ "AND budgets.client_id = clients.id";
+		queryString = "SELECT budgets.client_id FROM budgets "
+					+ "WHERE budgets.id = " + budgetId;
 		
 		setBudgetClientId = this.select(queryString);
 		
 		try {
 			if (setBudgetClientId.next()) {
-				return setBudgetClientId.getString("clients.client_code");
+				return setBudgetClientId.getInt("budgets.client_id");
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return null;
+		return -1;
 	}
 	
 	public String getBudgetClientName(int budgetId) {
@@ -1084,7 +1083,6 @@ public class Db extends MysqlDriver {
 		}
 		return null;
 	}
-
 	
 	public boolean addBudgetBox(Integer selectedBudgetId, Integer boxSearchId, Integer boxQuantity) {
 		int budgetBoxId = 0;
@@ -1102,14 +1100,14 @@ public class Db extends MysqlDriver {
 			return (this.getInsertId() > 0)? true:false;
 		}
 	}
-
+	
 	private boolean increaseBudgetBox(int budgetBoxId, Integer boxQuantity) {
 		String queryString = "UPDATE budget_boxes SET quantity = quantity + " + boxQuantity 
 				+ " WHERE id = " + budgetBoxId;
 
 		return this.update(queryString);
 	}
-
+	
 	private int getBudgetBoxId(Integer selectedBudgetId, Integer boxSearchId) {
 		String queryString;
 		ResultSet setBudgetBoxId;
@@ -1142,7 +1140,6 @@ public class Db extends MysqlDriver {
 		
 		return (this.getNumRows() > 0)? true:false;
 	}
-
 	
 	public boolean addBudgetSwitch(int selectedBudgetId, Integer switchSearchId, Integer switchQuantity) {
 		int budgetSwitchId = 0;
@@ -1160,14 +1157,14 @@ public class Db extends MysqlDriver {
 			return (this.getInsertId() > 0)? true:false;
 		}
 	}
-
+	
 	private boolean increaseBudgetSwitch(int budgetSwitchId, Integer switchQuantity) {
 		String queryString = "UPDATE budget_switches SET quantity = quantity + " + switchQuantity 
 				+ " WHERE id = " + budgetSwitchId;
 
 		return this.update(queryString);
 	}
-
+	
 	private int getBudgetSwitchId(int selectedBudgetId, Integer switchSearchId) {
 		String queryString;
 		ResultSet setBudgetSwitchId;
@@ -1188,7 +1185,7 @@ public class Db extends MysqlDriver {
 		}
 		return 0;
 	}
-
+	
 	private boolean budgetSwitchExists(int selectedBudgetId, Integer switchSearchId) {
 		String queryString;
 		
@@ -1199,6 +1196,136 @@ public class Db extends MysqlDriver {
 		this.select(queryString);
 		
 		return (this.getNumRows() > 0)? true:false;
+	}
+	
+	public boolean removeBudgetSwitch(Integer selectedBudgetSwitchId) {
+		String queryDelete;
+		queryDelete = "DELETE FROM budget_switches WHERE id = '" + selectedBudgetSwitchId + "'";
+		return this.delete(queryDelete);
+	}
+	
+	public boolean removeBudgetBox(Integer selectedBudgetBoxId) {
+		String queryDelete;
+		queryDelete = "DELETE FROM budget_boxes WHERE id = '" + selectedBudgetBoxId + "'";
+		return this.delete(queryDelete);
+	}
+	
+	public boolean removeBudgetBoard(Integer selectedBudgetBoardId) {
+		String queryDelete;
+		queryDelete = "DELETE FROM budget_boards WHERE id = '" + selectedBudgetBoardId + "'";
+		return this.delete(queryDelete);
+	}
+	
+	public boolean addBudgetBoard(int selectedBudgetId, Integer boardSearchId, Integer boardQuantity) {
+		int budgetBoardId = 0;
+		if(this.budgetBoardExists(selectedBudgetId, boardSearchId)) {
+			budgetBoardId = this.getBudgetBoardId(selectedBudgetId, boardSearchId);
+			if(budgetBoardId > 0) {
+				return this.increaseBudgetBoard(budgetBoardId, boardQuantity);
+			} else {
+				return false;
+			}
+		} else {
+			String queryString = "INSERT INTO budget_boards (budget_container_id, board_id, quantity) "
+								+ "VALUES (" + selectedBudgetId + ", " + boardSearchId + ", " + boardQuantity + ")";
+			this.insert(queryString);
+			return (this.getInsertId() > 0)? true:false;
+		}
+	}
+	
+	private boolean increaseBudgetBoard(int budgetBoardId, Integer boardQuantity) {
+		String queryString = "UPDATE budget_boards SET quantity = quantity + " + boardQuantity 
+				+ " WHERE id = " + budgetBoardId;
+
+		return this.update(queryString);
+	}
+	
+	private int getBudgetBoardId(int selectedBudgetId, Integer boardSearchId) {
+		String queryString;
+		ResultSet setBudgetBoardId;
+		
+		queryString = "SELECT budget_boards.id FROM budget_boards "
+					+ "WHERE budget_boards.budget_container_id = '" + selectedBudgetId + "' "
+					+ "AND budget_boards.board_id = '" + boardSearchId + "' "
+					+ "LIMIT 1";
+		
+		setBudgetBoardId = this.select(queryString);
+		
+		try {
+			if (setBudgetBoardId.next()) {
+				return setBudgetBoardId.getInt("budget_boards.id");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return 0;
+	}
+	
+	private boolean budgetBoardExists(int selectedBudgetId, Integer boardSearchId) {
+		String queryString;
+		
+		queryString = "SELECT * FROM budget_boards "
+					+ "WHERE budget_boards.budget_container_id = '" + selectedBudgetId + "' "
+					+ "AND budget_boards.board_id = '" + boardSearchId + "' ";
+		
+		this.select(queryString);
+		
+		return (this.getNumRows() > 0)? true:false;
+	}
+	
+	public String getBudgetClientCode(Integer budgetId) {
+		String queryString;
+		ResultSet setBudgetClientCode;
+		
+		queryString = "SELECT clients.client_code FROM budgets, clients "
+					+ "WHERE budgets.id = '" + budgetId + "' "
+					+ "AND budgets.client_id = clients.id";
+		
+		setBudgetClientCode = this.select(queryString);
+		
+		try {
+			if (setBudgetClientCode.next()) {
+				return setBudgetClientCode.getString("clients.client_code");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public Integer getBudgetSellerId(Integer budgetId) {
+		String queryString;
+		ResultSet setBudgetSellerId;
+		
+		queryString = "SELECT budgets.seller_id FROM budgets "
+					+ "WHERE budgets.id = " + budgetId;
+		
+		setBudgetSellerId = this.select(queryString);
+		
+		try {
+			if (setBudgetSellerId.next()) {
+				return setBudgetSellerId.getInt("budgets.seller_id");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return -1;
+	}
+
+	
+	public String getBudgetNotes(Integer budgetId) {
+		ResultSet setBudgetNotes;
+		String notes = "";
+		setBudgetNotes = this.select("SELECT notes FROM budgets WHERE id = '" + budgetId + "'");
+		
+		try {
+			setBudgetNotes.first();
+			notes = setBudgetNotes.getString("notes");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener las notas del presupuesto");
+		}
+		return notes;
 	}
 	
 }
