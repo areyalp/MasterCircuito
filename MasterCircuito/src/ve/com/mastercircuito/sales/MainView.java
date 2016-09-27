@@ -2,7 +2,6 @@ package ve.com.mastercircuito.sales;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dialog;
 import java.awt.Dimension;
@@ -31,7 +30,6 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
@@ -72,10 +70,12 @@ import org.joda.time.format.DateTimeFormatter;
 
 import ve.com.mastercircuito.components.BoardDialog;
 import ve.com.mastercircuito.components.BoxDialog;
+import ve.com.mastercircuito.components.ClientDialog;
 import ve.com.mastercircuito.components.DateLabelFormatter;
 import ve.com.mastercircuito.components.MyInternalFrame;
 import ve.com.mastercircuito.components.MyTableModel;
 import ve.com.mastercircuito.components.PrintDialog;
+import ve.com.mastercircuito.components.SellerDialog;
 import ve.com.mastercircuito.components.SwitchDialog;
 import ve.com.mastercircuito.db.Db;
 import ve.com.mastercircuito.font.Fa;
@@ -100,7 +100,6 @@ public class MainView extends JFrame{
 		private static final String LOCK_TYPES_TABLE = "lock_types";
 		private static final String USERS_TABLE = "users";
 		private static final String CLIENTS_TABLE = "clients";
-	
 	// Common Fields
 		private static final String INSTALLATION_FIELD = "installations.installation";
 		private static final String NEMA_FIELD = "nemas.nema";
@@ -146,15 +145,12 @@ public class MainView extends JFrame{
 		private static final String BOARD_GROUND_FIELD = "IF(boards.ground=0,'NO','SI') as ground";
 		private static final String BOARD_LOCK_TYPE_FIELD = "lock_types.lock_type";
 		private static final String BOARD_PRICE_FIELD = "boards.price";
-	// Finish filling up the fields of the board table and the tables above too
-	
 	//Budget Tables	
 		private static final String BUDGET_TABLE = "budgets";
 		private static final String BUDGET_PAYMENT_METHODS_TABLE = "budget_payment_methods";
 		private static final String BUDGET_DISPATCH_PLACES_TABLE = "budget_dispatch_places";
 		private static final String BUDGET_STAGES_TABLE = "budget_stages";
 		private static final String BUDGET_DELIVERY_PERIOD_TABLE = "budget_delivery_period";
-	
 	//Budget Fields
 		private static final String BUDGET_ID_FIELD = "budgets.id";
 		private static final String BUDGET_CODE_FIELD = "budgets.`code`";
@@ -163,15 +159,15 @@ public class MainView extends JFrame{
 		private static final String BUDGET_WORK_NAME_FIELD = "budgets.work_name";
 		private static final String BUDGET_DELIVERY_TIME_FIELD = "budgets.delivery_time";
 		private static final String BUDGET_DELIVERY_PERIOD_FIELD = "budget_delivery_period.delivery_period";
-		private static final String BUDGET_TRACING_FIELD = "budgets.tracing";
+//		private static final String BUDGET_TRACING_FIELD = "budgets.tracing";
 		private static final String METHOD_FIELD = "budget_payment_methods.method";
 		private static final String USERNAME_FIELD = "users.username";
 		private static final String PLACE_FIELD = "budget_dispatch_places.place";
-		private static final String STAGE_FIELD = "stages.stage";
+//		private static final String STAGE_FIELD = "budget_stages.stage";
 		private static final String CLIENT_CODE_FIELD = "clients.client_code";
 		private static final String CLIENT_FIELD = "clients.client";
 		private static final String CLIENT_REPRESENTATIVE_FIELD = "clients.representative";
-		private static final String SELLER_FIELD = "budget_sellers.seller";
+//		private static final String SELLER_FIELD = "budget_sellers.seller";
 		
 		private Db db;
 	
@@ -192,7 +188,7 @@ public class MainView extends JFrame{
 	// Switch Table Objects
 		private JScrollPane tableSwitchScrollPane;
 		private JTable tableSwitchesResult;
-		private int switchTableSelectedIndex = -1;
+		private Integer switchTableSelectedIndex = -1;
 		private ListSelectionModel listSwitchSelectionModel;
 	// Switch Add Objects
 		private JTextField textSwitchAddPrice, textSwitchAddModel;
@@ -201,8 +197,8 @@ public class MainView extends JFrame{
 		private JComboBox<String> comboSwitchAddBrands, comboSwitchAddTypes, comboSwitchAddPhases, comboSwitchAddCurrents, comboSwitchAddInterruptions, comboSwitchAddVoltages;
 		private String addSelectedSwitchBrand;
 	// Switch Edit Objects
-		private int editSwitchId = 0, editSwitchCurrent = 0, editSwitchInterruption = 0;
-		private double editSwitchPrice = 0;
+		private Integer editSwitchId = 0, editSwitchCurrent = 0, editSwitchInterruption = 0;
+		private Double editSwitchPrice = 0.00;
 		private String editSwitchPhases, editSwitchBrand, editSwitchType, editSwitchModel, editSwitchVoltage;
 		private JTextField textSwitchEditPrice, textSwitchEditModel;
 		private JTextArea textSwitchEditDescription;
@@ -225,7 +221,7 @@ public class MainView extends JFrame{
 	// Box Table Objects
 		private JScrollPane tableBoxScrollPane;
 		private JTable tableBoxesResult;
-		private int boxTableSelectedIndex = -1;
+		private Integer boxTableSelectedIndex = -1;
 		private ListSelectionModel listBoxSelectionModel;
 	// Box Add Objects
 		private JButton buttonBoxAdd, buttonBoxEdit, buttonBoxAddSave, buttonBoxAddCancel, buttonBoxEditSave, buttonBoxEditCancel;
@@ -234,8 +230,8 @@ public class MainView extends JFrame{
 		private String addSelectedBoxType = "", addSelectedBoxSheet = "";
 		private JTextArea textBoxAddDescription;
 	// Box Edit Objects
-		private double editBoxPrice = 0;
-		private int editBoxId = 0, editBoxPairs = 0, editBoxHeight = 0, editBoxWidth = 0, editBoxDepth = 0;
+		private Double editBoxPrice = 0.00;
+		private Integer editBoxId = 0, editBoxPairs = 0, editBoxHeight = 0, editBoxWidth = 0, editBoxDepth = 0;
 		private String editSelectedBoxType, editSelectedBoxSheet;
 		private String editBoxType, editBoxInstallation, editBoxNema, editBoxSheet, editBoxFinish, editBoxColor, editBoxUnits, editBoxCaliber, editBoxCaliberComments, editBoxLockType;
 		private JTextField textBoxEditPairs, textBoxEditHeight, textBoxEditWidth, textBoxEditDepth, textBoxEditCaliberComments, textBoxEditPrice;
@@ -262,17 +258,17 @@ public class MainView extends JFrame{
 		private JScrollPane tableBoardScrollPane;
 		private JTable tableBoardsResult;
 		private ListSelectionModel listBoardSelectionModel;
-		private int boardsTableSelectedIndex;
-		private int selectedBoardId = 0;
+		private Integer boardsTableSelectedIndex;
+		private Integer selectedBoardId = 0;
 	// Board Switches Objects
 		private JPanel boardSwitchesPanel;
 		private JTable tableBoardSwitchesResult;
 		private ListSelectionModel listBoardSwitchesSelectionModel;
-		private int boardSwitchesTableSelectedIndex;
+		private Integer boardSwitchesTableSelectedIndex;
 		private JButton buttonAddBoardSwitch, buttonRemoveBoardSwitch;
-		private int selectedBoardSwitchId;
+		private Integer selectedBoardSwitchId;
 	// Board Switches Add Objects
-		private int selectedTableBoardCircuits = 0;
+		private Integer selectedTableBoardCircuits = 0;
 		private String searchSelectedBoardSwitchBrand, searchSelectedBoardSwitchType, searchSelectedBoardSwitchPhases, searchSelectedBoardSwitchCurrent, searchSelectedBoardSwitchInterruption;
 		private SwitchDialog dialogBoardSwitchAdd;
 		private Object[][] boardSwitchesSearchData;
@@ -288,7 +284,7 @@ public class MainView extends JFrame{
 	// Board Edit Objects
 		private JPanel panelBoardEdit;
 		private JButton buttonBoardAddSave;
-		private int editBoardId, editBoardPhases;
+		private Integer editBoardId, editBoardPhases;
 		private Double editBoardPrice;
 		private String editBoardType, editBoardName, editBoardInstallation, editBoardNema, editBoardBarCapacity, editBoardBarType, editBoardCircuits, editBoardVoltage, editBoardGround, editBoardInterruption, editBoardLockType;
 		private JTextField textBoardEditName, textBoardEditPrice;
@@ -315,7 +311,6 @@ public class MainView extends JFrame{
 		private PrintDialog budgetPrintDialog;
 	
 	//Budget add Objects
-		private String searchSelectedBudgetClient, searchSelectedBudgetId,searchSelectedBudgetDays,searchSelectedBudgetMonths,searchSelectedBudgetYears;
 		private UtilDateModel addBudgetDateModel;
 		private JButton buttonBudgetAdd;
 		private JButton buttonBudgetEdit;
@@ -323,10 +318,7 @@ public class MainView extends JFrame{
 		private JTable tableBudgetsResult;
 		private ListSelectionModel listBudgetSelectionModel;
 		private JTextField textBudgetSearchId;
-		private JComboBox<String> comboBudgetDays;
 		private JPanel panelBudgetDescription, panelWrapperBudgetDescription;
-		private JComboBox<String> comboBudgetMonths;
-		private JComboBox<String> comboBudgetYears;
 		private JPanel panelBudgetAddNew, panelBudgetEdit;
 		private JTextField textBudgetDescriptionId, textBudgetSearchClient,textBudgetDescriptionCode;
 		private JTextField textBudgetDescriptionDate, textBudgetDescriptionExpiryDays;
@@ -337,10 +329,8 @@ public class MainView extends JFrame{
 		private JTextField textBudgetAddClientCode,textBudgetAddExpiryDays;
 		private JTextField textBudgetAddCompanyRepresentative, textBudgetAddWorkName, textBudgetAddCompany;
 		private JTextField textBudgetAddSeller, textBudgetAddDeliveryTime;
-		private JCheckBox checkBudgetAddTracing;
+//		private JCheckBox checkBudgetAddTracing;
 		private JTextField textBudgetDescriptionExpiryDate;
-	//	private String queryUser;
-	//	private String username;
 		private Object [][] budgetsData={};
 		private JComboBox<String> comboBudgetAddPaymentMethod, comboBudgetAddDispatchPlace,comboBudgetAddDeliveryPeriod;
 	//	private List<String> comboListResult;
@@ -351,14 +341,14 @@ public class MainView extends JFrame{
 		private JButton buttonBudgetAddCompany, buttonBudgetAddSeller, buttonBudgetEditSave, buttonBudgetEditCancel;
 		private Integer selectedBudgetId;
 	// Budget Company Add
-		private JDialog dialogBudgetCompanyAdd;
+		private ClientDialog dialogBudgetCompanyAdd;
 		private JTextField textBudgetCompanySearchClient;
 		private Object[][] budgetCompaniesData = {};
 		private JTable tableBudgetCompaniesSearchResult;
 		private ListSelectionModel listBudgetCompaniesSearchSelectionModel;
-		private int budgetCompanyAddSearchId;
+		private Integer budgetCompanyAddId;
 	// Budget Seller Add
-		private JDialog dialogBudgetSellerAdd;
+		private SellerDialog dialogBudgetSellerAdd;
 		private JTextField textBudgetSellerSearchUser, textBudgetSellerSearchName, textBudgetSellerSearchPassport;
 		private Object[][] budgetSellersData = {};
 		private JTable tableBudgetSellersSearchResult;
@@ -368,12 +358,11 @@ public class MainView extends JFrame{
 		private UtilDateModel editBudgetDateModel;
 		private JButton buttonBudgetEditCompany, buttonBudgetEditSeller;
 		private JTextField textBudgetEditSeller, textBudgetEditDeliveryTime;
-		private JCheckBox checkBudgetEditTracing;
+//		private JCheckBox checkBudgetEditTracing;
 		private JTextField textBudgetEditClientCode, textBudgetEditWorkName, textBudgetEditCompany;
 		private JTextField textBudgetEditCompanyRepresentative, textBudgetEditExpiryDays;
-		private String editBudgetCode, editBudgetCompanyRepresentative, editBudgetCompany;
+		private String editBudgetCompanyRepresentative, editBudgetCompany;
 		private JComboBox<String> comboBudgetEditDispatchPlace,comboBudgetEditDeliveryPeriod, comboBudgetEditPaymentMethod, comboBudgetEditStage;
-		private Component textBudgetSearchCode;
 	// Budget Switches Objects
 		private JPanel budgetSwitchesPanel;
 		private JTable tableBudgetSwitchesResult;
@@ -409,21 +398,16 @@ public class MainView extends JFrame{
 		private JPanel panelBudgetNotesEditSaveCancel;
 		private JButton buttonBudgetNotesEdit, buttonBudgetNotesEditSave, buttonBudgetNotesEditCancel;
 	// Budget Company Edit
-		private JDialog dialogBudgetCompanyEdit;
-//		private JTextField textBudgetCompanySearchClient;
-//		private Object[][] budgetCompaniesData = {};
-//		private JTable tableBudgetCompaniesSearchResult;
-//		private ListSelectionModel listBudgetCompaniesSearchSelectionModel;
-		private int budgetCompanyEditSearchId;
+		private ClientDialog dialogBudgetClientEdit;
+		private Integer budgetCompanyEditSearchId;
 		private JTextField textBudgetEditRif;
-		private JPanel panelBudgetEditDescription;
 	// Budget Seller Edit
 		private JDialog dialogBudgetSellerEdit;
 //		private JTextField textBudgetSellerSearchUser, textBudgetSellerSearchName, textBudgetSellerSearchPassport;
 //		private Object[][] budgetSellersData = {};
 //		private JTable tableBudgetSellersSearchResult;
 //		private ListSelectionModel listBudgetSellersSearchSelectionModel;
-		private int budgetSellerEditSearchId;
+		private Integer budgetSellerEditSearchId;
 		private JTextField textBudgetEditUser;
 		private JTextField textBudgetEditPassport;
 		private JTextField textBudgetEditFirstName;
@@ -450,7 +434,7 @@ public class MainView extends JFrame{
 		
 		DateTime dt = new DateTime();
 		
-		if(dt.isAfter(new DateTime(2016, 9, 30, 0, 0))) {
+		if(dt.isAfter(new DateTime(2016, 10, 30, 0, 0))) {
 			JOptionPane.showMessageDialog(null, "Error, debe comunicarse con el programador");
 			System.exit(0);
 		}
@@ -5168,47 +5152,12 @@ public class MainView extends JFrame{
 	}
 	
 	private JPanel createBudgetSearchBarPanel() {
-		
+		JPanel panelWrapperBudgetSearch = new JPanel(new BorderLayout());
 		JPanel panelBudgetSearch = new JPanel();		
 		panelBudgetSearch.setLayout(new FlowLayout(FlowLayout.CENTER));
-		//Insert here query for the budget search bar clients, code, date
-		String queryClients = "SELECT clients.client "
-				+ "FROM clients "
-				+ "GROUP BY clients.client ";
-		
-		String queryCode = "SELECT budgets.code "
-				+ "FROM budgets "
-				+ "GROUP BY budgets.code ";
-		
-		String queryDate = "SELECT budgets.`date` "
-				+ "FROM budgets "
-				+ "GROUP BY budgets.`date` ";
 		
 		JLabel labelClient = new JLabel("Cliente: ");
 		JLabel labelId = new JLabel("Codigo:");
-		JLabel labelDay = new JLabel("Dia:");
-		JLabel labelMonth = new JLabel("Mes");
-		JLabel labelYear = new JLabel("Año");
-		
-		List<String> listDays = new ArrayList<String>();
-		
-		for(int i = 1; i < 32; i++){
-			listDays.add(String.valueOf(i));
-		}
-		
-		List<String> listMonths = new ArrayList<String>();
-		for(int i = 1; i < 13; i++){
-			listMonths.add(String.valueOf(i));
-		}
-		
-		Date todaysDate = new Date();
-		DateTime dt = new DateTime(todaysDate);
-		int actualYear = dt.getYear();
-		
-		List<String> listYears = new ArrayList<String>();
-		for (int i = 2015; i <= actualYear; i++){
-			listYears.add(String.valueOf(i));
-		}
 		
 		textBudgetSearchClient = new JTextField(6);
 		textBudgetSearchClient.addKeyListener(new KeyListener() {
@@ -5254,23 +5203,7 @@ public class MainView extends JFrame{
 		panelBudgetSearch.add(labelId);
 		panelBudgetSearch.add(textBudgetSearchId);
 		
-		comboBudgetDays = new JComboBox<String>(new Vector<String>(listDays));
-		panelBudgetSearch.add(labelDay);
-		panelBudgetSearch.add(comboBudgetDays);
-		
-		comboBudgetMonths = new JComboBox<String>(new Vector<String>(listMonths));
-		panelBudgetSearch.add(labelMonth);
-		panelBudgetSearch.add(comboBudgetMonths);
-		
-		comboBudgetYears = new JComboBox<String>(new Vector<String>(listYears));
-		panelBudgetSearch.add(labelYear);
-		panelBudgetSearch.add(comboBudgetYears);
-				
-		JButton searchButton = new JButton("Buscar");
-		searchButton.setActionCommand("budget.search.bar.button");
-		SearchButtonListener lForSearchButton = new SearchButtonListener();
-		searchButton.addActionListener(lForSearchButton);
-		panelBudgetSearch.add(searchButton);
+		panelWrapperBudgetSearch.add(panelBudgetSearch, BorderLayout.CENTER);
 		
 		Font fa = null;
 		
@@ -5285,7 +5218,7 @@ public class MainView extends JFrame{
 		}
 		
 		PrinterButtonListener lForPrinterButton = new PrinterButtonListener();
-		// TODO Add Printer button here
+		
 		JButton buttonBudgetPrint = new JButton(Fa.fa_print);
 		buttonBudgetPrint.setContentAreaFilled(false);
 		buttonBudgetPrint.setActionCommand("budget.print");
@@ -5295,9 +5228,9 @@ public class MainView extends JFrame{
 		buttonBudgetPrint.setBorderPainted(false);
 		buttonBudgetPrint.setFont(fa);
 		buttonBudgetPrint.setForeground(Color.GREEN);
-		panelBudgetSearch.add(buttonBudgetPrint);
+		panelWrapperBudgetSearch.add(buttonBudgetPrint, BorderLayout.EAST);
 		
-		return panelBudgetSearch;
+		return panelWrapperBudgetSearch;
 	}
 	
 	private JPanel createBudgetEditPanel() {
@@ -5545,13 +5478,10 @@ public class MainView extends JFrame{
 				+ "FROM  budget_dispatch_places "
 				+ "GROUP BY budget_dispatch_places.place";
 		
-		String queryStages = "SELECT budget_stages.stage "
-				+ "FROM budget_stages "
-				+ "GROUP BY budget_stages.stage";
-			
-		String queryUsers = "SELECT users.username "
-				+ "FROM users "
-				+ "GROUP BY users.username";
+		// TODO Add stages to budget
+//		String queryStages = "SELECT budget_stages.stage "
+//				+ "FROM budget_stages "
+//				+ "GROUP BY budget_stages.stage";
 		
 		String queryDeliveryPeriod = "SELECT budget_delivery_period.delivery_period "
 				+ "FROM  budget_delivery_period "
@@ -6364,7 +6294,7 @@ public class MainView extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if(tableBudgetCompaniesSearchResult.getSelectedRow() > -1) {
-					budgetCompanyAddSearchId = Integer.valueOf((String)tableBudgetCompaniesSearchResult.getValueAt(tableBudgetCompaniesSearchResult.getSelectedRow(), 0));
+					budgetCompanyAddId = Integer.valueOf((String)tableBudgetCompaniesSearchResult.getValueAt(tableBudgetCompaniesSearchResult.getSelectedRow(), 0));
 					textBudgetAddCompany.setText((String)tableBudgetCompaniesSearchResult.getValueAt(tableBudgetCompaniesSearchResult.getSelectedRow(), 1));
 					textBudgetAddClientCode.setText((String)tableBudgetCompaniesSearchResult.getValueAt(tableBudgetCompaniesSearchResult.getSelectedRow(), 2));
 					textBudgetAddCompanyRepresentative.setText((String)tableBudgetCompaniesSearchResult.getValueAt(tableBudgetCompaniesSearchResult.getSelectedRow(), 3));
@@ -6378,7 +6308,7 @@ public class MainView extends JFrame{
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				budgetCompanyAddSearchId = 0;
+				budgetCompanyAddId = 0;
 				dialogBudgetCompanyAdd.dispose();
 			}
 		});
@@ -6875,7 +6805,7 @@ public class MainView extends JFrame{
 					textBudgetEditCompany.setText((String)tableBudgetCompaniesSearchResult.getValueAt(tableBudgetCompaniesSearchResult.getSelectedRow(), 1));
 					textBudgetEditClientCode.setText((String)tableBudgetCompaniesSearchResult.getValueAt(tableBudgetCompaniesSearchResult.getSelectedRow(), 2));
 					textBudgetEditCompanyRepresentative.setText((String)tableBudgetCompaniesSearchResult.getValueAt(tableBudgetCompaniesSearchResult.getSelectedRow(), 3));
-					dialogBudgetCompanyEdit.dispose();
+//					dialogBudgetCompanyEdit.dispose();
 				}
 			}
 		});
@@ -6885,7 +6815,7 @@ public class MainView extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				budgetCompanyEditSearchId = 0;
-				dialogBudgetCompanyEdit.dispose();
+//				dialogBudgetCompanyEdit.dispose();
 			}
 		});
 		
@@ -7330,7 +7260,6 @@ public class MainView extends JFrame{
 			buttonBudgetAdd.setEnabled(false);
 			buttonBudgetEdit.setEnabled(false);
 			editBudgetId = Integer.valueOf(String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_ID_COLUMN)));
-			editBudgetCode = String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_CODE_COLUMN));
 			editBudgetDate = String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_DATE_COLUMN));
 			editBudgetExpiryDays = Integer.valueOf(String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_EXPIRY_DAYS_COLUMN)));
 			editBudgetClientId = db.getBudgetClientId(editBudgetId);
@@ -7387,8 +7316,8 @@ public class MainView extends JFrame{
 			comboBudgetEditDispatchPlace.setSelectedItem(editBudgetDispatchPlace);
 			
 			textBudgetEditDeliveryTime.setText(String.valueOf(editBudgetDeliveryTime));
-//			comboBudgetEditDeliveryTime.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadComboList(queryDeliveryTime, "delivery_time"))));
-//			comboBudgetEditDeliveryTime.removeItem("Todas");
+			comboBudgetEditDeliveryPeriod.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadComboList(queryDeliveryPeriod, "delivery_period"))));
+			comboBudgetEditDeliveryPeriod.removeItem("Todas");
 			comboBudgetEditDeliveryPeriod.setSelectedItem(editBudgetDeliveryPeriod);
 			
 //			checkBudgetEditTracing.setSelected((editBudgetTracing.equalsIgnoreCase("SI")?true:false));
@@ -8700,36 +8629,6 @@ public class MainView extends JFrame{
 				
 				loadBoardSwitchSearchTable(whereQuery);
 			}
-			else if (actionCommand.equalsIgnoreCase("budget.search.bar.button")) {
-				whereQuery = "";
-				searchSelectedBudgetClient = textBudgetSearchClient.getText();
-				searchSelectedBudgetId = textBudgetSearchId.getText();	
-				
-				//TODO (Jesus) Search Budget code
-				searchSelectedBudgetDays = comboBudgetDays.getSelectedItem().toString();
-				searchSelectedBudgetMonths = comboBudgetMonths.getSelectedItem().toString();
-				searchSelectedBudgetYears = comboBudgetYears.getSelectedItem().toString();
-				
-				// TODO The date here should be separated by dashes, not slashes
-				String budgetDate =  searchSelectedBudgetDays + "/" + searchSelectedBudgetMonths + "/" + searchSelectedBudgetYears; 
-				
-				if(searchSelectedBudgetClient != null && !searchSelectedBudgetClient.equalsIgnoreCase("Todas") &&
-						!searchSelectedBudgetClient.isEmpty()) {
-					whereQuery += " AND " + MainView.CLIENTS_TABLE + ".client = '" + searchSelectedBudgetClient + "'";
-				}
-				if(searchSelectedBudgetId != null && !searchSelectedBudgetId.equalsIgnoreCase("Todas") &&
-						!searchSelectedBudgetId.isEmpty()) {
-					whereQuery += " AND " + MainView.BUDGET_TABLE + ".code = '" + searchSelectedBudgetId + "'";
-				}
-				
-				if(searchSelectedBudgetDays != null && searchSelectedBudgetMonths != null &&
-						searchSelectedBudgetYears != null) {
-					
-					whereQuery += " AND " + MainView.BUDGET_TABLE + ".date = '" + searchSelectedBudgetDays + "'";
-				}
-				//
-				loadBudgetTable(whereQuery);
-			}
 		}
 		
 	}
@@ -9816,65 +9715,19 @@ public class MainView extends JFrame{
 			else if (actionCommand.equalsIgnoreCase("budget.description.buttons.edit")) {
 				setBudgetsMode(MainView.EDIT_MODE);
 			} else if(actionCommand.equalsIgnoreCase("budget.description.add.company")) {
-				dialogBudgetCompanyAdd = new JDialog(null, "Agregar Compañia", Dialog.DEFAULT_MODALITY_TYPE);
-				dialogBudgetCompanyAdd.setMinimumSize(new Dimension(800, 300));
-				dialogBudgetCompanyAdd.setSize(800, 400);
-				dialogBudgetCompanyAdd.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-				
-				Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-				int x = (dim.width / 2) - (dialogBudgetCompanyAdd.getWidth() / 2);
-				int y = (dim.height / 2) - (dialogBudgetCompanyAdd.getHeight() / 2);
-				dialogBudgetCompanyAdd.setLocation(x, y);
-				
-				JPanel panelCenter = new JPanel();
-				panelCenter.setLayout(new BoxLayout(panelCenter, BoxLayout.PAGE_AXIS));
-				panelCenter.add(createBudgetCompanyAddSearchPanel());
-				panelCenter.add(Box.createRigidArea(new Dimension(0, 10)));
-				panelCenter.add(createBudgetCompanyAddTablePanel());
-				dialogBudgetCompanyAdd.add(panelCenter, BorderLayout.CENTER);
-				
-				JPanel panelLower = new JPanel();
-				panelLower.setLayout(new BoxLayout(panelLower, BoxLayout.LINE_AXIS));
-				// TODO The panel below will add a company that doesn't exists
-				panelLower.add(createBudgetCompanyAddButtonPanel());
-				dialogBudgetCompanyAdd.add(panelLower, BorderLayout.SOUTH);
+				dialogBudgetCompanyAdd = new ClientDialog(null, "Agregar Compañia");
 				
 				WindowsListener lForWindow = new WindowsListener();
 				dialogBudgetCompanyAdd.addWindowListener(lForWindow);
-				
-				dialogBudgetCompanyAdd.setVisible(true);
 			} else if(actionCommand.equalsIgnoreCase("budget.description.add.seller")) {
-				dialogBudgetSellerAdd = new JDialog(null, "Agregar Vendedor", Dialog.DEFAULT_MODALITY_TYPE);
-				dialogBudgetSellerAdd.setMinimumSize(new Dimension(800, 300));
-				dialogBudgetSellerAdd.setSize(800, 400);
-				dialogBudgetSellerAdd.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-				
-				Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-				int x = (dim.width / 2) - (dialogBudgetSellerAdd.getWidth() / 2);
-				int y = (dim.height / 2) - (dialogBudgetSellerAdd.getHeight() / 2);
-				dialogBudgetSellerAdd.setLocation(x, y);
-				
-				JPanel panelCenter = new JPanel();
-				panelCenter.setLayout(new BoxLayout(panelCenter, BoxLayout.PAGE_AXIS));
-				panelCenter.add(createBudgetSellerAddSearchPanel());
-				panelCenter.add(Box.createRigidArea(new Dimension(0, 10)));
-				panelCenter.add(createBudgetSellerAddTablePanel());
-				dialogBudgetSellerAdd.add(panelCenter, BorderLayout.CENTER);
-				
-				JPanel panelLower = new JPanel();
-				panelLower.setLayout(new BoxLayout(panelLower, BoxLayout.LINE_AXIS));
-				// TODO The panel below will add a seller that doesn't exists
-				panelLower.add(createBudgetSellerAddButtonPanel());
-				dialogBudgetSellerAdd.add(panelLower, BorderLayout.SOUTH);
+				dialogBudgetSellerAdd = new SellerDialog(null, "Agregar Vendedor");
 				
 				WindowsListener lForWindow = new WindowsListener();
 				dialogBudgetSellerAdd.addWindowListener(lForWindow);
-				
-				dialogBudgetSellerAdd.setVisible(true);
 			} else if(actionCommand.equalsIgnoreCase("budget.description.add.save")) {
 				String budgetDate = addBudgetDateModel.getYear() + "-" + (addBudgetDateModel.getMonth() + 1) + "-" + addBudgetDateModel.getDay();
 				String budgetExpiryDays = textBudgetAddExpiryDays.getText().toString();
-				String budgetClientId = String.valueOf(budgetCompanyAddSearchId);
+				String budgetClientId = String.valueOf(budgetCompanyAddId);
 				String budgetWorkName = textBudgetAddWorkName.getText();
 				String budgetPaymentMethod = comboBudgetAddPaymentMethod.getSelectedItem().toString();
 				String budgetDispatchPlace = comboBudgetAddDispatchPlace.getSelectedItem().toString();
@@ -9925,36 +9778,10 @@ public class MainView extends JFrame{
 			} else if(actionCommand.equalsIgnoreCase("budget.description.add.cancel")) {
 				setBudgetsMode(MainView.VIEW_MODE);
 			} else if(actionCommand.equalsIgnoreCase("budget.description.edit.company")) {
-				dialogBudgetCompanyEdit = new JDialog(null, "Editar Compañia", Dialog.DEFAULT_MODALITY_TYPE);
-				dialogBudgetCompanyEdit.setMinimumSize(new Dimension(800, 300));
-				dialogBudgetCompanyEdit.setSize(800, 400);
-				dialogBudgetCompanyEdit.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-				
-				Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-				int x = (dim.width / 2) - (dialogBudgetCompanyEdit.getWidth() / 2);
-				int y = (dim.height / 2) - (dialogBudgetCompanyEdit.getHeight() / 2);
-				dialogBudgetCompanyEdit.setLocation(x, y);
-				
-				JPanel panelCenter = new JPanel();
-				panelCenter.setLayout(new BoxLayout(panelCenter, BoxLayout.PAGE_AXIS));
-				panelCenter.add(createBudgetCompanyEditSearchPanel());
-				panelCenter.add(Box.createRigidArea(new Dimension(0, 10)));
-				panelCenter.add(createBudgetCompanyEditTablePanel());
-				dialogBudgetCompanyEdit.add(panelCenter, BorderLayout.CENTER);
-				
-				JPanel panelLower = new JPanel();
-				
-				panelLower.setLayout(new BorderLayout(20,20));  
-				
-				panelLower.add(createBudgetCompanyEditDescriptionPanel(),  BorderLayout.CENTER);	
-				panelLower.add(createBudgetCompanyEditButtonPanel(), BorderLayout.SOUTH);
-				
-				dialogBudgetCompanyEdit.add(panelLower, BorderLayout.SOUTH);
+				dialogBudgetClientEdit = new ClientDialog(null, "Buscar Cliente");
 				
 				WindowsListener lForWindow = new WindowsListener();
-				dialogBudgetCompanyEdit.addWindowListener(lForWindow);				
-				dialogBudgetCompanyEdit.setVisible(true);
-				
+				dialogBudgetClientEdit.addWindowListener(lForWindow);
 			} else if(actionCommand.equalsIgnoreCase("budget.description.edit.seller")) {
 				dialogBudgetSellerEdit = new JDialog(null, "Editar Vendedor", Dialog.DEFAULT_MODALITY_TYPE);
 				dialogBudgetSellerEdit.setMinimumSize(new Dimension(800, 300));
@@ -10163,7 +9990,7 @@ public class MainView extends JFrame{
 					listFields.add("notes");
 					listValues.add("'" + textBudgetNotes.getText() + "'");
 					db.editBudget(selectedBudgetId, listFields, listValues);
-					// TODO Finish enabling and disabling tabs here
+					
 					JTabbedPane budgetTabbedPane = (JTabbedPane) budgetNotesPanel.getParent();
 					budgetTabbedPane.setEnabled(true);
 					buttonBudgetNotesEdit.setEnabled(true);
@@ -10215,8 +10042,6 @@ public class MainView extends JFrame{
 						JOptionPane.showMessageDialog(null, "No puede agregar mas de " + selectedTableBoardCircuits + " circuitos");
 					}
 				}
-			} else if (window.equals(dialogBudgetSellerEdit)) {
-				
 			} else if (window.equals(dialogBudgetSwitchAdd)) {
 				Integer switchSearchId = dialogBudgetSwitchAdd.getSwitchSearchId();
 				Integer switchQuantity = dialogBudgetSwitchAdd.getSwitchAddQuantity();
@@ -10240,6 +10065,23 @@ public class MainView extends JFrame{
 					if(db.addBudgetBoard(selectedBudgetId, boardSearchId, boardQuantity)) {
 						loadBudgetBoardTable();
 					}
+				}
+			} else if (window.equals(dialogBudgetCompanyAdd)) {
+				Integer searchClientId = dialogBudgetCompanyAdd.getSearchId();
+				budgetCompanyAddId = searchClientId;
+				if (budgetCompanyAddId > 0) {
+					String searchClient = dialogBudgetCompanyAdd.getSearchClient();
+					String searchClientCode = dialogBudgetCompanyAdd.getSearchClientCode();
+					String searchClientRepresentative = dialogBudgetCompanyAdd.getSearchRepresentative();
+					textBudgetAddCompany.setText(searchClient);
+					textBudgetAddClientCode.setText(searchClientCode);
+					textBudgetAddCompanyRepresentative.setText(searchClientRepresentative);
+				}
+			} else if (window.equals(dialogBudgetSellerAdd)) {
+				Integer searchSellerId = dialogBudgetSellerAdd.getSearchId();
+				if (searchSellerId > 0) {
+					String searchSellerUser = dialogBudgetSellerAdd.getSellerUser();
+					textBudgetAddSeller.setText(searchSellerUser);
 				}
 			}
 			
