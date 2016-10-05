@@ -11,6 +11,7 @@ import javax.swing.JOptionPane;
 
 import org.joda.time.DateTime;
 
+import ve.com.mastercircuito.components.MCSwitch;
 import ve.com.mastercircuito.utils.StringTools;
 
 public class Db extends MysqlDriver {
@@ -23,7 +24,7 @@ public class Db extends MysqlDriver {
 		super(host,dbuser,dbpassword,database);
 	}
 	
-	public boolean switchExists(String phases, String current, String brand, String type, String interruption, String model) {
+	public Boolean switchExists(String phases, String current, String brand, String type, String interruption, String model) {
 		String queryString;
 		
 		queryString = "SELECT * FROM switches, switch_brands, switch_types, currents, interruptions "
@@ -43,7 +44,7 @@ public class Db extends MysqlDriver {
 		return (this.getNumRows() > 0)? true:false;
 	}
 	
-	public boolean editSwitch(int switchId, ArrayList<Object> listFields, ArrayList<Object> listValues) {
+	public Boolean editSwitch(Integer switchId, ArrayList<Object> listFields, ArrayList<Object> listValues) {
 		if (listFields.size() > 0) {
 			String queryFields = "";
 			Iterator<Object> it1 = listFields.iterator();
@@ -60,7 +61,7 @@ public class Db extends MysqlDriver {
 		return false;
 	}
 	
-	public boolean editBox(int boxId, ArrayList<Object> listFields, ArrayList<Object> listValues) {
+	public Boolean editBox(Integer boxId, ArrayList<Object> listFields, ArrayList<Object> listValues) {
 		if (listFields.size() > 0) {
 			String queryFields = "";
 			Iterator<Object> it1 = listFields.iterator();
@@ -77,7 +78,7 @@ public class Db extends MysqlDriver {
 		return false;
 	}
 	
-	public boolean editBoard(int boardId, ArrayList<Object> listFields, ArrayList<Object> listValues) {
+	public Boolean editBoard(Integer boardId, ArrayList<Object> listFields, ArrayList<Object> listValues) {
 		if (listFields.size() > 0) {
 			String queryFields = "";
 			Iterator<Object> it1 = listFields.iterator();
@@ -94,7 +95,7 @@ public class Db extends MysqlDriver {
 		return false;
 	}
 	
-	public boolean switchBrandExists(String brand) {
+	public Boolean switchBrandExists(String brand) {
 		String queryString;
 		
 		queryString = "SELECT id FROM switch_brands WHERE brand = '" + brand + "'";
@@ -103,7 +104,7 @@ public class Db extends MysqlDriver {
 		return (this.getNumRows() > 0)? true:false;
 	}
 	
-	public boolean addSwitchBrand(String brand) {
+	public Boolean addSwitchBrand(String brand) {
 		String queryInsert;
 		
 		queryInsert = "INSERT INTO switch_brands (brand) VALUES ('" + brand + "')";
@@ -112,14 +113,14 @@ public class Db extends MysqlDriver {
 		return (this.getInsertId() > 0)? true:false;
 	}
 	
-	public boolean removeSwitchBrand(String brand) {
+	public Boolean removeSwitchBrand(String brand) {
 		String queryDelete;
 		
 		queryDelete = "DELETE FROM switch_brands WHERE brand = '" + brand + "'";
 		return this.delete(queryDelete);
 	}
 	
-	public boolean switchTypeExists(String type) {
+	public Boolean switchTypeExists(String type) {
 		String queryString;
 		
 		queryString = "SELECT id FROM switch_types WHERE type = '" + type + "'";
@@ -128,7 +129,7 @@ public class Db extends MysqlDriver {
 		return (this.getNumRows() > 0)? true:false;
 	}
 	
-	public boolean addSwitchType(String type, String brand) {
+	public Boolean addSwitchType(String type, String brand) {
 		String queryInsert;
 		int brandId = this.getSwitchBrandId(brand);
 		
@@ -142,14 +143,14 @@ public class Db extends MysqlDriver {
 		return (this.getInsertId() > 0)? true:false;
 	}
 	
-	public boolean removeSwitchType(String type) {
+	public Boolean removeSwitchType(String type) {
 		String queryDelete;
 		
 		queryDelete = "DELETE FROM switch_types WHERE type = '" + type + "'";
 		return this.delete(queryDelete);
 	}
 	
-	public boolean currentExists(String current) {
+	public Boolean currentExists(String current) {
 		String queryString;
 		
 		queryString = "SELECT id FROM currents WHERE current = '" + current + "'";
@@ -158,7 +159,7 @@ public class Db extends MysqlDriver {
 		return (this.getNumRows() > 0)? true:false;
 	}
 	
-	public boolean addCurrent(String current) {
+	public Boolean addCurrent(String current) {
 		String queryInsert;
 		
 		queryInsert = "INSERT INTO currents (current) VALUES ('" + current + "')";
@@ -167,14 +168,14 @@ public class Db extends MysqlDriver {
 		return (this.getInsertId() > 0)? true:false;
 	}
 	
-	public boolean removeCurrent(String current) {
+	public Boolean removeCurrent(String current) {
 		String queryDelete;
 		
 		queryDelete = "DELETE FROM currents WHERE current = '" + current + "'";
 		return this.delete(queryDelete);
 	}
 	
-	public boolean voltageExists(String voltage) {
+	public Boolean voltageExists(String voltage) {
 		String queryString;
 		
 		queryString = "SELECT id FROM switch_voltages WHERE voltage = '" + voltage + "'";
@@ -183,7 +184,7 @@ public class Db extends MysqlDriver {
 		return (this.getNumRows() > 0)? true:false;
 	}
 	
-	public boolean addVoltage(String voltage, String type) {
+	public Boolean addVoltage(String voltage, String type) {
 		String queryInsert;
 		
 		queryInsert = "INSERT INTO switch_voltages (voltage) VALUES ('" + voltage + "V" + type + "')";
@@ -192,14 +193,14 @@ public class Db extends MysqlDriver {
 		return (this.getInsertId() > 0)? true:false;
 	}
 	
-	public boolean removeVoltage(String voltage) {
+	public Boolean removeVoltage(String voltage) {
 		String queryDelete;
 		
 		queryDelete = "DELETE FROM switch_voltages WHERE voltage = '" + voltage + "'";
 		return this.delete(queryDelete);
 	}
 	
-	public boolean interruptionExists(String interruption) {
+	public Boolean interruptionExists(String interruption) {
 		String queryString;
 		
 		queryString = "SELECT id FROM interruptions WHERE interruption = '" + interruption + "'";
@@ -208,7 +209,7 @@ public class Db extends MysqlDriver {
 		return (this.getNumRows() > 0)? true:false;
 	}
 	
-	public boolean addInterruption(String interruption) {
+	public Boolean addInterruption(String interruption) {
 		String queryInsert;
 		
 		queryInsert = "INSERT INTO interruptions (interruption) VALUES ('" + interruption + "')";
@@ -217,14 +218,14 @@ public class Db extends MysqlDriver {
 		return (this.getInsertId() > 0)? true:false;
 	}
 	
-	public boolean removeInterruption(String interruption) {
+	public Boolean removeInterruption(String interruption) {
 		String queryDelete;
 		
 		queryDelete = "DELETE FROM interruptions WHERE interruption = '" + interruption + "'";
 		return this.delete(queryDelete);
 	}
 	
-	public int getSwitchBrandId(String brand) {
+	public Integer getSwitchBrandId(String brand) {
 		ResultSet setBrand;
 		int brandId = 0;
 		setBrand = this.select("SELECT id FROM switch_brands WHERE brand = '" + brand + "'");
@@ -239,7 +240,7 @@ public class Db extends MysqlDriver {
 		return brandId;
 	}
 	
-	public int getSwitchTypeId(String type) {
+	public Integer getSwitchTypeId(String type) {
 		ResultSet setType;
 		int typeId = 0;
 		setType = this.select("SELECT id FROM switch_types WHERE type = '" + type + "'");
@@ -254,7 +255,7 @@ public class Db extends MysqlDriver {
 		return typeId;
 	}
 	
-	public int getCurrentId(int current) {
+	public Integer getCurrentId(Integer current) {
 		ResultSet setCurrent;
 		int currentId = 0;
 		setCurrent = this.select("SELECT id FROM currents WHERE current = '" + current + "'");
@@ -270,7 +271,7 @@ public class Db extends MysqlDriver {
 		return currentId;
 	}
 	
-	public int getVoltageId(String voltage) {
+	public Integer getVoltageId(String voltage) {
 		ResultSet setVoltage;
 		int voltageId = 0;
 		setVoltage = this.select("SELECT id FROM switch_voltages WHERE voltage = '" + voltage + "'");
@@ -285,7 +286,7 @@ public class Db extends MysqlDriver {
 		return voltageId;
 	}
 	
-	public int getInterruptionId(int interruption) {
+	public Integer getInterruptionId(Integer interruption) {
 		ResultSet setInterruption;
 		int interruptionId = 0;
 		setInterruption = this.select("SELECT id FROM interruptions WHERE interruption = " + interruption);
@@ -300,7 +301,7 @@ public class Db extends MysqlDriver {
 		return interruptionId;
 	}
 	
-	public int getBoxTypeId(String type) {
+	public Integer getBoxTypeId(String type) {
 		ResultSet setType;
 		int typeId = 0;
 		setType = this.select("SELECT id FROM box_types WHERE type = '" + type + "'");
@@ -315,7 +316,7 @@ public class Db extends MysqlDriver {
 		return typeId;
 	}
 	
-	public int getInstallationId(String installation) {
+	public Integer getInstallationId(String installation) {
 		ResultSet setInstallation;
 		int installationId = 0;
 		setInstallation = this.select("SELECT id FROM installations WHERE installation = '" + installation + "'");
@@ -330,7 +331,7 @@ public class Db extends MysqlDriver {
 		return installationId;
 	}
 	
-	public int getNemaId(String nema) {
+	public Integer getNemaId(String nema) {
 		ResultSet setNema;
 		int nemaId = 0;
 		setNema = this.select("SELECT id FROM nemas WHERE nema = '" + nema + "'");
@@ -345,7 +346,7 @@ public class Db extends MysqlDriver {
 		return nemaId;
 	}
 	
-	public int getBoxSheetId(String sheet) {
+	public Integer getBoxSheetId(String sheet) {
 		ResultSet setSheet;
 		int sheetId = 0;
 		setSheet = this.select("SELECT id FROM box_sheets WHERE sheet = '" + sheet + "'");
@@ -360,7 +361,7 @@ public class Db extends MysqlDriver {
 		return sheetId;
 	}
 	
-	public int getBoxFinishId(String finish) {
+	public Integer getBoxFinishId(String finish) {
 		ResultSet setFinish;
 		int finishId = 0;
 		setFinish = this.select("SELECT id FROM box_finishes WHERE finish = '" + finish + "'");
@@ -375,7 +376,7 @@ public class Db extends MysqlDriver {
 		return finishId;
 	}
 	
-	public int getBoxColorId(String color) {
+	public Integer getBoxColorId(String color) {
 		ResultSet setColor;
 		int colorId = 0;
 		setColor = this.select("SELECT id FROM box_colors WHERE color = '" + color + "'");
@@ -390,7 +391,7 @@ public class Db extends MysqlDriver {
 		return colorId;
 	}
 	
-	public boolean colorExists(String color) {
+	public Boolean colorExists(String color) {
 		String queryString;
 		
 		queryString = "SELECT id FROM box_colors WHERE color = '" + color + "'";
@@ -399,7 +400,7 @@ public class Db extends MysqlDriver {
 		return (this.getNumRows() > 0)? true:false;
 	}
 	
-	public boolean addColor(String color) {
+	public Boolean addColor(String color) {
 		String queryInsert;
 		
 		queryInsert = "INSERT INTO box_colors (color) VALUES ('" + color + "')";
@@ -408,7 +409,7 @@ public class Db extends MysqlDriver {
 		return (this.getInsertId() > 0)? true:false;
 	}
 	
-	public boolean removeColor(String color) {
+	public Boolean removeColor(String color) {
 		String queryDelete;
 		
 		queryDelete = "DELETE FROM box_colors WHERE color = '" + color + "'";
@@ -445,7 +446,7 @@ public class Db extends MysqlDriver {
 		return caliberId;
 	}
 	
-	public boolean caliberExists(String caliber) {
+	public Boolean caliberExists(String caliber) {
 		String queryString;
 		
 		queryString = "SELECT id FROM box_calibers WHERE caliber = '" + caliber + "'";
@@ -454,7 +455,7 @@ public class Db extends MysqlDriver {
 		return (this.getNumRows() > 0)? true:false;
 	}
 	
-	public boolean addCaliber(String caliber) {
+	public Boolean addCaliber(String caliber) {
 		String queryInsert;
 		
 		queryInsert = "INSERT INTO box_calibers (caliber) VALUES ('" + caliber + "')";
@@ -463,14 +464,14 @@ public class Db extends MysqlDriver {
 		return (this.getInsertId() > 0)? true:false;
 	}
 	
-	public boolean removeCaliber(String caliber) {
+	public Boolean removeCaliber(String caliber) {
 		String queryDelete;
 		
 		queryDelete = "DELETE FROM box_calibers WHERE caliber = '" + caliber + "'";
 		return this.delete(queryDelete);
 	}
 	
-	public int getLockTypeId(String lockType) {
+	public Integer getLockTypeId(String lockType) {
 		ResultSet setLockType;
 		int lockTypeId = 0;
 		setLockType = this.select("SELECT id FROM lock_types WHERE lock_type = '" + lockType + "'");
@@ -485,7 +486,7 @@ public class Db extends MysqlDriver {
 		return lockTypeId;
 	}
 	
-	public String getBoxCaliberComments(int id) {
+	public String getBoxCaliberComments(Integer id) {
 		ResultSet setCaliber;
 		String caliberComments = "";
 		setCaliber = this.select("SELECT caliber_comments FROM boxes WHERE id = " + id);
@@ -500,7 +501,7 @@ public class Db extends MysqlDriver {
 		return caliberComments;
 	}
 	
-	public int getBoardTypeId(String type) {
+	public Integer getBoardTypeId(String type) {
 		ResultSet setType;
 		int typeId = 0;
 		setType = this.select("SELECT id FROM board_types WHERE type = '" + type + "'");
@@ -515,7 +516,7 @@ public class Db extends MysqlDriver {
 		return typeId;
 	}
 	
-	public int getBoardBarCapacityId(Integer barCapacity) {
+	public Integer getBoardBarCapacityId(Integer barCapacity) {
 		ResultSet setBarCapacity;
 		int barCapacityId = 0;
 		setBarCapacity = this.select("SELECT id FROM board_bar_capacities WHERE bar_capacity = '" + barCapacity + "'");
@@ -530,7 +531,7 @@ public class Db extends MysqlDriver {
 		return barCapacityId;
 	}
 	
-	public int getBoardBarTypeId(String barType) {
+	public Integer getBoardBarTypeId(String barType) {
 		ResultSet setBarType;
 		int barTypeId = 0;
 		setBarType = this.select("SELECT id FROM board_bar_types WHERE bar_type = '" + barType + "'");
@@ -545,7 +546,7 @@ public class Db extends MysqlDriver {
 		return barTypeId;
 	}
 	
-	public int getBoardCircuitsId(Integer circuits) {
+	public Integer getBoardCircuitsId(Integer circuits) {
 		ResultSet setCircuits;
 		int circuitsId = 0;
 		setCircuits = this.select("SELECT id FROM board_circuits WHERE circuits = '" + circuits + "'");
@@ -560,7 +561,7 @@ public class Db extends MysqlDriver {
 		return circuitsId;
 	}
 	
-	public int getBoardVoltageId(String voltage) {
+	public Integer getBoardVoltageId(String voltage) {
 		ResultSet setVoltage;
 		int voltageId = 0;
 		setVoltage = this.select("SELECT id FROM board_voltages WHERE voltage = '" + voltage + "'");
@@ -575,7 +576,7 @@ public class Db extends MysqlDriver {
 		return voltageId;
 	}
 	
-	public int getBoardContainerId(int switchId) {
+	public Integer getBoardContainerId(Integer switchId) {
 		ResultSet setSwitchBoard;
 		int switchBoardId = 0;
 		setSwitchBoard = this.select("SELECT board_container_id FROM board_switches WHERE id = '" + switchId + "'");
@@ -590,7 +591,7 @@ public class Db extends MysqlDriver {
 		return switchBoardId;
 	}
 	
-	public int getSwitchBoardId(int boardSwitchId) {
+	public Integer getSwitchBoardId(Integer boardSwitchId) {
 		ResultSet setBoardSwitch;
 		int boardId = 0;
 		setBoardSwitch = this.select("SELECT board_container_id FROM board_switches WHERE id = '" + boardSwitchId + "'");
@@ -605,7 +606,7 @@ public class Db extends MysqlDriver {
 		return boardId;
 	}
 	
-	public int getBoardSwitchId(int boardSwitchId) {
+	public Integer getBoardSwitchId(Integer boardSwitchId) {
 		ResultSet setBoardSwitch;
 		int switchId = 0;
 		setBoardSwitch = this.select("SELECT switch_id FROM board_switches WHERE id = '" + boardSwitchId + "'");
@@ -620,7 +621,7 @@ public class Db extends MysqlDriver {
 		return switchId;
 	}
 	
-	public int getDispachPlaceId (String place){
+	public Integer getDispachPlaceId (String place){
 		ResultSet setDispatchPlace;
 		int dispatchPlaceId = 0;
 		setDispatchPlace = this.select("SELECT id FROM budget_dispatch_places WHERE place = '" + place + "'");
@@ -635,7 +636,7 @@ public class Db extends MysqlDriver {
 		return dispatchPlaceId;
 	}
 	
-	public int getPaymentMethodId (String method){
+	public Integer getPaymentMethodId (String method){
 		ResultSet setPaymentMethod;
 		int paymentMethodId = 0;
 		setPaymentMethod = this.select("SELECT id FROM budget_payment_methods WHERE method = '" + method + "'");
@@ -650,7 +651,7 @@ public class Db extends MysqlDriver {
 		return paymentMethodId;
 	}
 	
-	public int getSellerId (String seller){
+	public Integer getSellerId (String seller){
 		ResultSet setSeller;
 		int sellerId = 0;
 		setSeller = this.select("SELECT id FROM budget_sellers WHERE seller = '" + seller + "'");
@@ -665,7 +666,7 @@ public class Db extends MysqlDriver {
 		return sellerId;
 	}
 	
-	public int getDeliveryPeriodId(String delivery_period) {
+	public Integer getDeliveryPeriodId(String delivery_period) {
 		ResultSet setDeliveryPeriod;
 		int deliveryPeriodId = 0;
 		setDeliveryPeriod = this.select("SELECT id FROM budget_delivery_period WHERE delivery_period = '" + delivery_period + "'");
@@ -680,7 +681,7 @@ public class Db extends MysqlDriver {
 		return deliveryPeriodId;
 	}
 	
-	public String getBudgetCode(int budgetId) {
+	public String getBudgetCode(Integer budgetId) {
 		ResultSet setBudgetCode;
 		String code = "";
 		setBudgetCode = this.select("SELECT code FROM budgets WHERE id = '" + budgetId + "'");
@@ -695,7 +696,7 @@ public class Db extends MysqlDriver {
 		return code;
 	}
 	
-	public Integer getBudgetExpiryDays(int budgetId) {
+	public Integer getBudgetExpiryDays(Integer budgetId) {
 		ResultSet setBudgetExpiryDays;
 		int expiryDays = 0;
 		setBudgetExpiryDays = this.select("SELECT expiry_days FROM budgets WHERE id = '" + budgetId + "'");
@@ -710,7 +711,7 @@ public class Db extends MysqlDriver {
 		return expiryDays;
 	}	
 	
-	public String getBudgetWorkName(int budgetId) {
+	public String getBudgetWorkName(Integer budgetId) {
 		ResultSet setBudgetWorkName;
 		String workName = "";
 		setBudgetWorkName = this.select("SELECT work_name FROM budgets WHERE id = '" + budgetId + "'");
@@ -725,7 +726,7 @@ public class Db extends MysqlDriver {
 		return workName;
 	}
 	
-	public String getBudgetDate(int budgetId) {
+	public String getBudgetDate(Integer budgetId) {
 		ResultSet setBudgetDate;
 		String date = "";
 		setBudgetDate = this.select("SELECT date FROM budgets WHERE id = '" + budgetId + "'");
@@ -740,7 +741,7 @@ public class Db extends MysqlDriver {
 		return date;
 	}
 	
-	public boolean addSwitch(String model, String brand, String type, String phases, int current, String voltage, int interruption, String price) {
+	public Boolean addSwitch(String model, String brand, String type, String phases, Integer current, String voltage, Integer interruption, String price) {
 		int brandId = this.getSwitchBrandId(brand);
 		int typeId = this.getSwitchTypeId(type);
 		int currentId = this.getCurrentId(current);
@@ -755,7 +756,7 @@ public class Db extends MysqlDriver {
 		return (this.getInsertId() > 0)? true:false;
 	}
 	
-	public boolean addBox(String type, String installation, String nema, int pairs, String sheet, String finish, String color, Double height, Double width, Double depth, String units, String caliber, String caliberComments, String lockType, Double price) {
+	public Boolean addBox(String type, String installation, String nema, int pairs, String sheet, String finish, String color, Double height, Double width, Double depth, String units, String caliber, String caliberComments, String lockType, Double price) {
 		int typeId = this.getBoxTypeId(type);
 		int installationId = this.getInstallationId(installation);
 		int nemaId = this.getNemaId(nema);
@@ -774,7 +775,7 @@ public class Db extends MysqlDriver {
 		return (this.getInsertId() > 0)? true:false;
 	}
 	
-	public boolean addBoard(String name, String type, String installation, String nema, Integer barCapacity, String barType, Integer circuits, String voltage, Integer phases, String ground, Integer interruption, String lockType, Double price) {
+	public Boolean addBoard(String name, String type, String installation, String nema, Integer barCapacity, String barType, Integer circuits, String voltage, Integer phases, String ground, Integer interruption, String lockType, Double price) {
 		int typeId = this.getBoardTypeId(type);
 		int installationId = this.getInstallationId(installation);
 		int nemaId = this.getNemaId(nema);
@@ -836,7 +837,7 @@ public class Db extends MysqlDriver {
 		
 	}
 	
-	private String prepareBudgetCode(DateTime serverDateTime, int budgetCodeId) {
+	private String prepareBudgetCode(DateTime serverDateTime, Integer budgetCodeId) {
 		DecimalFormat df = new DecimalFormat("00");
 		String serverDay = df.format(serverDateTime.getDayOfMonth());
 		String serverMonth = df.format(serverDateTime.getMonthOfYear());
@@ -848,7 +849,7 @@ public class Db extends MysqlDriver {
 		return budgetCode;
 	}
 	
-	public boolean editBudget(int budgetId, ArrayList<Object> listFields, ArrayList<Object> listValues) {
+	public Boolean editBudget(Integer budgetId, ArrayList<Object> listFields, ArrayList<Object> listValues) {
 		if (listFields.size() > 0) {
 			String queryFields = "";
 			Iterator<Object> it1 = listFields.iterator();
@@ -865,13 +866,13 @@ public class Db extends MysqlDriver {
 		return false;
 	}
 	
-	public boolean removeBoardSwitch(int switchId) {
+	public Boolean removeBoardSwitch(Integer switchId) {
 		String queryDelete;
 		queryDelete = "DELETE FROM board_switches WHERE id = '" + switchId + "'";
 		return this.delete(queryDelete);
 	}
 	
-	public String getBoardSwitchMainId(int boardId) {
+	public String getBoardSwitchMainId(Integer boardId) {
 		String queryString;
 		ResultSet setBoardSwitchMainId;
 		
@@ -890,7 +891,7 @@ public class Db extends MysqlDriver {
 		return null;
 	}
 	
-	public int getBoardSwitchesQuantity(int boardId) {
+	public Integer getBoardSwitchesQuantity(Integer boardId) {
 		ResultSet setBoardSwitchesQuantity;
 		int boardSwitchesQuantity = 0;
 		setBoardSwitchesQuantity = this.select("SELECT IFNULL(SUM(board_switches.quantity * switches.phases),0) as cnt " +
@@ -908,7 +909,7 @@ public class Db extends MysqlDriver {
 		return boardSwitchesQuantity;
 	}
 	
-	public int getSwitchPhases(int switchId) {
+	public Integer getSwitchPhases(Integer switchId) {
 		ResultSet setSwitchPhases;
 		int switchPhases = 0;
 		setSwitchPhases = this.select("SELECT phases FROM switches WHERE switches.id = '" + switchId + "'");
@@ -923,7 +924,7 @@ public class Db extends MysqlDriver {
 		return switchPhases;
 	}
 	
-	public boolean boardSwitchExists(int containerId, int switchId) {
+	public Boolean boardSwitchExists(Integer containerId, Integer switchId) {
 		String queryString;
 		
 		queryString = "SELECT * FROM board_switches "
@@ -935,7 +936,7 @@ public class Db extends MysqlDriver {
 		return (this.getNumRows() > 0)? true:false;
 	}
 	
-	public int getBoardSwitchId(int containerId, int switchId) {
+	public Integer getBoardSwitchId(Integer containerId, Integer switchId) {
 		String queryString;
 		ResultSet setBoardSwitchId;
 		
@@ -956,7 +957,7 @@ public class Db extends MysqlDriver {
 		return 0;
 	}
 	
-	public boolean addBoardSwitch(int containerId, int switchId, int quantity) {
+	public Boolean addBoardSwitch(Integer containerId, Integer switchId, Integer quantity) {
 		int boardSwitchId = 0;
 		if(this.boardSwitchExists(containerId, switchId)) {
 			boardSwitchId = this.getBoardSwitchId(containerId, switchId);
@@ -973,14 +974,14 @@ public class Db extends MysqlDriver {
 		}
 	}
 	
-	private boolean increaseBoardSwitch(int boardSwitchId, int quantity) {
+	private Boolean increaseBoardSwitch(Integer boardSwitchId, Integer quantity) {
 		String queryString = "UPDATE board_switches SET quantity = quantity + " + quantity 
 							+ " WHERE id = " + boardSwitchId;
 		
 		return this.update(queryString);
 	}
 	
-	public String getBoardMaterials(int boardId) {
+	public String getBoardMaterials(Integer boardId) {
 		ResultSet setBoardMaterials;
 		String materials = "";
 		setBoardMaterials = this.select("SELECT materials FROM boards WHERE id = '" + boardId + "'");
@@ -995,7 +996,7 @@ public class Db extends MysqlDriver {
 		return materials;
 	}
 	
-	public Double getBoardMaterialsPrice(int boardId) {
+	public Double getBoardMaterialsPrice(Integer boardId) {
 		ResultSet setBoardMaterialsPrice;
 		Double materialsPrice = 0.00;
 		setBoardMaterialsPrice = this.select("SELECT materials_price FROM boards WHERE id = '" + boardId + "'");
@@ -1010,7 +1011,7 @@ public class Db extends MysqlDriver {
 		return materialsPrice;
 	}
 	
-	public String getBoardComments(int boardId) {
+	public String getBoardComments(Integer boardId) {
 		ResultSet setBoardCommentsPrice;
 		String comments = "";
 		setBoardCommentsPrice = this.select("SELECT comments FROM boards WHERE id = '" + boardId + "'");
@@ -1025,7 +1026,7 @@ public class Db extends MysqlDriver {
 		return comments;
 	}
 	
-	public Integer getBudgetClientId(int budgetId) {
+	public Integer getBudgetClientId(Integer budgetId) {
 		String queryString;
 		ResultSet setBudgetClientId;
 		
@@ -1044,7 +1045,7 @@ public class Db extends MysqlDriver {
 		return -1;
 	}
 	
-	public String getBudgetClientName(int budgetId) {
+	public String getBudgetClientName(Integer budgetId) {
 		String queryString;
 		ResultSet setBudgetClientName;
 		
@@ -1064,7 +1065,7 @@ public class Db extends MysqlDriver {
 		return null;
 	}
 	
-	public String getBudgetClientRepresentative(int budgetId) {
+	public String getBudgetClientRepresentative(Integer budgetId) {
 		String queryString;
 		ResultSet setBudgetClientRepresentative;
 		
@@ -1084,7 +1085,67 @@ public class Db extends MysqlDriver {
 		return null;
 	}
 	
-	public boolean addBudgetBox(Integer selectedBudgetId, Integer boxSearchId, Integer boxQuantity) {
+	public String getBudgetPaymentMethod(Integer budgetId) {
+		ResultSet setBudgetPaymentMethod;
+		String method = "";
+		setBudgetPaymentMethod = this.select("SELECT method FROM budgets, budget_payment_methods WHERE id = '" + budgetId + "' AND budgets.payment_method_id = budget_payment_methods.id");
+		
+		try {
+			setBudgetPaymentMethod.first();
+			method = setBudgetPaymentMethod.getString("method");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener el metodo de pago");
+		}
+		return method;
+	}
+	
+	public String getBudgetDispatchPlace(Integer budgetId) {
+		ResultSet setBudgetDispatchPlace;
+		String place = "";
+		setBudgetDispatchPlace = this.select("SELECT place FROM budgets, budget_dispatch_places WHERE id = '" + budgetId + "' AND budgets.dispatch_place_id = budget_dispatch_places.id");
+		
+		try {
+			setBudgetDispatchPlace.first();
+			place = setBudgetDispatchPlace.getString("place");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener el lugar de entrega");
+		}
+		return place;
+	}
+	
+	public Integer getBudgetDeliveryTime(Integer budgetId) {
+		ResultSet setBudgetDeliveryTime;
+		int deliveryTime = 0;
+		setBudgetDeliveryTime = this.select("SELECT delivery_time FROM budgets WHERE id = '" + budgetId + "'");
+		
+		try {
+			setBudgetDeliveryTime.first();
+			deliveryTime = setBudgetDeliveryTime.getInt("delivery_time");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener el tiempo de entrega");
+		}
+		return deliveryTime;
+	}
+	
+	public String getBudgetDeliveryPeriod(Integer budgetId) {
+		ResultSet setBudgetDeliveryPeriod;
+		String deliveryPeriod = "";
+		setBudgetDeliveryPeriod = this.select("SELECT delivery_period FROM budgets, budget_delivery_periods WHERE id = '" + budgetId + "' AND budgets.delivery_period_id = budget_delivery_periods.id");
+		
+		try {
+			setBudgetDeliveryPeriod.first();
+			deliveryPeriod = setBudgetDeliveryPeriod.getString("delivery_period");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener el periodo de entrega");
+		}
+		return deliveryPeriod;
+	}
+	
+	public Boolean addBudgetBox(Integer selectedBudgetId, Integer boxSearchId, Integer boxQuantity) {
 		int budgetBoxId = 0;
 		if(this.budgetBoxExists(selectedBudgetId, boxSearchId)) {
 			budgetBoxId = this.getBudgetBoxId(selectedBudgetId, boxSearchId);
@@ -1101,14 +1162,14 @@ public class Db extends MysqlDriver {
 		}
 	}
 	
-	private boolean increaseBudgetBox(int budgetBoxId, Integer boxQuantity) {
+	private Boolean increaseBudgetBox(Integer budgetBoxId, Integer boxQuantity) {
 		String queryString = "UPDATE budget_boxes SET quantity = quantity + " + boxQuantity 
 				+ " WHERE id = " + budgetBoxId;
 
 		return this.update(queryString);
 	}
 	
-	private int getBudgetBoxId(Integer selectedBudgetId, Integer boxSearchId) {
+	private Integer getBudgetBoxId(Integer selectedBudgetId, Integer boxSearchId) {
 		String queryString;
 		ResultSet setBudgetBoxId;
 		
@@ -1129,7 +1190,7 @@ public class Db extends MysqlDriver {
 		return 0;
 	}
 	
-	private boolean budgetBoxExists(Integer selectedBudgetId, Integer boxSearchId) {
+	private Boolean budgetBoxExists(Integer selectedBudgetId, Integer boxSearchId) {
 		String queryString;
 		
 		queryString = "SELECT * FROM budget_boxes "
@@ -1141,7 +1202,7 @@ public class Db extends MysqlDriver {
 		return (this.getNumRows() > 0)? true:false;
 	}
 	
-	public boolean addBudgetSwitch(int selectedBudgetId, Integer switchSearchId, Integer switchQuantity) {
+	public Boolean addBudgetSwitch(Integer selectedBudgetId, Integer switchSearchId, Integer switchQuantity) {
 		int budgetSwitchId = 0;
 		if(this.budgetSwitchExists(selectedBudgetId, switchSearchId)) {
 			budgetSwitchId = this.getBudgetSwitchId(selectedBudgetId, switchSearchId);
@@ -1158,14 +1219,14 @@ public class Db extends MysqlDriver {
 		}
 	}
 	
-	private boolean increaseBudgetSwitch(int budgetSwitchId, Integer switchQuantity) {
+	private Boolean increaseBudgetSwitch(Integer budgetSwitchId, Integer switchQuantity) {
 		String queryString = "UPDATE budget_switches SET quantity = quantity + " + switchQuantity 
 				+ " WHERE id = " + budgetSwitchId;
 
 		return this.update(queryString);
 	}
 	
-	private int getBudgetSwitchId(int selectedBudgetId, Integer switchSearchId) {
+	private Integer getBudgetSwitchId(Integer selectedBudgetId, Integer switchSearchId) {
 		String queryString;
 		ResultSet setBudgetSwitchId;
 		
@@ -1186,7 +1247,7 @@ public class Db extends MysqlDriver {
 		return 0;
 	}
 	
-	private boolean budgetSwitchExists(int selectedBudgetId, Integer switchSearchId) {
+	private Boolean budgetSwitchExists(Integer selectedBudgetId, Integer switchSearchId) {
 		String queryString;
 		
 		queryString = "SELECT * FROM budget_switches "
@@ -1198,25 +1259,25 @@ public class Db extends MysqlDriver {
 		return (this.getNumRows() > 0)? true:false;
 	}
 	
-	public boolean removeBudgetSwitch(Integer selectedBudgetSwitchId) {
+	public Boolean removeBudgetSwitch(Integer selectedBudgetSwitchId) {
 		String queryDelete;
 		queryDelete = "DELETE FROM budget_switches WHERE id = '" + selectedBudgetSwitchId + "'";
 		return this.delete(queryDelete);
 	}
 	
-	public boolean removeBudgetBox(Integer selectedBudgetBoxId) {
+	public Boolean removeBudgetBox(Integer selectedBudgetBoxId) {
 		String queryDelete;
 		queryDelete = "DELETE FROM budget_boxes WHERE id = '" + selectedBudgetBoxId + "'";
 		return this.delete(queryDelete);
 	}
 	
-	public boolean removeBudgetBoard(Integer selectedBudgetBoardId) {
+	public Boolean removeBudgetBoard(Integer selectedBudgetBoardId) {
 		String queryDelete;
 		queryDelete = "DELETE FROM budget_boards WHERE id = '" + selectedBudgetBoardId + "'";
 		return this.delete(queryDelete);
 	}
 	
-	public boolean addBudgetBoard(int selectedBudgetId, Integer boardSearchId, Integer boardQuantity) {
+	public Boolean addBudgetBoard(Integer selectedBudgetId, Integer boardSearchId, Integer boardQuantity) {
 		int budgetBoardId = 0;
 		if(this.budgetBoardExists(selectedBudgetId, boardSearchId)) {
 			budgetBoardId = this.getBudgetBoardId(selectedBudgetId, boardSearchId);
@@ -1233,14 +1294,14 @@ public class Db extends MysqlDriver {
 		}
 	}
 	
-	private boolean increaseBudgetBoard(int budgetBoardId, Integer boardQuantity) {
+	private Boolean increaseBudgetBoard(Integer budgetBoardId, Integer boardQuantity) {
 		String queryString = "UPDATE budget_boards SET quantity = quantity + " + boardQuantity 
 				+ " WHERE id = " + budgetBoardId;
 
 		return this.update(queryString);
 	}
 	
-	private int getBudgetBoardId(int selectedBudgetId, Integer boardSearchId) {
+	private Integer getBudgetBoardId(Integer selectedBudgetId, Integer boardSearchId) {
 		String queryString;
 		ResultSet setBudgetBoardId;
 		
@@ -1261,7 +1322,7 @@ public class Db extends MysqlDriver {
 		return 0;
 	}
 	
-	private boolean budgetBoardExists(int selectedBudgetId, Integer boardSearchId) {
+	private Boolean budgetBoardExists(Integer selectedBudgetId, Integer boardSearchId) {
 		String queryString;
 		
 		queryString = "SELECT * FROM budget_boards "
@@ -1311,7 +1372,6 @@ public class Db extends MysqlDriver {
 		}
 		return -1;
 	}
-
 	
 	public String getBudgetNotes(Integer budgetId) {
 		ResultSet setBudgetNotes;
@@ -1326,6 +1386,85 @@ public class Db extends MysqlDriver {
 			JOptionPane.showMessageDialog(null, "Error al obtener las notas del presupuesto");
 		}
 		return notes;
+	}
+	
+	public ArrayList<MCSwitch> getBudgetSwitches(Integer budgetId) {
+		ArrayList<MCSwitch> switches = new ArrayList<MCSwitch>();
+		ResultSet setBudgetSwitches;
+		
+		setBudgetSwitches = this.select("SELECT * FROM budgets WHERE id = " + budgetId);
+		
+		try {
+			while(setBudgetSwitches.next()) {
+				Integer id = setBudgetSwitches.getInt("id");
+				Integer brandId = setBudgetSwitches.getInt("brand_id");
+				Integer typeId = setBudgetSwitches.getInt("type_id");
+				String model = setBudgetSwitches.getString("model");
+				Integer phases = setBudgetSwitches.getInt("phases");
+				Integer currentId = setBudgetSwitches.getInt("current_id");
+				Integer voltageId = setBudgetSwitches.getInt("voltage_id");
+				Integer interruptionId = setBudgetSwitches.getInt("voltage_id");
+				Double price = setBudgetSwitches.getDouble("price");
+				Boolean active = (setBudgetSwitches.getInt("active")==1?true:false);
+				switches.add(new MCSwitch(id, brandId, typeId, model, phases, currentId, voltageId, interruptionId, price, active));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener los interruptores del presupuesto");
+		}
+		
+		return switches;
+	}
+	
+	
+	public Integer cloneBudget(Integer selectedBudgetId) {
+		Integer clonedBudgetId = 0;
+		
+		String date = this.getBudgetDate(selectedBudgetId);
+		Integer expiryDays = this.getBudgetExpiryDays(selectedBudgetId);
+		String clientId = String.valueOf(this.getBudgetClientId(selectedBudgetId));
+		String workName = this.getBudgetWorkName(selectedBudgetId);
+		String method = this.getBudgetPaymentMethod(selectedBudgetId);
+		Integer sellerId = this.getBudgetSellerId(selectedBudgetId);
+		String place = this.getBudgetDispatchPlace(selectedBudgetId);
+		Integer deliveryTime = this.getBudgetDeliveryTime(selectedBudgetId);
+		String deliveryPeriod = this.getBudgetDeliveryPeriod(selectedBudgetId);
+		
+		Boolean added = this.addBudget(date, expiryDays, clientId, workName, method, sellerId, place, deliveryTime, deliveryPeriod);
+		
+		if(added) {
+			clonedBudgetId = this.getInsertId();
+			
+			this.cloneBudgetSwitches(selectedBudgetId, clonedBudgetId);
+			this.cloneBudgetBoxes(selectedBudgetId, clonedBudgetId);
+			this.cloneBudgetBoards(selectedBudgetId, clonedBudgetId);
+			// TODO Clone budget materials and specials here
+//			this.cloneBudgetMaterials(selectedBudgetId, clonedBudgetId);
+//			this.cloneBudgetSpecials(selectedBudgetId, clonedBudgetId);
+		}
+		
+		return clonedBudgetId;
+	}
+	
+	private void cloneBudgetSwitches(Integer selectedBudgetId, Integer clonedBudgetId) {
+		ResultSet setBudgetSwitches;
+		ArrayList<MCSwitch> switches = this.getBudgetSwitches(selectedBudgetId);
+		ArrayList<MCSwitch> clonedSwitches = (ArrayList<MCSwitch>) switches.clone();
+		Iterator<MCSwitch> it = clonedSwitches.iterator();
+		
+		// TODO Iterate through all of them an change the budget container
+		it.next();
+	}
+
+	private void cloneBudgetBoxes(Integer selectedBudgetId, Integer clonedBudgetId) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	
+	private void cloneBudgetBoards(Integer selectedBudgetId, Integer clonedBudgetId) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }
