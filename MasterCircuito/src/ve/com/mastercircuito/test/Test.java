@@ -12,12 +12,12 @@ import javax.xml.bind.Marshaller;
 
 import org.joda.time.DateTime;
 
+import com.java4less.xreport.fop.FOProcessor;
+
 import ve.com.mastercircuito.db.Db;
 import ve.com.mastercircuito.print.PurchaseOrderHeader;
 import ve.com.mastercircuito.print.PurchaseOrderItem;
 import ve.com.mastercircuito.print.BuyerInformation;
-//import ve.com.mastercircuito.print.FOProcessor;
-import com.java4less.xreport.fop.FOProcessor;
 
 
 
@@ -58,7 +58,7 @@ public class Test {
 				// 3. create now the PDF output for the XML data
 				FOProcessor processor=new FOProcessor();
 				processor.process(new ByteArrayInputStream(ba.toByteArray()), new FileInputStream("JavaPOExample.fo") , new FileOutputStream("BudgetExample.pdf"));
-
+				
 				
 			} catch (Exception e) {
 				e.printStackTrace();
