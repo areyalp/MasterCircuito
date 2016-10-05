@@ -165,7 +165,6 @@ public class MysqlDriver {
 					for(int j = 0; j < columns; j++) {
 						results[i][j] = set.getString(j+1);
 					}
-//					results[i][columns] = new Boolean(false);
 					i++;
 				}
 			} catch (SQLException e) {

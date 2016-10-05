@@ -73,6 +73,7 @@ public abstract class Fa extends Font{
 	
 	public static final String fa_caret_left = "\uf0d9";
 	public static final String fa_caret_right = "\uf0da";
+	public static final String fa_clone = "\uf24d";
 	public static final String fa_pencil_square_o = "\uf044";
 	public static final String fa_plus = "\uf067";
 	public static final String fa_plus_circle = "\uf055";
