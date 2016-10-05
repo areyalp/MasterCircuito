@@ -12,8 +12,8 @@ import ve.com.mastercircuito.db.Db;
 import ve.com.mastercircuito.print.PurchaseOrderHeader;
 import ve.com.mastercircuito.print.PurchaseOrderItem;
 import ve.com.mastercircuito.print.BuyerInformation;
-import ve.com.mastercircuito.print.FOProcessor;
-//import com.java4less.xreport.fop.FOProcessor;
+//import ve.com.mastercircuito.print.FOProcessor;
+import com.java4less.xreport.fop.FOProcessor;
 
 
 
