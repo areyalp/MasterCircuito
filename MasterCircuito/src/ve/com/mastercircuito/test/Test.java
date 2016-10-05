@@ -1,6 +1,10 @@
 package ve.com.mastercircuito.test;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+
 import java.util.Date;
 
 import javax.xml.bind.JAXBContext;
