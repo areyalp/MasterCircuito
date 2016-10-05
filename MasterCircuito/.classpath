@@ -9,6 +9,6 @@
 	<classpathentry kind="lib" path="lib/mysql-connector-java-5.1.36-bin.jar"/>
 	<classpathentry kind="lib" path="lib/joda-time-2.8.2.jar"/>
 	<classpathentry kind="lib" path="lib/jdatepicker-1.3.4.jar"/>
-	<classpathentry exported="true" kind="lib" path="C:/Program Files (x86)/J4LFOPServer/FODesigner/j4lFOReport.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/Program Files (x86)/J4LFOPServer/FODesigner/j4lFOReport.jar" sourcepath="lib/j4lFOReport.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
