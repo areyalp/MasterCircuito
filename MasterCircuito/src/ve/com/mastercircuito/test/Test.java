@@ -20,8 +20,6 @@ import ve.com.mastercircuito.print.PurchaseOrderItem;
 import ve.com.mastercircuito.print.BuyerInformation;
 
 
-
-
 public class Test {
 
 	public static void main(String[] args) {
@@ -57,7 +55,7 @@ public class Test {
 				
 				// 3. create now the PDF output for the XML data
 				FOProcessor processor=new FOProcessor();
-				processor.process(new ByteArrayInputStream(ba.toByteArray()), new FileInputStream("JavaPOExample.fo") , new FileOutputStream("BudgetExample.pdf"));
+				processor.process(new ByteArrayInputStream(ba.toByteArray()), new FileInputStream("src/ve.com.mastercircuito.print/JavaPOExample.fo") , new FileOutputStream("BudgetExample.pdf"));
 				
 				
 			} catch (Exception e) {
