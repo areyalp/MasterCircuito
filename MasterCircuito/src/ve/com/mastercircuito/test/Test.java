@@ -55,7 +55,7 @@ public class Test {
 				
 				// 3. create now the PDF output for the XML data
 				FOProcessor processor=new FOProcessor();
-				processor.process(new ByteArrayInputStream(ba.toByteArray()), new FileInputStream("src/ve.com.mastercircuito.print/JavaPOExample.fo") , new FileOutputStream("BudgetExample.pdf"));
+				processor.process(new ByteArrayInputStream(ba.toByteArray()), new FileInputStream("src/ve.com.mastercircuito.print/JavaPOExample2.fo") , new FileOutputStream("src/ve.com.mastercircuito.print/BudgetExample.pdf"));
 				
 				
 			} catch (Exception e) {
