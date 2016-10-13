@@ -1,10 +1,12 @@
 package ve.com.mastercircuito.test;
 
+import java.awt.Desktop;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-
+import java.io.IOException;
 import java.util.Date;
 
 import javax.xml.bind.JAXBContext;
@@ -57,6 +59,14 @@ public class Test {
 				FOProcessor processor=new FOProcessor();
 				processor.process(new ByteArrayInputStream(ba.toByteArray()), new FileInputStream("src/ve/com/mastercircuito/print/JavaPOExample.fo") , new FileOutputStream("BudgetExample.pdf"));
 				
+				if(Desktop.isDesktopSupported()) {
+					try{
+						File pdfFile = new File("BudgetExample.pdf");
+						Desktop.getDesktop().open(pdfFile);
+					} catch(IOException ex) {
+						
+					}
+				}
 				
 			} catch (Exception e) {
 				e.printStackTrace();
