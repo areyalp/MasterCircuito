@@ -15,6 +15,11 @@ public class PaymentMethod {
 		this.method = method;
 	}
 	
+	public PaymentMethod(PaymentMethod paymentMethodInfo) {
+		this.id = paymentMethodInfo.id;
+		this.method = paymentMethodInfo.method;
+	}
+
 	public Integer getId() {
 		return this.id;
 	}

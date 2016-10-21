@@ -15,6 +15,11 @@ public class DispatchPlace {
 		this.place = place;
 	}
 	
+	public DispatchPlace(DispatchPlace dispachPlaceInfo) {
+		this.id = dispachPlaceInfo.getId();
+		this.place = dispachPlaceInfo.getPlace();
+	}
+
 	public String getPlace() {
 		return this.place;
 	}

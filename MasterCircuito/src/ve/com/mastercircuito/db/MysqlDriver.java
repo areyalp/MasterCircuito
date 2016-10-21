@@ -12,12 +12,11 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-
 import javax.swing.JOptionPane;
 
 public class MysqlDriver {
 	
-	private Connection conn = null;
+	protected Connection conn = null;
 	private String host, database, dbuser, dbpassword;
 	
 	private int insertId = 0;
@@ -61,6 +60,7 @@ public class MysqlDriver {
 	
 	public Connection connect() {
 		String url = "jdbc:mysql://" + host + "/" + database;
+		
 		try {
 			conn = DriverManager.getConnection(url, dbuser, dbpassword);
 		} catch (SQLException e) {

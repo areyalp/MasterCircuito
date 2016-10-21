@@ -147,7 +147,7 @@ public class MainView extends JFrame{
 		private static final String BUDGET_PAYMENT_METHODS_TABLE = "budget_payment_methods";
 		private static final String BUDGET_DISPATCH_PLACES_TABLE = "budget_dispatch_places";
 		private static final String BUDGET_STAGES_TABLE = "budget_stages";
-		private static final String BUDGET_DELIVERY_PERIOD_TABLE = "budget_delivery_period";
+		private static final String BUDGET_DELIVERY_PERIODS_TABLE = "budget_delivery_periods";
 	//Budget Fields
 		private static final String BUDGET_ID_FIELD = "budgets.id";
 		private static final String BUDGET_CODE_FIELD = "budgets.`code`";
@@ -155,7 +155,7 @@ public class MainView extends JFrame{
 		private static final String BUDGET_EXPIRY_DAYS_FIELD = "budgets.expiry_days";
 		private static final String BUDGET_WORK_NAME_FIELD = "budgets.work_name";
 		private static final String BUDGET_DELIVERY_TIME_FIELD = "budgets.delivery_time";
-		private static final String BUDGET_DELIVERY_PERIOD_FIELD = "budget_delivery_period.delivery_period";
+		private static final String BUDGET_DELIVERY_PERIOD_FIELD = "budget_delivery_periods.delivery_period";
 //		private static final String BUDGET_TRACING_FIELD = "budgets.tracing";
 		private static final String METHOD_FIELD = "budget_payment_methods.method";
 		private static final String USERNAME_FIELD = "users.username";
@@ -5244,9 +5244,9 @@ public class MainView extends JFrame{
 				+ "FROM  budget_dispatch_places "
 				+ "GROUP BY budget_dispatch_places.place";
 		
-		String queryDeliveryPeriod = "SELECT budget_delivery_period.delivery_period "
-				+ "FROM  budget_delivery_period "
-				+ "GROUP BY budget_delivery_period.delivery_period "
+		String queryDeliveryPeriod = "SELECT budget_delivery_periods.delivery_period "
+				+ "FROM  budget_delivery_periods "
+				+ "GROUP BY budget_delivery_periods.delivery_period "
 				+ "ORDER BY id ASC";
 		
 //		String queryStages = "SELECT budget_stages.stage "
@@ -5478,9 +5478,9 @@ public class MainView extends JFrame{
 //				+ "FROM budget_stages "
 //				+ "GROUP BY budget_stages.stage";
 		
-		String queryDeliveryPeriod = "SELECT budget_delivery_period.delivery_period "
-				+ "FROM  budget_delivery_period "
-				+ "GROUP BY budget_delivery_period.delivery_period "
+		String queryDeliveryPeriod = "SELECT budget_delivery_periods.delivery_period "
+				+ "FROM  budget_delivery_periods "
+				+ "GROUP BY budget_delivery_periods.delivery_period "
 				+ "ORDER BY id ASC";
 		
 		JLabel labelDate = new JLabel("Fecha:");
@@ -5906,7 +5906,7 @@ public class MainView extends JFrame{
 		ArrayList<String> tables = new ArrayList<String>();
 		tables.add(MainView.BUDGET_TABLE);
 		tables.add(MainView.BUDGET_DISPATCH_PLACES_TABLE);
-		tables.add(MainView.BUDGET_DELIVERY_PERIOD_TABLE);
+		tables.add(MainView.BUDGET_DELIVERY_PERIODS_TABLE);
 		tables.add(MainView.BUDGET_PAYMENT_METHODS_TABLE);
 		tables.add(MainView.BUDGET_STAGES_TABLE);
 		tables.add(MainView.USERS_TABLE);
@@ -5922,7 +5922,7 @@ public class MainView extends JFrame{
 						+ "AND budgets.payment_method_id = budget_payment_methods.id "
 						+ "AND budgets.seller_id = users.id "
 						+ "AND budgets.dispatch_place_id = budget_dispatch_places.id "
-						+ "AND budgets.delivery_period_id = budget_delivery_period.id "
+						+ "AND budgets.delivery_period_id = budget_delivery_periods.id "
 						+ "AND budgets.stage_id = budget_stages.id "
 //						+ "AND budgets.active = '1' "
 						+ " GROUP BY budgets.id";
@@ -6205,7 +6205,7 @@ public class MainView extends JFrame{
 		ArrayList<String> tables = new ArrayList<String>();
 		tables.add(MainView.BUDGET_TABLE);
 		tables.add(MainView.BUDGET_DISPATCH_PLACES_TABLE);
-		tables.add(MainView.BUDGET_DELIVERY_PERIOD_TABLE);
+		tables.add(MainView.BUDGET_DELIVERY_PERIODS_TABLE);
 		tables.add(MainView.BUDGET_PAYMENT_METHODS_TABLE);
 		tables.add(MainView.BUDGET_STAGES_TABLE);
 		tables.add(MainView.USERS_TABLE);
@@ -6223,7 +6223,7 @@ public class MainView extends JFrame{
 						+ "AND budgets.payment_method_id = budget_payment_methods.id "
 						+ "AND budgets.seller_id = users.id "
 						+ "AND budgets.dispatch_place_id = budget_dispatch_places.id "
-						+ "AND budgets.delivery_period_id = budget_delivery_period.id "
+						+ "AND budgets.delivery_period_id = budget_delivery_periods.id "
 //						+ "AND budgets.stage_id = budget_stages.id "
 						+ whereQuery
 						+ " GROUP BY budgets.id ";
@@ -6522,9 +6522,9 @@ public class MainView extends JFrame{
 //			editBudgetTracing = String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_TRACING_COLUMN));
 //			editBudgetStage = String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_STAGE_COLUMN));
 
-			String queryDeliveryPeriod = "SELECT budget_delivery_period.delivery_period "
-					+ "FROM budget_delivery_period "
-					+ "GROUP BY budget_delivery_period.delivery_period";
+			String queryDeliveryPeriod = "SELECT budget_delivery_periods.delivery_period "
+					+ "FROM budget_delivery_periods "
+					+ "GROUP BY budget_delivery_periods.delivery_period";
 			
 //			String queryStage = "SELECT  budget_stages.stage "
 //					+ "FROM budget_stages "
@@ -8089,7 +8089,8 @@ public class MainView extends JFrame{
 						textBoardDescriptionLockType.setText((String) tableBoardsResult.getValueAt(boardsTableSelectedIndex, BOARD_LOCK_TYPE_COLUMN));
 						textBoardDescriptionPrice.setText("BsF " + tableBoardsResult.getValueAt(boardsTableSelectedIndex, BOARD_PRICE_COLUMN));
 						
-						textMaterials.setText(db.getBoardMaterials(selectedBoardId));
+						// TODO Fix materials tab and place a table to show the materials
+//						textMaterials.setText(db.getBoardMaterials(selectedBoardId));
 						textMaterialsPrice.setText(String.valueOf(db.getBoardMaterialsPrice(selectedBoardId)));
 						
 						textBoardComments.setText(db.getBoardComments(selectedBoardId));
@@ -8865,19 +8866,13 @@ public class MainView extends JFrame{
 				int response = JOptionPane.showConfirmDialog(null, "Esta seguro que desea remover este interruptor del tablero?", "Remover interruptor del tablero", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 				if(response == JOptionPane.YES_OPTION) {
 					int boardContainerId = db.getSwitchBoardId(selectedBoardSwitchId);
-					String boardMainSwitches = db.getBoardSwitchMainId(boardContainerId);
+					ArrayList<Integer> boardMainSwitches = db.getBoardSwitchMainId(boardContainerId);
 					if(db.removeBoardSwitch(selectedBoardSwitchId)) {
-						boardMainSwitches = boardMainSwitches.replace(String.valueOf(selectedBoardSwitchId), "");
-						if(boardMainSwitches.endsWith(",")) {
-							boardMainSwitches = StringTools.removeLastChar(boardMainSwitches);
-						}
-						if(boardMainSwitches.startsWith(",")) {
-							boardMainSwitches = StringTools.removeFirstChar(boardMainSwitches);
-						}
+						boardMainSwitches.remove(String.valueOf(selectedBoardSwitchId));
 						ArrayList<Object> listFields = new ArrayList<Object>();
 						ArrayList<Object> listValues = new ArrayList<Object>();
 						listFields.add("main_switch_id");
-						listValues.add("'" + boardMainSwitches + "'");
+						listValues.add("'" + StringTools.implode(",", boardMainSwitches) + "'");
 						db.editBoard(boardContainerId, listFields, listValues);
 						if(tableBoardsResult.getSelectedRow() > -1) {
 							selectedBoardId = Integer.valueOf( (String) tableBoardsResult.getValueAt(tableBoardsResult.getSelectedRow(), SharedListSelectionListener.BOARD_ID_COLUMN));

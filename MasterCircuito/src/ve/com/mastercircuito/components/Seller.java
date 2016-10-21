@@ -36,6 +36,20 @@ public class Seller {
 		this.status = status;
 	}
 	
+	public Seller(Seller sellerInfo) {
+		this.id = sellerInfo.getId();
+		this.username = sellerInfo.getUsername();
+		this.passport = sellerInfo.getPassport();
+		this.password = sellerInfo.getPassword();
+		this.userType = sellerInfo.getUserType();
+		this.firstName = sellerInfo.getFirstName();
+		this.lastName = sellerInfo.getLastName();
+		this.email = sellerInfo.getEmail();
+		this.phone = sellerInfo.getPhone();
+		this.dateCreated = sellerInfo.getDateCreated();
+		this.status = sellerInfo.getStatus();
+	}
+
 	public String getUsername() {
 		return this.username;
 	}

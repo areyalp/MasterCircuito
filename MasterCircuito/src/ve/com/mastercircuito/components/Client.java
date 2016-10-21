@@ -34,6 +34,20 @@ public class Client {
 		this.instagramUser = instagramUser;
 	}
 	
+	public Client(Client clientInfo) {
+		this.id = clientInfo.id;
+		this.client = clientInfo.client;
+		this.code = clientInfo.code;
+		this.representative = clientInfo.representative;
+		this.rif = clientInfo.rif;
+		this.address = clientInfo.address;
+		this.phone = clientInfo.phone;
+		this.email = clientInfo.email;
+		this.facebookProfile = clientInfo.facebookProfile;
+		this.twitterUser = clientInfo.twitterUser;
+		this.instagramUser = clientInfo.instagramUser;
+	}
+
 	public String getClient() {
 		return this.client;
 	}

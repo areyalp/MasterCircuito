@@ -79,6 +79,7 @@ public abstract class Fa extends Font{
 	public static final String fa_plus_circle = "\uf055";
 	public static final String fa_plus_square_o = "\uf196";
 	public static final String fa_print = "\uf02f";
+	public static final String fa_refresh = "\uf021";
 	public static final String fa_remove = "\uf00d";
 	public static final String fa_search = "\uf002";
 	public static final String fa_step_backward = "\uf048";
