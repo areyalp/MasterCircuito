@@ -1,8 +1,7 @@
 package ve.com.mastercircuito.components;
 
-public class Switch {
+public class Switch extends Product {
 	
-	private Integer id;
 	private Integer brandId;
 	private String brand;
 	private Integer typeId;
@@ -28,7 +27,7 @@ public class Switch {
 			Integer currentId, String current, Integer voltageId, String voltage, Integer interruptionId,
 			String interruption, Double price, Boolean active, Integer containerId, Integer quantity) {
 		super();
-		this.id = id;
+		this.setId(id);
 		this.brandId = brandId;
 		this.brand = brand;
 		this.typeId = typeId;
@@ -45,14 +44,6 @@ public class Switch {
 		this.active = active;
 		this.containerId = containerId;
 		this.quantity = quantity;
-	}
-
-	public Integer getId() {
-		return id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
 	}
 
 	public Integer getBrandId() {

@@ -34,9 +34,16 @@ import javax.swing.event.ListSelectionListener;
 
 import org.joda.time.DateTime;
 
+import ve.com.mastercircuito.common.LoginDialog;
+import ve.com.mastercircuito.components.Board;
+import ve.com.mastercircuito.components.Box;
 import ve.com.mastercircuito.components.Budget;
 import ve.com.mastercircuito.components.MyInternalFrame;
+import ve.com.mastercircuito.components.Product;
+import ve.com.mastercircuito.components.ProductType;
 import ve.com.mastercircuito.components.ProductionOrder;
+import ve.com.mastercircuito.components.Switch;
+import ve.com.mastercircuito.components.User;
 import ve.com.mastercircuito.components.WorkOrder;
 import ve.com.mastercircuito.db.Db;
 import ve.com.mastercircuito.font.Fa;
@@ -48,7 +55,7 @@ public class MainView extends JFrame{
 	 */
 	private static final long serialVersionUID = 7717733090547682708L;
 	
-	private Db db;
+	private User user;
 	
 	private JDesktopPane desktop;
 	private JPanel theToolBarPanel;
@@ -58,9 +65,9 @@ public class MainView extends JFrame{
 	private MyInternalFrame productionFrame;
 	
 	private JList<Budget> listInbox;
-	private ListSelectionModel listInboxSelectionModel;
 	private JList<ProductionOrder> listProductionOrders;
 	private JList<WorkOrder> listWorkOrders;
+	private ListSelectionModel listInboxSelectionModel, listProductionOrdersSelectionModel, listWorkOrdersSelectionModel;
 	private JButton buttonProcessBudget, buttonProcessProductionOrder;
 	
 	public static void main(String[] args) {
@@ -69,15 +76,17 @@ public class MainView extends JFrame{
 	
 	protected MainView() {
 		
-		db = new Db();
-		
-		/*LoginDialog lDialog = new LoginDialog(null);
+		LoginDialog lDialog = new LoginDialog(null);
 		
 		lDialog.setVisible(true);
 		
 		if(!lDialog.isSucceeded()) {
 			System.exit(0);
-		}*/
+		}
+		
+		user = new User(lDialog.getUsername());
+		
+		user.fetchUserInfo();
 		
 		DateTime dt = new DateTime();
 		
@@ -136,7 +145,7 @@ public class MainView extends JFrame{
 	}
 	
 	private void createProductionFrame() {
-		productionFrame = new MyInternalFrame("Interruptores");
+		productionFrame = new MyInternalFrame("Produccion");
 		productionFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		productionFrame.setMaximizable(false);
 		productionFrame.setFrameIcon(new ImageIcon("resources/interruptor_32x32.jpg"));
@@ -223,6 +232,8 @@ public class MainView extends JFrame{
 		panelProduction.add(buttonBudgetsRefresh, cs);
 		
 		buttonProcessBudget = new JButton("Procesar");
+		buttonProcessBudget.setActionCommand("button.order.production.process");
+		buttonProcessBudget.addActionListener(lForButton);
 		buttonProcessBudget.setEnabled(false);
 		cs.fill = GridBagConstraints.HORIZONTAL;
 		cs.gridx = 11;
@@ -240,10 +251,12 @@ public class MainView extends JFrame{
 		panelProduction.add(labelProductionOrders, cs);
 		
 		listProductionOrders = new JList<ProductionOrder>(new DefaultListModel<ProductionOrder>());
-		listProductionOrders.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		listProductionOrders.setLayoutOrientation(JList.VERTICAL);
 		listProductionOrders.setVisibleRowCount(-1);
-		listProductionOrders.addListSelectionListener(lForList);
+		listProductionOrdersSelectionModel = listProductionOrders.getSelectionModel();
+		listProductionOrdersSelectionModel.addListSelectionListener(lForList);
+		listProductionOrders.setSelectionModel(listProductionOrdersSelectionModel);
+		listProductionOrders.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		
 		JScrollPane listProductionOrdersScroller = new JScrollPane(listProductionOrders);
 		listProductionOrdersScroller.setPreferredSize(new Dimension(300, 400));
@@ -255,6 +268,8 @@ public class MainView extends JFrame{
 		panelProduction.add(listProductionOrdersScroller, cs);
 		
 		buttonProcessProductionOrder = new JButton("Procesar");
+		buttonProcessProductionOrder.setActionCommand("button.order.work.process");
+		buttonProcessProductionOrder.addActionListener(lForButton);
 		buttonProcessProductionOrder.setEnabled(false);
 		cs.fill = GridBagConstraints.HORIZONTAL;
 		cs.gridx = 23;
@@ -272,10 +287,12 @@ public class MainView extends JFrame{
 		panelProduction.add(labelWorkOrders, cs);
 		
 		listWorkOrders = new JList<WorkOrder>(new DefaultListModel<WorkOrder>());
-		listWorkOrders.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		listWorkOrders.setLayoutOrientation(JList.VERTICAL);
 		listWorkOrders.setVisibleRowCount(-1);
-		listWorkOrders.addListSelectionListener(lForList);
+		listWorkOrdersSelectionModel = listWorkOrders.getSelectionModel();
+		listWorkOrdersSelectionModel.addListSelectionListener(lForList);
+		listWorkOrders.setSelectionModel(listWorkOrdersSelectionModel);
+		listWorkOrders.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		
 		JScrollPane listWorkOrdersScroller = new JScrollPane(listWorkOrders);
 		listWorkOrdersScroller.setPreferredSize(new Dimension(300, 400));
@@ -294,9 +311,10 @@ public class MainView extends JFrame{
 		@Override
 		public void actionPerformed(ActionEvent ev) {
 			String actionCommand = ev.getActionCommand();
+			Db db = new Db();
 			
 			if (actionCommand.equalsIgnoreCase("button.budget.refresh")) {
-				Db db = new Db();
+				
 				ArrayList<Budget> budgets = new ArrayList<Budget>();
 				
 				budgets = db.getBudgets(1);
@@ -307,6 +325,55 @@ public class MainView extends JFrame{
 				}
 				listInbox.setModel(model);
 				
+			} else if (actionCommand.equalsIgnoreCase("button.order.production.process")) {
+				if(listInbox.getSelectedIndex() > -1) {
+					Budget selectedBudget = new Budget(listInbox.getSelectedValue());
+					if (!ProductionOrder.exists(selectedBudget.getId())) {
+						Integer orderId = ProductionOrder.pushToDb(selectedBudget.getId(), user.getId());
+						ProductionOrder newProductionOrder = new ProductionOrder();
+						newProductionOrder.pullFromDb(orderId);
+						DefaultListModel<ProductionOrder> model = new DefaultListModel<ProductionOrder>();
+						model.addElement(newProductionOrder);
+						listProductionOrders.setModel(model);
+					} else {
+						ProductionOrder productionOrder = new ProductionOrder();
+						productionOrder.pullByBudget(selectedBudget.getId());
+						DefaultListModel<ProductionOrder> model = new DefaultListModel<ProductionOrder>();
+						model.addElement(productionOrder);
+						listProductionOrders.setModel(model);
+					}
+				}
+			} else if (actionCommand.equalsIgnoreCase("button.order.work.process")) {
+				if (listProductionOrders.getSelectedIndex() > -1) {
+					DefaultListModel<WorkOrder> model = new DefaultListModel<WorkOrder>();
+					ProductionOrder selectedProductionOrder = new ProductionOrder(listProductionOrders.getSelectedValue());
+					ArrayList<Product> products = new ArrayList<Product>();
+					products = db.getProductionOrderProducts(selectedProductionOrder.getId());
+					if (!selectedProductionOrder.isProcessed()) {
+						for (Product product:products) {
+							Integer orderId = 0;
+							if (product instanceof Switch) {
+								orderId = WorkOrder.pushToDb(selectedProductionOrder.getId(), product.getId(), ProductType.SWITCH_TYPE, user.getId());
+							} else if (product instanceof Box) {
+								orderId = WorkOrder.pushToDb(selectedProductionOrder.getId(), product.getId(), ProductType.BOX_TYPE, user.getId());
+							} else if (product instanceof Board) {
+								orderId = WorkOrder.pushToDb(selectedProductionOrder.getId(), product.getId(), ProductType.BOARD_TYPE, user.getId());
+							}
+							WorkOrder workOrder = new WorkOrder();
+							workOrder.pullFromDb(orderId);
+							model.addElement(workOrder);
+						}
+						listWorkOrders.setModel(model);
+						db.setProductionOrderProcessed(selectedProductionOrder.getId());
+					} else {
+						ArrayList<WorkOrder> workOrders = new ArrayList<WorkOrder>();
+						workOrders = WorkOrder.pullAllFromDb(selectedProductionOrder.getId());
+						for (WorkOrder workOrder:workOrders) {
+							model.addElement(workOrder);
+							listWorkOrders.setModel(model);
+						}
+					}
+				}
 			}
 		}
 		

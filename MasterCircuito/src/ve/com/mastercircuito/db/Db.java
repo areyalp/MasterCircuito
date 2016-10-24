@@ -34,10 +34,13 @@ import ve.com.mastercircuito.components.Material;
 import ve.com.mastercircuito.components.MeasureUnits;
 import ve.com.mastercircuito.components.Nema;
 import ve.com.mastercircuito.components.PaymentMethod;
-import ve.com.mastercircuito.components.Seller;
+import ve.com.mastercircuito.components.Product;
+import ve.com.mastercircuito.components.ProductionOrder;
+import ve.com.mastercircuito.components.User;
 import ve.com.mastercircuito.components.Sheet;
 import ve.com.mastercircuito.components.Switch;
 import ve.com.mastercircuito.components.UserType;
+import ve.com.mastercircuito.components.WorkOrder;
 import ve.com.mastercircuito.utils.StringTools;
 
 public class Db extends MysqlDriver {
@@ -1463,7 +1466,6 @@ public class Db extends MysqlDriver {
 		return switches;
 	}
 	
-	
 	public ArrayList<Switch> getBoardSwitches(Integer budgetId) {
 		ArrayList<Switch> switches = new ArrayList<Switch>();
 		ResultSet setBoardSwitches = null;
@@ -1715,7 +1717,7 @@ public class Db extends MysqlDriver {
 				PaymentMethod paymentMethod = new PaymentMethod(this.getPaymentMethodInfo(paymentMethodId));
 				
 				Integer sellerId = setBudgets.getInt("seller_id");
-				Seller seller = new Seller(this.getSellerInfo(sellerId));
+				User seller = new User(this.getSellerInfo(sellerId));
 				
 				Integer dispatchPlaceId = setBudgets.getInt("dispatch_place_id");
 				DispatchPlace dispatchPlace = new DispatchPlace(this.getDispachPlaceInfo(dispatchPlaceId));
@@ -1800,10 +1802,10 @@ public class Db extends MysqlDriver {
 		return dispatchPlace;
 	}
 
-	private Seller getSellerInfo(Integer sellerId) {
-		Seller seller = null;
+	private User getSellerInfo(Integer sellerId) {
+		User seller = null;
 		ResultSet setSeller;
-		String query = "SELECT *, UNIX_TIMESTAMP(created_date) as date_timestamp FROM users WHERE users.id = " + sellerId;
+		String query = "SELECT *, UNIX_TIMESTAMP(date_created) as date_timestamp FROM users WHERE users.id = " + sellerId;
 		
 		setSeller = this.select(query);
 		
@@ -1821,7 +1823,7 @@ public class Db extends MysqlDriver {
 				Timestamp timestamp = setSeller.getTimestamp("date_timestamp");
 				DateTime dateCreated = new DateTime(timestamp.getTime());
 				Boolean status = (setSeller.getInt("status")==1)?true:false;
-				seller = new Seller(sellerId, username, passport, password, userType, firstName, lastName, email, phone, dateCreated, status);
+				seller = new User(sellerId, username, passport, password, userType, firstName, lastName, email, phone, dateCreated, status);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -1891,6 +1893,315 @@ public class Db extends MysqlDriver {
 		}
 		
 		return client;
+	}
+
+	public User fetchUserInfo(String username) {
+		User user = null;
+		ResultSet setUserInfo;
+		CallableStatement statement;
+		
+		try {
+			statement = this.conn.prepareCall("{call SP_GET_USER_INFO(?)}");
+			statement.setString(1, username);
+			setUserInfo = statement.executeQuery();
+			
+			if (setUserInfo.next()) {
+				Integer id = setUserInfo.getInt("id");
+				String password = setUserInfo.getString("password");
+				String passport = setUserInfo.getString("passport");
+				Integer userTypeId = setUserInfo.getInt("user_type_id");
+				String strUserType = setUserInfo.getString("type");
+				UserType userType = new UserType(userTypeId, strUserType);
+				String firstName = setUserInfo.getString("first_name");
+				String lastName = setUserInfo.getString("last_name");
+				String email = setUserInfo.getString("email");
+				String phone = setUserInfo.getString("phone");
+				Timestamp timestamp = setUserInfo.getTimestamp("date_timestamp");
+				DateTime dateCreated = new DateTime(timestamp.getTime());
+				Boolean status = (setUserInfo.getInt("status")==1?true:false);
+				
+				user = new User(id, username, password, passport, userType, firstName, lastName, email, phone, dateCreated, status);
+			}
+			
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return user;
+	}
+	
+	public ProductionOrder pullProductionOrder(Integer orderId) {
+		ProductionOrder productionOrder = new ProductionOrder();
+		ResultSet setProductionOrder;
+		CallableStatement statement;
+		
+		try {
+			statement = this.conn.prepareCall("{call SP_GET_PRODUCTION_ORDER_INFO(?)}");
+			statement.setInt(1, orderId);
+			setProductionOrder = statement.executeQuery();
+			if (setProductionOrder.next()) {
+				Integer id = setProductionOrder.getInt("id");
+				Integer budgetId = setProductionOrder.getInt("budget_id");
+				Timestamp timestampProcessed = setProductionOrder.getTimestamp("date_processed_ts");
+				DateTime dateProcessed = new DateTime(timestampProcessed.getTime());
+				Timestamp timestampFinished = setProductionOrder.getTimestamp("date_finished_ts");
+				DateTime dateFinished = new DateTime(timestampFinished.getTime());
+				Integer creatorId = setProductionOrder.getInt("creator_id");
+				Integer authorizerId = setProductionOrder.getInt("authorizer_id");
+				Boolean processed = (setProductionOrder.getInt("processed")==1?true:false);
+				productionOrder = new ProductionOrder(id, budgetId, dateProcessed, dateFinished, creatorId, authorizerId, processed);
+			}
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return productionOrder;
+	}
+
+	
+	public Boolean productionOrderExists(Integer budgetId) {
+		String queryString;
+		
+		queryString = "SELECT id FROM production_orders WHERE budget_id = '" + budgetId + "'";
+		this.select(queryString);
+		
+		return (this.getNumRows() > 0)? true:false;
+	}
+
+	
+	public ProductionOrder pullProductionOrderByBudget(Integer budgetId) {
+		ProductionOrder productionOrder = new ProductionOrder();
+		ResultSet setProductionOrder;
+		CallableStatement statement;
+		
+		try {
+			statement = this.conn.prepareCall("{call SP_GET_PRODUCTION_ORDER_INFO_BY_BUDGET(?)}");
+			statement.setInt(1, budgetId);
+			setProductionOrder = statement.executeQuery();
+			if (setProductionOrder.next()) {
+				Integer id = setProductionOrder.getInt("id");
+				Timestamp timestampProcessed = setProductionOrder.getTimestamp("date_processed_ts");
+				DateTime dateProcessed = new DateTime(timestampProcessed.getTime());
+				Timestamp timestampFinished = setProductionOrder.getTimestamp("date_finished_ts");
+				DateTime dateFinished = new DateTime(timestampFinished.getTime());
+				Integer creatorId = setProductionOrder.getInt("creator_id");
+				Integer authorizerId = setProductionOrder.getInt("authorizer_id");
+				Boolean processed = (setProductionOrder.getInt("processed")==1?true:false);
+				productionOrder = new ProductionOrder(id, budgetId, dateProcessed, dateFinished, creatorId, authorizerId, processed);
+			}
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return productionOrder;
+	}
+
+	public ArrayList<Product> getProductionOrderProducts(Integer productionOrderId) {
+		ArrayList<Product> products = new ArrayList<Product>();
+		ResultSet setProducts;
+		CallableStatement statement;
+		
+		try {
+			statement = this.conn.prepareCall("{call SP_GET_PRODUCTION_ORDER_SWITCHES(?)}");
+			statement.setInt(1, productionOrderId);
+			setProducts = statement.executeQuery();
+			while (setProducts.next()) {
+				Integer id = setProducts.getInt("id");
+				Integer brandId = setProducts.getInt("brand_id");
+				String brand = setProducts.getString("brand");
+				Integer typeId = setProducts.getInt("type_id");
+				String type = setProducts.getString("type");
+				String model = setProducts.getString("model");
+				Integer phases = setProducts.getInt("phases");
+				Integer currentId = setProducts.getInt("current_id");
+				String current = setProducts.getString("current");
+				Integer voltageId = setProducts.getInt("voltage_id");
+				String voltage = setProducts.getString("voltage");
+				Integer interruptionId = setProducts.getInt("interruption_id");
+				String interruption = setProducts.getString("interruption");
+				Double price = setProducts.getDouble("price");
+				Boolean active = (setProducts.getInt("active")==1?true:false);
+				Integer containerId = setProducts.getInt("container_id");
+				Integer quantity = setProducts.getInt("quantity");
+				products.add(new Switch(id, brandId, brand, typeId, type, model, phases, currentId, current, voltageId, voltage, interruptionId, interruption, price, active, containerId, quantity));
+			}
+			
+			statement = this.conn.prepareCall("{call SP_GET_PRODUCTION_ORDER_BOXES(?)}");
+			statement.setInt(1, productionOrderId);
+			setProducts = statement.executeQuery();
+			while (setProducts.next()) {
+				Integer id = setProducts.getInt("id");
+				Integer typeId = setProducts.getInt("type_id");
+				String type = setProducts.getString("type");
+				BoxType boxType = new BoxType(typeId, type);
+				
+				Integer installationId = setProducts.getInt("installation_id");
+				String strInstallation = setProducts.getString("installation");
+				Installation installation = new Installation(installationId, strInstallation);
+				
+				Integer nemaId = setProducts.getInt("nema_id");
+				String strNema = setProducts.getString("nema");
+				Nema nema = new Nema(nemaId, strNema);
+				
+				String strPairs = setProducts.getString("pairs");
+				String strPairsNumeric = (strPairs.equals("N/A"))?"0":strPairs;
+				Integer pairs = Integer.valueOf(strPairsNumeric);
+				
+				Integer sheetId = setProducts.getInt("sheet_id");
+				String strSheet = setProducts.getString("sheet");
+				Sheet sheet = new Sheet(sheetId, strSheet);
+				
+				Integer finishId = setProducts.getInt("finish_id");
+				String strFinish = setProducts.getString("finish");
+				Finish finish = new Finish(finishId, strFinish);
+				
+				Integer colorId = setProducts.getInt("color_id");
+				String strColor = setProducts.getString("color");
+				Color color = new Color(colorId, strColor);
+				
+				Integer height = setProducts.getInt("height");
+				Integer width = setProducts.getInt("width");
+				Integer depth = setProducts.getInt("depth");
+				Integer unitsId = setProducts.getInt("units_id");
+				String strUnits = setProducts.getString("units");
+				MeasureUnits units = new MeasureUnits(unitsId, strUnits);
+				
+				Integer caliberId = setProducts.getInt("caliber_id");
+				String strCaliber = setProducts.getString("caliber");
+				Integer intCaliber = Integer.valueOf(((strCaliber.equals("N/A"))?"0":strCaliber));
+				Caliber caliber = new Caliber(caliberId, intCaliber);
+				
+				String caliberComments = setProducts.getString("caliber_comments");
+				Integer lockTypeId = setProducts.getInt("lock_type_id");
+				String strLockType = setProducts.getString("lock_type");
+				LockType lockType = new LockType(lockTypeId, strLockType);
+				
+				Double price = setProducts.getDouble("price");
+				String comments = setProducts.getString("comments");
+				Boolean active = (setProducts.getInt("active")==1?true:false);
+				products.add(new Box(id, boxType, installation, nema, pairs, sheet, finish, color, height, width, depth, units, caliber, caliberComments, lockType, price, comments, active));
+			}
+			
+			statement = this.conn.prepareCall("{call SP_GET_PRODUCTION_ORDER_BOARDS(?)}");
+			statement.setInt(1, productionOrderId);
+			setProducts = statement.executeQuery();
+			while (setProducts.next()) {
+				Integer id = setProducts.getInt("id");
+				String name = setProducts.getString("name");
+				Integer boardTypeId = setProducts.getInt("type_id");
+				String strBoardtype = setProducts.getString("type");
+				BoardType boardType = new BoardType(boardTypeId, strBoardtype);
+				
+				Integer installationId = setProducts.getInt("installation_id");
+				String strInstallation = setProducts.getString("installation");
+				Installation installation = new Installation(installationId, strInstallation);
+				
+				Integer nemaId = setProducts.getInt("nema_id");
+				String strNema = setProducts.getString("nema");
+				Nema nema = new Nema(nemaId, strNema);
+				
+				Integer barCapacityId = setProducts.getInt("bar_capacity_id");
+				Integer strBarCapacity = setProducts.getInt("bar_capacity");
+				BarCapacity barCapacity = new BarCapacity(barCapacityId, strBarCapacity);
+				
+				Integer barTypeId = setProducts.getInt("bar_type_id");
+				String strBarType = setProducts.getString("nema");
+				BarType barType = new BarType(barTypeId, strBarType);
+				
+				Integer circuitsId = setProducts.getInt("circuits_id");
+				Integer strCircuits = setProducts.getInt("circuits");
+				Circuits circuits = new Circuits(circuitsId, strCircuits);
+				
+				Integer boardVoltageId = setProducts.getInt("voltage_id");
+				String strBoardVoltage = setProducts.getString("voltage");
+				BoardVoltage boardVoltage = new BoardVoltage(boardVoltageId, strBoardVoltage);
+				
+				Integer phases = setProducts.getInt("phases");
+				Boolean ground = setProducts.getBoolean("ground");
+				
+				Integer interruptionId = setProducts.getInt("interruption_id");
+				Integer strInterruption = setProducts.getInt("interruption");
+				Interruption interruption = new Interruption(interruptionId, strInterruption);
+				
+				Integer lockTypeId = setProducts.getInt("lock_type_id");
+				String strLockType = setProducts.getString("lock_type");
+				LockType lockType = new LockType(lockTypeId, strLockType);
+				
+				ArrayList<Integer> mainSwitchIds = this.getBoardSwitchMainId(id);
+				
+				ArrayList<Material> materials = this.getBoardMaterials(id);
+				
+				Double price = setProducts.getDouble("price");
+				String comments = setProducts.getString("comments");
+				Boolean active = (setProducts.getInt("active")==1?true:false);
+				
+				ArrayList<Switch> switches = new ArrayList<Switch>();
+				switches = this.getBoardSwitches(id);
+				products.add(new Board(id, name, boardType, installation, nema, barCapacity, barType, circuits, boardVoltage, phases, ground, interruption, lockType, mainSwitchIds, materials, price, comments, active, switches));
+			}
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return products;
+	}
+
+	public WorkOrder pullWorkOrder(Integer orderId) {
+		WorkOrder workOrder = new WorkOrder();
+		ResultSet setWorkOrder;
+		CallableStatement statement;
+		
+		try {
+			statement = this.conn.prepareCall("{call SP_GET_WORK_ORDER_INFO_BY_ID(?)}");
+			statement.setInt(1, orderId);
+			setWorkOrder = statement.executeQuery();
+			if (setWorkOrder.next()) {
+				Integer id = setWorkOrder.getInt("id");
+				Integer productionOrderId = setWorkOrder.getInt("production_order_id");
+				Integer productId = setWorkOrder.getInt("product_id");
+				Integer productTypeId = setWorkOrder.getInt("product_type_id");
+				Integer creatorId = setWorkOrder.getInt("creator_id");
+				Integer authorizerId = setWorkOrder.getInt("authorizer_id");
+				Timestamp timestampProcessed = setWorkOrder.getTimestamp("date_processed_ts");
+				DateTime dateProcessed = new DateTime(timestampProcessed.getTime());
+				Timestamp timestampFinished = setWorkOrder.getTimestamp("date_finished_ts");
+				DateTime dateFinished = new DateTime(timestampFinished.getTime());
+				Boolean processed = (setWorkOrder.getInt("processed")==1?true:false);
+				workOrder = new WorkOrder(id, productionOrderId, productId, productTypeId, creatorId, authorizerId, dateProcessed, dateFinished, processed);
+			}
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return workOrder;
+	}
+
+	public ArrayList<WorkOrder> pullAllWorkOrders(Integer productionOrderId) {
+		ArrayList<WorkOrder> workOrders = new ArrayList<WorkOrder>();
+		ResultSet setWorkOrder;
+		CallableStatement statement;
+		
+		try {
+			statement = this.conn.prepareCall("{call SP_GET_WORK_ORDER_INFO_BY_PRODUCTION_ORDER_ID(?)}");
+			statement.setInt(1, productionOrderId);
+			setWorkOrder = statement.executeQuery();
+			while (setWorkOrder.next()) {
+				Integer id = setWorkOrder.getInt("id");
+				Integer productId = setWorkOrder.getInt("product_id");
+				Integer productTypeId = setWorkOrder.getInt("product_type_id");
+				Integer creatorId = setWorkOrder.getInt("creator_id");
+				Integer authorizerId = setWorkOrder.getInt("authorizer_id");
+				Timestamp timestampProcessed = setWorkOrder.getTimestamp("date_processed_ts");
+				DateTime dateProcessed = new DateTime(timestampProcessed.getTime());
+				Timestamp timestampFinished = setWorkOrder.getTimestamp("date_finished_ts");
+				DateTime dateFinished = new DateTime(timestampFinished.getTime());
+				Boolean processed = (setWorkOrder.getInt("processed")==1?true:false);
+				workOrders.add(new WorkOrder(id, productionOrderId, productId, productTypeId, creatorId, authorizerId, dateProcessed, dateFinished, processed));
+			}
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return workOrders;
+	}
+
+	public Boolean setProductionOrderProcessed(Integer orderId) {
+		return this.update("UPDATE production_orders SET processed = 1 WHERE id = " + orderId);
 	}
 	
 }

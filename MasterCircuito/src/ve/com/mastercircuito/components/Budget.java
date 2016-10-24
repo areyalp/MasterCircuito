@@ -12,7 +12,7 @@ public class Budget {
 	private Client client;
 	private String workName;
 	private PaymentMethod paymentMethod;
-	private Seller seller;
+	private User seller;
 	private DispatchPlace dispatchPlace;
 	private Integer deliveryTime;
 	private DeliveryPeriod deliveryPeriod;
@@ -30,7 +30,7 @@ public class Budget {
 	}
 	
 	public Budget(Integer id, String code, Date date, Integer expiryDays, Client client, String workName,
-			PaymentMethod paymentMethod, Seller seller, DispatchPlace dispatchPlace, Integer deliveryTime,
+			PaymentMethod paymentMethod, User seller, DispatchPlace dispatchPlace, Integer deliveryTime,
 			DeliveryPeriod deliveryPeriod, Boolean tracing, BudgetStage stage, String notes, ArrayList<Switch> switches,
 			ArrayList<Box> boxes, ArrayList<Board> boards) {
 		super();
@@ -54,7 +54,7 @@ public class Budget {
 	}
 	
 	public Budget(Integer id, String code, Date date, Integer expiryDays, Client client, String workName,
-			PaymentMethod paymentMethod, Seller seller, DispatchPlace dispatchPlace, Integer deliveryTime,
+			PaymentMethod paymentMethod, User seller, DispatchPlace dispatchPlace, Integer deliveryTime,
 			DeliveryPeriod deliveryPeriod, Boolean tracing, BudgetStage stage) {
 		super();
 		this.id = id;
@@ -73,6 +73,22 @@ public class Budget {
 	}
 
 	
+	public Budget(Budget selectedValue) {
+		this.id = selectedValue.getId();
+		this.code = selectedValue.getCode();
+		this.date = selectedValue.getDate();
+		this.expiryDays = selectedValue.getExpiryDays();
+		this.client = selectedValue.getClient();
+		this.workName = selectedValue.getWorkName();
+		this.paymentMethod = selectedValue.getPaymentMethod();
+		this.seller = selectedValue.getSeller();
+		this.dispatchPlace = selectedValue.getDispatchPlace();
+		this.deliveryTime = selectedValue.getDeliveryTime();
+		this.deliveryPeriod = selectedValue.getDeliveryPeriod();
+		this.tracing = selectedValue.getTracing();
+		this.stage = selectedValue.getStage();
+	}
+
 	public Integer getId() {
 		return id;
 	}
@@ -143,12 +159,12 @@ public class Budget {
 	}
 
 	
-	public Seller getSeller() {
+	public User getSeller() {
 		return seller;
 	}
 
 	
-	public void setSeller(Seller seller) {
+	public void setSeller(User seller) {
 		this.seller = seller;
 	}
 
@@ -243,7 +259,7 @@ public class Budget {
 	}
 	
 	public String toString() {
-		return this.getCode();
+		return this.getCode() + " \t\t " + this.getDate().toString() + " \t\t " + this.getClient().getClient();
 	}
 	
 }

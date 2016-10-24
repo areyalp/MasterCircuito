@@ -1,8 +1,7 @@
 package ve.com.mastercircuito.components;
 
-public class Box {
+public class Box extends Product {
 	
-	private Integer id;
 	private BoxType type;
 	private Installation installation;
 	private Nema nema;
@@ -29,7 +28,7 @@ public class Box {
 			Finish finish, Color color, Integer height, Integer width, Integer depth, MeasureUnits units,
 			Caliber caliber, String caliberComments, LockType lockType, Double price, String comments, Boolean active) {
 		super();
-		this.id = id;
+		this.setId(id);
 		this.type = type;
 		this.installation = installation;
 		this.nema = nema;
@@ -47,14 +46,6 @@ public class Box {
 		this.price = price;
 		this.comments = comments;
 		this.active = active;
-	}
-
-	public Integer getId() {
-		return id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
 	}
 
 	public BoxType getType() {

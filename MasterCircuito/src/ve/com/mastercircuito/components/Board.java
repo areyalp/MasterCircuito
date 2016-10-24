@@ -2,9 +2,8 @@ package ve.com.mastercircuito.components;
 
 import java.util.ArrayList;
 
-public class Board {
+public class Board extends Product {
 	
-	private Integer id;
 	private String name;
 	private BoardType type;
 	private Installation installation;
@@ -34,7 +33,7 @@ public class Board {
 			Interruption interruption, LockType lockType, ArrayList<Integer> mainSwitchId,
 			ArrayList<Material> materials, Double price, String comments, Boolean active, ArrayList<Switch> switches) {
 		super();
-		this.id = id;
+		this.setId(id);
 		this.name = name;
 		this.type = type;
 		this.installation = installation;
@@ -53,14 +52,6 @@ public class Board {
 		this.comments = comments;
 		this.active = active;
 		this.switches = switches;
-	}
-	
-	public Integer getId() {
-		return id;
-	}
-	
-	public void setId(Integer id) {
-		this.id = id;
 	}
 	
 	public String getName() {
