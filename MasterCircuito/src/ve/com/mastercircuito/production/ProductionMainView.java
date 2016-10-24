@@ -48,7 +48,7 @@ import ve.com.mastercircuito.components.WorkOrder;
 import ve.com.mastercircuito.db.Db;
 import ve.com.mastercircuito.font.Fa;
 
-public class MainView extends JFrame{
+public class ProductionMainView extends JFrame{
 
 	/**
 	 * 
@@ -71,10 +71,10 @@ public class MainView extends JFrame{
 	private JButton buttonProcessBudget, buttonProcessProductionOrder;
 	
 	public static void main(String[] args) {
-		new ve.com.mastercircuito.production.MainView();
+		new ve.com.mastercircuito.production.ProductionMainView();
 	}
 	
-	protected MainView() {
+	protected ProductionMainView() {
 		
 		LoginDialog lDialog = new LoginDialog(null);
 		

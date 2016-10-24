@@ -80,7 +80,7 @@ import ve.com.mastercircuito.utils.Errors;
 import ve.com.mastercircuito.utils.Numbers;
 import ve.com.mastercircuito.utils.StringTools;
 
-public class MainView extends JFrame{
+public class SalesMainView extends JFrame{
 
 	/**
 	 * 
@@ -398,10 +398,10 @@ public class MainView extends JFrame{
 		
 		
 	public static void main(String[] args) {
-		new MainView();
+		new SalesMainView();
 	}
 	
-	protected MainView() {
+	protected SalesMainView() {
 		
 		db = new Db();
 		
@@ -1540,7 +1540,7 @@ public class MainView extends JFrame{
 	
 	private void setSwitchesMode(int mode) {
 		
-		if(mode == MainView.VIEW_MODE) {
+		if(mode == SalesMainView.VIEW_MODE) {
 			if(panelSwitchAddNew.isVisible()) {
 				buttonSwitchAdd.setEnabled(true);
 				textSwitchAddPrice.setText("");
@@ -1585,7 +1585,7 @@ public class MainView extends JFrame{
 					}
 				});
 			}
-		} else if(mode == MainView.ADD_MODE) {
+		} else if(mode == SalesMainView.ADD_MODE) {
 			buttonSwitchAdd.setEnabled(false);
 			buttonSwitchEdit.setEnabled(false);
 			textSwitchPrice.setText("");
@@ -1613,7 +1613,7 @@ public class MainView extends JFrame{
 					switchesFrame.repaint();
 				}
 			});
-		} else if(mode == MainView.EDIT_MODE) {
+		} else if(mode == SalesMainView.EDIT_MODE) {
 			buttonSwitchAdd.setEnabled(false);
 			buttonSwitchEdit.setEnabled(false);
 			// save everything to variables before going to edit form and after editing return the new values to
@@ -1900,49 +1900,49 @@ public class MainView extends JFrame{
 		JPanel searchBarPanel2 = new JPanel();
 		searchBarPanel2.setLayout(new FlowLayout(FlowLayout.CENTER));
 		
-		String queryTypes = "SELECT " + MainView.BOX_TYPE_FIELD
-				+ " FROM " + MainView.BOX_TYPES_TABLE + "," + MainView.BOXES_TABLE
-				+ " WHERE " + MainView.BOX_TYPES_TABLE + ".id = " + MainView.BOXES_TABLE + ".type_id "
+		String queryTypes = "SELECT " + SalesMainView.BOX_TYPE_FIELD
+				+ " FROM " + SalesMainView.BOX_TYPES_TABLE + "," + SalesMainView.BOXES_TABLE
+				+ " WHERE " + SalesMainView.BOX_TYPES_TABLE + ".id = " + SalesMainView.BOXES_TABLE + ".type_id "
 				+ " GROUP BY box_types.type";
 		
-		String queryInstallations = "SELECT " + MainView.INSTALLATION_FIELD
-				+ " FROM " + MainView.INSTALLATIONS_TABLE + "," + MainView.BOXES_TABLE
-				+ " WHERE " + MainView.INSTALLATIONS_TABLE + ".id = " + MainView.BOXES_TABLE + ".installation_id "
+		String queryInstallations = "SELECT " + SalesMainView.INSTALLATION_FIELD
+				+ " FROM " + SalesMainView.INSTALLATIONS_TABLE + "," + SalesMainView.BOXES_TABLE
+				+ " WHERE " + SalesMainView.INSTALLATIONS_TABLE + ".id = " + SalesMainView.BOXES_TABLE + ".installation_id "
 				+ " GROUP BY installations.installation";
 		
-		String queryNemas = "SELECT " + MainView.NEMA_FIELD
-				+ " FROM " + MainView.NEMAS_TABLE + "," + MainView.BOXES_TABLE
-				+ " WHERE " + MainView.NEMAS_TABLE + ".id = " + MainView.BOXES_TABLE + ".nema_id "
+		String queryNemas = "SELECT " + SalesMainView.NEMA_FIELD
+				+ " FROM " + SalesMainView.NEMAS_TABLE + "," + SalesMainView.BOXES_TABLE
+				+ " WHERE " + SalesMainView.NEMAS_TABLE + ".id = " + SalesMainView.BOXES_TABLE + ".nema_id "
 				+ " GROUP BY nemas.nema";
 		
 		String queryPairs = "SELECT boxes.pairs "
-				+ " FROM " + MainView.BOXES_TABLE
+				+ " FROM " + SalesMainView.BOXES_TABLE
 				+ " WHERE boxes.pairs > 0 "
-				+ " GROUP BY " + MainView.BOXES_TABLE + ".pairs";
+				+ " GROUP BY " + SalesMainView.BOXES_TABLE + ".pairs";
 		
-		String querySheets = "SELECT " + MainView.BOX_SHEET_FIELD
-				+ " FROM " + MainView.BOX_SHEETS_TABLE + "," + MainView.BOXES_TABLE
-				+ " WHERE " + MainView.BOX_SHEETS_TABLE + ".id = " + MainView.BOXES_TABLE + ".sheet_id "
+		String querySheets = "SELECT " + SalesMainView.BOX_SHEET_FIELD
+				+ " FROM " + SalesMainView.BOX_SHEETS_TABLE + "," + SalesMainView.BOXES_TABLE
+				+ " WHERE " + SalesMainView.BOX_SHEETS_TABLE + ".id = " + SalesMainView.BOXES_TABLE + ".sheet_id "
 				+ " GROUP BY box_sheets.sheet";
 		
-		String queryFinishes = "SELECT " + MainView.BOX_FINISH_FIELD
-				+ " FROM " + MainView.BOX_FINISHES_TABLE + "," + MainView.BOXES_TABLE
-				+ " WHERE " + MainView.BOX_FINISHES_TABLE + ".id = " + MainView.BOXES_TABLE + ".finish_id "
+		String queryFinishes = "SELECT " + SalesMainView.BOX_FINISH_FIELD
+				+ " FROM " + SalesMainView.BOX_FINISHES_TABLE + "," + SalesMainView.BOXES_TABLE
+				+ " WHERE " + SalesMainView.BOX_FINISHES_TABLE + ".id = " + SalesMainView.BOXES_TABLE + ".finish_id "
 				+ " GROUP BY box_finishes.finish";
 		
-		String queryColors = "SELECT " + MainView.BOX_COLOR_FIELD
-				+ " FROM " + MainView.BOX_COLORS_TABLE + "," + MainView.BOXES_TABLE
-				+ " WHERE " + MainView.BOX_COLORS_TABLE + ".id = " + MainView.BOXES_TABLE + ".color_id "
+		String queryColors = "SELECT " + SalesMainView.BOX_COLOR_FIELD
+				+ " FROM " + SalesMainView.BOX_COLORS_TABLE + "," + SalesMainView.BOXES_TABLE
+				+ " WHERE " + SalesMainView.BOX_COLORS_TABLE + ".id = " + SalesMainView.BOXES_TABLE + ".color_id "
 				+ " GROUP BY box_colors.color";
 		
-		String queryCalibers = "SELECT " + MainView.BOX_CALIBER_FIELD
-				+ " FROM " + MainView.BOX_CALIBERS_TABLE + "," + MainView.BOXES_TABLE
-				+ " WHERE " + MainView.BOX_CALIBERS_TABLE + ".id = " + MainView.BOXES_TABLE + ".caliber_id "
+		String queryCalibers = "SELECT " + SalesMainView.BOX_CALIBER_FIELD
+				+ " FROM " + SalesMainView.BOX_CALIBERS_TABLE + "," + SalesMainView.BOXES_TABLE
+				+ " WHERE " + SalesMainView.BOX_CALIBERS_TABLE + ".id = " + SalesMainView.BOXES_TABLE + ".caliber_id "
 				+ " GROUP BY box_calibers.caliber";
 		
-		String queryLockTypes = "SELECT " + MainView.BOX_LOCK_TYPE_FIELD
-				+ " FROM " + MainView.LOCK_TYPES_TABLE + "," + MainView.BOXES_TABLE
-				+ " WHERE " + MainView.LOCK_TYPES_TABLE + ".id = " + MainView.BOXES_TABLE + ".lock_type_id "
+		String queryLockTypes = "SELECT " + SalesMainView.BOX_LOCK_TYPE_FIELD
+				+ " FROM " + SalesMainView.LOCK_TYPES_TABLE + "," + SalesMainView.BOXES_TABLE
+				+ " WHERE " + SalesMainView.LOCK_TYPES_TABLE + ".id = " + SalesMainView.BOXES_TABLE + ".lock_type_id "
 				+ " GROUP BY lock_types.lock_type";
 		
 		JLabel labelType = new JLabel("Tipo:");
@@ -2048,33 +2048,33 @@ public class MainView extends JFrame{
 	
 	private JPanel createBoxTablePanel() {
 		ArrayList<String> fields = new ArrayList<String>();
-		fields.add(MainView.BOX_ID_FIELD);
-		fields.add(MainView.BOX_TYPE_FIELD);
-		fields.add(MainView.INSTALLATION_FIELD);
-		fields.add(MainView.NEMA_FIELD);
-		fields.add(MainView.BOX_PAIRS_FIELD);
-		fields.add(MainView.BOX_SHEET_FIELD);
-		fields.add(MainView.BOX_FINISH_FIELD);
-		fields.add(MainView.BOX_COLOR_FIELD);
-		fields.add(MainView.BOX_HEIGHT_FIELD);
-		fields.add(MainView.BOX_WIDTH_FIELD);
-		fields.add(MainView.BOX_DEPTH_FIELD);
-		fields.add(MainView.BOX_UNITS_FIELD);
-		fields.add(MainView.BOX_CALIBER_FIELD);
-		fields.add(MainView.BOX_LOCK_TYPE_FIELD);
-		fields.add(MainView.BOX_PRICE_FIELD);
+		fields.add(SalesMainView.BOX_ID_FIELD);
+		fields.add(SalesMainView.BOX_TYPE_FIELD);
+		fields.add(SalesMainView.INSTALLATION_FIELD);
+		fields.add(SalesMainView.NEMA_FIELD);
+		fields.add(SalesMainView.BOX_PAIRS_FIELD);
+		fields.add(SalesMainView.BOX_SHEET_FIELD);
+		fields.add(SalesMainView.BOX_FINISH_FIELD);
+		fields.add(SalesMainView.BOX_COLOR_FIELD);
+		fields.add(SalesMainView.BOX_HEIGHT_FIELD);
+		fields.add(SalesMainView.BOX_WIDTH_FIELD);
+		fields.add(SalesMainView.BOX_DEPTH_FIELD);
+		fields.add(SalesMainView.BOX_UNITS_FIELD);
+		fields.add(SalesMainView.BOX_CALIBER_FIELD);
+		fields.add(SalesMainView.BOX_LOCK_TYPE_FIELD);
+		fields.add(SalesMainView.BOX_PRICE_FIELD);
 		
 		ArrayList<String> tables = new ArrayList<String>();
-		tables.add(MainView.BOXES_TABLE);
-		tables.add(MainView.BOX_TYPES_TABLE);
-		tables.add(MainView.INSTALLATIONS_TABLE);
-		tables.add(MainView.NEMAS_TABLE);
-		tables.add(MainView.BOX_SHEETS_TABLE);
-		tables.add(MainView.BOX_FINISHES_TABLE);
-		tables.add(MainView.BOX_COLORS_TABLE);
-		tables.add(MainView.BOX_UNITS_TABLE);
-		tables.add(MainView.BOX_CALIBERS_TABLE);
-		tables.add(MainView.LOCK_TYPES_TABLE);
+		tables.add(SalesMainView.BOXES_TABLE);
+		tables.add(SalesMainView.BOX_TYPES_TABLE);
+		tables.add(SalesMainView.INSTALLATIONS_TABLE);
+		tables.add(SalesMainView.NEMAS_TABLE);
+		tables.add(SalesMainView.BOX_SHEETS_TABLE);
+		tables.add(SalesMainView.BOX_FINISHES_TABLE);
+		tables.add(SalesMainView.BOX_COLORS_TABLE);
+		tables.add(SalesMainView.BOX_UNITS_TABLE);
+		tables.add(SalesMainView.BOX_CALIBERS_TABLE);
+		tables.add(SalesMainView.LOCK_TYPES_TABLE);
 		
 		String fieldsQuery = StringTools.implode(",", fields);
 		String tablesQuery = StringTools.implode(",", tables);
@@ -2982,7 +2982,7 @@ public class MainView extends JFrame{
 	
 	private void setBoxesMode(int mode) {
 		
-		if(mode == MainView.VIEW_MODE) {
+		if(mode == SalesMainView.VIEW_MODE) {
 			if(panelBoxAddNew.isVisible()) {
 				buttonBoxAdd.setEnabled(true);
 				textBoxAddPairs.setText("");
@@ -3036,7 +3036,7 @@ public class MainView extends JFrame{
 					}
 				});
 			}
-		} else if(mode == MainView.ADD_MODE) {
+		} else if(mode == SalesMainView.ADD_MODE) {
 			buttonBoxAdd.setEnabled(false);
 			buttonBoxEdit.setEnabled(false);
 			textBoxDescriptionPairs.setText("");
@@ -3061,7 +3061,7 @@ public class MainView extends JFrame{
 					boxesFrame.repaint();
 				}
 			});
-		} else if(mode == MainView.EDIT_MODE) {
+		} else if(mode == SalesMainView.EDIT_MODE) {
 			buttonBoxAdd.setEnabled(false);
 			buttonBoxEdit.setEnabled(false);
 			editBoxId = Integer.valueOf(String.valueOf(tableBoxesResult.getValueAt(boxTableSelectedIndex, SharedListSelectionListener.BOX_ID_COLUMN)));
@@ -3206,52 +3206,52 @@ public class MainView extends JFrame{
 	
 	private void loadBoxTable(String whereQuery) {
 		ArrayList<String> fields = new ArrayList<String>();
-		fields.add(MainView.BOX_ID_FIELD);
-		fields.add(MainView.BOX_TYPE_FIELD);
-		fields.add(MainView.INSTALLATION_FIELD);
-		fields.add(MainView.NEMA_FIELD);
-		fields.add(MainView.BOX_PAIRS_FIELD);
-		fields.add(MainView.BOX_SHEET_FIELD);
-		fields.add(MainView.BOX_FINISH_FIELD);
-		fields.add(MainView.BOX_COLOR_FIELD);
-		fields.add(MainView.BOX_HEIGHT_FIELD);
-		fields.add(MainView.BOX_WIDTH_FIELD);
-		fields.add(MainView.BOX_DEPTH_FIELD);
-		fields.add(MainView.BOX_UNITS_FIELD);
-		fields.add(MainView.BOX_CALIBER_FIELD);
-		fields.add(MainView.BOX_LOCK_TYPE_FIELD);
-		fields.add(MainView.BOX_PRICE_FIELD);
+		fields.add(SalesMainView.BOX_ID_FIELD);
+		fields.add(SalesMainView.BOX_TYPE_FIELD);
+		fields.add(SalesMainView.INSTALLATION_FIELD);
+		fields.add(SalesMainView.NEMA_FIELD);
+		fields.add(SalesMainView.BOX_PAIRS_FIELD);
+		fields.add(SalesMainView.BOX_SHEET_FIELD);
+		fields.add(SalesMainView.BOX_FINISH_FIELD);
+		fields.add(SalesMainView.BOX_COLOR_FIELD);
+		fields.add(SalesMainView.BOX_HEIGHT_FIELD);
+		fields.add(SalesMainView.BOX_WIDTH_FIELD);
+		fields.add(SalesMainView.BOX_DEPTH_FIELD);
+		fields.add(SalesMainView.BOX_UNITS_FIELD);
+		fields.add(SalesMainView.BOX_CALIBER_FIELD);
+		fields.add(SalesMainView.BOX_LOCK_TYPE_FIELD);
+		fields.add(SalesMainView.BOX_PRICE_FIELD);
 		
 		ArrayList<String> tables = new ArrayList<String>();
-		tables.add(MainView.BOXES_TABLE);
-		tables.add(MainView.BOX_TYPES_TABLE);
-		tables.add(MainView.INSTALLATIONS_TABLE);
-		tables.add(MainView.NEMAS_TABLE);
-		tables.add(MainView.BOX_SHEETS_TABLE);
-		tables.add(MainView.BOX_FINISHES_TABLE);
-		tables.add(MainView.BOX_COLORS_TABLE);
-		tables.add(MainView.BOX_UNITS_TABLE);
-		tables.add(MainView.BOX_CALIBERS_TABLE);
-		tables.add(MainView.LOCK_TYPES_TABLE);
+		tables.add(SalesMainView.BOXES_TABLE);
+		tables.add(SalesMainView.BOX_TYPES_TABLE);
+		tables.add(SalesMainView.INSTALLATIONS_TABLE);
+		tables.add(SalesMainView.NEMAS_TABLE);
+		tables.add(SalesMainView.BOX_SHEETS_TABLE);
+		tables.add(SalesMainView.BOX_FINISHES_TABLE);
+		tables.add(SalesMainView.BOX_COLORS_TABLE);
+		tables.add(SalesMainView.BOX_UNITS_TABLE);
+		tables.add(SalesMainView.BOX_CALIBERS_TABLE);
+		tables.add(SalesMainView.LOCK_TYPES_TABLE);
 		
 		if(whereQuery.isEmpty()) {
 			whereQuery += " AND ( (boxes.sheet_id > 0 "
-							+ " AND boxes.sheet_id = " + MainView.BOX_SHEETS_TABLE + ".id) "
+							+ " AND boxes.sheet_id = " + SalesMainView.BOX_SHEETS_TABLE + ".id) "
 							+ " OR boxes.sheet_id = 0) "
 						+ " AND ( (boxes.finish_id > 0 "
-							+ " AND boxes.finish_id = " + MainView.BOX_FINISHES_TABLE + ".id) "
+							+ " AND boxes.finish_id = " + SalesMainView.BOX_FINISHES_TABLE + ".id) "
 							+ " OR boxes.finish_id = 0) "
 						+ " AND ( (boxes.color_id > 0 "
-							+ " AND boxes.color_id = " + MainView.BOX_COLORS_TABLE + ".id) "
+							+ " AND boxes.color_id = " + SalesMainView.BOX_COLORS_TABLE + ".id) "
 							+ " OR boxes.color_id = 0) "
 						+ " AND ( (boxes.units_id > 0 "
-							+ " AND boxes.units_id = " + MainView.BOX_UNITS_TABLE + ".id) "
+							+ " AND boxes.units_id = " + SalesMainView.BOX_UNITS_TABLE + ".id) "
 							+ " OR boxes.units_id = 0) "
 						+ " AND ( (boxes.caliber_id > 0 "
-							+ " AND boxes.caliber_id = " + MainView.BOX_CALIBERS_TABLE + ".id) "
+							+ " AND boxes.caliber_id = " + SalesMainView.BOX_CALIBERS_TABLE + ".id) "
 							+ " OR boxes.caliber_id = 0) "
 						+ " AND ( (boxes.lock_type_id > 0 "
-							+ " AND boxes.lock_type_id = " + MainView.LOCK_TYPES_TABLE + ".id) "
+							+ " AND boxes.lock_type_id = " + SalesMainView.LOCK_TYPES_TABLE + ".id) "
 							+ " OR boxes.lock_type_id = 0) ";
 		}
 		
@@ -3395,58 +3395,58 @@ public class MainView extends JFrame{
 		JPanel searchBarPanel2 = new JPanel();
 		searchBarPanel2.setLayout(new FlowLayout(FlowLayout.CENTER));
 		
-		String queryTypes = "SELECT " + MainView.BOARD_TYPE_FIELD
-				+ " FROM " + MainView.BOARD_TYPES_TABLE + "," + MainView.BOARD_TABLE
-				+ " WHERE " + MainView.BOARD_TYPES_TABLE + ".id = " + MainView.BOARD_TABLE + ".type_id "
-				+ " GROUP BY " + MainView.BOARD_TYPES_TABLE + ".type";
+		String queryTypes = "SELECT " + SalesMainView.BOARD_TYPE_FIELD
+				+ " FROM " + SalesMainView.BOARD_TYPES_TABLE + "," + SalesMainView.BOARD_TABLE
+				+ " WHERE " + SalesMainView.BOARD_TYPES_TABLE + ".id = " + SalesMainView.BOARD_TABLE + ".type_id "
+				+ " GROUP BY " + SalesMainView.BOARD_TYPES_TABLE + ".type";
 		
-		String queryInstallations = "SELECT " + MainView.INSTALLATION_FIELD
-				+ " FROM " + MainView.INSTALLATIONS_TABLE + "," + MainView.BOARD_TABLE
-				+ " WHERE " + MainView.INSTALLATIONS_TABLE + ".id = " + MainView.BOARD_TABLE + ".installation_id "
-				+ " GROUP BY " + MainView.INSTALLATIONS_TABLE + ".installation";
+		String queryInstallations = "SELECT " + SalesMainView.INSTALLATION_FIELD
+				+ " FROM " + SalesMainView.INSTALLATIONS_TABLE + "," + SalesMainView.BOARD_TABLE
+				+ " WHERE " + SalesMainView.INSTALLATIONS_TABLE + ".id = " + SalesMainView.BOARD_TABLE + ".installation_id "
+				+ " GROUP BY " + SalesMainView.INSTALLATIONS_TABLE + ".installation";
 		
-		String queryNemas = "SELECT " + MainView.NEMA_FIELD
-				+ " FROM " + MainView.NEMAS_TABLE + "," + MainView.BOARD_TABLE
-				+ " WHERE " + MainView.NEMAS_TABLE + ".id = " + MainView.BOARD_TABLE + ".nema_id "
-				+ " GROUP BY " + MainView.NEMAS_TABLE + ".nema";
+		String queryNemas = "SELECT " + SalesMainView.NEMA_FIELD
+				+ " FROM " + SalesMainView.NEMAS_TABLE + "," + SalesMainView.BOARD_TABLE
+				+ " WHERE " + SalesMainView.NEMAS_TABLE + ".id = " + SalesMainView.BOARD_TABLE + ".nema_id "
+				+ " GROUP BY " + SalesMainView.NEMAS_TABLE + ".nema";
 		
-		String queryBarCapacities = "SELECT " + MainView.BOARD_BAR_CAPACITY_FIELD
-				+ " FROM " + MainView.BOARD_BAR_CAPACITIES_TABLE + "," + MainView.BOARD_TABLE
-				+ " WHERE " + MainView.BOARD_BAR_CAPACITIES_TABLE + ".id = " + MainView.BOARD_TABLE + ".bar_capacity_id "
-				+ " GROUP BY " + MainView.BOARD_BAR_CAPACITIES_TABLE + ".bar_capacity";
+		String queryBarCapacities = "SELECT " + SalesMainView.BOARD_BAR_CAPACITY_FIELD
+				+ " FROM " + SalesMainView.BOARD_BAR_CAPACITIES_TABLE + "," + SalesMainView.BOARD_TABLE
+				+ " WHERE " + SalesMainView.BOARD_BAR_CAPACITIES_TABLE + ".id = " + SalesMainView.BOARD_TABLE + ".bar_capacity_id "
+				+ " GROUP BY " + SalesMainView.BOARD_BAR_CAPACITIES_TABLE + ".bar_capacity";
 		
-		String queryBarTypes = "SELECT " + MainView.BOARD_BAR_TYPE_FIELD
-				+ " FROM " + MainView.BOARD_BAR_TYPES_TABLE + "," + MainView.BOARD_TABLE
-				+ " WHERE " + MainView.BOARD_BAR_TYPES_TABLE + ".id = " + MainView.BOARD_TABLE + ".bar_type_id "
-				+ " GROUP BY " + MainView.BOARD_BAR_TYPES_TABLE + ".bar_type";
+		String queryBarTypes = "SELECT " + SalesMainView.BOARD_BAR_TYPE_FIELD
+				+ " FROM " + SalesMainView.BOARD_BAR_TYPES_TABLE + "," + SalesMainView.BOARD_TABLE
+				+ " WHERE " + SalesMainView.BOARD_BAR_TYPES_TABLE + ".id = " + SalesMainView.BOARD_TABLE + ".bar_type_id "
+				+ " GROUP BY " + SalesMainView.BOARD_BAR_TYPES_TABLE + ".bar_type";
 		
-		String queryCircuits = "SELECT " + MainView.BOARD_CIRCUITS_FIELD
-				+ " FROM " + MainView.BOARD_CIRCUITS_TABLE + "," + MainView.BOARD_TABLE
-				+ " WHERE " + MainView.BOARD_CIRCUITS_TABLE + ".id = " + MainView.BOARD_TABLE + ".circuits_id "
-				+ " GROUP BY " + MainView.BOARD_CIRCUITS_TABLE + ".circuits";
+		String queryCircuits = "SELECT " + SalesMainView.BOARD_CIRCUITS_FIELD
+				+ " FROM " + SalesMainView.BOARD_CIRCUITS_TABLE + "," + SalesMainView.BOARD_TABLE
+				+ " WHERE " + SalesMainView.BOARD_CIRCUITS_TABLE + ".id = " + SalesMainView.BOARD_TABLE + ".circuits_id "
+				+ " GROUP BY " + SalesMainView.BOARD_CIRCUITS_TABLE + ".circuits";
 		
-		String queryVoltages = "SELECT " + MainView.BOARD_VOLTAGE_FIELD
-				+ " FROM " + MainView.BOARD_VOLTAGES_TABLE + "," + MainView.BOARD_TABLE
-				+ " WHERE " + MainView.BOARD_VOLTAGES_TABLE + ".id = " + MainView.BOARD_TABLE + ".voltage_id "
-				+ " GROUP BY " + MainView.BOARD_VOLTAGES_TABLE + ".voltage";
+		String queryVoltages = "SELECT " + SalesMainView.BOARD_VOLTAGE_FIELD
+				+ " FROM " + SalesMainView.BOARD_VOLTAGES_TABLE + "," + SalesMainView.BOARD_TABLE
+				+ " WHERE " + SalesMainView.BOARD_VOLTAGES_TABLE + ".id = " + SalesMainView.BOARD_TABLE + ".voltage_id "
+				+ " GROUP BY " + SalesMainView.BOARD_VOLTAGES_TABLE + ".voltage";
 		
-		String queryPhases = "SELECT " + MainView.BOARD_PHASES_FIELD
-				+ " FROM " + MainView.BOARD_TABLE
-				+ " GROUP BY " + MainView.BOARD_TABLE + ".phases";
+		String queryPhases = "SELECT " + SalesMainView.BOARD_PHASES_FIELD
+				+ " FROM " + SalesMainView.BOARD_TABLE
+				+ " GROUP BY " + SalesMainView.BOARD_TABLE + ".phases";
 		
-		String queryGround = "SELECT " + MainView.BOARD_GROUND_FIELD
-				+ " FROM " + MainView.BOARD_TABLE
-				+ " GROUP BY " + MainView.BOARD_TABLE + ".ground";
+		String queryGround = "SELECT " + SalesMainView.BOARD_GROUND_FIELD
+				+ " FROM " + SalesMainView.BOARD_TABLE
+				+ " GROUP BY " + SalesMainView.BOARD_TABLE + ".ground";
 		
-		String queryInterruptions = "SELECT " + MainView.INTERRUPTION_FIELD
-				+ " FROM " + MainView.INTERRUPTIONS_TABLE + "," + MainView.BOARD_TABLE
-				+ " WHERE " + MainView.INTERRUPTIONS_TABLE + ".id = " + MainView.BOARD_TABLE + ".interruption_id "
-				+ " GROUP BY " + MainView.INTERRUPTIONS_TABLE + ".interruption";
+		String queryInterruptions = "SELECT " + SalesMainView.INTERRUPTION_FIELD
+				+ " FROM " + SalesMainView.INTERRUPTIONS_TABLE + "," + SalesMainView.BOARD_TABLE
+				+ " WHERE " + SalesMainView.INTERRUPTIONS_TABLE + ".id = " + SalesMainView.BOARD_TABLE + ".interruption_id "
+				+ " GROUP BY " + SalesMainView.INTERRUPTIONS_TABLE + ".interruption";
 		
-		String queryLockTypes = "SELECT " + MainView.BOARD_LOCK_TYPE_FIELD
-				+ " FROM " + MainView.LOCK_TYPES_TABLE + "," + MainView.BOARD_TABLE
-				+ " WHERE " + MainView.LOCK_TYPES_TABLE + ".id = " + MainView.BOARD_TABLE + ".lock_type_id "
-				+ " GROUP BY " + MainView.LOCK_TYPES_TABLE + ".lock_type";
+		String queryLockTypes = "SELECT " + SalesMainView.BOARD_LOCK_TYPE_FIELD
+				+ " FROM " + SalesMainView.LOCK_TYPES_TABLE + "," + SalesMainView.BOARD_TABLE
+				+ " WHERE " + SalesMainView.LOCK_TYPES_TABLE + ".id = " + SalesMainView.BOARD_TABLE + ".lock_type_id "
+				+ " GROUP BY " + SalesMainView.LOCK_TYPES_TABLE + ".lock_type";
 		
 		JLabel labelName = new JLabel("Nombre: ");
 		JLabel labelType = new JLabel("Tipo:");
@@ -3604,32 +3604,32 @@ public class MainView extends JFrame{
 	
 	private JPanel createBoardTablePanel() {
 		ArrayList<String> fields = new ArrayList<String>();
-		fields.add(MainView.BOARD_ID_FIELD);
-		fields.add(MainView.BOARD_NAME_FIELD);
-		fields.add(MainView.BOARD_TYPE_FIELD);
-		fields.add(MainView.INSTALLATION_FIELD);
-		fields.add(MainView.NEMA_FIELD);
-		fields.add(MainView.BOARD_BAR_CAPACITY_FIELD);
-		fields.add(MainView.BOARD_BAR_TYPE_FIELD);
-		fields.add(MainView.BOARD_CIRCUITS_FIELD);
-		fields.add(MainView.BOARD_VOLTAGE_FIELD);
-		fields.add(MainView.BOARD_PHASES_FIELD);
-		fields.add(MainView.BOARD_GROUND_FIELD);
-		fields.add(MainView.INTERRUPTION_FIELD);
-		fields.add(MainView.BOARD_LOCK_TYPE_FIELD);
-		fields.add(MainView.BOARD_PRICE_FIELD);
+		fields.add(SalesMainView.BOARD_ID_FIELD);
+		fields.add(SalesMainView.BOARD_NAME_FIELD);
+		fields.add(SalesMainView.BOARD_TYPE_FIELD);
+		fields.add(SalesMainView.INSTALLATION_FIELD);
+		fields.add(SalesMainView.NEMA_FIELD);
+		fields.add(SalesMainView.BOARD_BAR_CAPACITY_FIELD);
+		fields.add(SalesMainView.BOARD_BAR_TYPE_FIELD);
+		fields.add(SalesMainView.BOARD_CIRCUITS_FIELD);
+		fields.add(SalesMainView.BOARD_VOLTAGE_FIELD);
+		fields.add(SalesMainView.BOARD_PHASES_FIELD);
+		fields.add(SalesMainView.BOARD_GROUND_FIELD);
+		fields.add(SalesMainView.INTERRUPTION_FIELD);
+		fields.add(SalesMainView.BOARD_LOCK_TYPE_FIELD);
+		fields.add(SalesMainView.BOARD_PRICE_FIELD);
 		
 		ArrayList<String> tables = new ArrayList<String>();
-		tables.add(MainView.BOARD_TABLE);
-		tables.add(MainView.BOARD_BAR_CAPACITIES_TABLE);
-		tables.add(MainView.BOARD_BAR_TYPES_TABLE);
-		tables.add(MainView.BOARD_CIRCUITS_TABLE);
-		tables.add(MainView.BOARD_TYPES_TABLE);
-		tables.add(MainView.BOARD_VOLTAGES_TABLE);
-		tables.add(MainView.INSTALLATIONS_TABLE);
-		tables.add(MainView.INTERRUPTIONS_TABLE);
-		tables.add(MainView.LOCK_TYPES_TABLE);
-		tables.add(MainView.NEMAS_TABLE);
+		tables.add(SalesMainView.BOARD_TABLE);
+		tables.add(SalesMainView.BOARD_BAR_CAPACITIES_TABLE);
+		tables.add(SalesMainView.BOARD_BAR_TYPES_TABLE);
+		tables.add(SalesMainView.BOARD_CIRCUITS_TABLE);
+		tables.add(SalesMainView.BOARD_TYPES_TABLE);
+		tables.add(SalesMainView.BOARD_VOLTAGES_TABLE);
+		tables.add(SalesMainView.INSTALLATIONS_TABLE);
+		tables.add(SalesMainView.INTERRUPTIONS_TABLE);
+		tables.add(SalesMainView.LOCK_TYPES_TABLE);
+		tables.add(SalesMainView.NEMAS_TABLE);
 		
 		String fieldsQuery = StringTools.implode(",", fields);
 		String tablesQuery = StringTools.implode(",", tables);
@@ -4596,7 +4596,7 @@ public class MainView extends JFrame{
 	
 	private void setBoardsMode(int mode) {
 		
-		if(mode == MainView.VIEW_MODE) {
+		if(mode == SalesMainView.VIEW_MODE) {
 			if(panelBoardAddNew.isVisible()) {
 				buttonBoardAdd.setEnabled(true);
 				textBoardAddName.setText("");
@@ -4641,7 +4641,7 @@ public class MainView extends JFrame{
 					}
 				});
 			}
-		} else if(mode == MainView.ADD_MODE) {
+		} else if(mode == SalesMainView.ADD_MODE) {
 			buttonBoardAdd.setEnabled(false);
 			buttonBoardEdit.setEnabled(false);
 			textMaterials.setText("");
@@ -4675,7 +4675,7 @@ public class MainView extends JFrame{
 					boardsFrame.repaint();
 				}
 			});
-		} else if(mode == MainView.EDIT_MODE) {
+		} else if(mode == SalesMainView.EDIT_MODE) {
 			buttonBoardAdd.setEnabled(false);
 			buttonBoardEdit.setEnabled(false);
 			textMaterials.setEditable(false);
@@ -4830,88 +4830,88 @@ public class MainView extends JFrame{
 		searchSelectedBoardInterruption = comboBoardInterruptions.getSelectedItem().toString();
 		searchSelectedBoardLockType = comboBoardLockTypes.getSelectedItem().toString();
 		if(null != textBoardSearchNames && !textBoardSearchNames.getText().isEmpty()) {
-			whereQuery += " AND " + MainView.BOARD_TABLE + ".name LIKE '%" + textBoardSearchNames.getText() + "%'";
+			whereQuery += " AND " + SalesMainView.BOARD_TABLE + ".name LIKE '%" + textBoardSearchNames.getText() + "%'";
 		}
 		if(null != searchSelectedBoardType  && !searchSelectedBoardType.equalsIgnoreCase("Todas") &&
 				!searchSelectedBoardType.isEmpty()) {
-			whereQuery += " AND " + MainView.BOARD_TYPES_TABLE + ".type = '" + searchSelectedBoardType + "'";
+			whereQuery += " AND " + SalesMainView.BOARD_TYPES_TABLE + ".type = '" + searchSelectedBoardType + "'";
 		}
 		if(searchSelectedBoardInstallation != null && !searchSelectedBoardInstallation.equalsIgnoreCase("Todas") &&
 				!searchSelectedBoardInstallation.isEmpty()) {
-			whereQuery += " AND " + MainView.BOARD_TABLE + ".installation_id = " + MainView.INSTALLATIONS_TABLE + ".id ";
-			whereQuery += " AND " + MainView.INSTALLATIONS_TABLE + ".installation = '" + searchSelectedBoardInstallation + "'";
+			whereQuery += " AND " + SalesMainView.BOARD_TABLE + ".installation_id = " + SalesMainView.INSTALLATIONS_TABLE + ".id ";
+			whereQuery += " AND " + SalesMainView.INSTALLATIONS_TABLE + ".installation = '" + searchSelectedBoardInstallation + "'";
 		}
 		if(searchSelectedBoardNema != null && !searchSelectedBoardNema.equalsIgnoreCase("Todas") &&
 				!searchSelectedBoardNema.isEmpty()) {
-			whereQuery += " AND " + MainView.BOARD_TABLE + ".nema_id = " + MainView.NEMAS_TABLE + ".id ";
-			whereQuery += " AND " + MainView.NEMAS_TABLE + ".nema = '" + searchSelectedBoardNema + "'";
+			whereQuery += " AND " + SalesMainView.BOARD_TABLE + ".nema_id = " + SalesMainView.NEMAS_TABLE + ".id ";
+			whereQuery += " AND " + SalesMainView.NEMAS_TABLE + ".nema = '" + searchSelectedBoardNema + "'";
 		}
 		if(searchSelectedBoardBarCapacity != null && !searchSelectedBoardBarCapacity.equalsIgnoreCase("Todas") &&
 				!searchSelectedBoardBarCapacity.isEmpty()) {
-			whereQuery += " AND " + MainView.BOARD_TABLE + ".bar_capacity_id = " + MainView.BOARD_BAR_CAPACITIES_TABLE + ".id ";
-			whereQuery += " AND " + MainView.BOARD_BAR_CAPACITIES_TABLE + ".bar_capacity = '" + searchSelectedBoardBarCapacity + "'";
+			whereQuery += " AND " + SalesMainView.BOARD_TABLE + ".bar_capacity_id = " + SalesMainView.BOARD_BAR_CAPACITIES_TABLE + ".id ";
+			whereQuery += " AND " + SalesMainView.BOARD_BAR_CAPACITIES_TABLE + ".bar_capacity = '" + searchSelectedBoardBarCapacity + "'";
 		}
 		if(searchSelectedBoardBarType != null && !searchSelectedBoardBarType.equalsIgnoreCase("Todas") &&
 				!searchSelectedBoardBarType.isEmpty()) {
-			whereQuery += " AND " + MainView.BOARD_TABLE + ".bar_type_id = " + MainView.BOARD_BAR_TYPES_TABLE + ".id ";
-			whereQuery += " AND " + MainView.BOARD_BAR_TYPES_TABLE + ".bar_type = '" + searchSelectedBoardBarType + "'";
+			whereQuery += " AND " + SalesMainView.BOARD_TABLE + ".bar_type_id = " + SalesMainView.BOARD_BAR_TYPES_TABLE + ".id ";
+			whereQuery += " AND " + SalesMainView.BOARD_BAR_TYPES_TABLE + ".bar_type = '" + searchSelectedBoardBarType + "'";
 		}
 		if(searchSelectedBoardCircuits != null && !searchSelectedBoardCircuits.equalsIgnoreCase("Todas") &&
 				!searchSelectedBoardCircuits.isEmpty()) {
-			whereQuery += " AND " + MainView.BOARD_TABLE + ".circuits_id = " + MainView.BOARD_CIRCUITS_TABLE + ".id ";
-			whereQuery += " AND " + MainView.BOARD_CIRCUITS_TABLE + ".circuits = '" + searchSelectedBoardCircuits + "'";
+			whereQuery += " AND " + SalesMainView.BOARD_TABLE + ".circuits_id = " + SalesMainView.BOARD_CIRCUITS_TABLE + ".id ";
+			whereQuery += " AND " + SalesMainView.BOARD_CIRCUITS_TABLE + ".circuits = '" + searchSelectedBoardCircuits + "'";
 		}
 		if(searchSelectedBoardVoltage != null && !searchSelectedBoardVoltage.equalsIgnoreCase("Todas") &&
 				!searchSelectedBoardVoltage.isEmpty()) {
-			whereQuery += " AND " + MainView.BOARD_TABLE + ".voltage_id = " + MainView.BOARD_VOLTAGES_TABLE + ".id ";
-			whereQuery += " AND " + MainView.BOARD_VOLTAGES_TABLE + ".voltage = '" + searchSelectedBoardVoltage + "'";
+			whereQuery += " AND " + SalesMainView.BOARD_TABLE + ".voltage_id = " + SalesMainView.BOARD_VOLTAGES_TABLE + ".id ";
+			whereQuery += " AND " + SalesMainView.BOARD_VOLTAGES_TABLE + ".voltage = '" + searchSelectedBoardVoltage + "'";
 		}
 		if(searchSelectedBoardPhases != null && !searchSelectedBoardPhases.equalsIgnoreCase("Todas") &&
 				!searchSelectedBoardPhases.isEmpty()) {
-			whereQuery += " AND " + MainView.BOARD_TABLE + ".phases = '" + searchSelectedBoardPhases + "'";
+			whereQuery += " AND " + SalesMainView.BOARD_TABLE + ".phases = '" + searchSelectedBoardPhases + "'";
 		}
 		if(searchSelectedBoardGround != null && !searchSelectedBoardGround.equalsIgnoreCase("Todas") &&
 				!searchSelectedBoardGround.isEmpty()) {
-			whereQuery += " AND " + MainView.BOARD_TABLE + ".ground = '" + (searchSelectedBoardGround.equalsIgnoreCase("SI")?"1":"0") + "'";
+			whereQuery += " AND " + SalesMainView.BOARD_TABLE + ".ground = '" + (searchSelectedBoardGround.equalsIgnoreCase("SI")?"1":"0") + "'";
 		}
 		if(searchSelectedBoardInterruption != null && !searchSelectedBoardInterruption.equalsIgnoreCase("Todas") &&
 				!searchSelectedBoardInterruption.isEmpty()) {
-			whereQuery += " AND " + MainView.BOARD_TABLE + ".interruption_id = " + MainView.INTERRUPTIONS_TABLE + ".id ";
-			whereQuery += " AND " + MainView.INTERRUPTIONS_TABLE + ".interruption = '" + searchSelectedBoardInterruption + "'";
+			whereQuery += " AND " + SalesMainView.BOARD_TABLE + ".interruption_id = " + SalesMainView.INTERRUPTIONS_TABLE + ".id ";
+			whereQuery += " AND " + SalesMainView.INTERRUPTIONS_TABLE + ".interruption = '" + searchSelectedBoardInterruption + "'";
 		}
 		if(searchSelectedBoardLockType != null && !searchSelectedBoardLockType.equalsIgnoreCase("Todas") &&
 				!searchSelectedBoardLockType.isEmpty()) {
-			whereQuery += " AND " + MainView.BOARD_TABLE + ".lock_type_id = " + MainView.LOCK_TYPES_TABLE + ".id ";
-			whereQuery += " AND " + MainView.LOCK_TYPES_TABLE + ".lock_type = '" + searchSelectedBoardLockType + "'";
+			whereQuery += " AND " + SalesMainView.BOARD_TABLE + ".lock_type_id = " + SalesMainView.LOCK_TYPES_TABLE + ".id ";
+			whereQuery += " AND " + SalesMainView.LOCK_TYPES_TABLE + ".lock_type = '" + searchSelectedBoardLockType + "'";
 		}
 		
 		ArrayList<String> fields = new ArrayList<String>();
-		fields.add(MainView.BOARD_ID_FIELD);
-		fields.add(MainView.BOARD_NAME_FIELD);
-		fields.add(MainView.BOARD_TYPE_FIELD);
-		fields.add(MainView.INSTALLATION_FIELD);
-		fields.add(MainView.NEMA_FIELD);
-		fields.add(MainView.BOARD_BAR_CAPACITY_FIELD);
-		fields.add(MainView.BOARD_BAR_TYPE_FIELD);
-		fields.add(MainView.BOARD_CIRCUITS_FIELD);
-		fields.add(MainView.BOARD_VOLTAGE_FIELD);
-		fields.add(MainView.BOARD_PHASES_FIELD);
-		fields.add(MainView.BOARD_GROUND_FIELD);
-		fields.add(MainView.INTERRUPTION_FIELD);
-		fields.add(MainView.BOARD_LOCK_TYPE_FIELD);
-		fields.add(MainView.BOARD_PRICE_FIELD);
+		fields.add(SalesMainView.BOARD_ID_FIELD);
+		fields.add(SalesMainView.BOARD_NAME_FIELD);
+		fields.add(SalesMainView.BOARD_TYPE_FIELD);
+		fields.add(SalesMainView.INSTALLATION_FIELD);
+		fields.add(SalesMainView.NEMA_FIELD);
+		fields.add(SalesMainView.BOARD_BAR_CAPACITY_FIELD);
+		fields.add(SalesMainView.BOARD_BAR_TYPE_FIELD);
+		fields.add(SalesMainView.BOARD_CIRCUITS_FIELD);
+		fields.add(SalesMainView.BOARD_VOLTAGE_FIELD);
+		fields.add(SalesMainView.BOARD_PHASES_FIELD);
+		fields.add(SalesMainView.BOARD_GROUND_FIELD);
+		fields.add(SalesMainView.INTERRUPTION_FIELD);
+		fields.add(SalesMainView.BOARD_LOCK_TYPE_FIELD);
+		fields.add(SalesMainView.BOARD_PRICE_FIELD);
 		
 		ArrayList<String> tables = new ArrayList<String>();
-		tables.add(MainView.BOARD_TABLE);
-		tables.add(MainView.BOARD_TYPES_TABLE);
-		tables.add(MainView.INSTALLATIONS_TABLE);
-		tables.add(MainView.NEMAS_TABLE);
-		tables.add(MainView.BOARD_BAR_CAPACITIES_TABLE);
-		tables.add(MainView.BOARD_BAR_TYPES_TABLE);
-		tables.add(MainView.BOARD_CIRCUITS_TABLE);
-		tables.add(MainView.BOARD_VOLTAGES_TABLE);
-		tables.add(MainView.INTERRUPTIONS_TABLE);
-		tables.add(MainView.LOCK_TYPES_TABLE);
+		tables.add(SalesMainView.BOARD_TABLE);
+		tables.add(SalesMainView.BOARD_TYPES_TABLE);
+		tables.add(SalesMainView.INSTALLATIONS_TABLE);
+		tables.add(SalesMainView.NEMAS_TABLE);
+		tables.add(SalesMainView.BOARD_BAR_CAPACITIES_TABLE);
+		tables.add(SalesMainView.BOARD_BAR_TYPES_TABLE);
+		tables.add(SalesMainView.BOARD_CIRCUITS_TABLE);
+		tables.add(SalesMainView.BOARD_VOLTAGES_TABLE);
+		tables.add(SalesMainView.INTERRUPTIONS_TABLE);
+		tables.add(SalesMainView.LOCK_TYPES_TABLE);
 		
 		String fieldsQuery = StringTools.implode(",", fields);
 		String tablesQuery = StringTools.implode(",", tables);
@@ -5888,29 +5888,29 @@ public class MainView extends JFrame{
 	private JPanel createBudgetTablePanel() {	
 		
 		ArrayList<String> fields = new ArrayList<String>();
-		fields.add(MainView.BUDGET_ID_FIELD);
-		fields.add(MainView.BUDGET_CODE_FIELD);
-		fields.add(MainView.BUDGET_DATE_FIELD);
-		fields.add(MainView.BUDGET_EXPIRY_DAYS_FIELD);
-		fields.add(MainView.CLIENT_CODE_FIELD);
-		fields.add(MainView.CLIENT_FIELD);
-		fields.add(MainView.CLIENT_REPRESENTATIVE_FIELD);
-		fields.add(MainView.BUDGET_WORK_NAME_FIELD);
-		fields.add(MainView.METHOD_FIELD);
-		fields.add(MainView.USERNAME_FIELD);
-		fields.add(MainView.PLACE_FIELD);
-		fields.add(MainView.BUDGET_DELIVERY_TIME_FIELD);
-		fields.add(MainView.BUDGET_DELIVERY_PERIOD_FIELD);
+		fields.add(SalesMainView.BUDGET_ID_FIELD);
+		fields.add(SalesMainView.BUDGET_CODE_FIELD);
+		fields.add(SalesMainView.BUDGET_DATE_FIELD);
+		fields.add(SalesMainView.BUDGET_EXPIRY_DAYS_FIELD);
+		fields.add(SalesMainView.CLIENT_CODE_FIELD);
+		fields.add(SalesMainView.CLIENT_FIELD);
+		fields.add(SalesMainView.CLIENT_REPRESENTATIVE_FIELD);
+		fields.add(SalesMainView.BUDGET_WORK_NAME_FIELD);
+		fields.add(SalesMainView.METHOD_FIELD);
+		fields.add(SalesMainView.USERNAME_FIELD);
+		fields.add(SalesMainView.PLACE_FIELD);
+		fields.add(SalesMainView.BUDGET_DELIVERY_TIME_FIELD);
+		fields.add(SalesMainView.BUDGET_DELIVERY_PERIOD_FIELD);
 //		fields.add(MainView.BUDGET_TRACING_FIELD);
 		
 		ArrayList<String> tables = new ArrayList<String>();
-		tables.add(MainView.BUDGET_TABLE);
-		tables.add(MainView.BUDGET_DISPATCH_PLACES_TABLE);
-		tables.add(MainView.BUDGET_DELIVERY_PERIODS_TABLE);
-		tables.add(MainView.BUDGET_PAYMENT_METHODS_TABLE);
-		tables.add(MainView.BUDGET_STAGES_TABLE);
-		tables.add(MainView.USERS_TABLE);
-		tables.add(MainView.CLIENTS_TABLE);
+		tables.add(SalesMainView.BUDGET_TABLE);
+		tables.add(SalesMainView.BUDGET_DISPATCH_PLACES_TABLE);
+		tables.add(SalesMainView.BUDGET_DELIVERY_PERIODS_TABLE);
+		tables.add(SalesMainView.BUDGET_PAYMENT_METHODS_TABLE);
+		tables.add(SalesMainView.BUDGET_STAGES_TABLE);
+		tables.add(SalesMainView.USERS_TABLE);
+		tables.add(SalesMainView.CLIENTS_TABLE);
 				
 		
 		String fieldsQuery = StringTools.implode(",", fields);
@@ -6180,36 +6180,36 @@ public class MainView extends JFrame{
 	private void loadBudgetTable(String whereQuery) {
 		
 		if(null != textBudgetSearchClient && !textBudgetSearchClient.getText().isEmpty()) {
-			whereQuery += " AND " + MainView.CLIENTS_TABLE + ".client LIKE '%" + textBudgetSearchClient.getText() + "%'";
+			whereQuery += " AND " + SalesMainView.CLIENTS_TABLE + ".client LIKE '%" + textBudgetSearchClient.getText() + "%'";
 		}
 		if(null != textBudgetSearchId && !textBudgetSearchId.getText().isEmpty()) {
-			whereQuery += " AND " + MainView.BUDGET_TABLE + ".code LIKE '%" + textBudgetSearchId.getText() + "%'";
+			whereQuery += " AND " + SalesMainView.BUDGET_TABLE + ".code LIKE '%" + textBudgetSearchId.getText() + "%'";
 		}
 		
 		ArrayList<String> fields = new ArrayList<String>();
-		fields.add(MainView.BUDGET_ID_FIELD);
-		fields.add(MainView.BUDGET_CODE_FIELD);
-		fields.add(MainView.BUDGET_DATE_FIELD);
-		fields.add(MainView.BUDGET_EXPIRY_DAYS_FIELD);
-		fields.add(MainView.CLIENT_CODE_FIELD);
-		fields.add(MainView.CLIENT_FIELD);
-		fields.add(MainView.CLIENT_REPRESENTATIVE_FIELD);
-		fields.add(MainView.BUDGET_WORK_NAME_FIELD);
-		fields.add(MainView.METHOD_FIELD);
-		fields.add(MainView.USERNAME_FIELD);
-		fields.add(MainView.PLACE_FIELD);
-		fields.add(MainView.BUDGET_DELIVERY_TIME_FIELD);
-		fields.add(MainView.BUDGET_DELIVERY_PERIOD_FIELD);
+		fields.add(SalesMainView.BUDGET_ID_FIELD);
+		fields.add(SalesMainView.BUDGET_CODE_FIELD);
+		fields.add(SalesMainView.BUDGET_DATE_FIELD);
+		fields.add(SalesMainView.BUDGET_EXPIRY_DAYS_FIELD);
+		fields.add(SalesMainView.CLIENT_CODE_FIELD);
+		fields.add(SalesMainView.CLIENT_FIELD);
+		fields.add(SalesMainView.CLIENT_REPRESENTATIVE_FIELD);
+		fields.add(SalesMainView.BUDGET_WORK_NAME_FIELD);
+		fields.add(SalesMainView.METHOD_FIELD);
+		fields.add(SalesMainView.USERNAME_FIELD);
+		fields.add(SalesMainView.PLACE_FIELD);
+		fields.add(SalesMainView.BUDGET_DELIVERY_TIME_FIELD);
+		fields.add(SalesMainView.BUDGET_DELIVERY_PERIOD_FIELD);
 		//fields.add(MainView.BUDGET_TRACING_FIELD);
 		
 		ArrayList<String> tables = new ArrayList<String>();
-		tables.add(MainView.BUDGET_TABLE);
-		tables.add(MainView.BUDGET_DISPATCH_PLACES_TABLE);
-		tables.add(MainView.BUDGET_DELIVERY_PERIODS_TABLE);
-		tables.add(MainView.BUDGET_PAYMENT_METHODS_TABLE);
-		tables.add(MainView.BUDGET_STAGES_TABLE);
-		tables.add(MainView.USERS_TABLE);
-		tables.add(MainView.CLIENTS_TABLE);
+		tables.add(SalesMainView.BUDGET_TABLE);
+		tables.add(SalesMainView.BUDGET_DISPATCH_PLACES_TABLE);
+		tables.add(SalesMainView.BUDGET_DELIVERY_PERIODS_TABLE);
+		tables.add(SalesMainView.BUDGET_PAYMENT_METHODS_TABLE);
+		tables.add(SalesMainView.BUDGET_STAGES_TABLE);
+		tables.add(SalesMainView.USERS_TABLE);
+		tables.add(SalesMainView.CLIENTS_TABLE);
 		
 		String fieldsQuery = StringTools.implode(",", fields);
 		String tablesQuery = StringTools.implode(",", tables);
@@ -6290,48 +6290,48 @@ public class MainView extends JFrame{
 	private void loadBudgetBoxTable() {
 		ArrayList<String> fields = new ArrayList<String>();
 		fields.add("budget_boxes.id");
-		fields.add(" CONCAT('Caja ', box_types.type, ', ', IF(boxes.height=0,'N/A',boxes.height), ' x ', IF(boxes.width=0,'N/A',boxes.width), ' x ', IF(boxes.depth=0,'N/A',boxes.depth), ' ' , IF(boxes.units_id=0,'N/A',box_measure_units.units), ', ' ," + MainView.NEMA_FIELD + ") as description");
-		fields.add(MainView.INSTALLATION_FIELD);
-		fields.add(MainView.BOX_PAIRS_FIELD);
-		fields.add(MainView.BOX_FINISH_FIELD);
-		fields.add(MainView.BOX_COLOR_FIELD);
-		fields.add(MainView.BOX_CALIBER_FIELD);
-		fields.add(MainView.BOX_LOCK_TYPE_FIELD);
+		fields.add(" CONCAT('Caja ', box_types.type, ', ', IF(boxes.height=0,'N/A',boxes.height), ' x ', IF(boxes.width=0,'N/A',boxes.width), ' x ', IF(boxes.depth=0,'N/A',boxes.depth), ' ' , IF(boxes.units_id=0,'N/A',box_measure_units.units), ', ' ," + SalesMainView.NEMA_FIELD + ") as description");
+		fields.add(SalesMainView.INSTALLATION_FIELD);
+		fields.add(SalesMainView.BOX_PAIRS_FIELD);
+		fields.add(SalesMainView.BOX_FINISH_FIELD);
+		fields.add(SalesMainView.BOX_COLOR_FIELD);
+		fields.add(SalesMainView.BOX_CALIBER_FIELD);
+		fields.add(SalesMainView.BOX_LOCK_TYPE_FIELD);
 		fields.add("budget_boxes.quantity");
-		fields.add(MainView.BOX_PRICE_FIELD);
-		fields.add("(budget_boxes.quantity * " + MainView.BOX_PRICE_FIELD + ") as total");
+		fields.add(SalesMainView.BOX_PRICE_FIELD);
+		fields.add("(budget_boxes.quantity * " + SalesMainView.BOX_PRICE_FIELD + ") as total");
 		
 		ArrayList<String> tables = new ArrayList<String>();
-		tables.add(MainView.BOXES_TABLE);
-		tables.add(MainView.BOX_TYPES_TABLE);
-		tables.add(MainView.INSTALLATIONS_TABLE);
-		tables.add(MainView.NEMAS_TABLE);
-		tables.add(MainView.BOX_SHEETS_TABLE);
-		tables.add(MainView.BOX_FINISHES_TABLE);
-		tables.add(MainView.BOX_COLORS_TABLE);
-		tables.add(MainView.BOX_UNITS_TABLE);
-		tables.add(MainView.BOX_CALIBERS_TABLE);
-		tables.add(MainView.LOCK_TYPES_TABLE);
+		tables.add(SalesMainView.BOXES_TABLE);
+		tables.add(SalesMainView.BOX_TYPES_TABLE);
+		tables.add(SalesMainView.INSTALLATIONS_TABLE);
+		tables.add(SalesMainView.NEMAS_TABLE);
+		tables.add(SalesMainView.BOX_SHEETS_TABLE);
+		tables.add(SalesMainView.BOX_FINISHES_TABLE);
+		tables.add(SalesMainView.BOX_COLORS_TABLE);
+		tables.add(SalesMainView.BOX_UNITS_TABLE);
+		tables.add(SalesMainView.BOX_CALIBERS_TABLE);
+		tables.add(SalesMainView.LOCK_TYPES_TABLE);
 		tables.add("budget_boxes");
 		
 		String whereQuery = 
 				" AND ( (boxes.sheet_id > 0 "
-					+ " AND boxes.sheet_id = " + MainView.BOX_SHEETS_TABLE + ".id) "
+					+ " AND boxes.sheet_id = " + SalesMainView.BOX_SHEETS_TABLE + ".id) "
 					+ " OR boxes.sheet_id = 0) "
 				+ " AND ( (boxes.finish_id > 0 "
-					+ " AND boxes.finish_id = " + MainView.BOX_FINISHES_TABLE + ".id) "
+					+ " AND boxes.finish_id = " + SalesMainView.BOX_FINISHES_TABLE + ".id) "
 					+ " OR boxes.finish_id = 0) "
 				+ " AND ( (boxes.color_id > 0 "
-					+ " AND boxes.color_id = " + MainView.BOX_COLORS_TABLE + ".id) "
+					+ " AND boxes.color_id = " + SalesMainView.BOX_COLORS_TABLE + ".id) "
 					+ " OR boxes.color_id = 0) "
 				+ " AND ( (boxes.units_id > 0 "
-					+ " AND boxes.units_id = " + MainView.BOX_UNITS_TABLE + ".id) "
+					+ " AND boxes.units_id = " + SalesMainView.BOX_UNITS_TABLE + ".id) "
 					+ " OR boxes.units_id = 0) "
 				+ " AND ( (boxes.caliber_id > 0 "
-					+ " AND boxes.caliber_id = " + MainView.BOX_CALIBERS_TABLE + ".id) "
+					+ " AND boxes.caliber_id = " + SalesMainView.BOX_CALIBERS_TABLE + ".id) "
 					+ " OR boxes.caliber_id = 0) "
 				+ " AND ( (boxes.lock_type_id > 0 "
-					+ " AND boxes.lock_type_id = " + MainView.LOCK_TYPES_TABLE + ".id) "
+					+ " AND boxes.lock_type_id = " + SalesMainView.LOCK_TYPES_TABLE + ".id) "
 					+ " OR boxes.lock_type_id = 0) ";
 		
 		String fieldsQuery = StringTools.implode(",", fields);
@@ -6368,29 +6368,29 @@ public class MainView extends JFrame{
 		ArrayList<String> fields = new ArrayList<String>();
 		fields.add("budget_boards.id");
 		fields.add("CONCAT('Caja para Tablero, ', board_types.type, ', ', boards.phases, ', de ', board_circuits.circuits, ' circuitos, ', nemas.nema) as description");
-		fields.add(MainView.BOARD_NAME_FIELD);
-		fields.add(MainView.INSTALLATION_FIELD);
-		fields.add(MainView.BOARD_BAR_CAPACITY_FIELD);
-		fields.add(MainView.BOARD_BAR_TYPE_FIELD);
-		fields.add(MainView.BOARD_VOLTAGE_FIELD);
-		fields.add(MainView.BOARD_GROUND_FIELD);
-		fields.add(MainView.INTERRUPTION_FIELD);
-		fields.add(MainView.BOARD_LOCK_TYPE_FIELD);
+		fields.add(SalesMainView.BOARD_NAME_FIELD);
+		fields.add(SalesMainView.INSTALLATION_FIELD);
+		fields.add(SalesMainView.BOARD_BAR_CAPACITY_FIELD);
+		fields.add(SalesMainView.BOARD_BAR_TYPE_FIELD);
+		fields.add(SalesMainView.BOARD_VOLTAGE_FIELD);
+		fields.add(SalesMainView.BOARD_GROUND_FIELD);
+		fields.add(SalesMainView.INTERRUPTION_FIELD);
+		fields.add(SalesMainView.BOARD_LOCK_TYPE_FIELD);
 		fields.add("budget_boards.quantity");
-		fields.add(MainView.BOARD_PRICE_FIELD);
-		fields.add("(budget_boards.quantity * " + MainView.BOARD_PRICE_FIELD + ") as total");
+		fields.add(SalesMainView.BOARD_PRICE_FIELD);
+		fields.add("(budget_boards.quantity * " + SalesMainView.BOARD_PRICE_FIELD + ") as total");
 		
 		ArrayList<String> tables = new ArrayList<String>();
-		tables.add(MainView.BOARD_TABLE);
-		tables.add(MainView.BOARD_TYPES_TABLE);
-		tables.add(MainView.INSTALLATIONS_TABLE);
-		tables.add(MainView.NEMAS_TABLE);
-		tables.add(MainView.BOARD_BAR_CAPACITIES_TABLE);
-		tables.add(MainView.BOARD_BAR_TYPES_TABLE);
-		tables.add(MainView.BOARD_CIRCUITS_TABLE);
-		tables.add(MainView.BOARD_VOLTAGES_TABLE);
-		tables.add(MainView.INTERRUPTIONS_TABLE);
-		tables.add(MainView.LOCK_TYPES_TABLE);
+		tables.add(SalesMainView.BOARD_TABLE);
+		tables.add(SalesMainView.BOARD_TYPES_TABLE);
+		tables.add(SalesMainView.INSTALLATIONS_TABLE);
+		tables.add(SalesMainView.NEMAS_TABLE);
+		tables.add(SalesMainView.BOARD_BAR_CAPACITIES_TABLE);
+		tables.add(SalesMainView.BOARD_BAR_TYPES_TABLE);
+		tables.add(SalesMainView.BOARD_CIRCUITS_TABLE);
+		tables.add(SalesMainView.BOARD_VOLTAGES_TABLE);
+		tables.add(SalesMainView.INTERRUPTIONS_TABLE);
+		tables.add(SalesMainView.LOCK_TYPES_TABLE);
 		tables.add("budget_boards");
 		
 		String fieldsQuery = StringTools.implode(",", fields);
@@ -6430,7 +6430,7 @@ public class MainView extends JFrame{
 	
 	private void setBudgetsMode(int mode){
 		
-		if(mode == MainView.VIEW_MODE) {
+		if(mode == SalesMainView.VIEW_MODE) {
 			if(panelBudgetAddNew.isVisible()) {
 				addBudgetDateModel.setSelected(false);
 				buttonBudgetAdd.setEnabled(true);
@@ -6480,7 +6480,7 @@ public class MainView extends JFrame{
 					}
 				});
 			}
-		} else if(mode == MainView.ADD_MODE) {
+		} else if(mode == SalesMainView.ADD_MODE) {
 			buttonBudgetAdd.setEnabled(false);
 			tableBudgetsResult.clearSelection();
 			SwingUtilities.invokeLater(new Runnable(){
@@ -6502,7 +6502,7 @@ public class MainView extends JFrame{
 					budgetsFrame.repaint();
 				}
 			});
-		} else if(mode == MainView.EDIT_MODE) {
+		} else if(mode == SalesMainView.EDIT_MODE) {
 			buttonBudgetAdd.setEnabled(false);
 			buttonBudgetEdit.setEnabled(false);
 			editBudgetId = Integer.valueOf(String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_ID_COLUMN)));
@@ -6751,8 +6751,8 @@ public class MainView extends JFrame{
 				}
 				updateSwitchTextEditDescription();
 			} else if (actionCommand.equalsIgnoreCase("box.search.type")) {
-				fromQuery = MainView.BOXES_TABLE + "," + MainView.BOX_TYPES_TABLE;
-				whereQuery = " WHERE " + MainView.BOXES_TABLE + ".type_id = " + MainView.BOX_TYPES_TABLE + ".id ";
+				fromQuery = SalesMainView.BOXES_TABLE + "," + SalesMainView.BOX_TYPES_TABLE;
+				whereQuery = " WHERE " + SalesMainView.BOXES_TABLE + ".type_id = " + SalesMainView.BOX_TYPES_TABLE + ".id ";
 				searchSelectedBoxType = comboBoxTypes.getSelectedItem().toString();
 				this.clearSelectedBoxOptions("type");
 				
@@ -6814,34 +6814,34 @@ public class MainView extends JFrame{
 				
 				if(!searchSelectedBoxType.equalsIgnoreCase("Todas")) {
 					this.selectWhereQuery();
-					whereQuery += MainView.BOX_TYPES_TABLE + ".type = '"+searchSelectedBoxType+"' ";
+					whereQuery += SalesMainView.BOX_TYPES_TABLE + ".type = '"+searchSelectedBoxType+"' ";
 				}
 				this.loadComboBox("types");
 			} else if (actionCommand.equalsIgnoreCase("box.search.installation")) {
 				searchSelectedBoxInstallation = comboBoxInstallations.getSelectedItem().toString();
 				this.clearSelectedBoxOptions("installation");
-				fromQuery = MainView.BOXES_TABLE + "," + MainView.INSTALLATIONS_TABLE;
+				fromQuery = SalesMainView.BOXES_TABLE + "," + SalesMainView.INSTALLATIONS_TABLE;
 				if(!searchSelectedBoxInstallation.equalsIgnoreCase("Todas")) {
 					this.selectWhereQuery();
-					whereQuery += MainView.INSTALLATIONS_TABLE + ".installation = '"+searchSelectedBoxInstallation+"' ";
+					whereQuery += SalesMainView.INSTALLATIONS_TABLE + ".installation = '"+searchSelectedBoxInstallation+"' ";
 				}
 				this.loadComboBox("installations");
 			} else if (actionCommand.equalsIgnoreCase("box.search.nema")) {
 				searchSelectedBoxNema = comboBoxNemas.getSelectedItem().toString();
 				this.clearSelectedBoxOptions("nema");
-				fromQuery = MainView.BOXES_TABLE + "," + MainView.NEMAS_TABLE;
+				fromQuery = SalesMainView.BOXES_TABLE + "," + SalesMainView.NEMAS_TABLE;
 				if(!searchSelectedBoxNema.equalsIgnoreCase("Todas")) {
 					this.selectWhereQuery();
-					whereQuery += MainView.NEMAS_TABLE + ".nema = '"+searchSelectedBoxNema+"' ";
+					whereQuery += SalesMainView.NEMAS_TABLE + ".nema = '"+searchSelectedBoxNema+"' ";
 				}
 				this.loadComboBox("nemas");
 			} else if (actionCommand.equalsIgnoreCase("box.search.pairs")) {
 				searchSelectedBoxPairs = comboBoxPairs.getSelectedItem().toString();
 				this.clearSelectedBoxOptions("pairs");
-				fromQuery = MainView.BOXES_TABLE;
+				fromQuery = SalesMainView.BOXES_TABLE;
 				if(!searchSelectedBoxPairs.equalsIgnoreCase("Todas")) {
 					this.selectWhereQuery();
-					whereQuery += MainView.BOXES_TABLE + ".pairs = '"+searchSelectedBoxPairs+"' ";
+					whereQuery += SalesMainView.BOXES_TABLE + ".pairs = '"+searchSelectedBoxPairs+"' ";
 				}
 				this.loadComboBox("pairs");
 			} else if (actionCommand.equalsIgnoreCase("box.search.sheet")) {
@@ -6854,46 +6854,46 @@ public class MainView extends JFrame{
 					comboBoxFinishes.setEnabled(true);
 					comboBoxColors.setEnabled(true);
 				}
-				fromQuery = MainView.BOXES_TABLE + "," + MainView.BOX_SHEETS_TABLE;
+				fromQuery = SalesMainView.BOXES_TABLE + "," + SalesMainView.BOX_SHEETS_TABLE;
 				if(!searchSelectedBoxSheet.equalsIgnoreCase("Todas")) {
 					this.selectWhereQuery();
-					whereQuery += MainView.BOX_SHEETS_TABLE + ".sheet = '"+searchSelectedBoxSheet+"' ";
+					whereQuery += SalesMainView.BOX_SHEETS_TABLE + ".sheet = '"+searchSelectedBoxSheet+"' ";
 				}
 				this.loadComboBox("sheets");
 			} else if (actionCommand.equalsIgnoreCase("box.search.finish")) {
 				searchSelectedBoxFinish = comboBoxFinishes.getSelectedItem().toString();
 				this.clearSelectedBoxOptions("finish");
-				fromQuery = MainView.BOXES_TABLE + "," + MainView.BOX_FINISHES_TABLE;
+				fromQuery = SalesMainView.BOXES_TABLE + "," + SalesMainView.BOX_FINISHES_TABLE;
 				if(!searchSelectedBoxFinish.equalsIgnoreCase("Todas")) {
 					this.selectWhereQuery();
-					whereQuery += MainView.BOX_FINISHES_TABLE + ".finish = '"+searchSelectedBoxFinish+"' ";
+					whereQuery += SalesMainView.BOX_FINISHES_TABLE + ".finish = '"+searchSelectedBoxFinish+"' ";
 				}
 				this.loadComboBox("finishes");
 			} else if (actionCommand.equalsIgnoreCase("box.search.color")) {
 				searchSelectedBoxColor = comboBoxColors.getSelectedItem().toString();
 				this.clearSelectedBoxOptions("color");
-				fromQuery = MainView.BOXES_TABLE + "," + MainView.BOX_COLORS_TABLE;
+				fromQuery = SalesMainView.BOXES_TABLE + "," + SalesMainView.BOX_COLORS_TABLE;
 				if(!searchSelectedBoxColor.equalsIgnoreCase("Todas")) {
 					this.selectWhereQuery();
-					whereQuery += MainView.BOX_COLORS_TABLE + ".color = '"+searchSelectedBoxColor+"' ";
+					whereQuery += SalesMainView.BOX_COLORS_TABLE + ".color = '"+searchSelectedBoxColor+"' ";
 				}
 				this.loadComboBox("colors");
 			} else if (actionCommand.equalsIgnoreCase("box.search.caliber")) {
 				searchSelectedBoxCaliber = comboBoxCalibers.getSelectedItem().toString();
 				this.clearSelectedBoxOptions("caliber");
-				fromQuery = MainView.BOXES_TABLE + "," + MainView.BOX_CALIBERS_TABLE;
+				fromQuery = SalesMainView.BOXES_TABLE + "," + SalesMainView.BOX_CALIBERS_TABLE;
 				if(!searchSelectedBoxCaliber.equalsIgnoreCase("Todas")) {
 					this.selectWhereQuery();
-					whereQuery += MainView.BOX_CALIBERS_TABLE + ".caliber = '"+searchSelectedBoxCaliber+"' ";
+					whereQuery += SalesMainView.BOX_CALIBERS_TABLE + ".caliber = '"+searchSelectedBoxCaliber+"' ";
 				}
 				this.loadComboBox("calibers");
 			} else if (actionCommand.equalsIgnoreCase("box.search.lock_type")) {
 				searchSelectedBoxLockType = comboBoxLockTypes.getSelectedItem().toString();
 				this.clearSelectedBoxOptions("lock_type");
-				fromQuery = MainView.BOXES_TABLE + "," + MainView.LOCK_TYPES_TABLE;
+				fromQuery = SalesMainView.BOXES_TABLE + "," + SalesMainView.LOCK_TYPES_TABLE;
 				if(!searchSelectedBoxLockType.equalsIgnoreCase("Todas")) {
 					this.selectWhereQuery();
-					whereQuery += MainView.LOCK_TYPES_TABLE + ".lock_type = '"+searchSelectedBoxLockType+"' ";
+					whereQuery += SalesMainView.LOCK_TYPES_TABLE + ".lock_type = '"+searchSelectedBoxLockType+"' ";
 				}
 				this.loadComboBox("lock_types");
 			} else if (actionCommand.equalsIgnoreCase("box.description.add.type")) {
@@ -6955,87 +6955,87 @@ public class MainView extends JFrame{
 			} else if (actionCommand.equalsIgnoreCase("board.search.type")) {
 				searchSelectedBoardType = comboBoardTypes.getSelectedItem().toString();
 				this.clearSelectedBoardOptions("type");
-				fromQuery = MainView.BOARD_TABLE + "," + MainView.BOARD_TYPES_TABLE;
+				fromQuery = SalesMainView.BOARD_TABLE + "," + SalesMainView.BOARD_TYPES_TABLE;
 				if(!searchSelectedBoardType.equalsIgnoreCase("Todas")) {
 					this.selectWhereQuery();
-					whereQuery += MainView.BOARD_TYPES_TABLE + ".type = '"+searchSelectedBoardType+"' ";
+					whereQuery += SalesMainView.BOARD_TYPES_TABLE + ".type = '"+searchSelectedBoardType+"' ";
 				}
 				this.loadComboBoard("types");
 			} else if (actionCommand.equalsIgnoreCase("board.search.installation")) {
 				searchSelectedBoardInstallation = comboBoardInstallations.getSelectedItem().toString();
 				this.clearSelectedBoardOptions("installation");
-				fromQuery = MainView.BOARD_TABLE + "," + MainView.INSTALLATIONS_TABLE;
+				fromQuery = SalesMainView.BOARD_TABLE + "," + SalesMainView.INSTALLATIONS_TABLE;
 				if(!searchSelectedBoardInstallation.equalsIgnoreCase("Todas")) {
 					this.selectWhereQuery();
-					whereQuery += MainView.INSTALLATIONS_TABLE + ".installation = '"+searchSelectedBoardInstallation+"' ";
+					whereQuery += SalesMainView.INSTALLATIONS_TABLE + ".installation = '"+searchSelectedBoardInstallation+"' ";
 				}
 				this.loadComboBoard("installations");
 			} else if (actionCommand.equalsIgnoreCase("board.search.nema")) {
 				searchSelectedBoardNema = comboBoardNemas.getSelectedItem().toString();
 				this.clearSelectedBoardOptions("nema");
-				fromQuery = MainView.BOARD_TABLE + "," + MainView.NEMAS_TABLE;
+				fromQuery = SalesMainView.BOARD_TABLE + "," + SalesMainView.NEMAS_TABLE;
 				if(!searchSelectedBoardNema.equalsIgnoreCase("Todas")) {
 					this.selectWhereQuery();
-					whereQuery += MainView.NEMAS_TABLE + ".nema = '"+searchSelectedBoardNema+"' ";
+					whereQuery += SalesMainView.NEMAS_TABLE + ".nema = '"+searchSelectedBoardNema+"' ";
 				}
 				this.loadComboBoard("nemas");
 			} else if (actionCommand.equalsIgnoreCase("board.search.bar_capacity")) {
 				searchSelectedBoardBarCapacity = comboBoardBarCapacities.getSelectedItem().toString();
 				this.clearSelectedBoardOptions("bar_capacity");
-				fromQuery = MainView.BOARD_TABLE + "," + MainView.BOARD_BAR_CAPACITIES_TABLE;
+				fromQuery = SalesMainView.BOARD_TABLE + "," + SalesMainView.BOARD_BAR_CAPACITIES_TABLE;
 				if(!searchSelectedBoardBarCapacity.equalsIgnoreCase("Todas")) {
 					this.selectWhereQuery();
-					whereQuery += MainView.BOARD_BAR_CAPACITIES_TABLE + ".bar_capacity = '"+searchSelectedBoardBarCapacity+"' ";
+					whereQuery += SalesMainView.BOARD_BAR_CAPACITIES_TABLE + ".bar_capacity = '"+searchSelectedBoardBarCapacity+"' ";
 				}
 				this.loadComboBoard("bar_capacities");
 			} else if (actionCommand.equalsIgnoreCase("board.search.bar_type")) {
 				searchSelectedBoardBarType = comboBoardBarTypes.getSelectedItem().toString();
 				this.clearSelectedBoardOptions("bar_type");
-				fromQuery = MainView.BOARD_TABLE + "," + MainView.BOARD_BAR_TYPES_TABLE;
+				fromQuery = SalesMainView.BOARD_TABLE + "," + SalesMainView.BOARD_BAR_TYPES_TABLE;
 				if(!searchSelectedBoardBarType.equalsIgnoreCase("Todas")) {
 					this.selectWhereQuery();
-					whereQuery += MainView.BOARD_BAR_TYPES_TABLE + ".bar_type = '"+searchSelectedBoardBarType+"' ";
+					whereQuery += SalesMainView.BOARD_BAR_TYPES_TABLE + ".bar_type = '"+searchSelectedBoardBarType+"' ";
 				}
 				this.loadComboBoard("bar_types");
 			} else if (actionCommand.equalsIgnoreCase("board.search.circuits")) {
 				searchSelectedBoardCircuits = comboBoardCircuits.getSelectedItem().toString();
 				this.clearSelectedBoardOptions("circuits");
-				fromQuery = MainView.BOARD_TABLE + "," + MainView.BOARD_CIRCUITS_TABLE;
+				fromQuery = SalesMainView.BOARD_TABLE + "," + SalesMainView.BOARD_CIRCUITS_TABLE;
 				if(!searchSelectedBoardCircuits.equalsIgnoreCase("Todas")) {
 					this.selectWhereQuery();
-					whereQuery += MainView.BOARD_CIRCUITS_TABLE + ".circuits = '"+searchSelectedBoardCircuits+"' ";
+					whereQuery += SalesMainView.BOARD_CIRCUITS_TABLE + ".circuits = '"+searchSelectedBoardCircuits+"' ";
 				}
 				this.loadComboBoard("circuits");
 			} else if (actionCommand.equalsIgnoreCase("board.search.voltage")) {
 				searchSelectedBoardVoltage = comboBoardVoltages.getSelectedItem().toString();
 				this.clearSelectedBoardOptions("voltage");
-				fromQuery = MainView.BOARD_TABLE + "," + MainView.BOARD_VOLTAGES_TABLE;
+				fromQuery = SalesMainView.BOARD_TABLE + "," + SalesMainView.BOARD_VOLTAGES_TABLE;
 				if(!searchSelectedBoardVoltage.equalsIgnoreCase("Todas")) {
 					this.selectWhereQuery();
-					whereQuery += MainView.BOARD_VOLTAGES_TABLE + ".voltage = '"+searchSelectedBoardVoltage+"' ";
+					whereQuery += SalesMainView.BOARD_VOLTAGES_TABLE + ".voltage = '"+searchSelectedBoardVoltage+"' ";
 				}
 				this.loadComboBoard("voltages");
 			} else if (actionCommand.equalsIgnoreCase("board.search.phases")) {
 					searchSelectedBoardPhases = comboBoardPhases.getSelectedItem().toString();
 					this.clearSelectedBoardOptions("phases");
-					fromQuery = MainView.BOARD_TABLE;
+					fromQuery = SalesMainView.BOARD_TABLE;
 					if(!searchSelectedBoardPhases.equalsIgnoreCase("Todas")) {
 						this.selectWhereQuery();
-						whereQuery += MainView.BOARD_TABLE + ".phases = '"+searchSelectedBoardPhases+"' ";
+						whereQuery += SalesMainView.BOARD_TABLE + ".phases = '"+searchSelectedBoardPhases+"' ";
 					}
 					this.loadComboBoard("phases");
 			} else if (actionCommand.equalsIgnoreCase("board.search.ground")) {
 				searchSelectedBoardGround = comboBoardGround.getSelectedItem().toString();
 				this.clearSelectedBoardOptions("ground");
-				fromQuery = MainView.BOARD_TABLE;
+				fromQuery = SalesMainView.BOARD_TABLE;
 				this.loadComboBoard("ground");
 			} else if (actionCommand.equalsIgnoreCase("board.search.interruption")) {
 				searchSelectedBoardInterruption = comboBoardInterruptions.getSelectedItem().toString();
 				this.clearSelectedBoardOptions("interruption");
-				fromQuery = MainView.BOARD_TABLE + "," + MainView.INTERRUPTIONS_TABLE;
+				fromQuery = SalesMainView.BOARD_TABLE + "," + SalesMainView.INTERRUPTIONS_TABLE;
 				if(!searchSelectedBoardInterruption.equalsIgnoreCase("Todas")) {
 					this.selectWhereQuery();
-					whereQuery += MainView.INTERRUPTIONS_TABLE + ".interruption = '"+searchSelectedBoardInterruption+"' ";
+					whereQuery += SalesMainView.INTERRUPTIONS_TABLE + ".interruption = '"+searchSelectedBoardInterruption+"' ";
 				}
 				this.loadComboBoard("interruptions");
 			} else if (actionCommand.equalsIgnoreCase("board.description.add.type") || 
@@ -7290,74 +7290,74 @@ public class MainView extends JFrame{
 			switch(start) {
 				case "types":
 					this.selectWhereQuery();
-					fromQuery += "," + MainView.INSTALLATIONS_TABLE;
-					whereQuery += MainView.BOXES_TABLE + ".type_id = " + MainView.BOX_TYPES_TABLE + ".id";
+					fromQuery += "," + SalesMainView.INSTALLATIONS_TABLE;
+					whereQuery += SalesMainView.BOXES_TABLE + ".type_id = " + SalesMainView.BOX_TYPES_TABLE + ".id";
 					this.selectWhereQuery();
-					whereQuery += MainView.BOXES_TABLE + ".installation_id = " + MainView.INSTALLATIONS_TABLE + ".id ";
-					comboBoxInstallations.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(MainView.INSTALLATIONS_TABLE, "installation"))));
+					whereQuery += SalesMainView.BOXES_TABLE + ".installation_id = " + SalesMainView.INSTALLATIONS_TABLE + ".id ";
+					comboBoxInstallations.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(SalesMainView.INSTALLATIONS_TABLE, "installation"))));
 				case "installations":
-					fromQuery += "," + MainView.NEMAS_TABLE;
+					fromQuery += "," + SalesMainView.NEMAS_TABLE;
 					if(!searchSelectedBoxInstallation.isEmpty()) {
 						this.selectWhereQuery();
-						whereQuery += MainView.BOXES_TABLE + ".installation_id = " + MainView.INSTALLATIONS_TABLE + ".id";
+						whereQuery += SalesMainView.BOXES_TABLE + ".installation_id = " + SalesMainView.INSTALLATIONS_TABLE + ".id";
 					}
 					this.addBoxAdditionalWhere("installation");
 					this.selectWhereQuery();
-					whereQuery += MainView.BOXES_TABLE + ".nema_id = " + MainView.NEMAS_TABLE + ".id ";
-					comboBoxNemas.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(MainView.NEMAS_TABLE, "nema"))));
+					whereQuery += SalesMainView.BOXES_TABLE + ".nema_id = " + SalesMainView.NEMAS_TABLE + ".id ";
+					comboBoxNemas.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(SalesMainView.NEMAS_TABLE, "nema"))));
 				case "nemas":
 					if (!searchSelectedBoxNema.isEmpty()) {
 						this.selectWhereQuery();
-						whereQuery += MainView.BOXES_TABLE + ".nema_id = " + MainView.NEMAS_TABLE + ".id";
+						whereQuery += SalesMainView.BOXES_TABLE + ".nema_id = " + SalesMainView.NEMAS_TABLE + ".id";
 					}
 					this.addBoxAdditionalWhere("nema");
 					if(searchSelectedBoxType.equalsIgnoreCase("para Pares Telefonicos")) {
 						this.selectWhereQuery();
 						whereQuery += "boxes.pairs > 0";
-						comboBoxPairs.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(MainView.BOXES_TABLE, "pairs"))));
+						comboBoxPairs.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(SalesMainView.BOXES_TABLE, "pairs"))));
 					} else if(((!searchSelectedBoxInstallation.equalsIgnoreCase("Todas") ||
 							searchSelectedBoxInstallation.isEmpty()) ||
 							!searchSelectedBoxNema.equalsIgnoreCase("Todas")) && 
 							(searchSelectedBoxType.equalsIgnoreCase("Todas") ||
 									searchSelectedBoxType.isEmpty())){
 						String tempWhereQuery = this.getSelectWhereQuery(whereQuery) + "boxes.pairs > 0";
-						comboBoxPairs.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(MainView.BOXES_TABLE, "pairs", tempWhereQuery))));
+						comboBoxPairs.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(SalesMainView.BOXES_TABLE, "pairs", tempWhereQuery))));
 					}
 				case "pairs":
-					fromQuery += "," + MainView.BOX_SHEETS_TABLE;
+					fromQuery += "," + SalesMainView.BOX_SHEETS_TABLE;
 					if(!searchSelectedBoxPairs.isEmpty()) {
 						this.selectWhereQuery();
-						whereQuery += MainView.BOXES_TABLE + ".pairs = '" + searchSelectedBoxPairs + "' ";
+						whereQuery += SalesMainView.BOXES_TABLE + ".pairs = '" + searchSelectedBoxPairs + "' ";
 					}
 					this.addBoxAdditionalWhere("pairs");
 					this.selectWhereQuery();
-					whereQuery += MainView.BOXES_TABLE + ".sheet_id = " + MainView.BOX_SHEETS_TABLE + ".id ";
-					comboBoxSheets.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(MainView.BOX_SHEETS_TABLE, "sheet"))));
+					whereQuery += SalesMainView.BOXES_TABLE + ".sheet_id = " + SalesMainView.BOX_SHEETS_TABLE + ".id ";
+					comboBoxSheets.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(SalesMainView.BOX_SHEETS_TABLE, "sheet"))));
 				case "sheets":
-					fromQuery += "," + MainView.BOX_FINISHES_TABLE;
+					fromQuery += "," + SalesMainView.BOX_FINISHES_TABLE;
 					if(!searchSelectedBoxSheet.isEmpty()) {
 						this.selectWhereQuery();
-						whereQuery += MainView.BOXES_TABLE + ".sheet_id = " + MainView.BOX_SHEETS_TABLE + ".id";
+						whereQuery += SalesMainView.BOXES_TABLE + ".sheet_id = " + SalesMainView.BOX_SHEETS_TABLE + ".id";
 					}
 					this.addBoxAdditionalWhere("sheet");
 					this.selectWhereQuery();
-					whereQuery += MainView.BOXES_TABLE + ".finish_id = " + MainView.BOX_FINISHES_TABLE + ".id ";
-					comboBoxFinishes.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(MainView.BOX_FINISHES_TABLE, "finish"))));
+					whereQuery += SalesMainView.BOXES_TABLE + ".finish_id = " + SalesMainView.BOX_FINISHES_TABLE + ".id ";
+					comboBoxFinishes.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(SalesMainView.BOX_FINISHES_TABLE, "finish"))));
 				case "finishes":
-					fromQuery += "," + MainView.BOX_COLORS_TABLE;
+					fromQuery += "," + SalesMainView.BOX_COLORS_TABLE;
 					if(!searchSelectedBoxFinish.isEmpty()) {
 						this.selectWhereQuery();
-						whereQuery += MainView.BOXES_TABLE + ".finish_id = " + MainView.BOX_FINISHES_TABLE + ".id";
+						whereQuery += SalesMainView.BOXES_TABLE + ".finish_id = " + SalesMainView.BOX_FINISHES_TABLE + ".id";
 					}
 					this.addBoxAdditionalWhere("finish");
 					this.selectWhereQuery();
 					whereQuery += "((boxes.color_id > 0 "
 							+ "AND boxes.color_id = box_colors.id) "
 							+ "OR boxes.color_id = 0)";
-					String tempWhereQuery = this.getSelectWhereQuery(whereQuery) + MainView.BOXES_TABLE + ".color_id = " + MainView.BOX_COLORS_TABLE + ".id";
-					comboBoxColors.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(MainView.BOX_COLORS_TABLE, "color", tempWhereQuery))));
+					String tempWhereQuery = this.getSelectWhereQuery(whereQuery) + SalesMainView.BOXES_TABLE + ".color_id = " + SalesMainView.BOX_COLORS_TABLE + ".id";
+					comboBoxColors.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(SalesMainView.BOX_COLORS_TABLE, "color", tempWhereQuery))));
 				case "colors":
-					fromQuery += "," + MainView.BOX_CALIBERS_TABLE;
+					fromQuery += "," + SalesMainView.BOX_CALIBERS_TABLE;
 					if(!searchSelectedBoxColor.isEmpty()) {
 						this.selectWhereQuery();
 						whereQuery += "((boxes.color_id > 0 "
@@ -7366,18 +7366,18 @@ public class MainView extends JFrame{
 					}
 					this.addBoxAdditionalWhere("color");
 					this.selectWhereQuery();
-					whereQuery += MainView.BOXES_TABLE + ".caliber_id = " + MainView.BOX_CALIBERS_TABLE + ".id ";
-					comboBoxCalibers.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(MainView.BOX_CALIBERS_TABLE, "caliber"))));
+					whereQuery += SalesMainView.BOXES_TABLE + ".caliber_id = " + SalesMainView.BOX_CALIBERS_TABLE + ".id ";
+					comboBoxCalibers.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(SalesMainView.BOX_CALIBERS_TABLE, "caliber"))));
 				case "calibers":
-					fromQuery += "," + MainView.LOCK_TYPES_TABLE;
+					fromQuery += "," + SalesMainView.LOCK_TYPES_TABLE;
 					if(!searchSelectedBoxCaliber.isEmpty()) {
 						this.selectWhereQuery();
-						whereQuery += MainView.BOXES_TABLE + ".caliber_id = " + MainView.BOX_CALIBERS_TABLE + ".id";
+						whereQuery += SalesMainView.BOXES_TABLE + ".caliber_id = " + SalesMainView.BOX_CALIBERS_TABLE + ".id";
 					}
 					this.addBoxAdditionalWhere("caliber");
 					this.selectWhereQuery();
-					whereQuery += MainView.BOXES_TABLE + ".lock_type_id = " + MainView.LOCK_TYPES_TABLE + ".id ";
-					comboBoxLockTypes.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(MainView.LOCK_TYPES_TABLE, "lock_type"))));
+					whereQuery += SalesMainView.BOXES_TABLE + ".lock_type_id = " + SalesMainView.LOCK_TYPES_TABLE + ".id ";
+					comboBoxLockTypes.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(SalesMainView.LOCK_TYPES_TABLE, "lock_type"))));
 					break;
 			}
 		}
@@ -7387,74 +7387,74 @@ public class MainView extends JFrame{
 			//Need to fix this to add the filters backward, NOT ADDING YET WELL
 			switch(start) {
 				case "caliber":
-					if(!fromQuery.contains(MainView.BOX_COLORS_TABLE)) {
-						fromQuery += "," + MainView.BOX_COLORS_TABLE;
+					if(!fromQuery.contains(SalesMainView.BOX_COLORS_TABLE)) {
+						fromQuery += "," + SalesMainView.BOX_COLORS_TABLE;
 					}
 					if(!searchSelectedBoxColor.isEmpty() && !searchSelectedBoxColor.equalsIgnoreCase("Todas")) {
 						this.selectWhereQuery();
-						whereQuery += MainView.BOX_COLORS_TABLE + ".color = '" + searchSelectedBoxColor + "'";
+						whereQuery += SalesMainView.BOX_COLORS_TABLE + ".color = '" + searchSelectedBoxColor + "'";
 						this.selectWhereQuery();
 						whereQuery += "((boxes.color_id > 0 "
 								+ "AND boxes.color_id = box_colors.id) "
 								+ "OR boxes.color_id = 0)";
 					}
 				case "color":
-					if(!fromQuery.contains(MainView.BOX_FINISHES_TABLE)) {
-						fromQuery += "," + MainView.BOX_FINISHES_TABLE;
+					if(!fromQuery.contains(SalesMainView.BOX_FINISHES_TABLE)) {
+						fromQuery += "," + SalesMainView.BOX_FINISHES_TABLE;
 					}
 					if(!searchSelectedBoxFinish.isEmpty() && !searchSelectedBoxFinish.equalsIgnoreCase("Todas")) {
 						this.selectWhereQuery();
-						whereQuery += MainView.BOX_FINISHES_TABLE + ".finish = '" + searchSelectedBoxFinish + "'";
+						whereQuery += SalesMainView.BOX_FINISHES_TABLE + ".finish = '" + searchSelectedBoxFinish + "'";
 						this.selectWhereQuery();
-						whereQuery += MainView.BOXES_TABLE + ".finish_id = " + MainView.BOX_FINISHES_TABLE + ".id";
+						whereQuery += SalesMainView.BOXES_TABLE + ".finish_id = " + SalesMainView.BOX_FINISHES_TABLE + ".id";
 					}
 				case "finish":
-					if(!fromQuery.contains(MainView.BOX_SHEETS_TABLE)) {
-						fromQuery += "," + MainView.BOX_SHEETS_TABLE;
+					if(!fromQuery.contains(SalesMainView.BOX_SHEETS_TABLE)) {
+						fromQuery += "," + SalesMainView.BOX_SHEETS_TABLE;
 					}
 					if(!searchSelectedBoxSheet.isEmpty() && !searchSelectedBoxSheet.equalsIgnoreCase("Todas")) {
 						this.selectWhereQuery();
-						whereQuery += MainView.BOX_SHEETS_TABLE + ".sheet = '" + searchSelectedBoxSheet + "'";
+						whereQuery += SalesMainView.BOX_SHEETS_TABLE + ".sheet = '" + searchSelectedBoxSheet + "'";
 						this.selectWhereQuery();
-						whereQuery += MainView.BOXES_TABLE + ".sheet_id = " + MainView.BOX_SHEETS_TABLE + ".id";
+						whereQuery += SalesMainView.BOXES_TABLE + ".sheet_id = " + SalesMainView.BOX_SHEETS_TABLE + ".id";
 					}
 				case "sheet":
-					if(!fromQuery.contains(MainView.BOXES_TABLE)) {
-						fromQuery += "," + MainView.BOXES_TABLE;
+					if(!fromQuery.contains(SalesMainView.BOXES_TABLE)) {
+						fromQuery += "," + SalesMainView.BOXES_TABLE;
 					}
 					if(!searchSelectedBoxPairs.isEmpty() && !searchSelectedBoxPairs.equalsIgnoreCase("Todas")) {
 						this.selectWhereQuery();
-						whereQuery += MainView.BOXES_TABLE + ".pairs = '" + searchSelectedBoxPairs + "' ";
+						whereQuery += SalesMainView.BOXES_TABLE + ".pairs = '" + searchSelectedBoxPairs + "' ";
 					}
 				case "pairs":
-					if(!fromQuery.contains(MainView.NEMAS_TABLE)) {
-						fromQuery += "," + MainView.NEMAS_TABLE;
+					if(!fromQuery.contains(SalesMainView.NEMAS_TABLE)) {
+						fromQuery += "," + SalesMainView.NEMAS_TABLE;
 					}
 					if (!searchSelectedBoxNema.isEmpty() && !searchSelectedBoxNema.equalsIgnoreCase("Todas")) {
 						this.selectWhereQuery();
-						whereQuery += MainView.NEMAS_TABLE + ".nema = '" + searchSelectedBoxNema + "'";
+						whereQuery += SalesMainView.NEMAS_TABLE + ".nema = '" + searchSelectedBoxNema + "'";
 						this.selectWhereQuery();
-						whereQuery += MainView.BOXES_TABLE + ".nema_id = " + MainView.NEMAS_TABLE + ".id";
+						whereQuery += SalesMainView.BOXES_TABLE + ".nema_id = " + SalesMainView.NEMAS_TABLE + ".id";
 					}
 				case "nema":
-					if(!fromQuery.contains(MainView.INSTALLATIONS_TABLE)) {
-						fromQuery += "," + MainView.INSTALLATIONS_TABLE;
+					if(!fromQuery.contains(SalesMainView.INSTALLATIONS_TABLE)) {
+						fromQuery += "," + SalesMainView.INSTALLATIONS_TABLE;
 					}
 					if(!searchSelectedBoxInstallation.isEmpty() && !searchSelectedBoxInstallation.equalsIgnoreCase("Todas")) {
 						this.selectWhereQuery();
-						whereQuery += MainView.INSTALLATIONS_TABLE + ".installation = '" + searchSelectedBoxInstallation + "'";
+						whereQuery += SalesMainView.INSTALLATIONS_TABLE + ".installation = '" + searchSelectedBoxInstallation + "'";
 						this.selectWhereQuery();
-						whereQuery += MainView.BOXES_TABLE + ".installation_id = " + MainView.INSTALLATIONS_TABLE + ".id";
+						whereQuery += SalesMainView.BOXES_TABLE + ".installation_id = " + SalesMainView.INSTALLATIONS_TABLE + ".id";
 					}
 				case "installation":
-					if(!fromQuery.contains(MainView.BOX_TYPES_TABLE)) {
-						fromQuery += "," + MainView.BOX_TYPES_TABLE;
+					if(!fromQuery.contains(SalesMainView.BOX_TYPES_TABLE)) {
+						fromQuery += "," + SalesMainView.BOX_TYPES_TABLE;
 					}
 					if(!searchSelectedBoxType.isEmpty() && !searchSelectedBoxType.equalsIgnoreCase("Todas")) {
 						this.selectWhereQuery();
-						whereQuery += MainView.BOX_TYPES_TABLE + ".type = '" + searchSelectedBoxType + "'";
+						whereQuery += SalesMainView.BOX_TYPES_TABLE + ".type = '" + searchSelectedBoxType + "'";
 						this.selectWhereQuery();
-						whereQuery += MainView.BOXES_TABLE + ".type_id = " + MainView.BOX_TYPES_TABLE + ".id";
+						whereQuery += SalesMainView.BOXES_TABLE + ".type_id = " + SalesMainView.BOX_TYPES_TABLE + ".id";
 					}
 					break;
 			}
@@ -7463,104 +7463,104 @@ public class MainView extends JFrame{
 		private void addBoardAdditionalWhere(String start) {
 			switch(start) {
 				case "lock_type":
-					if(!fromQuery.contains(MainView.INTERRUPTIONS_TABLE)) {
-						fromQuery += "," + MainView.INTERRUPTIONS_TABLE;
+					if(!fromQuery.contains(SalesMainView.INTERRUPTIONS_TABLE)) {
+						fromQuery += "," + SalesMainView.INTERRUPTIONS_TABLE;
 					}
 					if(!searchSelectedBoardInterruption.isEmpty() && !searchSelectedBoardInterruption.equalsIgnoreCase("Todas")) {
 						this.selectWhereQuery();
-						whereQuery += MainView.INTERRUPTIONS_TABLE + ".interruption = '" + searchSelectedBoardInterruption + "'";
+						whereQuery += SalesMainView.INTERRUPTIONS_TABLE + ".interruption = '" + searchSelectedBoardInterruption + "'";
 						this.selectWhereQuery();
-						whereQuery += MainView.BOARD_TABLE + ".interruption_id = " + MainView.INTERRUPTIONS_TABLE + ".id";
+						whereQuery += SalesMainView.BOARD_TABLE + ".interruption_id = " + SalesMainView.INTERRUPTIONS_TABLE + ".id";
 					}
 				case "interruption":
-					if(!fromQuery.contains(MainView.BOARD_TABLE)) {
-						fromQuery += "," + MainView.BOARD_TABLE;
+					if(!fromQuery.contains(SalesMainView.BOARD_TABLE)) {
+						fromQuery += "," + SalesMainView.BOARD_TABLE;
 					}
 					if(!searchSelectedBoardGround.isEmpty() && !searchSelectedBoardGround.equalsIgnoreCase("Todas")) {
 						this.selectWhereQuery();
-						whereQuery += MainView.BOARD_TABLE + ".ground = '" + ((searchSelectedBoardGround.equalsIgnoreCase("SI"))?"1":"0") + "'";
+						whereQuery += SalesMainView.BOARD_TABLE + ".ground = '" + ((searchSelectedBoardGround.equalsIgnoreCase("SI"))?"1":"0") + "'";
 					}
 				case "ground":
-					if(!fromQuery.contains(MainView.BOARD_TABLE)) {
-						fromQuery += "," + MainView.BOARD_TABLE;
+					if(!fromQuery.contains(SalesMainView.BOARD_TABLE)) {
+						fromQuery += "," + SalesMainView.BOARD_TABLE;
 					}
 					if(!searchSelectedBoardPhases.isEmpty() && !searchSelectedBoardPhases.equalsIgnoreCase("Todas")) {
 						this.selectWhereQuery();
-						whereQuery += MainView.BOARD_TABLE + ".phases = '" + searchSelectedBoardPhases + "'";
+						whereQuery += SalesMainView.BOARD_TABLE + ".phases = '" + searchSelectedBoardPhases + "'";
 					}
 				case "phases":
-					if(!fromQuery.contains(MainView.BOARD_VOLTAGES_TABLE)) {
-						fromQuery += "," + MainView.BOARD_VOLTAGES_TABLE;
+					if(!fromQuery.contains(SalesMainView.BOARD_VOLTAGES_TABLE)) {
+						fromQuery += "," + SalesMainView.BOARD_VOLTAGES_TABLE;
 					}
 					if(!searchSelectedBoardVoltage.isEmpty() && !searchSelectedBoardVoltage.equalsIgnoreCase("Todas")) {
 						this.selectWhereQuery();
-						whereQuery += MainView.BOARD_VOLTAGES_TABLE + ".voltage = '" + searchSelectedBoardVoltage + "' ";
+						whereQuery += SalesMainView.BOARD_VOLTAGES_TABLE + ".voltage = '" + searchSelectedBoardVoltage + "' ";
 						this.selectWhereQuery();
-						whereQuery += MainView.BOARD_TABLE + ".voltage_id = " + MainView.BOARD_VOLTAGES_TABLE + ".id";
+						whereQuery += SalesMainView.BOARD_TABLE + ".voltage_id = " + SalesMainView.BOARD_VOLTAGES_TABLE + ".id";
 					}
 				case "voltage":
-					if(!fromQuery.contains(MainView.BOARD_CIRCUITS_TABLE)) {
-						fromQuery += "," + MainView.BOARD_CIRCUITS_TABLE;
+					if(!fromQuery.contains(SalesMainView.BOARD_CIRCUITS_TABLE)) {
+						fromQuery += "," + SalesMainView.BOARD_CIRCUITS_TABLE;
 					}
 					if (!searchSelectedBoardCircuits.isEmpty() && !searchSelectedBoardCircuits.equalsIgnoreCase("Todas")) {
 						this.selectWhereQuery();
-						whereQuery += MainView.BOARD_CIRCUITS_TABLE + ".circuits = '" + searchSelectedBoardCircuits + "'";
+						whereQuery += SalesMainView.BOARD_CIRCUITS_TABLE + ".circuits = '" + searchSelectedBoardCircuits + "'";
 						this.selectWhereQuery();
-						whereQuery += MainView.BOARD_TABLE + ".circuits_id = " + MainView.BOARD_CIRCUITS_TABLE + ".id";
+						whereQuery += SalesMainView.BOARD_TABLE + ".circuits_id = " + SalesMainView.BOARD_CIRCUITS_TABLE + ".id";
 					}
 				case "circuits":
-					if(!fromQuery.contains(MainView.BOARD_BAR_TYPES_TABLE)) {
-						fromQuery += "," + MainView.BOARD_BAR_TYPES_TABLE;
+					if(!fromQuery.contains(SalesMainView.BOARD_BAR_TYPES_TABLE)) {
+						fromQuery += "," + SalesMainView.BOARD_BAR_TYPES_TABLE;
 					}
 					if (!searchSelectedBoardBarType.isEmpty() && !searchSelectedBoardBarType.equalsIgnoreCase("Todas")) {
 						this.selectWhereQuery();
-						whereQuery += MainView.BOARD_BAR_TYPES_TABLE + ".bar_type = '" + searchSelectedBoardBarType + "'";
+						whereQuery += SalesMainView.BOARD_BAR_TYPES_TABLE + ".bar_type = '" + searchSelectedBoardBarType + "'";
 						this.selectWhereQuery();
-						whereQuery += MainView.BOARD_TABLE + ".bar_type_id = " + MainView.BOARD_BAR_TYPES_TABLE + ".id";
+						whereQuery += SalesMainView.BOARD_TABLE + ".bar_type_id = " + SalesMainView.BOARD_BAR_TYPES_TABLE + ".id";
 					}
 				case "bar_type":
-					if(!fromQuery.contains(MainView.BOARD_BAR_CAPACITIES_TABLE)) {
-						fromQuery += "," + MainView.BOARD_BAR_CAPACITIES_TABLE;
+					if(!fromQuery.contains(SalesMainView.BOARD_BAR_CAPACITIES_TABLE)) {
+						fromQuery += "," + SalesMainView.BOARD_BAR_CAPACITIES_TABLE;
 					}
 					if (!searchSelectedBoardBarCapacity.isEmpty() && !searchSelectedBoardBarCapacity.equalsIgnoreCase("Todas")) {
 						this.selectWhereQuery();
-						whereQuery += MainView.BOARD_BAR_CAPACITIES_TABLE + ".bar_capacity = '" + searchSelectedBoardBarCapacity + "'";
+						whereQuery += SalesMainView.BOARD_BAR_CAPACITIES_TABLE + ".bar_capacity = '" + searchSelectedBoardBarCapacity + "'";
 						this.selectWhereQuery();
-						whereQuery += MainView.BOARD_TABLE + ".bar_capacity_id = " + MainView.BOARD_BAR_CAPACITIES_TABLE + ".id";
+						whereQuery += SalesMainView.BOARD_TABLE + ".bar_capacity_id = " + SalesMainView.BOARD_BAR_CAPACITIES_TABLE + ".id";
 					}
 				case "bar_capacity":
-					if(!fromQuery.contains(MainView.NEMAS_TABLE)) {
-						fromQuery += "," + MainView.NEMAS_TABLE;
+					if(!fromQuery.contains(SalesMainView.NEMAS_TABLE)) {
+						fromQuery += "," + SalesMainView.NEMAS_TABLE;
 					}
 					if (!searchSelectedBoardNema.isEmpty() && !searchSelectedBoardNema.equalsIgnoreCase("Todas")) {
 						this.selectWhereQuery();
-						whereQuery += MainView.NEMAS_TABLE + ".nema = '" + searchSelectedBoardNema + "'";
+						whereQuery += SalesMainView.NEMAS_TABLE + ".nema = '" + searchSelectedBoardNema + "'";
 						this.selectWhereQuery();
-						whereQuery += MainView.BOARD_TABLE + ".nema_id = " + MainView.NEMAS_TABLE + ".id";
+						whereQuery += SalesMainView.BOARD_TABLE + ".nema_id = " + SalesMainView.NEMAS_TABLE + ".id";
 					}
 				case "nema":
-					if(!fromQuery.contains(MainView.INSTALLATIONS_TABLE)) {
-						fromQuery += "," + MainView.INSTALLATIONS_TABLE;
+					if(!fromQuery.contains(SalesMainView.INSTALLATIONS_TABLE)) {
+						fromQuery += "," + SalesMainView.INSTALLATIONS_TABLE;
 					}
 					if(!searchSelectedBoardInstallation.isEmpty() && !searchSelectedBoardInstallation.equalsIgnoreCase("Todas")) {
 						this.selectWhereQuery();
-						whereQuery += MainView.INSTALLATIONS_TABLE + ".installation = '" + searchSelectedBoardInstallation + "'";
+						whereQuery += SalesMainView.INSTALLATIONS_TABLE + ".installation = '" + searchSelectedBoardInstallation + "'";
 						this.selectWhereQuery();
-						whereQuery += MainView.BOARD_TABLE + ".installation_id = " + MainView.INSTALLATIONS_TABLE + ".id";
+						whereQuery += SalesMainView.BOARD_TABLE + ".installation_id = " + SalesMainView.INSTALLATIONS_TABLE + ".id";
 					}
 				case "installation":
-					if(!fromQuery.contains(MainView.BOARD_TYPES_TABLE)) {
-						fromQuery += "," + MainView.BOARD_TYPES_TABLE;
+					if(!fromQuery.contains(SalesMainView.BOARD_TYPES_TABLE)) {
+						fromQuery += "," + SalesMainView.BOARD_TYPES_TABLE;
 					}
 					if(!searchSelectedBoardType.isEmpty() && !searchSelectedBoardType.equalsIgnoreCase("Todas")) {
 						this.selectWhereQuery();
-						whereQuery += MainView.BOARD_TYPES_TABLE + ".type = '" + searchSelectedBoardType + "'";
+						whereQuery += SalesMainView.BOARD_TYPES_TABLE + ".type = '" + searchSelectedBoardType + "'";
 						this.selectWhereQuery();
-						whereQuery += MainView.BOARD_TABLE + ".type_id = " + MainView.BOARD_TYPES_TABLE + ".id";
+						whereQuery += SalesMainView.BOARD_TABLE + ".type_id = " + SalesMainView.BOARD_TYPES_TABLE + ".id";
 					}
 					if(null != textBoardSearchNames && !textBoardSearchNames.getText().isEmpty()) {
 						this.selectWhereQuery();
-						whereQuery += MainView.BOARD_TABLE + ".name LIKE '%" + textBoardSearchNames.getText() + "%'";
+						whereQuery += SalesMainView.BOARD_TABLE + ".name LIKE '%" + textBoardSearchNames.getText() + "%'";
 					}
 					break;
 			}
@@ -7570,101 +7570,101 @@ public class MainView extends JFrame{
 			switch(start) {
 			case "types":
 				this.selectWhereQuery();
-				fromQuery += "," + MainView.INSTALLATIONS_TABLE;
-				whereQuery += MainView.BOARD_TABLE + ".type_id = " + MainView.BOARD_TYPES_TABLE + ".id";
+				fromQuery += "," + SalesMainView.INSTALLATIONS_TABLE;
+				whereQuery += SalesMainView.BOARD_TABLE + ".type_id = " + SalesMainView.BOARD_TYPES_TABLE + ".id";
 				this.selectWhereQuery();
-				whereQuery += MainView.BOARD_TABLE + ".installation_id = " + MainView.INSTALLATIONS_TABLE + ".id ";
-				comboBoardInstallations.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(MainView.INSTALLATIONS_TABLE, "installation"))));
+				whereQuery += SalesMainView.BOARD_TABLE + ".installation_id = " + SalesMainView.INSTALLATIONS_TABLE + ".id ";
+				comboBoardInstallations.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(SalesMainView.INSTALLATIONS_TABLE, "installation"))));
 			case "installations":
-				fromQuery += "," + MainView.NEMAS_TABLE;
+				fromQuery += "," + SalesMainView.NEMAS_TABLE;
 				if(!searchSelectedBoardInstallation.isEmpty()) {
 					this.selectWhereQuery();
-					whereQuery += MainView.BOARD_TABLE + ".installation_id = " + MainView.INSTALLATIONS_TABLE + ".id";
+					whereQuery += SalesMainView.BOARD_TABLE + ".installation_id = " + SalesMainView.INSTALLATIONS_TABLE + ".id";
 				}
 				this.addBoardAdditionalWhere("installation");
 				this.selectWhereQuery();
-				whereQuery += MainView.BOARD_TABLE + ".nema_id = " + MainView.NEMAS_TABLE + ".id ";
-				comboBoardNemas.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(MainView.NEMAS_TABLE, "nema"))));
+				whereQuery += SalesMainView.BOARD_TABLE + ".nema_id = " + SalesMainView.NEMAS_TABLE + ".id ";
+				comboBoardNemas.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(SalesMainView.NEMAS_TABLE, "nema"))));
 			case "nemas":
-				fromQuery += "," + MainView.BOARD_BAR_CAPACITIES_TABLE;
+				fromQuery += "," + SalesMainView.BOARD_BAR_CAPACITIES_TABLE;
 				if(!searchSelectedBoardNema.isEmpty()) {
 					this.selectWhereQuery();
-					whereQuery += MainView.BOARD_TABLE + ".nema_id = " + MainView.NEMAS_TABLE + ".id";
+					whereQuery += SalesMainView.BOARD_TABLE + ".nema_id = " + SalesMainView.NEMAS_TABLE + ".id";
 				}
 				this.addBoardAdditionalWhere("nema");
 				this.selectWhereQuery();
-				whereQuery += MainView.BOARD_TABLE + ".bar_capacity_id = " + MainView.BOARD_BAR_CAPACITIES_TABLE + ".id ";
-				comboBoardBarCapacities.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(MainView.BOARD_BAR_CAPACITIES_TABLE, "bar_capacity"))));
+				whereQuery += SalesMainView.BOARD_TABLE + ".bar_capacity_id = " + SalesMainView.BOARD_BAR_CAPACITIES_TABLE + ".id ";
+				comboBoardBarCapacities.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(SalesMainView.BOARD_BAR_CAPACITIES_TABLE, "bar_capacity"))));
 			case "bar_capacity":
-				fromQuery += "," + MainView.BOARD_BAR_TYPES_TABLE;
+				fromQuery += "," + SalesMainView.BOARD_BAR_TYPES_TABLE;
 				if(!searchSelectedBoardBarCapacity.isEmpty()) {
 					this.selectWhereQuery();
-					whereQuery += MainView.BOARD_TABLE + ".bar_capacity_id = " + MainView.BOARD_BAR_CAPACITIES_TABLE + ".id";
+					whereQuery += SalesMainView.BOARD_TABLE + ".bar_capacity_id = " + SalesMainView.BOARD_BAR_CAPACITIES_TABLE + ".id";
 				}
 				this.addBoardAdditionalWhere("bar_capacity");
 				this.selectWhereQuery();
-				whereQuery += MainView.BOARD_TABLE + ".bar_type_id = " + MainView.BOARD_BAR_TYPES_TABLE + ".id ";
-				comboBoardBarTypes.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(MainView.BOARD_BAR_TYPES_TABLE, "bar_type"))));
+				whereQuery += SalesMainView.BOARD_TABLE + ".bar_type_id = " + SalesMainView.BOARD_BAR_TYPES_TABLE + ".id ";
+				comboBoardBarTypes.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(SalesMainView.BOARD_BAR_TYPES_TABLE, "bar_type"))));
 			case "bar_type":
-				fromQuery += "," + MainView.BOARD_CIRCUITS_TABLE;
+				fromQuery += "," + SalesMainView.BOARD_CIRCUITS_TABLE;
 				if(!searchSelectedBoardBarType.isEmpty()) {
 					this.selectWhereQuery();
-					whereQuery += MainView.BOARD_TABLE + ".bar_type_id = " + MainView.BOARD_BAR_TYPES_TABLE + ".id";
+					whereQuery += SalesMainView.BOARD_TABLE + ".bar_type_id = " + SalesMainView.BOARD_BAR_TYPES_TABLE + ".id";
 				}
 				this.addBoardAdditionalWhere("bar_type");
 				this.selectWhereQuery();
-				whereQuery += MainView.BOARD_TABLE + ".circuits_id = " + MainView.BOARD_CIRCUITS_TABLE + ".id ";
-				comboBoardCircuits.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(MainView.BOARD_CIRCUITS_TABLE, "circuits"))));
+				whereQuery += SalesMainView.BOARD_TABLE + ".circuits_id = " + SalesMainView.BOARD_CIRCUITS_TABLE + ".id ";
+				comboBoardCircuits.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(SalesMainView.BOARD_CIRCUITS_TABLE, "circuits"))));
 			case "circuits":
-				fromQuery += "," + MainView.BOARD_VOLTAGES_TABLE;
+				fromQuery += "," + SalesMainView.BOARD_VOLTAGES_TABLE;
 				if(!searchSelectedBoardCircuits.isEmpty()) {
 					this.selectWhereQuery();
-					whereQuery += MainView.BOARD_TABLE + ".circuits_id = " + MainView.BOARD_CIRCUITS_TABLE + ".id";
+					whereQuery += SalesMainView.BOARD_TABLE + ".circuits_id = " + SalesMainView.BOARD_CIRCUITS_TABLE + ".id";
 				}
 				this.addBoardAdditionalWhere("circuits");
 				this.selectWhereQuery();
-				whereQuery += MainView.BOARD_TABLE + ".voltage_id = " + MainView.BOARD_VOLTAGES_TABLE + ".id ";
-				comboBoardVoltages.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(MainView.BOARD_VOLTAGES_TABLE, "voltage"))));
+				whereQuery += SalesMainView.BOARD_TABLE + ".voltage_id = " + SalesMainView.BOARD_VOLTAGES_TABLE + ".id ";
+				comboBoardVoltages.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(SalesMainView.BOARD_VOLTAGES_TABLE, "voltage"))));
 			case "voltage":
-				if(!fromQuery.contains(MainView.BOARD_TABLE)) {
-					fromQuery += "," + MainView.BOARD_TABLE;
+				if(!fromQuery.contains(SalesMainView.BOARD_TABLE)) {
+					fromQuery += "," + SalesMainView.BOARD_TABLE;
 				}
 				if(!searchSelectedBoardVoltage.isEmpty()) {
 					this.selectWhereQuery();
-					whereQuery += MainView.BOARD_TABLE + ".voltage_id = " + MainView.BOARD_VOLTAGES_TABLE + ".id";
+					whereQuery += SalesMainView.BOARD_TABLE + ".voltage_id = " + SalesMainView.BOARD_VOLTAGES_TABLE + ".id";
 				}
 				this.addBoardAdditionalWhere("voltage");
-				comboBoardPhases.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(MainView.BOARD_TABLE, "phases"))));
+				comboBoardPhases.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(SalesMainView.BOARD_TABLE, "phases"))));
 			case "phases":
-				if(!fromQuery.contains(MainView.BOARD_TABLE)) {
-					fromQuery += "," + MainView.BOARD_TABLE;
+				if(!fromQuery.contains(SalesMainView.BOARD_TABLE)) {
+					fromQuery += "," + SalesMainView.BOARD_TABLE;
 				}
 				if(!searchSelectedBoardPhases.isEmpty() && !searchSelectedBoardPhases.equalsIgnoreCase("Todas")) {
 					this.selectWhereQuery();
-					whereQuery += MainView.BOARD_TABLE + ".phases = '" + searchSelectedBoardPhases + "' ";
+					whereQuery += SalesMainView.BOARD_TABLE + ".phases = '" + searchSelectedBoardPhases + "' ";
 				}
 				this.addBoardAdditionalWhere("phases");
-				comboBoardGround.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(MainView.BOARD_TABLE, "ground", MainView.BOARD_GROUND_FIELD, true))));
+				comboBoardGround.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(SalesMainView.BOARD_TABLE, "ground", SalesMainView.BOARD_GROUND_FIELD, true))));
 			case "ground":
-				fromQuery += "," + MainView.INTERRUPTIONS_TABLE;
+				fromQuery += "," + SalesMainView.INTERRUPTIONS_TABLE;
 				if(!searchSelectedBoardGround.isEmpty() && !searchSelectedBoardGround.equalsIgnoreCase("Todas")) {
 					this.selectWhereQuery();
-					whereQuery += MainView.BOARD_TABLE + ".ground = '" + (searchSelectedBoardGround.equalsIgnoreCase("SI")?"1":"0") + "'";
+					whereQuery += SalesMainView.BOARD_TABLE + ".ground = '" + (searchSelectedBoardGround.equalsIgnoreCase("SI")?"1":"0") + "'";
 				}
 				this.addBoardAdditionalWhere("ground");
 				this.selectWhereQuery();
-				whereQuery += MainView.BOARD_TABLE + ".interruption_id = " + MainView.INTERRUPTIONS_TABLE + ".id ";
-				comboBoardInterruptions.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(MainView.INTERRUPTIONS_TABLE, "interruption"))));
+				whereQuery += SalesMainView.BOARD_TABLE + ".interruption_id = " + SalesMainView.INTERRUPTIONS_TABLE + ".id ";
+				comboBoardInterruptions.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(SalesMainView.INTERRUPTIONS_TABLE, "interruption"))));
 			case "interruption":
-				fromQuery += "," + MainView.LOCK_TYPES_TABLE;
+				fromQuery += "," + SalesMainView.LOCK_TYPES_TABLE;
 				if(!searchSelectedBoardInterruption.isEmpty()) {
 					this.selectWhereQuery();
-					whereQuery += MainView.BOARD_TABLE + ".interruption_id = " + MainView.INTERRUPTIONS_TABLE + ".id";
+					whereQuery += SalesMainView.BOARD_TABLE + ".interruption_id = " + SalesMainView.INTERRUPTIONS_TABLE + ".id";
 				}
 				this.addBoardAdditionalWhere("interruption");
 				this.selectWhereQuery();
-				whereQuery += MainView.BOARD_TABLE + ".lock_type_id = " + MainView.LOCK_TYPES_TABLE + ".id ";
-				comboBoardLockTypes.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(MainView.LOCK_TYPES_TABLE, "lock_type"))));
+				whereQuery += SalesMainView.BOARD_TABLE + ".lock_type_id = " + SalesMainView.LOCK_TYPES_TABLE + ".id ";
+				comboBoardLockTypes.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(SalesMainView.LOCK_TYPES_TABLE, "lock_type"))));
 				break;
 			}
 		}
@@ -7753,81 +7753,81 @@ public class MainView extends JFrame{
 				searchSelectedBoxDepth = textBoxDepth.getText();
 				if(searchSelectedBoxType != null && !searchSelectedBoxType.equalsIgnoreCase("Todas") &&
 						!searchSelectedBoxType.isEmpty()) {
-					whereQuery += " AND " + MainView.BOX_TYPES_TABLE + ".type = '" + searchSelectedBoxType + "'";
+					whereQuery += " AND " + SalesMainView.BOX_TYPES_TABLE + ".type = '" + searchSelectedBoxType + "'";
 				}
 				if(searchSelectedBoxInstallation != null && !searchSelectedBoxInstallation.equalsIgnoreCase("Todas") &&
 						!searchSelectedBoxInstallation.isEmpty()) {
 					whereQuery += " AND boxes.installation_id = installations.id ";
-					whereQuery += " AND " + MainView.INSTALLATIONS_TABLE + ".installation = '" + searchSelectedBoxInstallation + "'";
+					whereQuery += " AND " + SalesMainView.INSTALLATIONS_TABLE + ".installation = '" + searchSelectedBoxInstallation + "'";
 				}
 				if(searchSelectedBoxNema != null && !searchSelectedBoxNema.equalsIgnoreCase("Todas") &&
 						!searchSelectedBoxNema.isEmpty()) {
-					whereQuery += " AND " + MainView.NEMAS_TABLE + ".nema = '" + searchSelectedBoxNema + "'";
+					whereQuery += " AND " + SalesMainView.NEMAS_TABLE + ".nema = '" + searchSelectedBoxNema + "'";
 				}
 				if(searchSelectedBoxPairs != null && !searchSelectedBoxPairs.equalsIgnoreCase("Todas") &&
 						!searchSelectedBoxPairs.isEmpty() && (searchSelectedBoxType.equalsIgnoreCase("Todas") ||
 								searchSelectedBoxType.equalsIgnoreCase("para Pares Telefonicos") ||
 								searchSelectedBoxType.isEmpty())) {
-					whereQuery += " AND " + MainView.BOXES_TABLE + ".pairs = '" + searchSelectedBoxPairs + "'";
+					whereQuery += " AND " + SalesMainView.BOXES_TABLE + ".pairs = '" + searchSelectedBoxPairs + "'";
 				}
 				if(searchSelectedBoxSheet != null && !searchSelectedBoxSheet.equalsIgnoreCase("Todas") &&
 						!searchSelectedBoxSheet.isEmpty()) {
-					whereQuery += " AND " + MainView.BOX_SHEETS_TABLE + ".id = " + MainView.BOXES_TABLE + ".sheet_id";
-					whereQuery += " AND " + MainView.BOX_SHEETS_TABLE + ".sheet = '" + searchSelectedBoxSheet + "'";
+					whereQuery += " AND " + SalesMainView.BOX_SHEETS_TABLE + ".id = " + SalesMainView.BOXES_TABLE + ".sheet_id";
+					whereQuery += " AND " + SalesMainView.BOX_SHEETS_TABLE + ".sheet = '" + searchSelectedBoxSheet + "'";
 				} else {
 					whereQuery += "AND ( (boxes.sheet_id > 0 "
-							+ "AND boxes.sheet_id = " + MainView.BOX_SHEETS_TABLE + ".id) "
+							+ "AND boxes.sheet_id = " + SalesMainView.BOX_SHEETS_TABLE + ".id) "
 							+ "OR boxes.sheet_id = 0)";
 				}
 				if(searchSelectedBoxFinish != null && !searchSelectedBoxFinish.equalsIgnoreCase("Todas") &&
 						!searchSelectedBoxFinish.isEmpty()) {
-					whereQuery += " AND " + MainView.BOX_FINISHES_TABLE + ".id = " + MainView.BOXES_TABLE + ".finish_id";
-					whereQuery += " AND " + MainView.BOX_FINISHES_TABLE + ".finish = '" + searchSelectedBoxFinish + "'";
+					whereQuery += " AND " + SalesMainView.BOX_FINISHES_TABLE + ".id = " + SalesMainView.BOXES_TABLE + ".finish_id";
+					whereQuery += " AND " + SalesMainView.BOX_FINISHES_TABLE + ".finish = '" + searchSelectedBoxFinish + "'";
 				} else {
 					whereQuery += "AND ( (boxes.finish_id > 0 "
-							+ "AND boxes.finish_id = " + MainView.BOX_FINISHES_TABLE + ".id) "
+							+ "AND boxes.finish_id = " + SalesMainView.BOX_FINISHES_TABLE + ".id) "
 							+ "OR boxes.finish_id = 0)";
 				}
 				if(searchSelectedBoxColor != null && !searchSelectedBoxColor.equalsIgnoreCase("Todas") &&
 						!searchSelectedBoxColor.isEmpty()) {
-					whereQuery += " AND " + MainView.BOX_COLORS_TABLE + ".id = " + MainView.BOXES_TABLE + ".color_id";
-					whereQuery += " AND " + MainView.BOX_COLORS_TABLE + ".color = '" + searchSelectedBoxColor + "'";
+					whereQuery += " AND " + SalesMainView.BOX_COLORS_TABLE + ".id = " + SalesMainView.BOXES_TABLE + ".color_id";
+					whereQuery += " AND " + SalesMainView.BOX_COLORS_TABLE + ".color = '" + searchSelectedBoxColor + "'";
 				} else {
 					whereQuery += "AND ( (boxes.color_id > 0 "
-							+ "AND boxes.color_id = " + MainView.BOX_COLORS_TABLE + ".id) "
+							+ "AND boxes.color_id = " + SalesMainView.BOX_COLORS_TABLE + ".id) "
 							+ "OR boxes.color_id = 0)";
 				}
 				if(searchSelectedBoxHeight != null && !searchSelectedBoxHeight.equalsIgnoreCase("Todas") &&
 						!searchSelectedBoxHeight.isEmpty() && !searchSelectedBoxType.equalsIgnoreCase("para Tablero")) {
-					whereQuery += " AND " + MainView.BOXES_TABLE + ".height = '" + searchSelectedBoxHeight + "'";
+					whereQuery += " AND " + SalesMainView.BOXES_TABLE + ".height = '" + searchSelectedBoxHeight + "'";
 				}
 				if(searchSelectedBoxWidth != null && !searchSelectedBoxWidth.equalsIgnoreCase("Todas") &&
 						!searchSelectedBoxWidth.isEmpty() && !searchSelectedBoxType.equalsIgnoreCase("para Tablero")) {
-					whereQuery += " AND " + MainView.BOXES_TABLE + ".width = '" + searchSelectedBoxWidth + "'";
+					whereQuery += " AND " + SalesMainView.BOXES_TABLE + ".width = '" + searchSelectedBoxWidth + "'";
 				}
 				if(searchSelectedBoxDepth != null && !searchSelectedBoxDepth.equalsIgnoreCase("Todas") &&
 						!searchSelectedBoxDepth.isEmpty() && !searchSelectedBoxType.equalsIgnoreCase("para Tablero")) {
-					whereQuery += " AND " + MainView.BOXES_TABLE + ".depth = '" + searchSelectedBoxDepth + "'";
+					whereQuery += " AND " + SalesMainView.BOXES_TABLE + ".depth = '" + searchSelectedBoxDepth + "'";
 				}
 				whereQuery += "AND ( (boxes.units_id > 0 "
-						+ "AND boxes.units_id = " + MainView.BOX_UNITS_TABLE + ".id) "
+						+ "AND boxes.units_id = " + SalesMainView.BOX_UNITS_TABLE + ".id) "
 						+ "OR boxes.units_id = 0)";
 				if(searchSelectedBoxCaliber != null && !searchSelectedBoxCaliber.equalsIgnoreCase("Todas") &&
 						!searchSelectedBoxCaliber.isEmpty()) {
-					whereQuery += " AND " + MainView.BOX_CALIBERS_TABLE + ".id = " + MainView.BOXES_TABLE + ".caliber_id";
-					whereQuery += " AND " + MainView.BOX_CALIBERS_TABLE + ".caliber = '" + searchSelectedBoxCaliber + "'";
+					whereQuery += " AND " + SalesMainView.BOX_CALIBERS_TABLE + ".id = " + SalesMainView.BOXES_TABLE + ".caliber_id";
+					whereQuery += " AND " + SalesMainView.BOX_CALIBERS_TABLE + ".caliber = '" + searchSelectedBoxCaliber + "'";
 				} else {
 					whereQuery += "AND ( (boxes.caliber_id > 0 "
-							+ "AND boxes.caliber_id = " + MainView.BOX_CALIBERS_TABLE + ".id) "
+							+ "AND boxes.caliber_id = " + SalesMainView.BOX_CALIBERS_TABLE + ".id) "
 							+ "OR boxes.caliber_id = 0)";
 				}
 				if(searchSelectedBoxLockType != null && !searchSelectedBoxLockType.equalsIgnoreCase("Todas") &&
 						!searchSelectedBoxLockType.isEmpty()) {
 					whereQuery += " AND boxes.lock_type_id = lock_types.id ";
-					whereQuery += "AND " + MainView.LOCK_TYPES_TABLE + ".lock_type = '" + searchSelectedBoxLockType + "'";
+					whereQuery += "AND " + SalesMainView.LOCK_TYPES_TABLE + ".lock_type = '" + searchSelectedBoxLockType + "'";
 				} else {
 					whereQuery += "AND ( (boxes.lock_type_id > 0 "
-							+ "AND boxes.lock_type_id = " + MainView.LOCK_TYPES_TABLE + ".id) "
+							+ "AND boxes.lock_type_id = " + SalesMainView.LOCK_TYPES_TABLE + ".id) "
 							+ "OR boxes.lock_type_id = 0)";
 				}
 				
@@ -8270,9 +8270,9 @@ public class MainView extends JFrame{
 		public void actionPerformed(ActionEvent e) {
 			String actionCommand = e.getActionCommand();
 			if(actionCommand.equalsIgnoreCase("switch.search.buttons.add")) {
-				setSwitchesMode(MainView.ADD_MODE);
+				setSwitchesMode(SalesMainView.ADD_MODE);
 			} else if (actionCommand.equalsIgnoreCase("switch.search.buttons.edit")) {
-				setSwitchesMode(MainView.EDIT_MODE);
+				setSwitchesMode(SalesMainView.EDIT_MODE);
 			} else if (actionCommand.equalsIgnoreCase("switch.description.add.save")) {
 				if(textSwitchAddPrice.getText() == null || textSwitchAddPrice.getText().isEmpty() || !Numbers.isNumeric(textSwitchAddPrice.getText())) {
 					JOptionPane.showMessageDialog(null, "Precio invalido");
@@ -8307,7 +8307,7 @@ public class MainView extends JFrame{
 								Integer.valueOf(comboSwitchAddInterruptions.getSelectedItem().toString()),
 								textSwitchAddPrice.getText())) {
 							JOptionPane.showMessageDialog(null, "Interruptor agregado exitosamente");
-							setSwitchesMode(MainView.VIEW_MODE);
+							setSwitchesMode(SalesMainView.VIEW_MODE);
 						} else {
 							JOptionPane.showMessageDialog(null, "Ocurrio un error al agregar el interruptor");
 						}
@@ -8316,7 +8316,7 @@ public class MainView extends JFrame{
 					}
 				}
 			} else if (actionCommand.equalsIgnoreCase("switch.description.add.cancel") || e.getActionCommand().equalsIgnoreCase("description.edit.cancel")) {
-				setSwitchesMode(MainView.VIEW_MODE);
+				setSwitchesMode(SalesMainView.VIEW_MODE);
 			} else if (actionCommand.equalsIgnoreCase("switch.description.edit.save")) {
 				ArrayList<Object> listFields = new ArrayList<Object>();
 				ArrayList<Object> listValues = new ArrayList<Object>();
@@ -8362,7 +8362,7 @@ public class MainView extends JFrame{
 						!textSwitchEditModel.getText().isEmpty() && comboSwitchEditVoltage.getItemCount() > 0) {
 					boolean switchEdited = db.editSwitch(editSwitchId, listFields, listValues);
 				if (switchEdited) {
-					setSwitchesMode(MainView.VIEW_MODE);
+					setSwitchesMode(SalesMainView.VIEW_MODE);
 				} else {
 					JOptionPane.showMessageDialog(null, "No se pudo actualizar el interruptor debido a un error");
 				}
@@ -8370,7 +8370,7 @@ public class MainView extends JFrame{
 					JOptionPane.showMessageDialog(null, "Todos los campos deben estar llenos");
 				}
 			} else if (actionCommand.equalsIgnoreCase("switch.description.edit.cancel")) {
-				setSwitchesMode(MainView.VIEW_MODE);
+				setSwitchesMode(SalesMainView.VIEW_MODE);
 			}
 		}
 		
@@ -8382,9 +8382,9 @@ public class MainView extends JFrame{
 		public void actionPerformed(ActionEvent e) {
 			String actionCommand = e.getActionCommand();
 			if (actionCommand.equalsIgnoreCase("box.description.buttons.add")) {
-				setBoxesMode(MainView.ADD_MODE);
+				setBoxesMode(SalesMainView.ADD_MODE);
 			} else if (actionCommand.equalsIgnoreCase("box.description.buttons.edit")) {
-				setBoxesMode(MainView.EDIT_MODE);
+				setBoxesMode(SalesMainView.EDIT_MODE);
 			} else if (actionCommand.equalsIgnoreCase("box.description.add.save")) {
 				String boxType = comboBoxAddTypes.getSelectedItem().toString();
 				String boxInstallation = comboBoxAddInstallations.getSelectedItem().toString();
@@ -8436,13 +8436,13 @@ public class MainView extends JFrame{
 					boolean saved = db.addBox(boxType, boxInstallation, boxNema, Integer.valueOf(boxPairs), boxSheet, boxFinish, boxColor, Double.valueOf(boxHeight), Double.valueOf(boxWidth), Double.valueOf(boxDepth), boxUnits, boxCaliber, boxCaliberComments, boxLockType, Double.valueOf(boxPrice));
 					if(saved) {
 						JOptionPane.showMessageDialog(null, "Caja creada exitosamente");
-						setBoxesMode(MainView.VIEW_MODE);
+						setBoxesMode(SalesMainView.VIEW_MODE);
 					}
 				} else {
 					err.dump();
 				}
 			} else if (actionCommand.equalsIgnoreCase("box.description.add.cancel")) {
-				setBoxesMode(MainView.VIEW_MODE);
+				setBoxesMode(SalesMainView.VIEW_MODE);
 			} else if (actionCommand.equalsIgnoreCase("box.description.edit.save")) {
 				ArrayList<Object> listFields = new ArrayList<Object>();
 				ArrayList<Object> listValues = new ArrayList<Object>();
@@ -8622,18 +8622,18 @@ public class MainView extends JFrame{
 					if(listFields.size() > 0 && listValues.size() > 0) {
 						boolean boxEdited = db.editBox(editBoxId, listFields, listValues);
 						if (boxEdited) {
-							setBoxesMode(MainView.VIEW_MODE);
+							setBoxesMode(SalesMainView.VIEW_MODE);
 						} else {
 							JOptionPane.showMessageDialog(null, "No se pudo actualizar la caja debido a un error");
 						}
 					} else {
-						setBoxesMode(MainView.VIEW_MODE);
+						setBoxesMode(SalesMainView.VIEW_MODE);
 					}
 				} else {
 					err.dump();
 				}
 			} else if (actionCommand.equalsIgnoreCase("box.description.edit.cancel")) {
-				setBoxesMode(MainView.VIEW_MODE);
+				setBoxesMode(SalesMainView.VIEW_MODE);
 			}
 		}
 		
@@ -8645,9 +8645,9 @@ public class MainView extends JFrame{
 		public void actionPerformed(ActionEvent e) {
 			String actionCommand = e.getActionCommand();
 			if (actionCommand.equalsIgnoreCase("board.description.buttons.add")) {
-				setBoardsMode(MainView.ADD_MODE);
+				setBoardsMode(SalesMainView.ADD_MODE);
 			} else if (actionCommand.equalsIgnoreCase("board.description.buttons.edit")) {
-				setBoardsMode(MainView.EDIT_MODE);
+				setBoardsMode(SalesMainView.EDIT_MODE);
 			} else if (actionCommand.equalsIgnoreCase("board.description.add.save")) {
 				String boardName = textBoardAddName.getText();
 				String boardType = comboBoardAddType.getSelectedItem().toString();
@@ -8674,13 +8674,13 @@ public class MainView extends JFrame{
 					boolean saved = db.addBoard(boardName, boardType, boardInstallation, boardNema, Integer.valueOf(boardBarCapacity), boardBarType, Integer.valueOf(boardCircuits), boardVoltage, Integer.valueOf(boardPhases), boardGround, Integer.valueOf(boardInterruption), boardLockType, Double.valueOf(boardPrice));
 					if(saved) {
 						JOptionPane.showMessageDialog(null, "Tablero creado exitosamente");
-						setBoardsMode(MainView.VIEW_MODE);
+						setBoardsMode(SalesMainView.VIEW_MODE);
 					}
 				} else {
 					err.dump();
 				}
 			} else if (actionCommand.equalsIgnoreCase("board.description.add.cancel")) {
-				setBoardsMode(MainView.VIEW_MODE);
+				setBoardsMode(SalesMainView.VIEW_MODE);
 			} else if (actionCommand.equalsIgnoreCase("board.description.edit.save")) {
 				ArrayList<Object> listFields = new ArrayList<Object>();
 				ArrayList<Object> listValues = new ArrayList<Object>();
@@ -8846,18 +8846,18 @@ public class MainView extends JFrame{
 					if(listFields.size() > 0 && listValues.size() > 0) {
 						boolean boardEdited = db.editBoard(editBoardId, listFields, listValues);
 						if (boardEdited) {
-							setBoardsMode(MainView.VIEW_MODE);
+							setBoardsMode(SalesMainView.VIEW_MODE);
 						} else {
 							JOptionPane.showMessageDialog(null, "No se pudo actualizar el tablero debido a un error");
 						}
 					} else {
-						setBoardsMode(MainView.VIEW_MODE);
+						setBoardsMode(SalesMainView.VIEW_MODE);
 					}
 				} else {
 					err.dump();
 				}
 			} else if (actionCommand.equalsIgnoreCase("board.description.edit.cancel")) {
-				setBoardsMode(MainView.VIEW_MODE);
+				setBoardsMode(SalesMainView.VIEW_MODE);
 			} else if (actionCommand.equalsIgnoreCase("board.switch.add")) {
 				dialogBoardSwitchAdd = new SwitchDialog(null, "Agregar Interruptor");
 				WindowsListener lForWindow = new WindowsListener();
@@ -8958,9 +8958,9 @@ public class MainView extends JFrame{
 		public void actionPerformed(ActionEvent e) {
 			String actionCommand = e.getActionCommand();
 			if (actionCommand.equalsIgnoreCase("budget.description.buttons.add")) {
-				setBudgetsMode(MainView.ADD_MODE);
+				setBudgetsMode(SalesMainView.ADD_MODE);
 			} else if (actionCommand.equalsIgnoreCase("budget.description.buttons.edit")) {
-				setBudgetsMode(MainView.EDIT_MODE);
+				setBudgetsMode(SalesMainView.EDIT_MODE);
 			} else if(actionCommand.equalsIgnoreCase("budget.description.company.add")) {
 				dialogBudgetClientAdd = new ClientDialog(null, "Agregar Compañia");
 				
@@ -9017,13 +9017,13 @@ public class MainView extends JFrame{
 					boolean saved = db.addBudget(budgetDate, Integer.valueOf(budgetExpiryDays), budgetClientId, budgetWorkName, budgetPaymentMethod, budgetSellerId, budgetDispatchPlace, Integer.valueOf(budgetDeliveryTime), budgetDeliveryPeriod);
 					if(saved) {
 						JOptionPane.showMessageDialog(null, "Presupuesto creado exitosamente");
-						setBudgetsMode(MainView.VIEW_MODE);
+						setBudgetsMode(SalesMainView.VIEW_MODE);
 					}
 				} else {
 					err.dump();
 				}
 			} else if(actionCommand.equalsIgnoreCase("budget.description.add.cancel")) {
-				setBudgetsMode(MainView.VIEW_MODE);
+				setBudgetsMode(SalesMainView.VIEW_MODE);
 			} else if(actionCommand.equalsIgnoreCase("budget.description.company.edit")) {
 				dialogBudgetClientEdit = new ClientDialog(null, "Buscar Cliente");
 				
@@ -9131,19 +9131,19 @@ public class MainView extends JFrame{
 					if(listFields.size() > 0 && listValues.size() > 0) {
 						boolean budgetEdited = db.editBudget(editBudgetId, listFields, listValues);
 						if (budgetEdited) {
-							setBudgetsMode(MainView.VIEW_MODE);
+							setBudgetsMode(SalesMainView.VIEW_MODE);
 						} else {
 							JOptionPane.showMessageDialog(null, "No se pudo actualizar el presupuesto debido a un error");
 						}
 					} else {
-						setBudgetsMode(MainView.VIEW_MODE);
+						setBudgetsMode(SalesMainView.VIEW_MODE);
 					}
 				} else {
 					err.dump();
 				}
 				
 			} else if (actionCommand.equalsIgnoreCase("budget.description.edit.cancel")) {
-				setBudgetsMode(MainView.VIEW_MODE);
+				setBudgetsMode(SalesMainView.VIEW_MODE);
 			} else if (actionCommand.equalsIgnoreCase("budget.switch.add")) {
 				dialogBudgetSwitchAdd = new SwitchDialog(null, "Agregar Interruptor");
 				WindowsListener lForWindow = new WindowsListener();
