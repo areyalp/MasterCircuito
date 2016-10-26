@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 
 import javax.xml.bind.JAXBContext;
@@ -19,6 +20,8 @@ import com.java4less.xreport.fop.FOProcessor;
 import ve.com.mastercircuito.db.Db;
 import ve.com.mastercircuito.print.PurchaseOrderHeader;
 import ve.com.mastercircuito.print.PurchaseOrderItem;
+import ve.com.mastercircuito.sales.MainView;
+import ve.com.mastercircuito.utils.StringTools;
 import ve.com.mastercircuito.print.BuyerInformation;
 
 
@@ -35,6 +38,14 @@ public class Test {
 		
 		//test implementation of the print XML file
 		//TODO insert query for the client data
+
+//		String BudgetSeller = String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_SELLER_COLUMN));
+//		Integer BudgetClientCode = Integer.valueOf(String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_CLIENT_ID_COLUMN)));
+//		String BudgetClient = String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_COMPANY_COLUMN));
+//		String BudgetClientRepresentative = String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_COMPANY_REPRESENTATIVE_COLUMN));
+//		String BudgetWorkName = String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_WORK_NAME_COLUMN));
+//		String BudgetDate = String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_DATE_COLUMN));
+						
 		
 	// 1. create order
 			PurchaseOrderHeader po = new PurchaseOrderHeader("1");
