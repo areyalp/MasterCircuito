@@ -415,7 +415,7 @@ public class SalesMainView extends JFrame{
 		
 		DateTime dt = new DateTime();
 		
-		if(dt.isAfter(new DateTime(2016, 10, 30, 0, 0))) {
+		if(dt.isAfter(new DateTime(2016, 11, 30, 0, 0))) {
 			JOptionPane.showMessageDialog(null, "Error, debe comunicarse con el programador");
 			System.exit(0);
 		}

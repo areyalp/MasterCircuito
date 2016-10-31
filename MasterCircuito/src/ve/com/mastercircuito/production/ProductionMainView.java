@@ -1,7 +1,9 @@
 package ve.com.mastercircuito.production;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.GridBagConstraints;
@@ -9,8 +11,11 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Toolkit;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -39,6 +44,7 @@ import ve.com.mastercircuito.components.Board;
 import ve.com.mastercircuito.components.Box;
 import ve.com.mastercircuito.components.Budget;
 import ve.com.mastercircuito.components.MyInternalFrame;
+import ve.com.mastercircuito.components.PrintDialog;
 import ve.com.mastercircuito.components.Product;
 import ve.com.mastercircuito.components.ProductType;
 import ve.com.mastercircuito.components.ProductionOrder;
@@ -54,6 +60,9 @@ public class ProductionMainView extends JFrame{
 	 * 
 	 */
 	private static final long serialVersionUID = 7717733090547682708L;
+	public static final Integer LIST_INBOX = 0;
+	public static final Integer LIST_PRODUCTION = 1;
+	public static final Integer LIST_WORK = 2;
 	
 	private User user;
 	
@@ -61,9 +70,12 @@ public class ProductionMainView extends JFrame{
 	private JPanel theToolBarPanel;
 	private JToolBar toolBar;
 	private JButton toolBarButtonProduction;
+	private PrintDialog workOrderPrintDialog;
+	private PrintDialog productionOrderPrintDialog;
 	
 	private MyInternalFrame productionFrame;
 	
+	private Integer selectedList = -1;
 	private JList<Budget> listInbox;
 	private JList<ProductionOrder> listProductionOrders;
 	private JList<WorkOrder> listWorkOrders;
@@ -90,7 +102,7 @@ public class ProductionMainView extends JFrame{
 		
 		DateTime dt = new DateTime();
 		
-		if(dt.isAfter(new DateTime(2016, 10, 30, 0, 0))) {
+		if(dt.isAfter(new DateTime(2016, 11, 30, 0, 0))) {
 			JOptionPane.showMessageDialog(null, "Error, debe comunicarse con el programador");
 			System.exit(0);
 		}
@@ -159,7 +171,9 @@ public class ProductionMainView extends JFrame{
 		productionFrame.setLocation(new Point(x, y));
 		productionFrame.setLayout(new BorderLayout(50,50));
 		
-		productionFrame.add(createProductionMainPanel());
+		productionFrame.add(createProductionTopPanel(), BorderLayout.NORTH);
+		
+		productionFrame.add(createProductionMainPanel(), BorderLayout.CENTER);
 		productionFrame.setVisible(true);
 		desktop.add(productionFrame);
 		try{
@@ -167,6 +181,37 @@ public class ProductionMainView extends JFrame{
 		} catch(java.beans.PropertyVetoException e) {
 			
 		}
+	}
+	
+	private JPanel createProductionTopPanel() {
+		JPanel panelTop = new JPanel(new FlowLayout(FlowLayout.TRAILING));
+		
+		Font fa = null;
+		
+		try {
+			URL url = getClass().getResource("fontawesome-webfont.ttf");
+			InputStream is;
+			is = url.openStream();
+			fa = Font.createFont(Font.TRUETYPE_FONT, is);
+			fa = fa.deriveFont(Font.PLAIN, 36f);
+		} catch (IOException | FontFormatException e) {
+			e.printStackTrace();
+		}
+		
+		PrinterButtonListener lForPrinterButton = new PrinterButtonListener();
+		
+		JButton buttonProductionPrint = new JButton(Fa.fa_print);
+		buttonProductionPrint.setContentAreaFilled(false);
+		buttonProductionPrint.setActionCommand("production.print");
+		buttonProductionPrint.addActionListener(lForPrinterButton);
+		buttonProductionPrint.setMargin(new Insets(0, 0, 0, 0));
+		buttonProductionPrint.setFocusPainted(true);
+		buttonProductionPrint.setBorderPainted(false);
+		buttonProductionPrint.setFont(fa);
+		buttonProductionPrint.setForeground(Color.GREEN);
+		panelTop.add(buttonProductionPrint);
+		
+		return panelTop;
 	}
 	
 	private JPanel createProductionMainPanel() {
@@ -327,6 +372,7 @@ public class ProductionMainView extends JFrame{
 				
 			} else if (actionCommand.equalsIgnoreCase("button.order.production.process")) {
 				if(listInbox.getSelectedIndex() > -1) {
+					listWorkOrders.setModel(new DefaultListModel<WorkOrder>());
 					Budget selectedBudget = new Budget(listInbox.getSelectedValue());
 					if (!ProductionOrder.exists(selectedBudget.getId())) {
 						Integer orderId = ProductionOrder.pushToDb(selectedBudget.getId(), user.getId());
@@ -364,6 +410,7 @@ public class ProductionMainView extends JFrame{
 							model.addElement(workOrder);
 						}
 						listWorkOrders.setModel(model);
+						listProductionOrders.getSelectedValue().setProcessed(true);
 						db.setProductionOrderProcessed(selectedProductionOrder.getId());
 					} else {
 						ArrayList<WorkOrder> workOrders = new ArrayList<WorkOrder>();
@@ -390,8 +437,12 @@ public class ProductionMainView extends JFrame{
 				
 				if (listInbox.getSelectedIndex() != -1 && listInbox.isFocusOwner()) {
 					buttonProcessBudget.setEnabled(true);
+					selectedList = ProductionMainView.LIST_INBOX;
 				} else if (listProductionOrders.getSelectedIndex() != -1 && listProductionOrders.isFocusOwner()) {
 					buttonProcessProductionOrder.setEnabled(true);
+					selectedList = ProductionMainView.LIST_PRODUCTION;
+				} else if (listWorkOrders.getSelectedIndex() != -1 && listWorkOrders.isFocusOwner()) {
+					selectedList = ProductionMainView.LIST_WORK;
 				}
 				
 				if (lsm.isSelectionEmpty()) {
@@ -414,6 +465,77 @@ public class ProductionMainView extends JFrame{
 					createProductionFrame();
 				}
 			}
+		}
+		
+	}
+	
+	private class PrinterButtonListener implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent ev) {
+			String actionCommand = ev.getActionCommand();
+			
+			if(actionCommand.equalsIgnoreCase("production.print")) {
+				
+				if(selectedList.equals(ProductionMainView.LIST_WORK) && listWorkOrders.getSelectedIndex() > -1) {
+					workOrderPrintDialog = new PrintDialog(null, "Imprimir Orden de Trabajo");
+					WindowsListener lForWindow = new WindowsListener();
+					workOrderPrintDialog.addWindowListener(lForWindow);
+				} else if (selectedList.equals(ProductionMainView.LIST_PRODUCTION) && listProductionOrders.getSelectedIndex() > -1) {
+					productionOrderPrintDialog = new PrintDialog(null, "Imprimir Orden de Produccion");
+					WindowsListener lForWindow = new WindowsListener();
+					productionOrderPrintDialog.addWindowListener(lForWindow);
+				}
+				
+			}
+		}
+		
+	}
+	
+	private class WindowsListener implements WindowListener {
+
+		@Override
+		public void windowActivated(WindowEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void windowClosed(WindowEvent e) {
+			Window window = (Window)e.getSource();
+			if (window.equals(workOrderPrintDialog)) {
+				
+			}
+		}
+
+		@Override
+		public void windowClosing(WindowEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void windowDeactivated(WindowEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void windowDeiconified(WindowEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void windowIconified(WindowEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void windowOpened(WindowEvent e) {
+			// TODO Auto-generated method stub
+			
 		}
 		
 	}
