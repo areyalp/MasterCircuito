@@ -434,7 +434,7 @@ public class ProductionMainView extends JFrame{
 			ListSelectionModel lsm = (ListSelectionModel)ev.getSource();
 			
 			if (!ev.getValueIsAdjusting()) {
-				
+				selectedList = 0;
 				if (listInbox.getSelectedIndex() != -1 && listInbox.isFocusOwner()) {
 					buttonProcessBudget.setEnabled(true);
 					selectedList = ProductionMainView.LIST_INBOX;
