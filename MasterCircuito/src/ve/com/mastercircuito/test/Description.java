@@ -2,7 +2,7 @@ package ve.com.mastercircuito.test;
 
 public class Description {
 
-	private budget_boards quantity;
+	private Integer quantity;
 	private String nro;
 	private String name;
 	private String type;
