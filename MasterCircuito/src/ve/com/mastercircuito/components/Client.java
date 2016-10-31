@@ -34,6 +34,8 @@ public class Client {
 		this.instagramUser = instagramUser;
 	}
 	
+	
+
 	public String getClient() {
 		return this.client;
 	}

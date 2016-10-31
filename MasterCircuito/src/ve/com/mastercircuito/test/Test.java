@@ -1,33 +1,34 @@
 package ve.com.mastercircuito.test;
 
-import java.awt.Desktop;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.joda.time.DateTime;
 
-import com.java4less.xreport.fop.FOProcessor;
-
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.export.JRPdfExporter;
+import net.sf.jasperreports.engine.util.JRLoader;
+import net.sf.jasperreports.view.JasperViewer;
+import ve.com.mastercircuito.components.Client;
 import ve.com.mastercircuito.db.Db;
-import ve.com.mastercircuito.print.PurchaseOrderHeader;
-import ve.com.mastercircuito.print.PurchaseOrderItem;
 import ve.com.mastercircuito.sales.MainView;
 import ve.com.mastercircuito.utils.StringTools;
-import ve.com.mastercircuito.print.BuyerInformation;
 
+import java.awt.EventQueue;
 
 public class Test {
-
-	public static void main(String[] args) {
+	private static ConnectionDB con;
+	
+	public static void main(String[] args) throws Exception {
 		DateTime dt = new DateTime(new Date());
 		int year = dt.getYear();
 		Db db = new Db();
@@ -36,52 +37,97 @@ public class Test {
 		db.delete("DELETE FROM budget_code_ids WHERE year < 2017");
 		db.query("ALTER TABLE budget_code_ids AUTO_INCREMENT=1");
 		
-		//test implementation of the print XML file
-		//TODO insert query for the client data
-
-//		String BudgetSeller = String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_SELLER_COLUMN));
-//		Integer BudgetClientCode = Integer.valueOf(String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_CLIENT_ID_COLUMN)));
-//		String BudgetClient = String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_COMPANY_COLUMN));
-//		String BudgetClientRepresentative = String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_COMPANY_REPRESENTATIVE_COLUMN));
-//		String BudgetWorkName = String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_WORK_NAME_COLUMN));
-//		String BudgetDate = String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_DATE_COLUMN));
-						
-		
-	// 1. create order
-			PurchaseOrderHeader po = new PurchaseOrderHeader("1");
-			po.setBuyer(new BuyerInformation("Cliente 1","avenida 123","Barquisimeto","3001","VE")); //name,direction,city,zip code, country
-			PurchaseOrderItem[] items={ new PurchaseOrderItem("X1","tablero",1),  //article,description,quantity
-					 new PurchaseOrderItem("R4","Interruptor2",1),
-					 new PurchaseOrderItem("M3","Caja123",1),
-					 new PurchaseOrderItem("X4","Tablero2",2)};
-			po.setItems(items);
-			
-			try {
-
-				// 2. create now XML representation of the order			
-				JAXBContext jc = JAXBContext.newInstance(PurchaseOrderHeader.class);
-				Marshaller marshaller=jc.createMarshaller();
-				ByteArrayOutputStream ba=new ByteArrayOutputStream();
-				marshaller.marshal(po,ba);
-				
-				System.out.println("Created XML= "+new String(ba.toByteArray()));
-				
-				// 3. create now the PDF output for the XML data
-				FOProcessor processor=new FOProcessor();
-				processor.process(new ByteArrayInputStream(ba.toByteArray()), new FileInputStream("src/ve/com/mastercircuito/print/JavaPOExample.fo") , new FileOutputStream("BudgetExample.pdf"));
-				
-				if(Desktop.isDesktopSupported()) {
-					try{
-						File pdfFile = new File("BudgetExample.pdf");
-						Desktop.getDesktop().open(pdfFile);
-					} catch(IOException ex) {
-						
-					}
-				}
-				
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+//		String ClientCode = "SELECT clients.client_code"
+//				+ "FROM clients "
+//				+ "WHERE clients.id = '1'";
+//		
+//		String Cliente = "SELECT clients.client "
+//				+ "FROM clients "
+//				+ "WHERE clients.id = '1'";
+//		
+//		String Representative = "SELECT clients.representative "
+//				+ "FROM clients "
+//				+ "WHERE clients.id = '1'";
+//		
+//		String WorkName = "SELECT budgets.work_name "
+//				+ "FROM budgets "
+//				+ "WHERE budgets.id = '1'";
+//		
+//		String Date = "SELECT budgets.date "
+//				+ "FROM budgets "
+//				+ "WHERE budgets.id = '1'";
+//		
+//		String Code = "SELECT budgets.code "
+//				+ "FROM budgets "
+//				+ "WHERE budgets.id = '1'";
+//		
+//		//lOADING THE REPORT
+//		
+//		JasperReport report = (JasperReport) JRLoader.loadObjectFromFile( "C:\\Users\\Daniel y Brenda\\JaspersoftWorkspace\\MyReports\\Presupuesto.jasper" );
+//
+//		//FILLING THE REPORT WITH THE NEW DATA
+//		//LOADING THE PARAMETERS
+//		Map<String, Object> parametros = new HashMap<String, Object>();
+//        parametros.put("code", Code);
+//        parametros.put("client", Cliente );
+//        parametros.put("clientcode", ClientCode);
+//        parametros.put("date", Date);
+//        parametros.put("work_name", WorkName);
+//        parametros.put("representative", Representative );
+//        
+//        //Adding the fields from the budget
+//        
+////        List<Description> listaDescription = new ArrayList<Description>();
+////        Description d = new Description("nro ", "quantity ", "description_budget ", "price ", "total_price ");
+//
+//        List<Client> listaClient = new ArrayList<Client>();       
+//
+//        for (int i = 1; i <= 2; i++)
+//        {
+//        	 Client d = new Client(i, "id " + i, "client " + i, "code  " + i, "representative " + i,  "rif " + i, "address " + i, "phone " + i, "email " + i, "facebookProfile " + i, "twitterUser " + i);
+//        	 listaClient.add(d);
+//        }
+//        
+//		JasperPrint jasperPrint = JasperFillManager.fillReport(report, parametros, new JRBeanCollectionDataSource(listaClient));
+//		JasperViewer.viewReport(jasperPrint);    //VIEWER OF THE JASPER PRINT OBJECT
+//		//EXPORTING THE PDF FILE
+//		try { 
+//			JasperExportManager.exportReportToPdfFile("src\\reporte2.pdf");
+//		}
+//		catch( JRException ex ) {
+//			ex.printStackTrace();
+//		}
 	
+		
+		conectToDatabase();
+		openReportFrame();
 	}
-}
+	
+	private static void conectToDatabase()
+	{
+		String	driver = "com.mysql.jdbc.Driver";
+		String url = "jdbc:mysql://localhost/";
+		String	db	= "mastercircuito";
+
+		con = new ConnectionDB( driver, db, url );
+		con.connect();
+	}
+	
+	private static void openReportFrame()
+	{
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					ReportFrame frame = new ReportFrame( con.getConn() );
+					frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+		
+		
+		
+	}
+
