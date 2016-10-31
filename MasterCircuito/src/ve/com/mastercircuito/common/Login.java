@@ -7,13 +7,13 @@ import ve.com.mastercircuito.utils.PasswordEncryptor;
 
 public class Login {
 
-	protected static boolean authenticate(String username, String plainPassword){
-		boolean isPasswordOk = false;
-		boolean authenticated = false;
+	protected static Boolean authenticate(String username, String plainPassword){
+		Boolean isPasswordOk = false;
+		Boolean authenticated = false;
 		ResultSet rows;
 		try{
 			MysqlDriver db = new MysqlDriver();
-			rows = db.select("SELECT Id, Password FROM Users WHERE Login='"+ username +"';");
+			rows = db.select("SELECT id, password FROM Users WHERE username = '"+ username +"';");
 			if(rows.next()){
 				String encryptedPassword = rows.getString("Password");
 				isPasswordOk = PasswordEncryptor.checkPassword(plainPassword, encryptedPassword);

@@ -1,9 +1,8 @@
-package ve.com.mastercircuito.production;
+package ve.com.mastercircuito.sales;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
-import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -14,6 +13,7 @@ import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Toolkit;
+import java.awt.Window;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
@@ -29,12 +29,10 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
 
-import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
@@ -42,7 +40,6 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDesktopPane;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -65,319 +62,346 @@ import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.UtilDateModel;
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
+import ve.com.mastercircuito.components.BoardDialog;
+import ve.com.mastercircuito.components.BoxDialog;
+import ve.com.mastercircuito.components.ClientDialog;
 import ve.com.mastercircuito.components.DateLabelFormatter;
 import ve.com.mastercircuito.components.MyInternalFrame;
 import ve.com.mastercircuito.components.MyTableModel;
+import ve.com.mastercircuito.components.PrintDialog;
+import ve.com.mastercircuito.components.SellerDialog;
+import ve.com.mastercircuito.components.SwitchDialog;
 import ve.com.mastercircuito.db.Db;
 import ve.com.mastercircuito.font.Fa;
 import ve.com.mastercircuito.utils.Errors;
 import ve.com.mastercircuito.utils.Numbers;
 import ve.com.mastercircuito.utils.StringTools;
 
-public class MainView extends JFrame{
+public class SalesMainView extends JFrame{
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 7717733090547682708L;
+		private static final long serialVersionUID = 7717733090547682708L;
 	// Form Modes
-	private static final int VIEW_MODE = 1;
-	private static final int ADD_MODE = 2;
-	private static final int EDIT_MODE = 3;
+		private static final int VIEW_MODE = 1;
+		private static final int ADD_MODE = 2;
+		private static final int EDIT_MODE = 3;
 	// Common Tables
-	private static final String INSTALLATIONS_TABLE = "installations";
-	private static final String NEMAS_TABLE = "nemas";
-	private static final String INTERRUPTIONS_TABLE = "interruptions";
-	private static final String LOCK_TYPES_TABLE = "lock_types";
-	private static final String USERS_TABLE = "users";
-	private static final String CLIENTS_TABLE = "clients";
-	
+		private static final String INSTALLATIONS_TABLE = "installations";
+		private static final String NEMAS_TABLE = "nemas";
+		private static final String INTERRUPTIONS_TABLE = "interruptions";
+		private static final String LOCK_TYPES_TABLE = "lock_types";
+		private static final String USERS_TABLE = "users";
+		private static final String CLIENTS_TABLE = "clients";
 	// Common Fields
-	private static final String INSTALLATION_FIELD = "installations.installation";
-	private static final String NEMA_FIELD = "nemas.nema";
-	private static final String INTERRUPTION_FIELD = "interruptions.interruption";
+		private static final String INSTALLATION_FIELD = "installations.installation";
+		private static final String NEMA_FIELD = "nemas.nema";
+		private static final String INTERRUPTION_FIELD = "interruptions.interruption";
 	// Box Tables
-	private static final String BOXES_TABLE = "boxes";
-	private static final String BOX_TYPES_TABLE = "box_types";
-	private static final String BOX_SHEETS_TABLE = "box_sheets";
-	private static final String BOX_FINISHES_TABLE = "box_finishes";
-	private static final String BOX_COLORS_TABLE = "box_colors";
-	private static final String BOX_UNITS_TABLE = "box_measure_units";
-	private static final String BOX_CALIBERS_TABLE = "box_calibers";
+		private static final String BOXES_TABLE = "boxes";
+		private static final String BOX_TYPES_TABLE = "box_types";
+		private static final String BOX_SHEETS_TABLE = "box_sheets";
+		private static final String BOX_FINISHES_TABLE = "box_finishes";
+		private static final String BOX_COLORS_TABLE = "box_colors";
+		private static final String BOX_UNITS_TABLE = "box_measure_units";
+		private static final String BOX_CALIBERS_TABLE = "box_calibers";
 	// Box Fields
-	private static final String BOX_ID_FIELD = "boxes.id";
-	private static final String BOX_TYPE_FIELD = "box_types.type";
-	private static final String BOX_PAIRS_FIELD = "IF(boxes.pairs=0,'N/A',boxes.pairs) as pairs";
-	private static final String BOX_SHEET_FIELD = "IF(boxes.sheet_id=0,'N/A',box_sheets.sheet) as sheet";
-	private static final String BOX_FINISH_FIELD = "IF(boxes.finish_id=0,'N/A',box_finishes.finish) as finish";
-	private static final String BOX_COLOR_FIELD = "IF(boxes.color_id=0,'N/A',box_colors.color) as color";
-	private static final String BOX_HEIGHT_FIELD = "IF(boxes.height=0,'N/A',boxes.height) as height";
-	private static final String BOX_WIDTH_FIELD = "IF(boxes.width=0,'N/A',boxes.width) as width";
-	private static final String BOX_DEPTH_FIELD = "IF(boxes.depth=0,'N/A',boxes.depth) as depth";
-	private static final String BOX_UNITS_FIELD = "IF(boxes.units_id=0,'N/A',box_measure_units.units) as units";
-	private static final String BOX_CALIBER_FIELD = "IF(boxes.caliber_id=0,'N/A',box_calibers.caliber) as caliber";
-	private static final String BOX_LOCK_TYPE_FIELD = "IF(boxes.lock_type_id=0,'N/A',lock_types.lock_type) as lock_type";
-	private static final String BOX_PRICE_FIELD = "boxes.price";
+		private static final String BOX_ID_FIELD = "boxes.id";
+		private static final String BOX_TYPE_FIELD = "box_types.type";
+		private static final String BOX_PAIRS_FIELD = "IF(boxes.pairs=0,'N/A',boxes.pairs) as pairs";
+		private static final String BOX_SHEET_FIELD = "IF(boxes.sheet_id=0,'N/A',box_sheets.sheet) as sheet";
+		private static final String BOX_FINISH_FIELD = "IF(boxes.finish_id=0,'N/A',box_finishes.finish) as finish";
+		private static final String BOX_COLOR_FIELD = "IF(boxes.color_id=0,'N/A',box_colors.color) as color";
+		private static final String BOX_HEIGHT_FIELD = "IF(boxes.height=0,'N/A',boxes.height) as height";
+		private static final String BOX_WIDTH_FIELD = "IF(boxes.width=0,'N/A',boxes.width) as width";
+		private static final String BOX_DEPTH_FIELD = "IF(boxes.depth=0,'N/A',boxes.depth) as depth";
+		private static final String BOX_UNITS_FIELD = "IF(boxes.units_id=0,'N/A',box_measure_units.units) as units";
+		private static final String BOX_CALIBER_FIELD = "IF(boxes.caliber_id=0,'N/A',box_calibers.caliber) as caliber";
+		private static final String BOX_LOCK_TYPE_FIELD = "IF(boxes.lock_type_id=0,'N/A',lock_types.lock_type) as lock_type";
+		private static final String BOX_PRICE_FIELD = "boxes.price";
 	// Board Tables
-	private static final String BOARD_TABLE = "boards";
-	private static final String BOARD_BAR_CAPACITIES_TABLE = "board_bar_capacities";
-	private static final String BOARD_BAR_TYPES_TABLE = "board_bar_types";
-	private static final String BOARD_CIRCUITS_TABLE = "board_circuits";
-	private static final String BOARD_TYPES_TABLE = "board_types";
-	private static final String BOARD_VOLTAGES_TABLE = "board_voltages";
+		private static final String BOARD_TABLE = "boards";
+		private static final String BOARD_BAR_CAPACITIES_TABLE = "board_bar_capacities";
+		private static final String BOARD_BAR_TYPES_TABLE = "board_bar_types";
+		private static final String BOARD_CIRCUITS_TABLE = "board_circuits";
+		private static final String BOARD_TYPES_TABLE = "board_types";
+		private static final String BOARD_VOLTAGES_TABLE = "board_voltages";
 	// Board Fields
-	private static final String BOARD_ID_FIELD = "boards.id";
-	private static final String BOARD_NAME_FIELD = "boards.`name`";
-	private static final String BOARD_TYPE_FIELD = "board_types.type";
-	private static final String BOARD_BAR_CAPACITY_FIELD = "board_bar_capacities.bar_capacity";
-	private static final String BOARD_BAR_TYPE_FIELD = "board_bar_types.bar_type";
-	private static final String BOARD_CIRCUITS_FIELD = "board_circuits.circuits";
-	private static final String BOARD_VOLTAGE_FIELD = "board_voltages.voltage";
-	private static final String BOARD_PHASES_FIELD = "boards.phases";
-	private static final String BOARD_GROUND_FIELD = "IF(boards.ground=0,'NO','SI') as ground";
-	private static final String BOARD_LOCK_TYPE_FIELD = "lock_types.lock_type";
-	private static final String BOARD_PRICE_FIELD = "boards.price";
-	// Finish filling up the fields of the board table and the tables above too
-	
+		private static final String BOARD_ID_FIELD = "boards.id";
+		private static final String BOARD_NAME_FIELD = "boards.`name`";
+		private static final String BOARD_TYPE_FIELD = "board_types.type";
+		private static final String BOARD_BAR_CAPACITY_FIELD = "board_bar_capacities.bar_capacity";
+		private static final String BOARD_BAR_TYPE_FIELD = "board_bar_types.bar_type";
+		private static final String BOARD_CIRCUITS_FIELD = "board_circuits.circuits";
+		private static final String BOARD_VOLTAGE_FIELD = "board_voltages.voltage";
+		private static final String BOARD_PHASES_FIELD = "boards.phases";
+		private static final String BOARD_GROUND_FIELD = "IF(boards.ground=0,'NO','SI') as ground";
+		private static final String BOARD_LOCK_TYPE_FIELD = "lock_types.lock_type";
+		private static final String BOARD_PRICE_FIELD = "boards.price";
 	//Budget Tables	
-	private static final String BUDGET_TABLE = "budgets";
-	private static final String BUDGET_PAYMENT_METHODS_TABLE = "budget_payment_methods";
-	private static final String BUDGET_DISPATCH_PLACES_TABLE = "budget_dispatch_places";
-	private static final String BUDGET_STAGES_TABLE = "budget_stages";
-	private static final String BUDGET_DELIVERY_PERIOD_TABLE = "budget_delivery_period";
-	
+		private static final String BUDGET_TABLE = "budgets";
+		private static final String BUDGET_PAYMENT_METHODS_TABLE = "budget_payment_methods";
+		private static final String BUDGET_DISPATCH_PLACES_TABLE = "budget_dispatch_places";
+		private static final String BUDGET_STAGES_TABLE = "budget_stages";
+		private static final String BUDGET_DELIVERY_PERIODS_TABLE = "budget_delivery_periods";
 	//Budget Fields
-	private static final String BUDGET_ID_FIELD = "budgets.id";
-	private static final String BUDGET_CODE_FIELD = "budgets.code";
-	private static final String BUDGET_DATE_FIELD = "budgets.date";
-	private static final String BUDGET_EXPIRY_DAYS_FIELD = "budgets.expiry_days";
-	private static final String BUDGET_WORK_NAME_FIELD = "budgets.work_name";
-	private static final String BUDGET_DELIVERY_TIME_FIELD = "budgets.delivery_time";
-	private static final String BUDGET_DELIVERY_PERIOD_FIELD = "budget_delivery_period.delivery_period";
-	private static final String BUDGET_TRACING_FIELD = "budgets.tracing";
-	private static final String METHOD_FIELD = "budget_payment_methods.method";
-	private static final String USERNAME_FIELD = "users.username";
-	private static final String PLACE_FIELD = "budget_dispatch_places.place";
-	private static final String STAGE_FIELD = "stages.stage";
-	private static final String CLIENT_CODE_FIELD = "clients.client_code";
-	private static final String CLIENT_FIELD = "clients.client";
-	private static final String CLIENT_REPRESENTATIVE_FIELD = "clients.representative";
-	private static final String SELLER_FIELD = "budget_sellers.seller";
+		private static final String BUDGET_ID_FIELD = "budgets.id";
+		private static final String BUDGET_CODE_FIELD = "budgets.`code`";
+		private static final String BUDGET_DATE_FIELD = "DATE_FORMAT(budgets.`date`,'%d-%m-%Y') as `date`";
+		private static final String BUDGET_EXPIRY_DAYS_FIELD = "budgets.expiry_days";
+		private static final String BUDGET_WORK_NAME_FIELD = "budgets.work_name";
+		private static final String BUDGET_DELIVERY_TIME_FIELD = "budgets.delivery_time";
+		private static final String BUDGET_DELIVERY_PERIOD_FIELD = "budget_delivery_periods.delivery_period";
+//		private static final String BUDGET_TRACING_FIELD = "budgets.tracing";
+		private static final String METHOD_FIELD = "budget_payment_methods.method";
+		private static final String USERNAME_FIELD = "users.username";
+		private static final String PLACE_FIELD = "budget_dispatch_places.place";
+//		private static final String STAGE_FIELD = "budget_stages.stage";
+		private static final String CLIENT_CODE_FIELD = "clients.client_code";
+		private static final String CLIENT_FIELD = "clients.client";
+		private static final String CLIENT_REPRESENTATIVE_FIELD = "clients.representative";
+//		private static final String SELLER_FIELD = "budget_sellers.seller";
+		
+		private Db db;
 	
-	private Db db;
-	
-	private JDesktopPane desktop;
-	private JPanel theToolBarPanel;
-	private JToolBar toolBar;
-	private JButton toolBarButtonSwitches, toolBarButtonBoxes, toolBarButtonPanels, toolBarButtonBudgets;
+		private JDesktopPane desktop;
+		private JPanel theToolBarPanel;
+		private JToolBar toolBar;
+		private JButton toolBarButtonSwitches, toolBarButtonBoxes, toolBarButtonPanels, toolBarButtonBudgets, toolBarButtonStarters, toolBarButtonTracing;
 	//*** Switch Global Variables and objects ***//
-	private MyInternalFrame switchesFrame = new MyInternalFrame();
-	private Object[][] switchesData = {};
+		private MyInternalFrame switchesFrame = new MyInternalFrame();
+		private Object[][] switchesData = {};
 	// Switch View Objects
-	private JComboBox<String> comboSwitchBrands, comboSwitchTypes, comboSwitchPhases, comboSwitchCurrents, comboSwitchInterruptions;
-	private String searchSelectedSwitchBrand = "", searchSelectedSwitchType = "", searchSelectedSwitchPhases = "", searchSelectedSwitchCurrent = "", searchSelectedSwitchInterruption = "";
-	private JPanel panelSwitchRight, panelSwitchDescription, panelWrapperSwitchDescription, panelSwitchAddNew, panelSwitchEdit;
-	private JTextField textSwitchPrice, textSwitchPhases, textSwitchCurrent, textSwitchType, textSwitchBrand;
-	private JTextArea textSwitchDescription;
-	private JLabel labelSwitchCopy;
+		private JComboBox<String> comboSwitchBrands, comboSwitchTypes, comboSwitchPhases, comboSwitchCurrents, comboSwitchInterruptions;
+		private String searchSelectedSwitchBrand = "", searchSelectedSwitchType = "", searchSelectedSwitchPhases = "", searchSelectedSwitchCurrent = "", searchSelectedSwitchInterruption = "";
+		private JPanel panelSwitchRight, panelSwitchDescription, panelWrapperSwitchDescription, panelSwitchAddNew, panelSwitchEdit;
+		private JTextField textSwitchPrice, textSwitchPhases, textSwitchCurrent, textSwitchType, textSwitchBrand;
+		private JTextArea textSwitchDescription;
+		private JLabel labelSwitchCopy;
 	// Switch Table Objects
-	private JScrollPane tableSwitchScrollPane;
-	private JTable tableSwitchesResult;
-	private int switchTableSelectedIndex = -1;
-	private ListSelectionModel listSwitchSelectionModel;
+		private JScrollPane tableSwitchScrollPane;
+		private JTable tableSwitchesResult;
+		private Integer switchTableSelectedIndex = -1;
+		private ListSelectionModel listSwitchSelectionModel;
 	// Switch Add Objects
-	private JTextField textSwitchAddPrice, textSwitchAddModel;
-	private JTextArea textSwitchAddDescription;
-	private JButton buttonSwitchAdd, buttonSwitchEdit, buttonSwitchAddSave, buttonSwitchAddCancel;
-	private JComboBox<String> comboSwitchAddBrands, comboSwitchAddTypes, comboSwitchAddPhases, comboSwitchAddCurrents, comboSwitchAddInterruptions, comboSwitchAddVoltages;
-	private String addSelectedSwitchBrand;
+		private JTextField textSwitchAddPrice, textSwitchAddModel;
+		private JTextArea textSwitchAddDescription;
+		private JButton buttonSwitchAdd, buttonSwitchEdit, buttonSwitchAddSave, buttonSwitchAddCancel;
+		private JComboBox<String> comboSwitchAddBrands, comboSwitchAddTypes, comboSwitchAddPhases, comboSwitchAddCurrents, comboSwitchAddInterruptions, comboSwitchAddVoltages;
+		private String addSelectedSwitchBrand;
 	// Switch Edit Objects
-	private int editSwitchId = 0, editSwitchCurrent = 0, editSwitchInterruption = 0;
-	private double editSwitchPrice = 0;
-	private String editSwitchPhases, editSwitchBrand, editSwitchType, editSwitchModel, editSwitchVoltage;
-	private JTextField textSwitchEditPrice, textSwitchEditModel;
-	private JTextArea textSwitchEditDescription;
-	private JComboBox<String> comboSwitchEditPhases, comboSwitchEditCurrent, comboSwitchEditBrand, comboSwitchEditType, comboSwitchEditInterruption, comboSwitchEditVoltage;
-	private String editSelectedSwitchBrand;
+		private Integer editSwitchId = 0, editSwitchCurrent = 0, editSwitchInterruption = 0;
+		private Double editSwitchPrice = 0.00;
+		private String editSwitchPhases, editSwitchBrand, editSwitchType, editSwitchModel, editSwitchVoltage;
+		private JTextField textSwitchEditPrice, textSwitchEditModel;
+		private JTextArea textSwitchEditDescription;
+		private JComboBox<String> comboSwitchEditPhases, comboSwitchEditCurrent, comboSwitchEditBrand, comboSwitchEditType, comboSwitchEditInterruption, comboSwitchEditVoltage;
+		private String editSelectedSwitchBrand;
 	// Switch Settings Objects
-	private JComboBox<String> comboSwitchSettingsBrands, comboSwitchSettingsTypes, comboSwitchSettingsCurrents, comboSwitchSettingsVoltages, comboSwitchSettingsInterruptions;
+		private JComboBox<String> comboSwitchSettingsBrands, comboSwitchSettingsTypes, comboSwitchSettingsCurrents, comboSwitchSettingsVoltages, comboSwitchSettingsInterruptions;
 	
 	//*** Box Global Variables and objects ***//
-	private MyInternalFrame boxesFrame = new MyInternalFrame();
-	private Object[][] boxesData = {};
+		private MyInternalFrame boxesFrame = new MyInternalFrame();
+		private Object[][] boxesData = {};
 	// Box View Objects
-	private JComboBox<String> comboBoxTypes, comboBoxInstallations, comboBoxNemas, comboBoxPairs, comboBoxSheets, comboBoxFinishes, comboBoxColors, comboBoxCalibers, comboBoxLockTypes;
-	private JTextField textBoxHeight, textBoxWidth, textBoxDepth;
-	private String searchSelectedBoxType = "", searchSelectedBoxInstallation = "", searchSelectedBoxNema = "", searchSelectedBoxPairs = "", searchSelectedBoxSheet = "", searchSelectedBoxFinish = "", searchSelectedBoxColor = "", searchSelectedBoxHeight = "", searchSelectedBoxWidth = "", searchSelectedBoxDepth = "", searchSelectedBoxCaliber = "", searchSelectedBoxLockType = "";
-	private JPanel panelBoxDescription, panelWrapperBoxDescription, panelBoxAddNew, panelBoxEdit;
-	private JTextField textBoxDescriptionType, textBoxDescriptionInstallation, textBoxDescriptionNema, textBoxDescriptionPairs, textBoxDescriptionSheet, textBoxDescriptionFinish, textBoxDescriptionColor, textBoxDescriptionHeight, textBoxDescriptionWidth, textBoxDescriptionDepth, textBoxDescriptionUnits, textBoxDescriptionCaliber, textBoxDescriptionLockType, textBoxDescriptionPrice;
-	private JTextArea textBoxDescription;
-	private JLabel labelBoxCopy;
+		private JComboBox<String> comboBoxTypes, comboBoxInstallations, comboBoxNemas, comboBoxPairs, comboBoxSheets, comboBoxFinishes, comboBoxColors, comboBoxCalibers, comboBoxLockTypes;
+		private JTextField textBoxHeight, textBoxWidth, textBoxDepth;
+		private String searchSelectedBoxType = "", searchSelectedBoxInstallation = "", searchSelectedBoxNema = "", searchSelectedBoxPairs = "", searchSelectedBoxSheet = "", searchSelectedBoxFinish = "", searchSelectedBoxColor = "", searchSelectedBoxHeight = "", searchSelectedBoxWidth = "", searchSelectedBoxDepth = "", searchSelectedBoxCaliber = "", searchSelectedBoxLockType = "";
+		private JPanel panelBoxDescription, panelWrapperBoxDescription, panelBoxAddNew, panelBoxEdit;
+		private JTextField textBoxDescriptionType, textBoxDescriptionInstallation, textBoxDescriptionNema, textBoxDescriptionPairs, textBoxDescriptionSheet, textBoxDescriptionFinish, textBoxDescriptionColor, textBoxDescriptionHeight, textBoxDescriptionWidth, textBoxDescriptionDepth, textBoxDescriptionUnits, textBoxDescriptionCaliber, textBoxDescriptionLockType, textBoxDescriptionPrice;
+		private JTextArea textBoxDescription;
+		private JLabel labelBoxCopy;
 	// Box Table Objects
-	private JScrollPane tableBoxScrollPane;
-	private JTable tableBoxesResult;
-	private int boxTableSelectedIndex = -1;
-	private ListSelectionModel listBoxSelectionModel;
+		private JScrollPane tableBoxScrollPane;
+		private JTable tableBoxesResult;
+		private Integer boxTableSelectedIndex = -1;
+		private ListSelectionModel listBoxSelectionModel;
 	// Box Add Objects
-	private JButton buttonBoxAdd, buttonBoxEdit, buttonBoxAddSave, buttonBoxAddCancel, buttonBoxEditSave, buttonBoxEditCancel;
-	private JComboBox<String> comboBoxAddTypes, comboBoxAddInstallations, comboBoxAddNemas, comboBoxAddSheets, comboBoxAddFinishes, comboBoxAddColors, comboBoxAddUnits, comboBoxAddCalibers, comboBoxAddLockTypes;
-	private JTextField textBoxAddPairs, textBoxAddHeight, textBoxAddWidth, textBoxAddDepth, textBoxAddCaliberComments, textBoxAddPrice;
-	private String addSelectedBoxType = "", addSelectedBoxSheet = "";
-	private JTextArea textBoxAddDescription;
+		private JButton buttonBoxAdd, buttonBoxEdit, buttonBoxAddSave, buttonBoxAddCancel, buttonBoxEditSave, buttonBoxEditCancel;
+		private JComboBox<String> comboBoxAddTypes, comboBoxAddInstallations, comboBoxAddNemas, comboBoxAddSheets, comboBoxAddFinishes, comboBoxAddColors, comboBoxAddUnits, comboBoxAddCalibers, comboBoxAddLockTypes;
+		private JTextField textBoxAddPairs, textBoxAddHeight, textBoxAddWidth, textBoxAddDepth, textBoxAddCaliberComments, textBoxAddPrice;
+		private String addSelectedBoxType = "", addSelectedBoxSheet = "";
+		private JTextArea textBoxAddDescription;
 	// Box Edit Objects
-	private double editBoxPrice = 0;
-	private int editBoxId = 0, editBoxPairs = 0, editBoxHeight = 0, editBoxWidth = 0, editBoxDepth = 0;
-	private String editSelectedBoxType, editSelectedBoxSheet;
-	private String editBoxType, editBoxInstallation, editBoxNema, editBoxSheet, editBoxFinish, editBoxColor, editBoxUnits, editBoxCaliber, editBoxCaliberComments, editBoxLockType;
-	private JTextField textBoxEditPairs, textBoxEditHeight, textBoxEditWidth, textBoxEditDepth, textBoxEditCaliberComments, textBoxEditPrice;
-	private JComboBox<String> comboBoxEditTypes, comboBoxEditInstallations, comboBoxEditNemas, comboBoxEditSheets, comboBoxEditFinishes, comboBoxEditColors, comboBoxEditUnits, comboBoxEditCalibers, comboBoxEditLockTypes;
-	private JTextArea textBoxEditDescription;
+		private Double editBoxPrice = 0.00;
+		private Integer editBoxId = 0, editBoxPairs = 0, editBoxHeight = 0, editBoxWidth = 0, editBoxDepth = 0;
+		private String editSelectedBoxType, editSelectedBoxSheet;
+		private String editBoxType, editBoxInstallation, editBoxNema, editBoxSheet, editBoxFinish, editBoxColor, editBoxUnits, editBoxCaliber, editBoxCaliberComments, editBoxLockType;
+		private JTextField textBoxEditPairs, textBoxEditHeight, textBoxEditWidth, textBoxEditDepth, textBoxEditCaliberComments, textBoxEditPrice;
+		private JComboBox<String> comboBoxEditTypes, comboBoxEditInstallations, comboBoxEditNemas, comboBoxEditSheets, comboBoxEditFinishes, comboBoxEditColors, comboBoxEditUnits, comboBoxEditCalibers, comboBoxEditLockTypes;
+		private JTextArea textBoxEditDescription;
 	// Box Settings Objects
-	private JComboBox<String> comboBoxSettingsColors, comboBoxSettingsCalibers;
+		private JComboBox<String> comboBoxSettingsColors, comboBoxSettingsCalibers;
 	
 	//*** Board Global Variables and objects ***//
-	private MyInternalFrame boardsFrame = new MyInternalFrame();
-	private Object[][] boardsData = {};
-	private Object[][] boardSwitchesData = {};
-	private JTabbedPane boardViewTabbedPane;
+		private MyInternalFrame boardsFrame = new MyInternalFrame();
+		private Object[][] boardsData = {};
+		private Object[][] boardSwitchesData = {};
+		private JTabbedPane boardViewTabbedPane;
 	// Board View Objects
-	private JPanel panelBoardDescription, panelWrapperBoardDescription;
-	private JButton buttonBoardAdd, buttonBoardEdit;
-	private JTextField textBoardSearchNames;
-	private JComboBox<String> comboBoardTypes, comboBoardInstallations, comboBoardNemas, comboBoardBarCapacities, comboBoardBarTypes, comboBoardCircuits, comboBoardVoltages, comboBoardPhases, comboBoardGround, comboBoardInterruptions, comboBoardLockTypes;
-	private String searchSelectedBoardType = "", searchSelectedBoardInstallation = "", searchSelectedBoardNema = "", searchSelectedBoardBarCapacity = "", searchSelectedBoardBarType = "", searchSelectedBoardCircuits = "", searchSelectedBoardVoltage = "", searchSelectedBoardPhases = "", searchSelectedBoardGround = "", searchSelectedBoardInterruption = "", searchSelectedBoardLockType = "";
-	private JTextField textBoardDescriptionName, textBoardDescriptionType, textBoardDescriptionInstallation, textBoardDescriptionNema, textBoardDescriptionBarCapacity, textBoardDescriptionBarType, textBoardDescriptionCircuits, textBoardDescriptionVoltage, textBoardDescriptionPhases, textBoardDescriptionGround, textBoardDescriptionInterruption, textBoardDescriptionLockType, textBoardDescriptionPrice;
-	private JTextArea textBoardDescription;
-	private JLabel labelBoardCopy;
+		private JPanel panelBoardDescription, panelWrapperBoardDescription;
+		private JButton buttonBoardAdd, buttonBoardEdit;
+		private JTextField textBoardSearchNames;
+		private JComboBox<String> comboBoardTypes, comboBoardInstallations, comboBoardNemas, comboBoardBarCapacities, comboBoardBarTypes, comboBoardCircuits, comboBoardVoltages, comboBoardPhases, comboBoardGround, comboBoardInterruptions, comboBoardLockTypes;
+		private String searchSelectedBoardType = "", searchSelectedBoardInstallation = "", searchSelectedBoardNema = "", searchSelectedBoardBarCapacity = "", searchSelectedBoardBarType = "", searchSelectedBoardCircuits = "", searchSelectedBoardVoltage = "", searchSelectedBoardPhases = "", searchSelectedBoardGround = "", searchSelectedBoardInterruption = "", searchSelectedBoardLockType = "";
+		private JTextField textBoardDescriptionName, textBoardDescriptionType, textBoardDescriptionInstallation, textBoardDescriptionNema, textBoardDescriptionBarCapacity, textBoardDescriptionBarType, textBoardDescriptionCircuits, textBoardDescriptionVoltage, textBoardDescriptionPhases, textBoardDescriptionGround, textBoardDescriptionInterruption, textBoardDescriptionLockType, textBoardDescriptionPrice;
+		private JTextArea textBoardDescription;
+		private JLabel labelBoardCopy;
 	// Board Table Objects
-	private JScrollPane tableBoardScrollPane;
-	private JTable tableBoardsResult;
-	private ListSelectionModel listBoardSelectionModel;
-	private int boardsTableSelectedIndex;
-	private int selectedBoardId = 0;
+		private JScrollPane tableBoardScrollPane;
+		private JTable tableBoardsResult;
+		private ListSelectionModel listBoardSelectionModel;
+		private Integer boardsTableSelectedIndex;
+		private Integer selectedBoardId = 0;
 	// Board Switches Objects
-	private JPanel boardSwitchesPanel;
-	private JTable tableBoardSwitchesResult;
-	private ListSelectionModel listBoardSwitchesSelectionModel;
-	private int boardSwitchesTableSelectedIndex;
-	private JButton buttonAddBoardSwitch, buttonRemoveBoardSwitch;
-	private int selectedBoardSwitchId;
+		private JPanel boardSwitchesPanel;
+		private JTable tableBoardSwitchesResult;
+		private ListSelectionModel listBoardSwitchesSelectionModel;
+		private Integer boardSwitchesTableSelectedIndex;
+		private JButton buttonAddBoardSwitch, buttonRemoveBoardSwitch;
+		private Integer selectedBoardSwitchId;
 	// Board Switches Add Objects
-	private int selectedTableBoardCircuits = 0;
-	private String searchSelectedBoardSwitchBrand, searchSelectedBoardSwitchType, searchSelectedBoardSwitchPhases, searchSelectedBoardSwitchCurrent, searchSelectedBoardSwitchInterruption;
-	private JDialog dialogBoardSwitchAdd;
-	private Object[][] boardSwitchesSearchData;
-	private JTable tableBoardSwitchesSearchResult;
-	private ListSelectionModel listBoardSwitchSearchSelectionModel;
-	private JComboBox<String> comboBoardSwitchBrands, comboBoardSwitchTypes, comboBoardSwitchPhases, comboBoardSwitchCurrents, comboBoardSwitchInterruptions;
-	private int boardSwitchAddQuantity = 1;
-	private int boardSwitchSearchQuantity = 1;
-	private int boardSwitchSearchId = 0;
+		private Integer selectedTableBoardCircuits = 0;
+		private String searchSelectedBoardSwitchBrand, searchSelectedBoardSwitchType, searchSelectedBoardSwitchPhases, searchSelectedBoardSwitchCurrent, searchSelectedBoardSwitchInterruption;
+		private SwitchDialog dialogBoardSwitchAdd;
+		private Object[][] boardSwitchesSearchData;
+		private JTable tableBoardSwitchesSearchResult;
+		private JComboBox<String> comboBoardSwitchBrands, comboBoardSwitchTypes, comboBoardSwitchPhases, comboBoardSwitchCurrents, comboBoardSwitchInterruptions;
 	// Board Add Objects
-	private JPanel panelBoardAddNew;
-	private JButton buttonBoardAddCancel;
-	private JTextField textBoardAddName, textBoardAddPrice;
-	private JComboBox<String> comboBoardAddType, comboBoardAddInstallation, comboBoardAddNema, comboBoardAddBarCapacity, comboBoardAddBarType, comboBoardAddCircuits, comboBoardAddVoltage, comboBoardAddPhases, comboBoardAddInterruption, comboBoardAddLockType;
-	private JCheckBox checkBoardAddGround;
-	private JTextArea textBoardAddDescription;
+		private JPanel panelBoardAddNew;
+		private JButton buttonBoardAddCancel;
+		private JTextField textBoardAddName, textBoardAddPrice;
+		private JComboBox<String> comboBoardAddType, comboBoardAddInstallation, comboBoardAddNema, comboBoardAddBarCapacity, comboBoardAddBarType, comboBoardAddCircuits, comboBoardAddVoltage, comboBoardAddPhases, comboBoardAddInterruption, comboBoardAddLockType;
+		private JCheckBox checkBoardAddGround;
+		private JTextArea textBoardAddDescription;
 	// Board Edit Objects
-	private JPanel panelBoardEdit;
-	private JButton buttonBoardAddSave;
-	private int editBoardId, editBoardPhases;
-	private Double editBoardPrice;
-	private String editBoardType, editBoardName, editBoardInstallation, editBoardNema, editBoardBarCapacity, editBoardBarType, editBoardCircuits, editBoardVoltage, editBoardGround, editBoardInterruption, editBoardLockType;
-	private JTextField textBoardEditName, textBoardEditPrice;
-	private JComboBox<String> comboBoardEditType, comboBoardEditInstallation, comboBoardEditNema, comboBoardEditBarCapacity, comboBoardEditBarType, comboBoardEditCircuits, comboBoardEditVoltage, comboBoardEditPhases, comboBoardEditInterruption, comboBoardEditLockType;
-	private JCheckBox checkBoardEditGround;
-	private JTextArea textBoardEditDescription;
-	private JButton buttonBoardEditSave, buttonBoardEditCancel;
+		private JPanel panelBoardEdit;
+		private JButton buttonBoardAddSave;
+		private Integer editBoardId, editBoardPhases;
+		private Double editBoardPrice;
+		private String editBoardType, editBoardName, editBoardInstallation, editBoardNema, editBoardBarCapacity, editBoardBarType, editBoardCircuits, editBoardVoltage, editBoardGround, editBoardInterruption, editBoardLockType;
+		private JTextField textBoardEditName, textBoardEditPrice;
+		private JComboBox<String> comboBoardEditType, comboBoardEditInstallation, comboBoardEditNema, comboBoardEditBarCapacity, comboBoardEditBarType, comboBoardEditCircuits, comboBoardEditVoltage, comboBoardEditPhases, comboBoardEditInterruption, comboBoardEditLockType;
+		private JCheckBox checkBoardEditGround;
+		private JTextArea textBoardEditDescription;
+		private JButton buttonBoardEditSave, buttonBoardEditCancel;
 	// Board Materials Objects
-	private JPanel boardMaterialsPanel;
-	private JTextArea textMaterials;
-	private JTextField textMaterialsPrice;
-	private JButton buttonBoardMaterialsEdit, buttonBoardMaterialsEditSave, buttonBoardMaterialsEditCancel;
-	private JPanel panelBoardMaterialsEditSaveCancel;
+		private JPanel boardMaterialsPanel;
+		private JTextArea textMaterials;
+		private JTextField textMaterialsPrice;
+		private JButton buttonBoardMaterialsEdit, buttonBoardMaterialsEditSave, buttonBoardMaterialsEditCancel;
+		private JPanel panelBoardMaterialsEditSaveCancel;
 	// Board Comments Objects
-	private JPanel boardCommentsPanel;
-	private JTextArea textComments;
-	private JButton buttonBoardCommentsEdit, buttonBoardCommentsEditSave, buttonBoardCommentsEditCancel;
-	private JPanel panelBoardCommentsEditSaveCancel;
+		private JPanel boardCommentsPanel;
+		private JTextArea textBoardComments;
+		private JButton buttonBoardCommentsEdit, buttonBoardCommentsEditSave, buttonBoardCommentsEditCancel;
+		private JPanel panelBoardCommentsEditSaveCancel;
 	//*** Budget Global Variables and objects ***//
-	private MyInternalFrame budgetsFrame = new MyInternalFrame();
-	private MyInternalFrame startersFrame = new MyInternalFrame();
-	private MyInternalFrame tracingFrame = new MyInternalFrame();
+		private MyInternalFrame budgetsFrame = new MyInternalFrame();
+		private MyInternalFrame startersFrame = new MyInternalFrame();
+		private MyInternalFrame tracingFrame = new MyInternalFrame();
+		
+		private PrintDialog budgetPrintDialog;
 	
-	//Budget add Objects
-	private UtilDateModel addBudgetDateModel;
-	private JButton buttonBudgetAdd;
-	private JButton buttonBudgetEdit;
-	private JPanel budgetSwitchesPanel;
-	private JScrollPane tableBudgetScrollPane;
-	private JTable tableBudgetsResult;
-	private ListSelectionModel listBudgetSelectionModel;
-	private JPanel budgetBoxesPanel;
-	private JPanel budgetBoardsPanel;
-	private JPanel budgetMaterialsPanel;
-	private JPanel budgetSpecialsPanel;
-	private JPanel budgetNotesPanel;
-	private JTextField textBudgetSearchId;
-	private JComboBox<String> comboBudgetDays;
-	private JPanel panelBudgetDescription, panelWrapperBudgetDescription;
-	private JComboBox<String> comboBudgetMonths;
-	private JComboBox<String> comboBudgetYears;
-	private JPanel panelBudgetAddNew, panelBudgetEdit;
-	private JTextField textBudgetDescriptionId, textBudgetSearchClient,textBudgetDescriptionCode;
-	private JTextField textBudgetDescriptionDate, textBudgetDescriptionExpiryDays;
-	private JTextField textBudgetDescriptionClientCode, textBudgetDescriptionCompany;
-	private JTextField textBudgetDescriptionCompanyRepresentative, textBudgetDescriptionWorkName, textBudgetDescriptionPaymentMethod;
-	private JTextField textBudgetDescriptionSeller, textBudgetDescriptionDeliveryTime, textBudgetDescriptionDeliveryPeriod, textBudgetDescriptionDispatchPlace;
-	private JButton buttonBudgetAddSave, buttonBudgetAddCancel;
-	private JTextField textBudgetAddClientCode,textBudgetAddExpiryDays;
-	private JTextField textBudgetAddCompanyRepresentative, textBudgetAddWorkName, textBudgetAddCompany;
-	private JTextField textBudgetAddSeller, textBudgetAddDeliveryTime;
-	private JCheckBox checkBudgetAddTracing;
-	private JTextField textBudgetDescriptionExpiryDate;
-//	private String queryUser;
-//	private String username;
-	private Object [][] budgetsData={};
-	private JComboBox<String> comboBudgetAddPaymentMethod, comboBudgetAddDispatchPlace,comboBugetAddDeliveryPeriod;
-	private int editBudgetClientCode, editBudgetExpiryDays,editBudgetDeliveryTime;
-	private String editBudgetDate, editBudgetDeliveryPeriod;
-	private String editBudgetWorkName, editBudgetPaymentMethod, editBudgetSeller, editBudgetDispatchPlace, editBudgetTracing, editBudgetStage;
-	private int budgetsTableSelectedIndex;
-	private JButton buttonBudgetAddCompany, buttonBudgetAddSeller, buttonBudgetEditSave, buttonBudgetEditCancel;
-	private int selectedBudgetId;
-	// Budget Company Add
-	private JDialog dialogBudgetCompanyAdd;
-	private JTextField textBudgetCompanySearchClient;
-	private Object[][] budgetCompaniesData = {};
-	private JTable tableBudgetCompaniesSearchResult;
-	private ListSelectionModel listBudgetCompaniesSearchSelectionModel;
-	private int budgetCompanyAddSearchId;
+	//Budget Objects
+		private UtilDateModel addBudgetDateModel;
+		private JButton buttonBudgetAdd;
+		private JButton buttonBudgetEdit;
+		private JScrollPane tableBudgetScrollPane;
+		private JTable tableBudgetsResult;
+		private ListSelectionModel listBudgetSelectionModel;
+		private JTextField textBudgetSearchId;
+		private JPanel panelBudgetDescription, panelWrapperBudgetDescription;
+		private JPanel panelBudgetAddNew, panelBudgetEdit;
+		private JTextField textBudgetDescriptionId, textBudgetSearchClient,textBudgetDescriptionCode;
+		private JTextField textBudgetDescriptionDate, textBudgetDescriptionExpiryDays;
+		private JTextField textBudgetDescriptionClientCode, textBudgetDescriptionClient;
+		private JTextField textBudgetDescriptionClientRepresentative, textBudgetDescriptionWorkName, textBudgetDescriptionPaymentMethod;
+		private JTextField textBudgetDescriptionSeller, textBudgetDescriptionDeliveryTime, textBudgetDescriptionDeliveryPeriod, textBudgetDescriptionDispatchPlace;
+	// Budget Add Objects
+		private JButton buttonBudgetAddSave, buttonBudgetAddCancel;
+		private JTextField textBudgetAddClientCode,textBudgetAddExpiryDays;
+		private JTextField textBudgetAddClientRepresentative, textBudgetAddWorkName, textBudgetAddClient;
+		private JTextField textBudgetAddSeller, textBudgetAddDeliveryTime;
+//		private JCheckBox checkBudgetAddTracing;
+		private JTextField textBudgetDescriptionExpiryDate;
+		private Object [][] budgetsData={};
+		private JComboBox<String> comboBudgetAddPaymentMethod, comboBudgetAddDispatchPlace,comboBudgetAddDeliveryPeriod;
+		private Integer editBudgetId, editBudgetClientId, editBudgetClientCode, editBudgetSellerId, editBudgetExpiryDays,editBudgetDeliveryTime;
+		private String editBudgetDate, editBudgetDeliveryPeriod;
+		private String editBudgetWorkName, editBudgetPaymentMethod, editBudgetSeller, editBudgetDispatchPlace, editBudgetTracing, editBudgetStage;
+		private Integer budgetsTableSelectedIndex;
+		private JButton buttonBudgetAddClient, buttonBudgetAddSeller, buttonBudgetEditSave, buttonBudgetEditCancel;
+		private Integer selectedBudgetId;
+	// Budget Clone
+		private Integer clonedBudgetId;
+	// Budget Client Add
+		private ClientDialog dialogBudgetClientAdd;
+		private Integer budgetClientAddId;
+	// Budget Client Edit
+		private ClientDialog dialogBudgetClientEdit;
+		private Integer budgetClientEditedId;
 	// Budget Seller Add
-	private JDialog dialogBudgetSellerAdd;
-	private JTextField textBudgetSellerSearchUser, textBudgetSellerSearchName, textBudgetSellerSearchPassport;
-	private Object[][] budgetSellersData = {};
-	private JTable tableBudgetSellersSearchResult;
-	private ListSelectionModel listBudgetSellersSearchSelectionModel;
-	private int budgetSellerAddSearchId;
+		private SellerDialog dialogBudgetSellerAdd;
+		private int budgetSellerAddSearchId;
+	// Budget Seller Edit
+		private SellerDialog dialogBudgetSellerEdit;
+		private Integer budgetSellerEditedId;
 	// Budget Edit Objects
-	private UtilDateModel editBudgetDateModel;
-	private JButton buttonBudgetEditCompany, buttonBudgetEditSeller;
-	private JTextField textBudgetEditSeller, textBudgetEditDeliveryTime;
-	private JCheckBox checkBudgetEditTracing;
-	private JTextField textBudgetEditClientCode, textBudgetEditWorkName, textBudgetEditCompany;
-	private JTextField textBudgetEditCompanyRepresentative, textBudgetEditExpiryDays;
-	private String editBudgetCompanyRepresentative, editBudgetCompany;
-	private JComboBox<String> comboBudgetEditDispatchPlace,comboBudgetEditDeliveryPeriod, comboBudgetEditPaymentMethod, comboBudgetEditStage;
+		private UtilDateModel editBudgetDateModel;
+		private JButton buttonBudgetEditClient, buttonBudgetEditSeller;
+		private JTextField textBudgetEditSeller, textBudgetEditDeliveryTime;
+//		private JCheckBox checkBudgetEditTracing;
+		private JTextField textBudgetEditClientCode, textBudgetEditWorkName, textBudgetEditClient;
+		private JTextField textBudgetEditClientRepresentative, textBudgetEditExpiryDays;
+		private String editBudgetClientRepresentative, editBudgetClient;
+		private JComboBox<String> comboBudgetEditDispatchPlace,comboBudgetEditDeliveryPeriod, comboBudgetEditPaymentMethod, comboBudgetEditStage;
+	// Budget Switches Objects
+		private JPanel budgetSwitchesPanel;
+		private JTable tableBudgetSwitchesResult;
+		private ListSelectionModel listBudgetSwitchesSelectionModel;
+		private Integer budgetSwitchesTableSelectedIndex;
+		private JButton buttonAddBudgetSwitch, buttonRemoveBudgetSwitch;
+		private String stringSelectedBudgetSwitch;
+		private Integer selectedBudgetSwitchId;
+	// Budget Switches Add Objects
+		private SwitchDialog dialogBudgetSwitchAdd;
+		private Object[][] budgetSwitchesSearchData;
+	// Budget Boxes Objects
+		private JPanel budgetBoxesPanel;
+		private Object[][] budgetBoxesData;
+		private JTable tableBudgetBoxesResult;
+		private ListSelectionModel listBudgetBoxesSelectionModel;
+		private JButton buttonAddBudgetBox, buttonRemoveBudgetBox;
+		private Integer selectedBudgetBoxId;
+	// Budget Boxes Add Objects
+		private BoxDialog dialogBudgetBoxAdd;
+	// Budget Boards Objects
+		private JPanel budgetBoardsPanel;
+		private Object[][] budgetBoardsData;
+		private JTable tableBudgetBoardsResult;
+		private ListSelectionModel listBudgetBoardsSelectionModel;
+		private JButton buttonAddBudgetBoard, buttonRemoveBudgetBoard;
+		private Integer selectedBudgetBoardId;
+	// Budget Boards Add Objects
+		private BoardDialog dialogBudgetBoardAdd;
+	// Budget Notes Edit Objects
+		private JPanel budgetNotesPanel;
+		private JTextArea textBudgetNotes;
+		private JPanel panelBudgetNotesEditSaveCancel;
+		private JButton buttonBudgetNotesEdit, buttonBudgetNotesEditSave, buttonBudgetNotesEditCancel;
 	
-	
+		
+		
 	public static void main(String[] args) {
-		new MainView();
+		new SalesMainView();
 	}
 	
-	protected MainView() {
+	protected SalesMainView() {
 		
 		db = new Db();
 		
@@ -391,7 +415,7 @@ public class MainView extends JFrame{
 		
 		DateTime dt = new DateTime();
 		
-		if(dt.isAfter(new DateTime(2016, 9, 30, 0, 0))) {
+		if(dt.isAfter(new DateTime(2016, 11, 30, 0, 0))) {
 			JOptionPane.showMessageDialog(null, "Error, debe comunicarse con el programador");
 			System.exit(0);
 		}
@@ -430,7 +454,7 @@ public class MainView extends JFrame{
 		
 		toolBar = new JToolBar("Barra de Herramientas");
 		
-		toolBarButtonSwitches = new JButton("Pendientes", new ImageIcon("resources/interruptor_32x32.jpg"));
+		toolBarButtonSwitches = new JButton("Interruptores", new ImageIcon("resources/interruptor_32x32.jpg"));
 		
 		toolBarButtonSwitches.setActionCommand("bar.button.switches");
 		
@@ -440,7 +464,7 @@ public class MainView extends JFrame{
 		
 		toolBar.addSeparator();
 		
-		toolBarButtonBoxes = new JButton("Ordenes de Producción", new ImageIcon("resources/caja_industrial_32x32.jpg"));
+		toolBarButtonBoxes = new JButton("Cajas", new ImageIcon("resources/caja_industrial_32x32.jpg"));
 		
 		toolBarButtonBoxes.setActionCommand("bar.button.boxes");
 		
@@ -450,7 +474,7 @@ public class MainView extends JFrame{
 		
 		toolBar.addSeparator();
 		
-		toolBarButtonPanels = new JButton("Ordenes de Trabajo", new ImageIcon("resources/tablero_32x32.jpg"));
+		toolBarButtonPanels = new JButton("Tableros", new ImageIcon("resources/tablero_32x32.jpg"));
 		
 		toolBarButtonPanels.setActionCommand("bar.button.panels");
 		
@@ -460,7 +484,7 @@ public class MainView extends JFrame{
 		
 		toolBar.addSeparator();
 		
-		toolBarButtonBudgets = new JButton("Reportes", new ImageIcon("resources/presupuesto_32x32.jpg"));
+		toolBarButtonBudgets = new JButton("Presupuestos", new ImageIcon("resources/presupuesto_32x32.jpg"));
 		
 		toolBarButtonBudgets.setActionCommand("bar.button.budgets");
 		
@@ -470,7 +494,7 @@ public class MainView extends JFrame{
 		
 		toolBar.addSeparator();
 		
-		/*toolBarButtonStarters = new JButton("Arrancadores", new ImageIcon("resources/arrancador_32x32.jpg"));
+		toolBarButtonStarters = new JButton("Arrancadores", new ImageIcon("resources/arrancador_32x32.jpg"));
 		
 		toolBarButtonStarters.setActionCommand("bar.button.starters");
 		
@@ -486,7 +510,7 @@ public class MainView extends JFrame{
 		
 		toolBarButtonTracing.addActionListener(lForToolbarButton);
 		
-		toolBar.add(toolBarButtonTracing);*/
+		toolBar.add(toolBarButtonTracing);
 		
 		toolBar.setFloatable(false);
 		
@@ -638,11 +662,8 @@ public class MainView extends JFrame{
 		int x = (desktop.getWidth() / 2) - (budgetsFrame.getWidth() / 2);
 		int y = (desktop.getHeight() / 2) - (budgetsFrame.getHeight() / 2);
 		budgetsFrame.setLocation(new Point(x, y));
-		
 		budgetsFrame.setLayout(new GridLayout(1, 1));
-		
 		budgetsFrame.add(createBudgetMainPanel());
-		
 		budgetsFrame.setVisible(true);
 		
 		desktop.add(budgetsFrame);
@@ -1519,7 +1540,7 @@ public class MainView extends JFrame{
 	
 	private void setSwitchesMode(int mode) {
 		
-		if(mode == MainView.VIEW_MODE) {
+		if(mode == SalesMainView.VIEW_MODE) {
 			if(panelSwitchAddNew.isVisible()) {
 				buttonSwitchAdd.setEnabled(true);
 				textSwitchAddPrice.setText("");
@@ -1564,7 +1585,7 @@ public class MainView extends JFrame{
 					}
 				});
 			}
-		} else if(mode == MainView.ADD_MODE) {
+		} else if(mode == SalesMainView.ADD_MODE) {
 			buttonSwitchAdd.setEnabled(false);
 			buttonSwitchEdit.setEnabled(false);
 			textSwitchPrice.setText("");
@@ -1592,7 +1613,7 @@ public class MainView extends JFrame{
 					switchesFrame.repaint();
 				}
 			});
-		} else if(mode == MainView.EDIT_MODE) {
+		} else if(mode == SalesMainView.EDIT_MODE) {
 			buttonSwitchAdd.setEnabled(false);
 			buttonSwitchEdit.setEnabled(false);
 			// save everything to variables before going to edit form and after editing return the new values to
@@ -1879,49 +1900,49 @@ public class MainView extends JFrame{
 		JPanel searchBarPanel2 = new JPanel();
 		searchBarPanel2.setLayout(new FlowLayout(FlowLayout.CENTER));
 		
-		String queryTypes = "SELECT " + MainView.BOX_TYPE_FIELD
-				+ " FROM " + MainView.BOX_TYPES_TABLE + "," + MainView.BOXES_TABLE
-				+ " WHERE " + MainView.BOX_TYPES_TABLE + ".id = " + MainView.BOXES_TABLE + ".type_id "
+		String queryTypes = "SELECT " + SalesMainView.BOX_TYPE_FIELD
+				+ " FROM " + SalesMainView.BOX_TYPES_TABLE + "," + SalesMainView.BOXES_TABLE
+				+ " WHERE " + SalesMainView.BOX_TYPES_TABLE + ".id = " + SalesMainView.BOXES_TABLE + ".type_id "
 				+ " GROUP BY box_types.type";
 		
-		String queryInstallations = "SELECT " + MainView.INSTALLATION_FIELD
-				+ " FROM " + MainView.INSTALLATIONS_TABLE + "," + MainView.BOXES_TABLE
-				+ " WHERE " + MainView.INSTALLATIONS_TABLE + ".id = " + MainView.BOXES_TABLE + ".installation_id "
+		String queryInstallations = "SELECT " + SalesMainView.INSTALLATION_FIELD
+				+ " FROM " + SalesMainView.INSTALLATIONS_TABLE + "," + SalesMainView.BOXES_TABLE
+				+ " WHERE " + SalesMainView.INSTALLATIONS_TABLE + ".id = " + SalesMainView.BOXES_TABLE + ".installation_id "
 				+ " GROUP BY installations.installation";
 		
-		String queryNemas = "SELECT " + MainView.NEMA_FIELD
-				+ " FROM " + MainView.NEMAS_TABLE + "," + MainView.BOXES_TABLE
-				+ " WHERE " + MainView.NEMAS_TABLE + ".id = " + MainView.BOXES_TABLE + ".nema_id "
+		String queryNemas = "SELECT " + SalesMainView.NEMA_FIELD
+				+ " FROM " + SalesMainView.NEMAS_TABLE + "," + SalesMainView.BOXES_TABLE
+				+ " WHERE " + SalesMainView.NEMAS_TABLE + ".id = " + SalesMainView.BOXES_TABLE + ".nema_id "
 				+ " GROUP BY nemas.nema";
 		
 		String queryPairs = "SELECT boxes.pairs "
-				+ " FROM " + MainView.BOXES_TABLE
+				+ " FROM " + SalesMainView.BOXES_TABLE
 				+ " WHERE boxes.pairs > 0 "
-				+ " GROUP BY " + MainView.BOXES_TABLE + ".pairs";
+				+ " GROUP BY " + SalesMainView.BOXES_TABLE + ".pairs";
 		
-		String querySheets = "SELECT " + MainView.BOX_SHEET_FIELD
-				+ " FROM " + MainView.BOX_SHEETS_TABLE + "," + MainView.BOXES_TABLE
-				+ " WHERE " + MainView.BOX_SHEETS_TABLE + ".id = " + MainView.BOXES_TABLE + ".sheet_id "
+		String querySheets = "SELECT " + SalesMainView.BOX_SHEET_FIELD
+				+ " FROM " + SalesMainView.BOX_SHEETS_TABLE + "," + SalesMainView.BOXES_TABLE
+				+ " WHERE " + SalesMainView.BOX_SHEETS_TABLE + ".id = " + SalesMainView.BOXES_TABLE + ".sheet_id "
 				+ " GROUP BY box_sheets.sheet";
 		
-		String queryFinishes = "SELECT " + MainView.BOX_FINISH_FIELD
-				+ " FROM " + MainView.BOX_FINISHES_TABLE + "," + MainView.BOXES_TABLE
-				+ " WHERE " + MainView.BOX_FINISHES_TABLE + ".id = " + MainView.BOXES_TABLE + ".finish_id "
+		String queryFinishes = "SELECT " + SalesMainView.BOX_FINISH_FIELD
+				+ " FROM " + SalesMainView.BOX_FINISHES_TABLE + "," + SalesMainView.BOXES_TABLE
+				+ " WHERE " + SalesMainView.BOX_FINISHES_TABLE + ".id = " + SalesMainView.BOXES_TABLE + ".finish_id "
 				+ " GROUP BY box_finishes.finish";
 		
-		String queryColors = "SELECT " + MainView.BOX_COLOR_FIELD
-				+ " FROM " + MainView.BOX_COLORS_TABLE + "," + MainView.BOXES_TABLE
-				+ " WHERE " + MainView.BOX_COLORS_TABLE + ".id = " + MainView.BOXES_TABLE + ".color_id "
+		String queryColors = "SELECT " + SalesMainView.BOX_COLOR_FIELD
+				+ " FROM " + SalesMainView.BOX_COLORS_TABLE + "," + SalesMainView.BOXES_TABLE
+				+ " WHERE " + SalesMainView.BOX_COLORS_TABLE + ".id = " + SalesMainView.BOXES_TABLE + ".color_id "
 				+ " GROUP BY box_colors.color";
 		
-		String queryCalibers = "SELECT " + MainView.BOX_CALIBER_FIELD
-				+ " FROM " + MainView.BOX_CALIBERS_TABLE + "," + MainView.BOXES_TABLE
-				+ " WHERE " + MainView.BOX_CALIBERS_TABLE + ".id = " + MainView.BOXES_TABLE + ".caliber_id "
+		String queryCalibers = "SELECT " + SalesMainView.BOX_CALIBER_FIELD
+				+ " FROM " + SalesMainView.BOX_CALIBERS_TABLE + "," + SalesMainView.BOXES_TABLE
+				+ " WHERE " + SalesMainView.BOX_CALIBERS_TABLE + ".id = " + SalesMainView.BOXES_TABLE + ".caliber_id "
 				+ " GROUP BY box_calibers.caliber";
 		
-		String queryLockTypes = "SELECT " + MainView.BOX_LOCK_TYPE_FIELD
-				+ " FROM " + MainView.LOCK_TYPES_TABLE + "," + MainView.BOXES_TABLE
-				+ " WHERE " + MainView.LOCK_TYPES_TABLE + ".id = " + MainView.BOXES_TABLE + ".lock_type_id "
+		String queryLockTypes = "SELECT " + SalesMainView.BOX_LOCK_TYPE_FIELD
+				+ " FROM " + SalesMainView.LOCK_TYPES_TABLE + "," + SalesMainView.BOXES_TABLE
+				+ " WHERE " + SalesMainView.LOCK_TYPES_TABLE + ".id = " + SalesMainView.BOXES_TABLE + ".lock_type_id "
 				+ " GROUP BY lock_types.lock_type";
 		
 		JLabel labelType = new JLabel("Tipo:");
@@ -2027,33 +2048,33 @@ public class MainView extends JFrame{
 	
 	private JPanel createBoxTablePanel() {
 		ArrayList<String> fields = new ArrayList<String>();
-		fields.add(MainView.BOX_ID_FIELD);
-		fields.add(MainView.BOX_TYPE_FIELD);
-		fields.add(MainView.INSTALLATION_FIELD);
-		fields.add(MainView.NEMA_FIELD);
-		fields.add(MainView.BOX_PAIRS_FIELD);
-		fields.add(MainView.BOX_SHEET_FIELD);
-		fields.add(MainView.BOX_FINISH_FIELD);
-		fields.add(MainView.BOX_COLOR_FIELD);
-		fields.add(MainView.BOX_HEIGHT_FIELD);
-		fields.add(MainView.BOX_WIDTH_FIELD);
-		fields.add(MainView.BOX_DEPTH_FIELD);
-		fields.add(MainView.BOX_UNITS_FIELD);
-		fields.add(MainView.BOX_CALIBER_FIELD);
-		fields.add(MainView.BOX_LOCK_TYPE_FIELD);
-		fields.add(MainView.BOX_PRICE_FIELD);
+		fields.add(SalesMainView.BOX_ID_FIELD);
+		fields.add(SalesMainView.BOX_TYPE_FIELD);
+		fields.add(SalesMainView.INSTALLATION_FIELD);
+		fields.add(SalesMainView.NEMA_FIELD);
+		fields.add(SalesMainView.BOX_PAIRS_FIELD);
+		fields.add(SalesMainView.BOX_SHEET_FIELD);
+		fields.add(SalesMainView.BOX_FINISH_FIELD);
+		fields.add(SalesMainView.BOX_COLOR_FIELD);
+		fields.add(SalesMainView.BOX_HEIGHT_FIELD);
+		fields.add(SalesMainView.BOX_WIDTH_FIELD);
+		fields.add(SalesMainView.BOX_DEPTH_FIELD);
+		fields.add(SalesMainView.BOX_UNITS_FIELD);
+		fields.add(SalesMainView.BOX_CALIBER_FIELD);
+		fields.add(SalesMainView.BOX_LOCK_TYPE_FIELD);
+		fields.add(SalesMainView.BOX_PRICE_FIELD);
 		
 		ArrayList<String> tables = new ArrayList<String>();
-		tables.add(MainView.BOXES_TABLE);
-		tables.add(MainView.BOX_TYPES_TABLE);
-		tables.add(MainView.INSTALLATIONS_TABLE);
-		tables.add(MainView.NEMAS_TABLE);
-		tables.add(MainView.BOX_SHEETS_TABLE);
-		tables.add(MainView.BOX_FINISHES_TABLE);
-		tables.add(MainView.BOX_COLORS_TABLE);
-		tables.add(MainView.BOX_UNITS_TABLE);
-		tables.add(MainView.BOX_CALIBERS_TABLE);
-		tables.add(MainView.LOCK_TYPES_TABLE);
+		tables.add(SalesMainView.BOXES_TABLE);
+		tables.add(SalesMainView.BOX_TYPES_TABLE);
+		tables.add(SalesMainView.INSTALLATIONS_TABLE);
+		tables.add(SalesMainView.NEMAS_TABLE);
+		tables.add(SalesMainView.BOX_SHEETS_TABLE);
+		tables.add(SalesMainView.BOX_FINISHES_TABLE);
+		tables.add(SalesMainView.BOX_COLORS_TABLE);
+		tables.add(SalesMainView.BOX_UNITS_TABLE);
+		tables.add(SalesMainView.BOX_CALIBERS_TABLE);
+		tables.add(SalesMainView.LOCK_TYPES_TABLE);
 		
 		String fieldsQuery = StringTools.implode(",", fields);
 		String tablesQuery = StringTools.implode(",", tables);
@@ -2961,7 +2982,7 @@ public class MainView extends JFrame{
 	
 	private void setBoxesMode(int mode) {
 		
-		if(mode == MainView.VIEW_MODE) {
+		if(mode == SalesMainView.VIEW_MODE) {
 			if(panelBoxAddNew.isVisible()) {
 				buttonBoxAdd.setEnabled(true);
 				textBoxAddPairs.setText("");
@@ -3015,7 +3036,7 @@ public class MainView extends JFrame{
 					}
 				});
 			}
-		} else if(mode == MainView.ADD_MODE) {
+		} else if(mode == SalesMainView.ADD_MODE) {
 			buttonBoxAdd.setEnabled(false);
 			buttonBoxEdit.setEnabled(false);
 			textBoxDescriptionPairs.setText("");
@@ -3040,7 +3061,7 @@ public class MainView extends JFrame{
 					boxesFrame.repaint();
 				}
 			});
-		} else if(mode == MainView.EDIT_MODE) {
+		} else if(mode == SalesMainView.EDIT_MODE) {
 			buttonBoxAdd.setEnabled(false);
 			buttonBoxEdit.setEnabled(false);
 			editBoxId = Integer.valueOf(String.valueOf(tableBoxesResult.getValueAt(boxTableSelectedIndex, SharedListSelectionListener.BOX_ID_COLUMN)));
@@ -3185,52 +3206,52 @@ public class MainView extends JFrame{
 	
 	private void loadBoxTable(String whereQuery) {
 		ArrayList<String> fields = new ArrayList<String>();
-		fields.add(MainView.BOX_ID_FIELD);
-		fields.add(MainView.BOX_TYPE_FIELD);
-		fields.add(MainView.INSTALLATION_FIELD);
-		fields.add(MainView.NEMA_FIELD);
-		fields.add(MainView.BOX_PAIRS_FIELD);
-		fields.add(MainView.BOX_SHEET_FIELD);
-		fields.add(MainView.BOX_FINISH_FIELD);
-		fields.add(MainView.BOX_COLOR_FIELD);
-		fields.add(MainView.BOX_HEIGHT_FIELD);
-		fields.add(MainView.BOX_WIDTH_FIELD);
-		fields.add(MainView.BOX_DEPTH_FIELD);
-		fields.add(MainView.BOX_UNITS_FIELD);
-		fields.add(MainView.BOX_CALIBER_FIELD);
-		fields.add(MainView.BOX_LOCK_TYPE_FIELD);
-		fields.add(MainView.BOX_PRICE_FIELD);
+		fields.add(SalesMainView.BOX_ID_FIELD);
+		fields.add(SalesMainView.BOX_TYPE_FIELD);
+		fields.add(SalesMainView.INSTALLATION_FIELD);
+		fields.add(SalesMainView.NEMA_FIELD);
+		fields.add(SalesMainView.BOX_PAIRS_FIELD);
+		fields.add(SalesMainView.BOX_SHEET_FIELD);
+		fields.add(SalesMainView.BOX_FINISH_FIELD);
+		fields.add(SalesMainView.BOX_COLOR_FIELD);
+		fields.add(SalesMainView.BOX_HEIGHT_FIELD);
+		fields.add(SalesMainView.BOX_WIDTH_FIELD);
+		fields.add(SalesMainView.BOX_DEPTH_FIELD);
+		fields.add(SalesMainView.BOX_UNITS_FIELD);
+		fields.add(SalesMainView.BOX_CALIBER_FIELD);
+		fields.add(SalesMainView.BOX_LOCK_TYPE_FIELD);
+		fields.add(SalesMainView.BOX_PRICE_FIELD);
 		
 		ArrayList<String> tables = new ArrayList<String>();
-		tables.add(MainView.BOXES_TABLE);
-		tables.add(MainView.BOX_TYPES_TABLE);
-		tables.add(MainView.INSTALLATIONS_TABLE);
-		tables.add(MainView.NEMAS_TABLE);
-		tables.add(MainView.BOX_SHEETS_TABLE);
-		tables.add(MainView.BOX_FINISHES_TABLE);
-		tables.add(MainView.BOX_COLORS_TABLE);
-		tables.add(MainView.BOX_UNITS_TABLE);
-		tables.add(MainView.BOX_CALIBERS_TABLE);
-		tables.add(MainView.LOCK_TYPES_TABLE);
+		tables.add(SalesMainView.BOXES_TABLE);
+		tables.add(SalesMainView.BOX_TYPES_TABLE);
+		tables.add(SalesMainView.INSTALLATIONS_TABLE);
+		tables.add(SalesMainView.NEMAS_TABLE);
+		tables.add(SalesMainView.BOX_SHEETS_TABLE);
+		tables.add(SalesMainView.BOX_FINISHES_TABLE);
+		tables.add(SalesMainView.BOX_COLORS_TABLE);
+		tables.add(SalesMainView.BOX_UNITS_TABLE);
+		tables.add(SalesMainView.BOX_CALIBERS_TABLE);
+		tables.add(SalesMainView.LOCK_TYPES_TABLE);
 		
 		if(whereQuery.isEmpty()) {
 			whereQuery += " AND ( (boxes.sheet_id > 0 "
-							+ " AND boxes.sheet_id = " + MainView.BOX_SHEETS_TABLE + ".id) "
+							+ " AND boxes.sheet_id = " + SalesMainView.BOX_SHEETS_TABLE + ".id) "
 							+ " OR boxes.sheet_id = 0) "
 						+ " AND ( (boxes.finish_id > 0 "
-							+ " AND boxes.finish_id = " + MainView.BOX_FINISHES_TABLE + ".id) "
+							+ " AND boxes.finish_id = " + SalesMainView.BOX_FINISHES_TABLE + ".id) "
 							+ " OR boxes.finish_id = 0) "
 						+ " AND ( (boxes.color_id > 0 "
-							+ " AND boxes.color_id = " + MainView.BOX_COLORS_TABLE + ".id) "
+							+ " AND boxes.color_id = " + SalesMainView.BOX_COLORS_TABLE + ".id) "
 							+ " OR boxes.color_id = 0) "
 						+ " AND ( (boxes.units_id > 0 "
-							+ " AND boxes.units_id = " + MainView.BOX_UNITS_TABLE + ".id) "
+							+ " AND boxes.units_id = " + SalesMainView.BOX_UNITS_TABLE + ".id) "
 							+ " OR boxes.units_id = 0) "
 						+ " AND ( (boxes.caliber_id > 0 "
-							+ " AND boxes.caliber_id = " + MainView.BOX_CALIBERS_TABLE + ".id) "
+							+ " AND boxes.caliber_id = " + SalesMainView.BOX_CALIBERS_TABLE + ".id) "
 							+ " OR boxes.caliber_id = 0) "
 						+ " AND ( (boxes.lock_type_id > 0 "
-							+ " AND boxes.lock_type_id = " + MainView.LOCK_TYPES_TABLE + ".id) "
+							+ " AND boxes.lock_type_id = " + SalesMainView.LOCK_TYPES_TABLE + ".id) "
 							+ " OR boxes.lock_type_id = 0) ";
 		}
 		
@@ -3374,58 +3395,58 @@ public class MainView extends JFrame{
 		JPanel searchBarPanel2 = new JPanel();
 		searchBarPanel2.setLayout(new FlowLayout(FlowLayout.CENTER));
 		
-		String queryTypes = "SELECT " + MainView.BOARD_TYPE_FIELD
-				+ " FROM " + MainView.BOARD_TYPES_TABLE + "," + MainView.BOARD_TABLE
-				+ " WHERE " + MainView.BOARD_TYPES_TABLE + ".id = " + MainView.BOARD_TABLE + ".type_id "
-				+ " GROUP BY " + MainView.BOARD_TYPES_TABLE + ".type";
+		String queryTypes = "SELECT " + SalesMainView.BOARD_TYPE_FIELD
+				+ " FROM " + SalesMainView.BOARD_TYPES_TABLE + "," + SalesMainView.BOARD_TABLE
+				+ " WHERE " + SalesMainView.BOARD_TYPES_TABLE + ".id = " + SalesMainView.BOARD_TABLE + ".type_id "
+				+ " GROUP BY " + SalesMainView.BOARD_TYPES_TABLE + ".type";
 		
-		String queryInstallations = "SELECT " + MainView.INSTALLATION_FIELD
-				+ " FROM " + MainView.INSTALLATIONS_TABLE + "," + MainView.BOARD_TABLE
-				+ " WHERE " + MainView.INSTALLATIONS_TABLE + ".id = " + MainView.BOARD_TABLE + ".installation_id "
-				+ " GROUP BY " + MainView.INSTALLATIONS_TABLE + ".installation";
+		String queryInstallations = "SELECT " + SalesMainView.INSTALLATION_FIELD
+				+ " FROM " + SalesMainView.INSTALLATIONS_TABLE + "," + SalesMainView.BOARD_TABLE
+				+ " WHERE " + SalesMainView.INSTALLATIONS_TABLE + ".id = " + SalesMainView.BOARD_TABLE + ".installation_id "
+				+ " GROUP BY " + SalesMainView.INSTALLATIONS_TABLE + ".installation";
 		
-		String queryNemas = "SELECT " + MainView.NEMA_FIELD
-				+ " FROM " + MainView.NEMAS_TABLE + "," + MainView.BOARD_TABLE
-				+ " WHERE " + MainView.NEMAS_TABLE + ".id = " + MainView.BOARD_TABLE + ".nema_id "
-				+ " GROUP BY " + MainView.NEMAS_TABLE + ".nema";
+		String queryNemas = "SELECT " + SalesMainView.NEMA_FIELD
+				+ " FROM " + SalesMainView.NEMAS_TABLE + "," + SalesMainView.BOARD_TABLE
+				+ " WHERE " + SalesMainView.NEMAS_TABLE + ".id = " + SalesMainView.BOARD_TABLE + ".nema_id "
+				+ " GROUP BY " + SalesMainView.NEMAS_TABLE + ".nema";
 		
-		String queryBarCapacities = "SELECT " + MainView.BOARD_BAR_CAPACITY_FIELD
-				+ " FROM " + MainView.BOARD_BAR_CAPACITIES_TABLE + "," + MainView.BOARD_TABLE
-				+ " WHERE " + MainView.BOARD_BAR_CAPACITIES_TABLE + ".id = " + MainView.BOARD_TABLE + ".bar_capacity_id "
-				+ " GROUP BY " + MainView.BOARD_BAR_CAPACITIES_TABLE + ".bar_capacity";
+		String queryBarCapacities = "SELECT " + SalesMainView.BOARD_BAR_CAPACITY_FIELD
+				+ " FROM " + SalesMainView.BOARD_BAR_CAPACITIES_TABLE + "," + SalesMainView.BOARD_TABLE
+				+ " WHERE " + SalesMainView.BOARD_BAR_CAPACITIES_TABLE + ".id = " + SalesMainView.BOARD_TABLE + ".bar_capacity_id "
+				+ " GROUP BY " + SalesMainView.BOARD_BAR_CAPACITIES_TABLE + ".bar_capacity";
 		
-		String queryBarTypes = "SELECT " + MainView.BOARD_BAR_TYPE_FIELD
-				+ " FROM " + MainView.BOARD_BAR_TYPES_TABLE + "," + MainView.BOARD_TABLE
-				+ " WHERE " + MainView.BOARD_BAR_TYPES_TABLE + ".id = " + MainView.BOARD_TABLE + ".bar_type_id "
-				+ " GROUP BY " + MainView.BOARD_BAR_TYPES_TABLE + ".bar_type";
+		String queryBarTypes = "SELECT " + SalesMainView.BOARD_BAR_TYPE_FIELD
+				+ " FROM " + SalesMainView.BOARD_BAR_TYPES_TABLE + "," + SalesMainView.BOARD_TABLE
+				+ " WHERE " + SalesMainView.BOARD_BAR_TYPES_TABLE + ".id = " + SalesMainView.BOARD_TABLE + ".bar_type_id "
+				+ " GROUP BY " + SalesMainView.BOARD_BAR_TYPES_TABLE + ".bar_type";
 		
-		String queryCircuits = "SELECT " + MainView.BOARD_CIRCUITS_FIELD
-				+ " FROM " + MainView.BOARD_CIRCUITS_TABLE + "," + MainView.BOARD_TABLE
-				+ " WHERE " + MainView.BOARD_CIRCUITS_TABLE + ".id = " + MainView.BOARD_TABLE + ".circuits_id "
-				+ " GROUP BY " + MainView.BOARD_CIRCUITS_TABLE + ".circuits";
+		String queryCircuits = "SELECT " + SalesMainView.BOARD_CIRCUITS_FIELD
+				+ " FROM " + SalesMainView.BOARD_CIRCUITS_TABLE + "," + SalesMainView.BOARD_TABLE
+				+ " WHERE " + SalesMainView.BOARD_CIRCUITS_TABLE + ".id = " + SalesMainView.BOARD_TABLE + ".circuits_id "
+				+ " GROUP BY " + SalesMainView.BOARD_CIRCUITS_TABLE + ".circuits";
 		
-		String queryVoltages = "SELECT " + MainView.BOARD_VOLTAGE_FIELD
-				+ " FROM " + MainView.BOARD_VOLTAGES_TABLE + "," + MainView.BOARD_TABLE
-				+ " WHERE " + MainView.BOARD_VOLTAGES_TABLE + ".id = " + MainView.BOARD_TABLE + ".voltage_id "
-				+ " GROUP BY " + MainView.BOARD_VOLTAGES_TABLE + ".voltage";
+		String queryVoltages = "SELECT " + SalesMainView.BOARD_VOLTAGE_FIELD
+				+ " FROM " + SalesMainView.BOARD_VOLTAGES_TABLE + "," + SalesMainView.BOARD_TABLE
+				+ " WHERE " + SalesMainView.BOARD_VOLTAGES_TABLE + ".id = " + SalesMainView.BOARD_TABLE + ".voltage_id "
+				+ " GROUP BY " + SalesMainView.BOARD_VOLTAGES_TABLE + ".voltage";
 		
-		String queryPhases = "SELECT " + MainView.BOARD_PHASES_FIELD
-				+ " FROM " + MainView.BOARD_TABLE
-				+ " GROUP BY " + MainView.BOARD_TABLE + ".phases";
+		String queryPhases = "SELECT " + SalesMainView.BOARD_PHASES_FIELD
+				+ " FROM " + SalesMainView.BOARD_TABLE
+				+ " GROUP BY " + SalesMainView.BOARD_TABLE + ".phases";
 		
-		String queryGround = "SELECT " + MainView.BOARD_GROUND_FIELD
-				+ " FROM " + MainView.BOARD_TABLE
-				+ " GROUP BY " + MainView.BOARD_TABLE + ".ground";
+		String queryGround = "SELECT " + SalesMainView.BOARD_GROUND_FIELD
+				+ " FROM " + SalesMainView.BOARD_TABLE
+				+ " GROUP BY " + SalesMainView.BOARD_TABLE + ".ground";
 		
-		String queryInterruptions = "SELECT " + MainView.INTERRUPTION_FIELD
-				+ " FROM " + MainView.INTERRUPTIONS_TABLE + "," + MainView.BOARD_TABLE
-				+ " WHERE " + MainView.INTERRUPTIONS_TABLE + ".id = " + MainView.BOARD_TABLE + ".interruption_id "
-				+ " GROUP BY " + MainView.INTERRUPTIONS_TABLE + ".interruption";
+		String queryInterruptions = "SELECT " + SalesMainView.INTERRUPTION_FIELD
+				+ " FROM " + SalesMainView.INTERRUPTIONS_TABLE + "," + SalesMainView.BOARD_TABLE
+				+ " WHERE " + SalesMainView.INTERRUPTIONS_TABLE + ".id = " + SalesMainView.BOARD_TABLE + ".interruption_id "
+				+ " GROUP BY " + SalesMainView.INTERRUPTIONS_TABLE + ".interruption";
 		
-		String queryLockTypes = "SELECT " + MainView.BOARD_LOCK_TYPE_FIELD
-				+ " FROM " + MainView.LOCK_TYPES_TABLE + "," + MainView.BOARD_TABLE
-				+ " WHERE " + MainView.LOCK_TYPES_TABLE + ".id = " + MainView.BOARD_TABLE + ".lock_type_id "
-				+ " GROUP BY " + MainView.LOCK_TYPES_TABLE + ".lock_type";
+		String queryLockTypes = "SELECT " + SalesMainView.BOARD_LOCK_TYPE_FIELD
+				+ " FROM " + SalesMainView.LOCK_TYPES_TABLE + "," + SalesMainView.BOARD_TABLE
+				+ " WHERE " + SalesMainView.LOCK_TYPES_TABLE + ".id = " + SalesMainView.BOARD_TABLE + ".lock_type_id "
+				+ " GROUP BY " + SalesMainView.LOCK_TYPES_TABLE + ".lock_type";
 		
 		JLabel labelName = new JLabel("Nombre: ");
 		JLabel labelType = new JLabel("Tipo:");
@@ -3475,7 +3496,7 @@ public class MainView extends JFrame{
 				textMaterialsPrice.setText("");
 				textMaterialsPrice.setEditable(false);
 				buttonBoardMaterialsEdit.setEnabled(false);
-				textComments.setEditable(false);
+				textBoardComments.setEditable(false);
 				buttonBoardCommentsEdit.setEnabled(false);
 			}
 			
@@ -3583,32 +3604,32 @@ public class MainView extends JFrame{
 	
 	private JPanel createBoardTablePanel() {
 		ArrayList<String> fields = new ArrayList<String>();
-		fields.add(MainView.BOARD_ID_FIELD);
-		fields.add(MainView.BOARD_NAME_FIELD);
-		fields.add(MainView.BOARD_TYPE_FIELD);
-		fields.add(MainView.INSTALLATION_FIELD);
-		fields.add(MainView.NEMA_FIELD);
-		fields.add(MainView.BOARD_BAR_CAPACITY_FIELD);
-		fields.add(MainView.BOARD_BAR_TYPE_FIELD);
-		fields.add(MainView.BOARD_CIRCUITS_FIELD);
-		fields.add(MainView.BOARD_VOLTAGE_FIELD);
-		fields.add(MainView.BOARD_PHASES_FIELD);
-		fields.add(MainView.BOARD_GROUND_FIELD);
-		fields.add(MainView.INTERRUPTION_FIELD);
-		fields.add(MainView.BOARD_LOCK_TYPE_FIELD);
-		fields.add(MainView.BOARD_PRICE_FIELD);
+		fields.add(SalesMainView.BOARD_ID_FIELD);
+		fields.add(SalesMainView.BOARD_NAME_FIELD);
+		fields.add(SalesMainView.BOARD_TYPE_FIELD);
+		fields.add(SalesMainView.INSTALLATION_FIELD);
+		fields.add(SalesMainView.NEMA_FIELD);
+		fields.add(SalesMainView.BOARD_BAR_CAPACITY_FIELD);
+		fields.add(SalesMainView.BOARD_BAR_TYPE_FIELD);
+		fields.add(SalesMainView.BOARD_CIRCUITS_FIELD);
+		fields.add(SalesMainView.BOARD_VOLTAGE_FIELD);
+		fields.add(SalesMainView.BOARD_PHASES_FIELD);
+		fields.add(SalesMainView.BOARD_GROUND_FIELD);
+		fields.add(SalesMainView.INTERRUPTION_FIELD);
+		fields.add(SalesMainView.BOARD_LOCK_TYPE_FIELD);
+		fields.add(SalesMainView.BOARD_PRICE_FIELD);
 		
 		ArrayList<String> tables = new ArrayList<String>();
-		tables.add(MainView.BOARD_TABLE);
-		tables.add(MainView.BOARD_BAR_CAPACITIES_TABLE);
-		tables.add(MainView.BOARD_BAR_TYPES_TABLE);
-		tables.add(MainView.BOARD_CIRCUITS_TABLE);
-		tables.add(MainView.BOARD_TYPES_TABLE);
-		tables.add(MainView.BOARD_VOLTAGES_TABLE);
-		tables.add(MainView.INSTALLATIONS_TABLE);
-		tables.add(MainView.INTERRUPTIONS_TABLE);
-		tables.add(MainView.LOCK_TYPES_TABLE);
-		tables.add(MainView.NEMAS_TABLE);
+		tables.add(SalesMainView.BOARD_TABLE);
+		tables.add(SalesMainView.BOARD_BAR_CAPACITIES_TABLE);
+		tables.add(SalesMainView.BOARD_BAR_TYPES_TABLE);
+		tables.add(SalesMainView.BOARD_CIRCUITS_TABLE);
+		tables.add(SalesMainView.BOARD_TYPES_TABLE);
+		tables.add(SalesMainView.BOARD_VOLTAGES_TABLE);
+		tables.add(SalesMainView.INSTALLATIONS_TABLE);
+		tables.add(SalesMainView.INTERRUPTIONS_TABLE);
+		tables.add(SalesMainView.LOCK_TYPES_TABLE);
+		tables.add(SalesMainView.NEMAS_TABLE);
 		
 		String fieldsQuery = StringTools.implode(",", fields);
 		String tablesQuery = StringTools.implode(",", tables);
@@ -3718,211 +3739,6 @@ public class MainView extends JFrame{
 		tablePanel.add(panelButtons, BorderLayout.PAGE_END);
 		
 		return tablePanel;
-	}
-	
-	private JPanel createBoardSwitchAddSearchPanel() {
-		JPanel panelBoardSwitchAddSearch = new JPanel();
-		
-		panelBoardSwitchAddSearch.setLayout(new FlowLayout(FlowLayout.CENTER));
-		
-		String queryBrands = "SELECT brand "
-				+ "FROM switch_brands, switches "
-				+ "WHERE switch_brands.id = switches.brand_id "
-				+ "GROUP BY switch_brands.brand";
-		
-		String queryTypes = "SELECT type "
-				+ "FROM switch_types, switches "
-				+ "WHERE switch_types.id = switches.type_id "
-				+ "GROUP BY switch_types.type";
-		
-		String queryPhases = "SELECT phases "
-				+ "FROM switches "
-				+ "GROUP BY phases";
-		
-		String queryCurrents = "SELECT current "
-				+ "FROM currents, switches "
-				+ "WHERE currents.id = switches.current_id "
-				+ "GROUP BY currents.current";
-		
-		String queryInterruptions = "SELECT interruption "
-				+ "FROM interruptions, switches "
-				+ "WHERE interruptions.id = switches.interruption_id "
-				+ "GROUP BY interruptions.interruption";
-		
-		JLabel brandsLabel = new JLabel("Marca:");
-		JLabel typesLabel = new JLabel("Tipo:");
-		JLabel phasesLabel = new JLabel("Fases:");
-		JLabel currentsLabel = new JLabel("Amperaje:");
-		JLabel interruptionsLabel = new JLabel("Interrupcion:");
-		
-		ComboBoxListener lForCombo = new ComboBoxListener();
-		
-		comboBoardSwitchBrands = new JComboBox<String>(new Vector<String>(loadComboList(queryBrands, "brand")));
-		comboBoardSwitchBrands.setActionCommand("board.switch.bar.brand");
-		comboBoardSwitchBrands.addActionListener(lForCombo);
-		panelBoardSwitchAddSearch.add(brandsLabel);
-		panelBoardSwitchAddSearch.add(comboBoardSwitchBrands);
-		
-		comboBoardSwitchTypes = new JComboBox<String>(new Vector<String>(loadComboList(queryTypes, "type")));
-		comboBoardSwitchTypes.setActionCommand("board.switch.bar.type");
-		comboBoardSwitchTypes.addActionListener(lForCombo);
-		panelBoardSwitchAddSearch.add(typesLabel);
-		panelBoardSwitchAddSearch.add(comboBoardSwitchTypes);
-		
-		comboBoardSwitchPhases = new JComboBox<String>(new Vector<String>(loadComboList(queryPhases, "phases")));
-		comboBoardSwitchPhases.setActionCommand("board.switch.bar.phases");
-		comboBoardSwitchPhases.addActionListener(lForCombo);
-		panelBoardSwitchAddSearch.add(phasesLabel);
-		panelBoardSwitchAddSearch.add(comboBoardSwitchPhases);
-		
-		comboBoardSwitchCurrents = new JComboBox<String>(new Vector<String>(loadComboList(queryCurrents, "current")));
-		comboBoardSwitchCurrents.setActionCommand("board.switch.bar.current");
-		comboBoardSwitchCurrents.addActionListener(lForCombo);
-		panelBoardSwitchAddSearch.add(currentsLabel);
-		panelBoardSwitchAddSearch.add(comboBoardSwitchCurrents);
-		
-		comboBoardSwitchInterruptions = new JComboBox<String>(new Vector<String>(loadComboList(queryInterruptions, "interruption")));
-		comboBoardSwitchInterruptions.setActionCommand("board.switch.bar.interruption");
-		comboBoardSwitchInterruptions.addActionListener(lForCombo);
-		panelBoardSwitchAddSearch.add(interruptionsLabel);
-		panelBoardSwitchAddSearch.add(comboBoardSwitchInterruptions);
-		
-		panelBoardSwitchAddSearch.add(separator());
-		
-		JButton searchButton = new JButton("Buscar");
-		searchButton.setActionCommand("board.switch.search.bar.button");
-		SearchButtonListener lForSearchButton = new SearchButtonListener();
-		searchButton.addActionListener(lForSearchButton);
-		panelBoardSwitchAddSearch.add(searchButton);
-		
-		return panelBoardSwitchAddSearch;
-	}
-	
-	private JPanel createBoardSwitchAddTablePanel() {
-		String switchesQuery = "SELECT switches.id, "
-						+ "switches.model, "
-						+ "switch_brands.brand, "
-						+ "switch_types.type, "
-						+ "switches.phases, "
-						+ "currents.current, "
-						+ "interruptions.interruption, "
-						+ "switch_voltages.voltage, "
-						+ "switches.price "
-					+ "FROM switches, "
-						+ "switch_brands, "
-						+ "switch_types, "
-						+ "currents, "
-						+ "interruptions, "
-						+ "switch_voltages "
-					+ "WHERE switches.brand_id = switch_brands.id "
-					+ "AND switches.type_id = switch_types.id "
-					+ "AND switches.current_id = currents.id "
-					+ "AND switches.interruption_id = interruptions.id "
-					+ "AND switches.voltage_id = switch_voltages.id "
-					+ "AND switches.active = '1'";
-		
-		boardSwitchesSearchData = db.fetchAll(db.select(switchesQuery));
-		
-		String[] switchesColumnNames = { "Id", "Modelo", "Marca", "Tipo", "Fases", "Amperaje", "Interrupcion", "Voltaje", "Precio"};
-		
-		MyTableModel mForTable = new MyTableModel(boardSwitchesSearchData, switchesColumnNames);
-		
-		tableBoardSwitchesSearchResult = new JTable();
-		tableBoardSwitchesSearchResult.setModel(mForTable);
-		tableBoardSwitchesSearchResult.setAutoCreateRowSorter(true);
-		tableBoardSwitchesSearchResult.getTableHeader().setReorderingAllowed(false);
-		
-		SharedListSelectionListener lForList = new SharedListSelectionListener();
-		
-		listBoardSwitchSearchSelectionModel = tableBoardSwitchesSearchResult.getSelectionModel();
-		listBoardSwitchSearchSelectionModel.addListSelectionListener(lForList);
-		tableBoardSwitchesSearchResult.setSelectionModel(listBoardSwitchSearchSelectionModel);
-		tableBoardSwitchesSearchResult.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		
-		JPanel panelBoardSwitchAddTable = new JPanel(new BorderLayout());
-		panelBoardSwitchAddTable.add(tableBoardSwitchesSearchResult.getTableHeader(), BorderLayout.PAGE_START);
-		panelBoardSwitchAddTable.add(tableBoardSwitchesSearchResult, BorderLayout.CENTER);
-		
-		return panelBoardSwitchAddTable;
-	}
-	
-	private JPanel createBoardSwitchAddCountPanel() {
-		JPanel panelCountOuter = new JPanel(new BorderLayout());
-		JPanel panelCountInner = new JPanel();
-		
-		panelCountInner.setLayout(new FlowLayout(FlowLayout.CENTER));
-		JButton buttonDecrease = new JButton("-");
-		JButton buttonIncrease = new JButton("+");
-		JLabel labelQuantity = new JLabel("1");
-		boardSwitchAddQuantity = 1;
-		int min = 1;
-		int max = 100;
-		
-		panelCountInner.add(buttonDecrease);
-		panelCountInner.add(labelQuantity);
-		panelCountInner.add(buttonIncrease);
-		
-		buttonDecrease.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if(boardSwitchAddQuantity > min) {
-					boardSwitchAddQuantity--;
-					labelQuantity.setText(String.valueOf(boardSwitchAddQuantity));
-				}
-			}
-		});
-		
-		buttonIncrease.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if(boardSwitchAddQuantity < max) {
-					boardSwitchAddQuantity++;
-					labelQuantity.setText(String.valueOf(boardSwitchAddQuantity));
-				}
-			}
-		});
-		
-		panelCountOuter.add(panelCountInner, BorderLayout.CENTER);
-		
-		return panelCountOuter;
-	}
-	
-	private JPanel createBoardSwitchAddButtonPanel() {
-		JPanel panelOuter = new JPanel(new BorderLayout());
-		JPanel panelInner = new JPanel();
-		panelInner.setLayout(new FlowLayout(FlowLayout.CENTER));
-		JButton buttonAccept = new JButton("Aceptar");
-		JButton buttonCancel = new JButton("Cancelar");
-		panelInner.add(buttonAccept);
-		panelInner.add(buttonCancel);
-		
-		buttonAccept.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if(tableBoardSwitchesSearchResult.getSelectedRow() > -1) {
-					boardSwitchSearchId = Integer.valueOf((String)tableBoardSwitchesSearchResult.getValueAt(tableBoardSwitchesSearchResult.getSelectedRow(), 0));
-					boardSwitchSearchQuantity = boardSwitchAddQuantity;
-					dialogBoardSwitchAdd.dispose();
-					
-				}
-			}
-		});
-		
-		buttonCancel.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				boardSwitchSearchId = 0;
-				dialogBoardSwitchAdd.dispose();
-			}
-		});
-		
-		panelOuter.add(panelInner, BorderLayout.CENTER);
-		
-		return panelOuter;
 	}
 	
 	private JPanel createBoardDescriptionPanel() {
@@ -4735,12 +4551,12 @@ public class MainView extends JFrame{
 		cs.gridwidth = 1;
 		panelCommentsCenter.add(labelComments, cs);
 		
-		textComments = new JTextArea(20, 50);
+		textBoardComments = new JTextArea(20, 50);
 		cs.gridx = 0;
 		cs.gridy = 1;
 		cs.gridwidth = 50;
-		textComments.setEditable(false);
-		panelCommentsCenter.add(textComments, cs);
+		textBoardComments.setEditable(false);
+		panelCommentsCenter.add(textBoardComments, cs);
 		
 		BoardButtonListener lForBoardButton = new BoardButtonListener();
 		
@@ -4770,17 +4586,17 @@ public class MainView extends JFrame{
 		buttonBoardCommentsEdit.addActionListener(lForBoardButton);
 		buttonBoardCommentsEdit.setEnabled(false);
 		
-		JPanel panelMaterialsButtons = new JPanel();
-		panelMaterialsButtons.add(buttonBoardCommentsEdit);
+		JPanel panelCommentsButtons = new JPanel();
+		panelCommentsButtons.add(buttonBoardCommentsEdit);
 		
-		panelComments.add(panelMaterialsButtons, BorderLayout.SOUTH);
+		panelComments.add(panelCommentsButtons, BorderLayout.SOUTH);
 		
 		return panelComments;
 	}
 	
 	private void setBoardsMode(int mode) {
 		
-		if(mode == MainView.VIEW_MODE) {
+		if(mode == SalesMainView.VIEW_MODE) {
 			if(panelBoardAddNew.isVisible()) {
 				buttonBoardAdd.setEnabled(true);
 				textBoardAddName.setText("");
@@ -4825,7 +4641,7 @@ public class MainView extends JFrame{
 					}
 				});
 			}
-		} else if(mode == MainView.ADD_MODE) {
+		} else if(mode == SalesMainView.ADD_MODE) {
 			buttonBoardAdd.setEnabled(false);
 			buttonBoardEdit.setEnabled(false);
 			textMaterials.setText("");
@@ -4833,8 +4649,8 @@ public class MainView extends JFrame{
 			textMaterialsPrice.setText("");
 			textMaterialsPrice.setEditable(false);
 			buttonBoardMaterialsEdit.setEnabled(false);
-			textComments.setText("");
-			textComments.setEditable(false);
+			textBoardComments.setText("");
+			textBoardComments.setEditable(false);
 			buttonBoardCommentsEdit.setEnabled(false);
 			textBoardDescriptionName.setText("");
 			textBoardDescriptionPrice.setText("");
@@ -4859,13 +4675,13 @@ public class MainView extends JFrame{
 					boardsFrame.repaint();
 				}
 			});
-		} else if(mode == MainView.EDIT_MODE) {
+		} else if(mode == SalesMainView.EDIT_MODE) {
 			buttonBoardAdd.setEnabled(false);
 			buttonBoardEdit.setEnabled(false);
 			textMaterials.setEditable(false);
 			textMaterialsPrice.setEditable(false);
 			buttonBoardMaterialsEdit.setEnabled(false);
-			textComments.setEditable(false);
+			textBoardComments.setEditable(false);
 			buttonBoardCommentsEdit.setEnabled(false);
 			editBoardId = Integer.valueOf(String.valueOf(tableBoardsResult.getValueAt(boardsTableSelectedIndex, SharedListSelectionListener.BOARD_ID_COLUMN)));
 			editBoardName = String.valueOf(tableBoardsResult.getValueAt(boardsTableSelectedIndex, SharedListSelectionListener.BOARD_NAME_COLUMN));
@@ -5009,93 +4825,93 @@ public class MainView extends JFrame{
 		searchSelectedBoardBarType = comboBoardBarTypes.getSelectedItem().toString();
 		searchSelectedBoardCircuits = comboBoardCircuits.getSelectedItem().toString();
 		searchSelectedBoardVoltage = comboBoardVoltages.getSelectedItem().toString();
-		searchSelectedBoardVoltage = comboBoardPhases.getSelectedItem().toString();
+		searchSelectedBoardPhases = comboBoardPhases.getSelectedItem().toString();
 		searchSelectedBoardGround = comboBoardGround.getSelectedItem().toString();
 		searchSelectedBoardInterruption = comboBoardInterruptions.getSelectedItem().toString();
 		searchSelectedBoardLockType = comboBoardLockTypes.getSelectedItem().toString();
 		if(null != textBoardSearchNames && !textBoardSearchNames.getText().isEmpty()) {
-			whereQuery += " AND " + MainView.BOARD_TABLE + ".name LIKE '%" + textBoardSearchNames.getText() + "%'";
+			whereQuery += " AND " + SalesMainView.BOARD_TABLE + ".name LIKE '%" + textBoardSearchNames.getText() + "%'";
 		}
 		if(null != searchSelectedBoardType  && !searchSelectedBoardType.equalsIgnoreCase("Todas") &&
 				!searchSelectedBoardType.isEmpty()) {
-			whereQuery += " AND " + MainView.BOARD_TYPES_TABLE + ".type = '" + searchSelectedBoardType + "'";
+			whereQuery += " AND " + SalesMainView.BOARD_TYPES_TABLE + ".type = '" + searchSelectedBoardType + "'";
 		}
 		if(searchSelectedBoardInstallation != null && !searchSelectedBoardInstallation.equalsIgnoreCase("Todas") &&
 				!searchSelectedBoardInstallation.isEmpty()) {
-			whereQuery += " AND " + MainView.BOARD_TABLE + ".installation_id = " + MainView.INSTALLATIONS_TABLE + ".id ";
-			whereQuery += " AND " + MainView.INSTALLATIONS_TABLE + ".installation = '" + searchSelectedBoardInstallation + "'";
+			whereQuery += " AND " + SalesMainView.BOARD_TABLE + ".installation_id = " + SalesMainView.INSTALLATIONS_TABLE + ".id ";
+			whereQuery += " AND " + SalesMainView.INSTALLATIONS_TABLE + ".installation = '" + searchSelectedBoardInstallation + "'";
 		}
 		if(searchSelectedBoardNema != null && !searchSelectedBoardNema.equalsIgnoreCase("Todas") &&
 				!searchSelectedBoardNema.isEmpty()) {
-			whereQuery += " AND " + MainView.BOARD_TABLE + ".nema_id = " + MainView.NEMAS_TABLE + ".id ";
-			whereQuery += " AND " + MainView.NEMAS_TABLE + ".nema = '" + searchSelectedBoardNema + "'";
+			whereQuery += " AND " + SalesMainView.BOARD_TABLE + ".nema_id = " + SalesMainView.NEMAS_TABLE + ".id ";
+			whereQuery += " AND " + SalesMainView.NEMAS_TABLE + ".nema = '" + searchSelectedBoardNema + "'";
 		}
 		if(searchSelectedBoardBarCapacity != null && !searchSelectedBoardBarCapacity.equalsIgnoreCase("Todas") &&
 				!searchSelectedBoardBarCapacity.isEmpty()) {
-			whereQuery += " AND " + MainView.BOARD_TABLE + ".bar_capacity_id = " + MainView.BOARD_BAR_CAPACITIES_TABLE + ".id ";
-			whereQuery += " AND " + MainView.BOARD_BAR_CAPACITIES_TABLE + ".bar_capacity = '" + searchSelectedBoardBarCapacity + "'";
+			whereQuery += " AND " + SalesMainView.BOARD_TABLE + ".bar_capacity_id = " + SalesMainView.BOARD_BAR_CAPACITIES_TABLE + ".id ";
+			whereQuery += " AND " + SalesMainView.BOARD_BAR_CAPACITIES_TABLE + ".bar_capacity = '" + searchSelectedBoardBarCapacity + "'";
 		}
 		if(searchSelectedBoardBarType != null && !searchSelectedBoardBarType.equalsIgnoreCase("Todas") &&
 				!searchSelectedBoardBarType.isEmpty()) {
-			whereQuery += " AND " + MainView.BOARD_TABLE + ".bar_type_id = " + MainView.BOARD_BAR_TYPES_TABLE + ".id ";
-			whereQuery += " AND " + MainView.BOARD_BAR_TYPES_TABLE + ".bar_type = '" + searchSelectedBoardBarType + "'";
+			whereQuery += " AND " + SalesMainView.BOARD_TABLE + ".bar_type_id = " + SalesMainView.BOARD_BAR_TYPES_TABLE + ".id ";
+			whereQuery += " AND " + SalesMainView.BOARD_BAR_TYPES_TABLE + ".bar_type = '" + searchSelectedBoardBarType + "'";
 		}
 		if(searchSelectedBoardCircuits != null && !searchSelectedBoardCircuits.equalsIgnoreCase("Todas") &&
 				!searchSelectedBoardCircuits.isEmpty()) {
-			whereQuery += " AND " + MainView.BOARD_TABLE + ".circuits_id = " + MainView.BOARD_CIRCUITS_TABLE + ".id ";
-			whereQuery += " AND " + MainView.BOARD_CIRCUITS_TABLE + ".circuits = '" + searchSelectedBoardCircuits + "'";
+			whereQuery += " AND " + SalesMainView.BOARD_TABLE + ".circuits_id = " + SalesMainView.BOARD_CIRCUITS_TABLE + ".id ";
+			whereQuery += " AND " + SalesMainView.BOARD_CIRCUITS_TABLE + ".circuits = '" + searchSelectedBoardCircuits + "'";
 		}
 		if(searchSelectedBoardVoltage != null && !searchSelectedBoardVoltage.equalsIgnoreCase("Todas") &&
 				!searchSelectedBoardVoltage.isEmpty()) {
-			whereQuery += " AND " + MainView.BOARD_TABLE + ".voltage_id = " + MainView.BOARD_VOLTAGES_TABLE + ".id ";
-			whereQuery += " AND " + MainView.BOARD_VOLTAGES_TABLE + ".voltage = '" + searchSelectedBoardVoltage + "'";
+			whereQuery += " AND " + SalesMainView.BOARD_TABLE + ".voltage_id = " + SalesMainView.BOARD_VOLTAGES_TABLE + ".id ";
+			whereQuery += " AND " + SalesMainView.BOARD_VOLTAGES_TABLE + ".voltage = '" + searchSelectedBoardVoltage + "'";
 		}
 		if(searchSelectedBoardPhases != null && !searchSelectedBoardPhases.equalsIgnoreCase("Todas") &&
 				!searchSelectedBoardPhases.isEmpty()) {
-			whereQuery += " AND " + MainView.BOARD_TABLE + ".phases = '" + searchSelectedBoardPhases + "'";
+			whereQuery += " AND " + SalesMainView.BOARD_TABLE + ".phases = '" + searchSelectedBoardPhases + "'";
 		}
 		if(searchSelectedBoardGround != null && !searchSelectedBoardGround.equalsIgnoreCase("Todas") &&
 				!searchSelectedBoardGround.isEmpty()) {
-			whereQuery += " AND " + MainView.BOARD_TABLE + ".ground = '" + (searchSelectedBoardGround.equalsIgnoreCase("SI")?"1":"0") + "'";
+			whereQuery += " AND " + SalesMainView.BOARD_TABLE + ".ground = '" + (searchSelectedBoardGround.equalsIgnoreCase("SI")?"1":"0") + "'";
 		}
 		if(searchSelectedBoardInterruption != null && !searchSelectedBoardInterruption.equalsIgnoreCase("Todas") &&
 				!searchSelectedBoardInterruption.isEmpty()) {
-			whereQuery += " AND " + MainView.BOARD_TABLE + ".interruption_id = " + MainView.INTERRUPTIONS_TABLE + ".id ";
-			whereQuery += " AND " + MainView.INTERRUPTIONS_TABLE + ".interruption = '" + searchSelectedBoardInterruption + "'";
+			whereQuery += " AND " + SalesMainView.BOARD_TABLE + ".interruption_id = " + SalesMainView.INTERRUPTIONS_TABLE + ".id ";
+			whereQuery += " AND " + SalesMainView.INTERRUPTIONS_TABLE + ".interruption = '" + searchSelectedBoardInterruption + "'";
 		}
 		if(searchSelectedBoardLockType != null && !searchSelectedBoardLockType.equalsIgnoreCase("Todas") &&
 				!searchSelectedBoardLockType.isEmpty()) {
-			whereQuery += " AND " + MainView.BOARD_TABLE + ".lock_type_id = " + MainView.LOCK_TYPES_TABLE + ".id ";
-			whereQuery += " AND " + MainView.LOCK_TYPES_TABLE + ".lock_type = '" + searchSelectedBoardLockType + "'";
+			whereQuery += " AND " + SalesMainView.BOARD_TABLE + ".lock_type_id = " + SalesMainView.LOCK_TYPES_TABLE + ".id ";
+			whereQuery += " AND " + SalesMainView.LOCK_TYPES_TABLE + ".lock_type = '" + searchSelectedBoardLockType + "'";
 		}
 		
 		ArrayList<String> fields = new ArrayList<String>();
-		fields.add(MainView.BOARD_ID_FIELD);
-		fields.add(MainView.BOARD_NAME_FIELD);
-		fields.add(MainView.BOARD_TYPE_FIELD);
-		fields.add(MainView.INSTALLATION_FIELD);
-		fields.add(MainView.NEMA_FIELD);
-		fields.add(MainView.BOARD_BAR_CAPACITY_FIELD);
-		fields.add(MainView.BOARD_BAR_TYPE_FIELD);
-		fields.add(MainView.BOARD_CIRCUITS_FIELD);
-		fields.add(MainView.BOARD_VOLTAGE_FIELD);
-		fields.add(MainView.BOARD_PHASES_FIELD);
-		fields.add(MainView.BOARD_GROUND_FIELD);
-		fields.add(MainView.INTERRUPTION_FIELD);
-		fields.add(MainView.BOARD_LOCK_TYPE_FIELD);
-		fields.add(MainView.BOARD_PRICE_FIELD);
+		fields.add(SalesMainView.BOARD_ID_FIELD);
+		fields.add(SalesMainView.BOARD_NAME_FIELD);
+		fields.add(SalesMainView.BOARD_TYPE_FIELD);
+		fields.add(SalesMainView.INSTALLATION_FIELD);
+		fields.add(SalesMainView.NEMA_FIELD);
+		fields.add(SalesMainView.BOARD_BAR_CAPACITY_FIELD);
+		fields.add(SalesMainView.BOARD_BAR_TYPE_FIELD);
+		fields.add(SalesMainView.BOARD_CIRCUITS_FIELD);
+		fields.add(SalesMainView.BOARD_VOLTAGE_FIELD);
+		fields.add(SalesMainView.BOARD_PHASES_FIELD);
+		fields.add(SalesMainView.BOARD_GROUND_FIELD);
+		fields.add(SalesMainView.INTERRUPTION_FIELD);
+		fields.add(SalesMainView.BOARD_LOCK_TYPE_FIELD);
+		fields.add(SalesMainView.BOARD_PRICE_FIELD);
 		
 		ArrayList<String> tables = new ArrayList<String>();
-		tables.add(MainView.BOARD_TABLE);
-		tables.add(MainView.BOARD_TYPES_TABLE);
-		tables.add(MainView.INSTALLATIONS_TABLE);
-		tables.add(MainView.NEMAS_TABLE);
-		tables.add(MainView.BOARD_BAR_CAPACITIES_TABLE);
-		tables.add(MainView.BOARD_BAR_TYPES_TABLE);
-		tables.add(MainView.BOARD_CIRCUITS_TABLE);
-		tables.add(MainView.BOARD_VOLTAGES_TABLE);
-		tables.add(MainView.INTERRUPTIONS_TABLE);
-		tables.add(MainView.LOCK_TYPES_TABLE);
+		tables.add(SalesMainView.BOARD_TABLE);
+		tables.add(SalesMainView.BOARD_TYPES_TABLE);
+		tables.add(SalesMainView.INSTALLATIONS_TABLE);
+		tables.add(SalesMainView.NEMAS_TABLE);
+		tables.add(SalesMainView.BOARD_BAR_CAPACITIES_TABLE);
+		tables.add(SalesMainView.BOARD_BAR_TYPES_TABLE);
+		tables.add(SalesMainView.BOARD_CIRCUITS_TABLE);
+		tables.add(SalesMainView.BOARD_VOLTAGES_TABLE);
+		tables.add(SalesMainView.INTERRUPTIONS_TABLE);
+		tables.add(SalesMainView.LOCK_TYPES_TABLE);
 		
 		String fieldsQuery = StringTools.implode(",", fields);
 		String tablesQuery = StringTools.implode(",", tables);
@@ -5103,8 +4919,6 @@ public class MainView extends JFrame{
 						+ " FROM "
 						+ tablesQuery
 						+ " WHERE boards.type_id = board_types.id "
-						// Fix these conditions to make them disappear when filtering
-						
 						+ "AND boards.installation_id = installations.id "
 						+ "AND boards.nema_id = nemas.id "
 						+ "AND boards.bar_capacity_id = board_bar_capacities.id "
@@ -5281,68 +5095,76 @@ public class MainView extends JFrame{
 		budgetMainPanel.add(panelBudgetLower, BorderLayout.SOUTH);
 		budgetViewTabbedPane.addTab("Buscar", null, budgetMainPanel, "Buscar");
 		
-		budgetSwitchesPanel = createBudgetSwitchesPanel();
+		budgetSwitchesPanel = createBudgetSwitchesTablePanel();
 		
 		budgetViewTabbedPane.addTab("Interruptores", null, budgetSwitchesPanel, "Interruptores");
 		budgetViewTabbedPane.setFont(new Font(null, Font.BOLD, 16));
 	
-		budgetBoxesPanel = createBudgetBoxesPanel();
+		budgetBoxesPanel = createBudgetBoxesTablePanel();
 		
 		budgetViewTabbedPane.addTab("Cajas", null, budgetBoxesPanel, "Cajas");
 		budgetViewTabbedPane.setFont(new Font(null, Font.BOLD, 16));
 		
-		budgetBoardsPanel = createBudgetBoardsPanel();
+		budgetBoardsPanel = createBudgetBoardsTablePanel();
 		
 		budgetViewTabbedPane.addTab("Tableros", null, budgetBoardsPanel, "Tableros");
 		budgetViewTabbedPane.setFont(new Font(null, Font.BOLD, 16));
-		
-		budgetMaterialsPanel = createBudgetMaterialsPanel();
-		
-		budgetViewTabbedPane.addTab("Materiales", null, budgetMaterialsPanel, "Materiales");
-		budgetViewTabbedPane.setFont(new Font(null, Font.BOLD, 16));
-		
-		budgetSpecialsPanel = createBudgetSpecialsPanel();
-		
-		budgetViewTabbedPane.addTab("Especiales", null, budgetSpecialsPanel, "Especiales");
-		budgetViewTabbedPane.setFont(new Font(null, Font.BOLD, 16));
-		
-		budgetNotesPanel = createBudgetNotesPanel();
+		// TODO (Jesus) Pending tabs for budget
+//		budgetMaterialsPanel = createBudgetMaterialsTablePanel();
+//		
+//		budgetViewTabbedPane.addTab("Materiales", null, budgetMaterialsPanel, "Materiales");
+//		budgetViewTabbedPane.setFont(new Font(null, Font.BOLD, 16));
+//		
+//		budgetSpecialsPanel = createBudgetSpecialsTablePanel();
+//		
+//		budgetViewTabbedPane.addTab("Especiales", null, budgetSpecialsPanel, "Especiales");
+//		budgetViewTabbedPane.setFont(new Font(null, Font.BOLD, 16));
+//		
+		budgetNotesPanel = createBudgetNotesTablePanel();
 		
 		budgetViewTabbedPane.addTab("Notas", null, budgetNotesPanel, "Notas");
 		budgetViewTabbedPane.setFont(new Font(null, Font.BOLD, 16));
-					
+		
+		for(Integer i = 1; i < budgetViewTabbedPane.getTabCount(); i++) {
+			budgetViewTabbedPane.setEnabledAt(i, false);
+		}
+		
 		return budgetViewTabbedPane;
 	}
 	
 	private JPanel createBudgetSearchBarPanel() {
+		JPanel panelWrapperBudgetSearch = new JPanel(new BorderLayout());
+		
+		Font fa = null;
+		
+		try {
+			URL url = getClass().getResource("fontawesome-webfont.ttf");
+			InputStream is;
+			is = url.openStream();
+			fa = Font.createFont(Font.TRUETYPE_FONT, is);
+			fa = fa.deriveFont(Font.PLAIN, 36f);
+		} catch (IOException | FontFormatException e) {
+			e.printStackTrace();
+		}
+		
+		BudgetButtonListener lForBudgetButton = new BudgetButtonListener();
+		
+		JButton buttonBudgetClone = new JButton(Fa.fa_clone);
+		buttonBudgetClone.setContentAreaFilled(false);
+		buttonBudgetClone.setActionCommand("budget.clone");
+		buttonBudgetClone.addActionListener(lForBudgetButton);
+		buttonBudgetClone.setMargin(new Insets(0, 0, 0, 0));
+		buttonBudgetClone.setFocusPainted(true);
+		buttonBudgetClone.setBorderPainted(false);
+		buttonBudgetClone.setFont(fa);
+		buttonBudgetClone.setForeground(Color.DARK_GRAY);
+		panelWrapperBudgetSearch.add(buttonBudgetClone, BorderLayout.WEST);
 		
 		JPanel panelBudgetSearch = new JPanel();		
 		panelBudgetSearch.setLayout(new FlowLayout(FlowLayout.CENTER));
+		
 		JLabel labelClient = new JLabel("Cliente: ");
 		JLabel labelId = new JLabel("Codigo:");
-		JLabel labelDay = new JLabel("Dia:");
-		JLabel labelMonth = new JLabel("Mes");
-		JLabel labelYear = new JLabel("Año");
-		
-		List<String> listDays = new ArrayList<String>();
-		
-		for(int i = 1; i < 32; i++){
-			listDays.add(String.valueOf(i));
-		}
-		
-		List<String> listMonths = new ArrayList<String>();
-		for(int i = 1; i < 13; i++){
-			listMonths.add(String.valueOf(i));
-		}
-		
-		Date todaysDate = new Date();
-		DateTime dt = new DateTime(todaysDate);
-		int actualYear = dt.getYear();
-		
-		List<String> listYears = new ArrayList<String>();
-		for (int i = 2015; i <= actualYear; i++){
-			listYears.add(String.valueOf(i));
-		}
 		
 		textBudgetSearchClient = new JTextField(6);
 		textBudgetSearchClient.addKeyListener(new KeyListener() {
@@ -5388,26 +5210,22 @@ public class MainView extends JFrame{
 		panelBudgetSearch.add(labelId);
 		panelBudgetSearch.add(textBudgetSearchId);
 		
-		comboBudgetDays = new JComboBox<String>(new Vector<String>(listDays));
-		panelBudgetSearch.add(labelDay);
-		panelBudgetSearch.add(comboBudgetDays);
+		panelWrapperBudgetSearch.add(panelBudgetSearch, BorderLayout.CENTER);
 		
-		comboBudgetMonths = new JComboBox<String>(new Vector<String>(listMonths));
-		panelBudgetSearch.add(labelMonth);
-		panelBudgetSearch.add(comboBudgetMonths);
+		PrinterButtonListener lForPrinterButton = new PrinterButtonListener();
 		
-		comboBudgetYears = new JComboBox<String>(new Vector<String>(listYears));
-		panelBudgetSearch.add(labelYear);
-		panelBudgetSearch.add(comboBudgetYears);
-				
-		JButton searchButton = new JButton("Buscar");
-		searchButton.setActionCommand("budget.search.bar.button");
-		SearchButtonListener lForSearchButton = new SearchButtonListener();
-		searchButton.addActionListener(lForSearchButton);
-		panelBudgetSearch.add(searchButton);
+		JButton buttonBudgetPrint = new JButton(Fa.fa_print);
+		buttonBudgetPrint.setContentAreaFilled(false);
+		buttonBudgetPrint.setActionCommand("budget.print");
+		buttonBudgetPrint.addActionListener(lForPrinterButton);
+		buttonBudgetPrint.setMargin(new Insets(0, 0, 0, 0));
+		buttonBudgetPrint.setFocusPainted(true);
+		buttonBudgetPrint.setBorderPainted(false);
+		buttonBudgetPrint.setFont(fa);
+		buttonBudgetPrint.setForeground(Color.GREEN);
+		panelWrapperBudgetSearch.add(buttonBudgetPrint, BorderLayout.EAST);
 		
-		
-		return panelBudgetSearch;
+		return panelWrapperBudgetSearch;
 	}
 	
 	private JPanel createBudgetEditPanel() {
@@ -5426,9 +5244,9 @@ public class MainView extends JFrame{
 				+ "FROM  budget_dispatch_places "
 				+ "GROUP BY budget_dispatch_places.place";
 		
-		String queryDeliveryPeriod = "SELECT budget_delivery_period.delivery_period "
-				+ "FROM  budget_delivery_period "
-				+ "GROUP BY budget_delivery_period.delivery_period "
+		String queryDeliveryPeriod = "SELECT budget_delivery_periods.delivery_period "
+				+ "FROM  budget_delivery_periods "
+				+ "GROUP BY budget_delivery_periods.delivery_period "
 				+ "ORDER BY id ASC";
 		
 //		String queryStages = "SELECT budget_stages.stage "
@@ -5481,44 +5299,44 @@ public class MainView extends JFrame{
 		cs.gridwidth = 6;
 		editPanel.add(textBudgetEditClientCode, cs);
 		
-		JLabel labelCompany = new JLabel("Empresa:");
+		JLabel labelClient = new JLabel("Empresa:");
 		cs.gridx = 17;
 		cs.gridy = 0;
 		cs.gridwidth = 1;
-		editPanel.add(labelCompany, cs);
+		editPanel.add(labelClient, cs);
 		
-		textBudgetEditCompany = new JTextField("", 8);
-		textBudgetEditCompany.setEditable(false);
+		textBudgetEditClient = new JTextField("", 8);
+		textBudgetEditClient.setEditable(false);
 		cs.gridx = 18;
 		cs.gridy = 0;
 		cs.gridwidth = 8;
-		editPanel.add(textBudgetEditCompany, cs);
+		editPanel.add(textBudgetEditClient, cs);
 		
 		BudgetButtonListener lForBudgetButton = new BudgetButtonListener();
 		
 		JPanel buttonOuterPanel = new JPanel(new FlowLayout(FlowLayout.LEADING));
-		buttonBudgetEditCompany = new JButton("...");
-		buttonBudgetEditCompany.setActionCommand("budget.description.edit.company");
-		buttonBudgetEditCompany.addActionListener(lForBudgetButton);
-		buttonOuterPanel.add(buttonBudgetEditCompany);
+		buttonBudgetEditClient = new JButton("...");
+		buttonBudgetEditClient.setActionCommand("budget.description.company.edit");
+		buttonBudgetEditClient.addActionListener(lForBudgetButton);
+		buttonOuterPanel.add(buttonBudgetEditClient);
 		cs.gridx = 26;
 		cs.gridy = 0;
 		cs.gridwidth = 1;
 		editPanel.add(buttonOuterPanel, cs);
 		
 		
-		JLabel labelCompanyRepresentative = new JLabel("Representante:");
+		JLabel labelClientRepresentative = new JLabel("Representante:");
 		cs.gridx = 0;
 		cs.gridy = 1;
 		cs.gridwidth = 1;
-		editPanel.add(labelCompanyRepresentative, cs);
+		editPanel.add(labelClientRepresentative, cs);
 		
-		textBudgetEditCompanyRepresentative = new JTextField("", 8);
-		textBudgetEditCompanyRepresentative.setEditable(false);
+		textBudgetEditClientRepresentative = new JTextField("", 8);
+		textBudgetEditClientRepresentative.setEditable(false);
 		cs.gridx = 1;
 		cs.gridy = 1;
 		cs.gridwidth = 8;
-		editPanel.add(textBudgetEditCompanyRepresentative, cs);
+		editPanel.add(textBudgetEditClientRepresentative, cs);
 		
 		JLabel labelWorkName = new JLabel(" Obra:");
 		cs.gridx = 9;
@@ -5548,7 +5366,7 @@ public class MainView extends JFrame{
 			comboBudgetEditPaymentMethod = new JComboBox<String>();
 		}
 		comboBudgetEditPaymentMethod.removeItem("Todas");
-		comboBudgetEditPaymentMethod.setActionCommand("budget.description.edit.payment_method");
+		comboBudgetEditPaymentMethod.setActionCommand("budget.description.payment_method.edit");
 		comboBudgetEditPaymentMethod.addActionListener(lForCombo);
 		cs.gridx = 19;
 		cs.gridy = 1;
@@ -5569,7 +5387,7 @@ public class MainView extends JFrame{
 		editPanel.add(textBudgetEditSeller, cs);
 		
 		buttonBudgetEditSeller = new JButton("...");
-		buttonBudgetEditSeller.setActionCommand("budget.description.edit.seller");
+		buttonBudgetEditSeller.setActionCommand("budget.description.seller.edit");
 		buttonBudgetEditSeller.addActionListener(lForBudgetButton);
 		
 		cs.gridx = 9;
@@ -5635,9 +5453,7 @@ public class MainView extends JFrame{
 		cs.gridy = 4;
 		cs.gridwidth = 30;
 		editPanel.add(panelButtons, cs);
-		
-//		updateBudgetTextEditDescription();
-		
+				
 		return editPanel;
 	}
 
@@ -5657,17 +5473,14 @@ public class MainView extends JFrame{
 				+ "FROM  budget_dispatch_places "
 				+ "GROUP BY budget_dispatch_places.place";
 		
-		String queryStages = "SELECT budget_stages.stage "
-				+ "FROM budget_stages "
-				+ "GROUP BY budget_stages.stage";
-			
-		String queryUsers = "SELECT users.username "
-				+ "FROM users "
-				+ "GROUP BY users.username";
+		// TODO Add stages to budget
+//		String queryStages = "SELECT budget_stages.stage "
+//				+ "FROM budget_stages "
+//				+ "GROUP BY budget_stages.stage";
 		
-		String queryDeliveryPeriod = "SELECT budget_delivery_period.delivery_period "
-				+ "FROM  budget_delivery_period "
-				+ "GROUP BY budget_delivery_period.delivery_period "
+		String queryDeliveryPeriod = "SELECT budget_delivery_periods.delivery_period "
+				+ "FROM  budget_delivery_periods "
+				+ "GROUP BY budget_delivery_periods.delivery_period "
 				+ "ORDER BY id ASC";
 		
 		JLabel labelDate = new JLabel("Fecha:");
@@ -5721,44 +5534,44 @@ public class MainView extends JFrame{
 		cs.gridwidth = 6;
 		addPanel.add(textBudgetAddClientCode, cs);
 		
-		JLabel labelCompany = new JLabel("Empresa:");
+		JLabel labelClient = new JLabel("Empresa:");
 		cs.gridx = 17;
 		cs.gridy = 0;
 		cs.gridwidth = 1;
-		addPanel.add(labelCompany, cs);
+		addPanel.add(labelClient, cs);
 		
-		textBudgetAddCompany = new JTextField("", 8);
-		textBudgetAddCompany.setEditable(false);
+		textBudgetAddClient = new JTextField("", 8);
+		textBudgetAddClient.setEditable(false);
 		cs.gridx = 18;
 		cs.gridy = 0;
 		cs.gridwidth = 8;
-		addPanel.add(textBudgetAddCompany, cs);
+		addPanel.add(textBudgetAddClient, cs);
 		
 		BudgetButtonListener lForBudgetButton = new BudgetButtonListener();
 		
 		JPanel buttonOuterPanel = new JPanel(new FlowLayout(FlowLayout.LEADING));
-		buttonBudgetAddCompany = new JButton("...");
-		buttonBudgetAddCompany.setActionCommand("budget.description.add.company");
-		buttonBudgetAddCompany.addActionListener(lForBudgetButton);
-		buttonOuterPanel.add(buttonBudgetAddCompany);
+		buttonBudgetAddClient = new JButton("...");
+		buttonBudgetAddClient.setActionCommand("budget.description.company.add");
+		buttonBudgetAddClient.addActionListener(lForBudgetButton);
+		buttonOuterPanel.add(buttonBudgetAddClient);
 		cs.gridx = 26;
 		cs.gridy = 0;
 		cs.gridwidth = 1;
 		addPanel.add(buttonOuterPanel, cs);
 		
 		
-		JLabel labelCompanyRepresentative = new JLabel("Representante:");
+		JLabel labelClientRepresentative = new JLabel("Representante:");
 		cs.gridx = 0;
 		cs.gridy = 1;
 		cs.gridwidth = 1;
-		addPanel.add(labelCompanyRepresentative, cs);
+		addPanel.add(labelClientRepresentative, cs);
 		
-		textBudgetAddCompanyRepresentative = new JTextField("", 8);
-		textBudgetAddCompanyRepresentative.setEditable(false);
+		textBudgetAddClientRepresentative = new JTextField("", 8);
+		textBudgetAddClientRepresentative.setEditable(false);
 		cs.gridx = 1;
 		cs.gridy = 1;
 		cs.gridwidth = 8;
-		addPanel.add(textBudgetAddCompanyRepresentative, cs);
+		addPanel.add(textBudgetAddClientRepresentative, cs);
 		
 		JLabel labelWorkName = new JLabel(" Obra:");
 		cs.gridx = 9;
@@ -5789,7 +5602,7 @@ public class MainView extends JFrame{
 			comboBudgetAddPaymentMethod = new JComboBox<String>();
 		}
 			comboBudgetAddPaymentMethod.removeItem("Todas");
-			comboBudgetAddPaymentMethod.setActionCommand("budget.description.add.payment_method");
+			comboBudgetAddPaymentMethod.setActionCommand("budget.description.payment_method.add");
 			comboBudgetAddPaymentMethod.addActionListener(lForCombo);
 			cs.gridx = 19;
 			cs.gridy = 1;
@@ -5810,7 +5623,7 @@ public class MainView extends JFrame{
 		addPanel.add(textBudgetAddSeller, cs);
 		
 		buttonBudgetAddSeller = new JButton("...");
-		buttonBudgetAddSeller.setActionCommand("budget.description.add.seller");
+		buttonBudgetAddSeller.setActionCommand("budget.description.seller.add");
 		buttonBudgetAddSeller.addActionListener(lForBudgetButton);
 		
 		cs.gridx = 9;
@@ -5843,14 +5656,14 @@ public class MainView extends JFrame{
 		cs.gridwidth = 4;
 		addPanel.add(textBudgetAddDeliveryTime, cs);
 		
-		comboBugetAddDeliveryPeriod = new JComboBox<String>(new Vector<String>(loadComboList(queryDeliveryPeriod, "delivery_period")));
-		comboBugetAddDeliveryPeriod.removeItem("Todas");
-		comboBugetAddDeliveryPeriod.setActionCommand("budget.add.delivery_period");
-		comboBugetAddDeliveryPeriod.addActionListener(lForCombo);
+		comboBudgetAddDeliveryPeriod = new JComboBox<String>(new Vector<String>(loadComboList(queryDeliveryPeriod, "delivery_period")));
+		comboBudgetAddDeliveryPeriod.removeItem("Todas");
+		comboBudgetAddDeliveryPeriod.setActionCommand("budget.add.delivery_period");
+		comboBudgetAddDeliveryPeriod.addActionListener(lForCombo);
 		cs.gridx = 24;
 		cs.gridy = 2;
 		cs.gridwidth = 4;
-		addPanel.add(comboBugetAddDeliveryPeriod, cs);
+		addPanel.add(comboBudgetAddDeliveryPeriod, cs);
 							
 //		checkBudgetAddTracing = new JCheckBox("Seguimiento");
 //		cs.gridx = 28;
@@ -5877,68 +5690,10 @@ public class MainView extends JFrame{
 		cs.gridwidth = 30;
 		addPanel.add(panelButtons, cs);
 		
-		updateBudgetTextAddDescription();
+//		updateBudgetTextAddDescription();
 		
 		return addPanel;
 		
-	}
-	
-	private JPanel createBudgetBoardsPanel() {
-		JPanel createBudgetBoardsPanel = new JPanel();
-		return createBudgetBoardsPanel;
-	}
-
-	private JPanel createBudgetMaterialsPanel() {
-		JPanel createBudgetMaterialsPanel = new JPanel();
-		return createBudgetMaterialsPanel;
-	}
-
-	private JPanel createBudgetSpecialsPanel() {
-		JPanel createBudgetSpecialsPanel = new JPanel();
-		return createBudgetSpecialsPanel;
-	}
-
-	private JPanel createBudgetNotesPanel() {
-		JPanel createBudgetNotes = new JPanel();
-		return createBudgetNotes;
-	}
-
-	private JPanel createBudgetBoxesPanel() {
-		JPanel panelBudgetBoxes = new JPanel();
-		return panelBudgetBoxes;
-	}
-
-	private JPanel createBudgetSwitchesPanel() {
-		JPanel panelBudgetSwitches = new JPanel();		
-		panelBudgetSwitches.setLayout(new BorderLayout());
-//		panelBudgetSwitches.add(createBudgetSwitchesSearchPanel(), BorderLayout.NORTH);
-		
-//		JLabel labelClient = new JLabel("Cliente:");
-//		JTextField textClient = new JTextField(6);
-//		ArrayList<Integer> listYears = new ArrayList<Integer>();
-//		Date nowDate = new Date();
-//		DateTime dt = new DateTime(nowDate);
-//		int todayYear = dt.getYear();
-//		for(int i = 2015; i <= todayYear; i++) {
-//			listYears.add(i);
-//		}
-//		
-//		String queryYears = "SELECT year FROM years ORDER BY year DESC";
-//		
-//		loadComboList(queryYears, "year");
-//		
-//		Object[] columnNames = {"Enero", "Febrero"};
-//		
-//		JTable tableTest = new JTable();
-//		
-//		tableTest.setModel(new DefaultTableModel(data, columnNames));
-//		
-//		JComboBox<Integer> comboYear = new JComboBox<Integer>(new Vector<Integer>(listYears));
-//		
-//		budgetSwitchesPanel.setLayout(new BorderLayout(20, 20));		
-//		budgetSwitchesPanel.add(createBudgetSwitchesTablePanel(), BorderLayout.CENTER);		
-//		
-		return panelBudgetSwitches;
 	}
 	
 	private JPanel createBudgetDescriptionPanel() {
@@ -6029,31 +5784,31 @@ public class MainView extends JFrame{
 		cs.gridwidth = 8;
 		panelBudgetDescription.add(textBudgetDescriptionClientCode, cs);
 		
-		JLabel labelCompany = new JLabel("Empresa:");
+		JLabel labelClient = new JLabel("Empresa:");
 		cs.gridx = 0;
 		cs.gridy = 1;
 		cs.gridwidth = 1;
-		panelBudgetDescription.add(labelCompany, cs);
+		panelBudgetDescription.add(labelClient, cs);
 		
-		textBudgetDescriptionCompany = new JTextField("", 10);
-		textBudgetDescriptionCompany.setEditable(false);
+		textBudgetDescriptionClient = new JTextField("", 10);
+		textBudgetDescriptionClient.setEditable(false);
 		cs.gridx = 1;
 		cs.gridy = 1;
 		cs.gridwidth = 10;
-		panelBudgetDescription.add(textBudgetDescriptionCompany, cs);
+		panelBudgetDescription.add(textBudgetDescriptionClient, cs);
 		
-		JLabel labelCompanyRepresentative = new JLabel("Representante de la Empresa:");
+		JLabel labelClientRepresentative = new JLabel("Representante de la Empresa:");
 		cs.gridx = 11;
 		cs.gridy = 1;
 		cs.gridwidth = 1;
-		panelBudgetDescription.add(labelCompanyRepresentative, cs);
+		panelBudgetDescription.add(labelClientRepresentative, cs);
 		
-		textBudgetDescriptionCompanyRepresentative = new JTextField("", 10);
-		textBudgetDescriptionCompanyRepresentative.setEditable(false);
+		textBudgetDescriptionClientRepresentative = new JTextField("", 10);
+		textBudgetDescriptionClientRepresentative.setEditable(false);
 		cs.gridx = 12;
 		cs.gridy = 1;
 		cs.gridwidth = 10;
-		panelBudgetDescription.add(textBudgetDescriptionCompanyRepresentative, cs);
+		panelBudgetDescription.add(textBudgetDescriptionClientRepresentative, cs);
 		
 		JLabel labelWorkName = new JLabel("Nombre de la Obra:");
 		cs.gridx = 22;
@@ -6133,29 +5888,29 @@ public class MainView extends JFrame{
 	private JPanel createBudgetTablePanel() {	
 		
 		ArrayList<String> fields = new ArrayList<String>();
-		fields.add(MainView.BUDGET_ID_FIELD);
-		fields.add(MainView.BUDGET_CODE_FIELD);
-		fields.add(MainView.BUDGET_DATE_FIELD);
-		fields.add(MainView.BUDGET_EXPIRY_DAYS_FIELD);
-		fields.add(MainView.CLIENT_CODE_FIELD);
-		fields.add(MainView.CLIENT_FIELD);
-		fields.add(MainView.CLIENT_REPRESENTATIVE_FIELD);
-		fields.add(MainView.BUDGET_WORK_NAME_FIELD);
-		fields.add(MainView.METHOD_FIELD);
-		fields.add(MainView.USERNAME_FIELD);
-		fields.add(MainView.PLACE_FIELD);
-		fields.add(MainView.BUDGET_DELIVERY_TIME_FIELD);
-		fields.add(MainView.BUDGET_DELIVERY_PERIOD_FIELD);
+		fields.add(SalesMainView.BUDGET_ID_FIELD);
+		fields.add(SalesMainView.BUDGET_CODE_FIELD);
+		fields.add(SalesMainView.BUDGET_DATE_FIELD);
+		fields.add(SalesMainView.BUDGET_EXPIRY_DAYS_FIELD);
+		fields.add(SalesMainView.CLIENT_CODE_FIELD);
+		fields.add(SalesMainView.CLIENT_FIELD);
+		fields.add(SalesMainView.CLIENT_REPRESENTATIVE_FIELD);
+		fields.add(SalesMainView.BUDGET_WORK_NAME_FIELD);
+		fields.add(SalesMainView.METHOD_FIELD);
+		fields.add(SalesMainView.USERNAME_FIELD);
+		fields.add(SalesMainView.PLACE_FIELD);
+		fields.add(SalesMainView.BUDGET_DELIVERY_TIME_FIELD);
+		fields.add(SalesMainView.BUDGET_DELIVERY_PERIOD_FIELD);
 //		fields.add(MainView.BUDGET_TRACING_FIELD);
 		
 		ArrayList<String> tables = new ArrayList<String>();
-		tables.add(MainView.BUDGET_TABLE);
-		tables.add(MainView.BUDGET_DISPATCH_PLACES_TABLE);
-		tables.add(MainView.BUDGET_DELIVERY_PERIOD_TABLE);
-		tables.add(MainView.BUDGET_PAYMENT_METHODS_TABLE);
-		tables.add(MainView.BUDGET_STAGES_TABLE);
-		tables.add(MainView.USERS_TABLE);
-		tables.add(MainView.CLIENTS_TABLE);
+		tables.add(SalesMainView.BUDGET_TABLE);
+		tables.add(SalesMainView.BUDGET_DISPATCH_PLACES_TABLE);
+		tables.add(SalesMainView.BUDGET_DELIVERY_PERIODS_TABLE);
+		tables.add(SalesMainView.BUDGET_PAYMENT_METHODS_TABLE);
+		tables.add(SalesMainView.BUDGET_STAGES_TABLE);
+		tables.add(SalesMainView.USERS_TABLE);
+		tables.add(SalesMainView.CLIENTS_TABLE);
 				
 		
 		String fieldsQuery = StringTools.implode(",", fields);
@@ -6167,7 +5922,7 @@ public class MainView extends JFrame{
 						+ "AND budgets.payment_method_id = budget_payment_methods.id "
 						+ "AND budgets.seller_id = users.id "
 						+ "AND budgets.dispatch_place_id = budget_dispatch_places.id "
-						+ "AND budgets.delivery_period_id = budget_delivery_period.id "
+						+ "AND budgets.delivery_period_id = budget_delivery_periods.id "
 						+ "AND budgets.stage_id = budget_stages.id "
 //						+ "AND budgets.active = '1' "
 						+ " GROUP BY budgets.id";
@@ -6195,317 +5950,281 @@ public class MainView extends JFrame{
 		return panelBudgetTable;
 	}
 	
-	private JPanel createBudgetCompanyAddSearchPanel() {
-		JPanel panelBudgetCompanyAddSearch = new JPanel();
+	private JPanel createBudgetSwitchesTablePanel() {
+		tableBudgetSwitchesResult = new JTable();
+		tableBudgetSwitchesResult.setModel(new DefaultTableModel());
+		tableBudgetSwitchesResult.setAutoCreateRowSorter(true);
+		tableBudgetSwitchesResult.getTableHeader().setReorderingAllowed(false);
 		
-		panelBudgetCompanyAddSearch.setLayout(new FlowLayout(FlowLayout.CENTER));
+		listBudgetSwitchesSelectionModel = tableBudgetSwitchesResult.getSelectionModel();
+		listBudgetSwitchesSelectionModel.addListSelectionListener(new SharedListSelectionListener());
+		tableBudgetSwitchesResult.setSelectionModel(listBudgetSwitchesSelectionModel);
+		tableBudgetSwitchesResult.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		
-		JLabel clientLabel = new JLabel("Empresa:");
+		JPanel tablePanel = new JPanel(new BorderLayout());
+		tablePanel.add(tableBudgetSwitchesResult.getTableHeader(), BorderLayout.PAGE_START);
+		tablePanel.add(tableBudgetSwitchesResult, BorderLayout.CENTER);
 		
-		textBudgetCompanySearchClient = new JTextField(6);
-		textBudgetCompanySearchClient.setActionCommand("budget.company.search.client");
-		textBudgetCompanySearchClient.addKeyListener(new KeyListener() {
-			
-			@Override
-			public void keyTyped(KeyEvent e) {
-				
-			}
-			
-			@Override
-			public void keyReleased(KeyEvent e) {
-				loadBudgetCompanyTable("");
-			}
-			
-			@Override
-			public void keyPressed(KeyEvent e) {
-				
-			}
-		});
-		panelBudgetCompanyAddSearch.add(clientLabel);
-		panelBudgetCompanyAddSearch.add(textBudgetCompanySearchClient);
+		Font fa = null;
 		
-		panelBudgetCompanyAddSearch.add(separator());
+		try {
+			URL url = getClass().getResource("fontawesome-webfont.ttf");
+			InputStream is;
+			is = url.openStream();
+			fa = Font.createFont(Font.TRUETYPE_FONT, is);
+			fa = fa.deriveFont(Font.PLAIN, 36f);
+		} catch (IOException | FontFormatException e) {
+			e.printStackTrace();
+		}
 		
-		JButton searchButton = new JButton("Buscar");
-		searchButton.setActionCommand("board.switch.search.bar.button");
-		SearchButtonListener lForSearchButton = new SearchButtonListener();
-		searchButton.addActionListener(lForSearchButton);
-		panelBudgetCompanyAddSearch.add(searchButton);
+		BudgetButtonListener lForBudgetButton = new BudgetButtonListener();
 		
-		return panelBudgetCompanyAddSearch;
+		JPanel panelButtons = new JPanel(new FlowLayout(FlowLayout.TRAILING));
+		// Add the add & remove buttons here for the Board Switches
+		buttonAddBudgetSwitch = new JButton(Fa.fa_plus);
+		buttonAddBudgetSwitch.setFont(fa);
+		buttonAddBudgetSwitch.setForeground(Color.GREEN);
+		buttonAddBudgetSwitch.setActionCommand("budget.switch.add");
+		buttonAddBudgetSwitch.addActionListener(lForBudgetButton);
+		buttonAddBudgetSwitch.setEnabled(false);
+		panelButtons.add(buttonAddBudgetSwitch);
+		
+		buttonRemoveBudgetSwitch = new JButton(Fa.fa_remove);
+		buttonRemoveBudgetSwitch.setFont(fa);
+		buttonRemoveBudgetSwitch.setForeground(Color.RED);
+		buttonRemoveBudgetSwitch.setActionCommand("budget.switch.remove");
+		buttonRemoveBudgetSwitch.addActionListener(lForBudgetButton);
+		buttonRemoveBudgetSwitch.setEnabled(false);
+		panelButtons.add(buttonRemoveBudgetSwitch);
+		
+		tablePanel.add(panelButtons, BorderLayout.PAGE_END);
+		
+		return tablePanel;
 	}
 	
-	private JPanel createBudgetCompanyAddTablePanel() {
-		String budgetCompaniesQuery = "SELECT clients.id, "
-						+ "clients.client, "
-						+ "clients.client_code, "
-						+ "clients.representative, "
-						+ "clients.rif "
-					+ "FROM clients "
-					+ "ORDER BY clients.id ASC "
-					+ "LIMIT 5";
+	private JPanel createBudgetBoxesTablePanel() {
+		tableBudgetBoxesResult = new JTable();
+		tableBudgetBoxesResult.setModel(new DefaultTableModel());
+		tableBudgetBoxesResult.setAutoCreateRowSorter(true);
+		tableBudgetBoxesResult.getTableHeader().setReorderingAllowed(false);
 		
-		String[] budgetCompaniesColumnNames = { "Id", "Empresa", "Codigo", "Representante", "Rif"};
+		listBudgetBoxesSelectionModel = tableBudgetBoxesResult.getSelectionModel();
+		listBudgetBoxesSelectionModel.addListSelectionListener(new SharedListSelectionListener());
+		tableBudgetBoxesResult.setSelectionModel(listBudgetBoxesSelectionModel);
+		tableBudgetBoxesResult.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		
-		budgetCompaniesData = db.fetchAll(db.select(budgetCompaniesQuery));
+		JPanel tablePanel = new JPanel(new BorderLayout());
+		tablePanel.add(tableBudgetBoxesResult.getTableHeader(), BorderLayout.PAGE_START);
+		tablePanel.add(tableBudgetBoxesResult, BorderLayout.CENTER);
 		
-		MyTableModel mForTable = new MyTableModel(budgetCompaniesData, budgetCompaniesColumnNames);
+		Font fa = null;
 		
-		tableBudgetCompaniesSearchResult = new JTable();
-		tableBudgetCompaniesSearchResult.setModel(mForTable);
-		tableBudgetCompaniesSearchResult.setAutoCreateRowSorter(true);
-		tableBudgetCompaniesSearchResult.getTableHeader().setReorderingAllowed(false);
+		try {
+			URL url = getClass().getResource("fontawesome-webfont.ttf");
+			InputStream is;
+			is = url.openStream();
+			fa = Font.createFont(Font.TRUETYPE_FONT, is);
+			fa = fa.deriveFont(Font.PLAIN, 36f);
+		} catch (IOException | FontFormatException e) {
+			e.printStackTrace();
+		}
 		
-		SharedListSelectionListener lForList = new SharedListSelectionListener();
+		BudgetButtonListener lForBudgetButton = new BudgetButtonListener();
 		
-		listBudgetCompaniesSearchSelectionModel = tableBudgetCompaniesSearchResult.getSelectionModel();
-		listBudgetCompaniesSearchSelectionModel.addListSelectionListener(lForList);
-		tableBudgetCompaniesSearchResult.setSelectionModel(listBudgetCompaniesSearchSelectionModel);
-		tableBudgetCompaniesSearchResult.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		JPanel panelButtons = new JPanel(new FlowLayout(FlowLayout.TRAILING));
+		// Add the add & remove buttons here for the Board Switches
+		buttonAddBudgetBox = new JButton(Fa.fa_plus);
+		buttonAddBudgetBox.setFont(fa);
+		buttonAddBudgetBox.setForeground(Color.GREEN);
+		buttonAddBudgetBox.setActionCommand("budget.box.add");
+		buttonAddBudgetBox.addActionListener(lForBudgetButton);
+		buttonAddBudgetBox.setEnabled(false);
+		panelButtons.add(buttonAddBudgetBox);
 		
-		JPanel panelBudgetCompanyAddTable = new JPanel(new BorderLayout());
-		panelBudgetCompanyAddTable.add(tableBudgetCompaniesSearchResult.getTableHeader(), BorderLayout.PAGE_START);
-		panelBudgetCompanyAddTable.add(tableBudgetCompaniesSearchResult, BorderLayout.CENTER);
+		buttonRemoveBudgetBox = new JButton(Fa.fa_remove);
+		buttonRemoveBudgetBox.setFont(fa);
+		buttonRemoveBudgetBox.setForeground(Color.RED);
+		buttonRemoveBudgetBox.setActionCommand("budget.box.remove");
+		buttonRemoveBudgetBox.addActionListener(lForBudgetButton);
+		buttonRemoveBudgetBox.setEnabled(false);
+		panelButtons.add(buttonRemoveBudgetBox);
 		
-		return panelBudgetCompanyAddTable;
+		tablePanel.add(panelButtons, BorderLayout.PAGE_END);
+		
+		return tablePanel;
 	}
 	
-	private JPanel createBudgetCompanyAddButtonPanel() {
-		JPanel panelOuter = new JPanel(new BorderLayout());
-		JPanel panelInner = new JPanel();
-		panelInner.setLayout(new FlowLayout(FlowLayout.CENTER));
-		JButton buttonAccept = new JButton("Aceptar");
-		JButton buttonCancel = new JButton("Cancelar");
-		panelInner.add(buttonAccept);
-		panelInner.add(buttonCancel);
+	private JPanel createBudgetBoardsTablePanel() {
+		tableBudgetBoardsResult = new JTable();
+		tableBudgetBoardsResult.setModel(new DefaultTableModel());
+		tableBudgetBoardsResult.setAutoCreateRowSorter(true);
+		tableBudgetBoardsResult.getTableHeader().setReorderingAllowed(false);
 		
-		buttonAccept.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if(tableBudgetCompaniesSearchResult.getSelectedRow() > -1) {
-					budgetCompanyAddSearchId = Integer.valueOf((String)tableBudgetCompaniesSearchResult.getValueAt(tableBudgetCompaniesSearchResult.getSelectedRow(), 0));
-					textBudgetAddCompany.setText((String)tableBudgetCompaniesSearchResult.getValueAt(tableBudgetCompaniesSearchResult.getSelectedRow(), 1));
-					textBudgetAddClientCode.setText((String)tableBudgetCompaniesSearchResult.getValueAt(tableBudgetCompaniesSearchResult.getSelectedRow(), 2));
-					textBudgetAddCompanyRepresentative.setText((String)tableBudgetCompaniesSearchResult.getValueAt(tableBudgetCompaniesSearchResult.getSelectedRow(), 3));
-					dialogBudgetCompanyAdd.dispose();
-					
-				}
-			}
-		});
+		listBudgetBoardsSelectionModel = tableBudgetBoardsResult.getSelectionModel();
+		listBudgetBoardsSelectionModel.addListSelectionListener(new SharedListSelectionListener());
+		tableBudgetBoardsResult.setSelectionModel(listBudgetBoardsSelectionModel);
+		tableBudgetBoardsResult.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		
-		buttonCancel.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				budgetCompanyAddSearchId = 0;
-				dialogBudgetCompanyAdd.dispose();
-			}
-		});
+		JPanel tablePanel = new JPanel(new BorderLayout());
+		tablePanel.add(tableBudgetBoardsResult.getTableHeader(), BorderLayout.PAGE_START);
+		tablePanel.add(tableBudgetBoardsResult, BorderLayout.CENTER);
 		
-		panelOuter.add(panelInner, BorderLayout.CENTER);
+		Font fa = null;
 		
-		return panelOuter;
+		try {
+			URL url = getClass().getResource("fontawesome-webfont.ttf");
+			InputStream is;
+			is = url.openStream();
+			fa = Font.createFont(Font.TRUETYPE_FONT, is);
+			fa = fa.deriveFont(Font.PLAIN, 36f);
+		} catch (IOException | FontFormatException e) {
+			e.printStackTrace();
+		}
+		
+		BudgetButtonListener lForBudgetButton = new BudgetButtonListener();
+		
+		JPanel panelButtons = new JPanel(new FlowLayout(FlowLayout.TRAILING));
+		// Add the add & remove buttons here for the Board Switches
+		buttonAddBudgetBoard = new JButton(Fa.fa_plus);
+		buttonAddBudgetBoard.setFont(fa);
+		buttonAddBudgetBoard.setForeground(Color.GREEN);
+		buttonAddBudgetBoard.setActionCommand("budget.board.add");
+		buttonAddBudgetBoard.addActionListener(lForBudgetButton);
+		buttonAddBudgetBoard.setEnabled(false);
+		panelButtons.add(buttonAddBudgetBoard);
+		
+		buttonRemoveBudgetBoard = new JButton(Fa.fa_remove);
+		buttonRemoveBudgetBoard.setFont(fa);
+		buttonRemoveBudgetBoard.setForeground(Color.RED);
+		buttonRemoveBudgetBoard.setActionCommand("budget.board.remove");
+		buttonRemoveBudgetBoard.addActionListener(lForBudgetButton);
+		buttonRemoveBudgetBoard.setEnabled(false);
+		panelButtons.add(buttonRemoveBudgetBoard);
+		
+		tablePanel.add(panelButtons, BorderLayout.PAGE_END);
+		
+		return tablePanel;
 	}
 	
-	private JPanel createBudgetSellerAddSearchPanel() {
-		JPanel panelBudgetSellerAddSearch = new JPanel();
-		
-		panelBudgetSellerAddSearch.setLayout(new FlowLayout(FlowLayout.CENTER));
-		
-		JLabel usernameLabel = new JLabel("Usuario:");
-		JLabel nameLabel = new JLabel("Nombre/Apellido:");
-		JLabel passportLabel = new JLabel("Cedula:");
-		
-		textBudgetSellerSearchUser = new JTextField(6);
-		textBudgetSellerSearchUser.setActionCommand("budget.seller.search.user");
-		textBudgetSellerSearchUser.addKeyListener(new KeyListener() {
-			
-			@Override
-			public void keyTyped(KeyEvent e) {
-				
-			}
-			
-			@Override
-			public void keyReleased(KeyEvent e) {
-				loadBudgetSellerTable("");
-			}
-			
-			@Override
-			public void keyPressed(KeyEvent e) {
-				
-			}
-		});
-		panelBudgetSellerAddSearch.add(usernameLabel);
-		panelBudgetSellerAddSearch.add(textBudgetSellerSearchUser);
-		
-		textBudgetSellerSearchName = new JTextField(6);
-		textBudgetSellerSearchName.setActionCommand("budget.seller.search.name");
-		textBudgetSellerSearchName.addKeyListener(new KeyListener() {
-			
-			@Override
-			public void keyTyped(KeyEvent e) {
-				
-			}
-			
-			@Override
-			public void keyReleased(KeyEvent e) {
-				loadBudgetSellerTable("");
-			}
-			
-			@Override
-			public void keyPressed(KeyEvent e) {
-				
-			}
-		});
-		panelBudgetSellerAddSearch.add(nameLabel);
-		panelBudgetSellerAddSearch.add(textBudgetSellerSearchName);
-		
-		textBudgetSellerSearchPassport = new JTextField(6);
-		textBudgetSellerSearchPassport.setActionCommand("budget.seller.search.passport");
-		textBudgetSellerSearchPassport.addKeyListener(new KeyListener() {
-			
-			@Override
-			public void keyTyped(KeyEvent e) {
-				
-			}
-			
-			@Override
-			public void keyReleased(KeyEvent e) {
-				loadBudgetSellerTable("");
-			}
-			
-			@Override
-			public void keyPressed(KeyEvent e) {
-				
-			}
-		});
-		panelBudgetSellerAddSearch.add(passportLabel);
-		panelBudgetSellerAddSearch.add(textBudgetSellerSearchPassport);
-		
-		return panelBudgetSellerAddSearch;
+	private JPanel createBudgetMaterialsTablePanel() {
+		JPanel createBudgetMaterialsPanel = new JPanel();
+		return createBudgetMaterialsPanel;
 	}
 	
-	private JPanel createBudgetSellerAddTablePanel() {
-		String budgetSellersQuery = "SELECT users.id, "
-						+ "users.username, "
-						+ "users.passport, "
-						+ "users.first_name, "
-						+ "users.last_name, "
-						+ "users.phone "
-					+ "FROM users "
-					+ "ORDER BY users.id ASC "
-					+ "LIMIT 5";
-		
-		String[] budgetSellersColumnNames = { "Id", "Usuario", "Cedula", "Nombre", "Apellido", "Telefono"};
-		
-		budgetSellersData = db.fetchAll(db.select(budgetSellersQuery));
-		
-		MyTableModel mForTable = new MyTableModel(budgetSellersData, budgetSellersColumnNames);
-		
-		tableBudgetSellersSearchResult = new JTable();
-		tableBudgetSellersSearchResult.setModel(mForTable);
-		tableBudgetSellersSearchResult.setAutoCreateRowSorter(true);
-		tableBudgetSellersSearchResult.getTableHeader().setReorderingAllowed(false);
-		
-		SharedListSelectionListener lForList = new SharedListSelectionListener();
-		
-		listBudgetSellersSearchSelectionModel = tableBudgetSellersSearchResult.getSelectionModel();
-		listBudgetSellersSearchSelectionModel.addListSelectionListener(lForList);
-		tableBudgetSellersSearchResult.setSelectionModel(listBudgetSellersSearchSelectionModel);
-		tableBudgetSellersSearchResult.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		
-		JPanel panelBudgetSellerAddTable = new JPanel(new BorderLayout());
-		panelBudgetSellerAddTable.add(tableBudgetSellersSearchResult.getTableHeader(), BorderLayout.PAGE_START);
-		panelBudgetSellerAddTable.add(tableBudgetSellersSearchResult, BorderLayout.CENTER);
-		
-		return panelBudgetSellerAddTable;
+	private JPanel createBudgetSpecialsTablePanel() {
+		JPanel createBudgetSpecialsPanel = new JPanel();
+		return createBudgetSpecialsPanel;
 	}
 	
-	private JPanel createBudgetSellerAddButtonPanel() {
-		JPanel panelOuter = new JPanel(new BorderLayout());
-		JPanel panelInner = new JPanel();
-		panelInner.setLayout(new FlowLayout(FlowLayout.CENTER));
-		JButton buttonAccept = new JButton("Aceptar");
-		JButton buttonCancel = new JButton("Cancelar");
-		panelInner.add(buttonAccept);
-		panelInner.add(buttonCancel);
+	private JPanel createBudgetNotesTablePanel() {
+		JPanel panelNotes = new JPanel();
+		panelNotes.setLayout(new BorderLayout(20, 20));
 		
-		buttonAccept.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if(tableBudgetSellersSearchResult.getSelectedRow() > -1) {
-					budgetSellerAddSearchId = Integer.valueOf((String)tableBudgetSellersSearchResult.getValueAt(tableBudgetSellersSearchResult.getSelectedRow(), 0));
-					textBudgetAddSeller.setText((String)tableBudgetSellersSearchResult.getValueAt(tableBudgetSellersSearchResult.getSelectedRow(), 1));
-					dialogBudgetSellerAdd.dispose();
-					
-				}
-			}
-		});
+		JPanel panelNotesCenter = new JPanel();
+		panelNotesCenter.setLayout(new GridBagLayout());
 		
-		buttonCancel.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				budgetSellerAddSearchId = 0;
-				dialogBudgetSellerAdd.dispose();
-			}
-		});
+		GridBagConstraints cs = new GridBagConstraints();
 		
-		panelOuter.add(panelInner, BorderLayout.CENTER);
+		cs.fill = GridBagConstraints.HORIZONTAL;
+		cs.insets = new Insets(0, 0, 5, 5);
 		
-		return panelOuter;
+		JLabel labelNotes = new JLabel("Notas:");
+		cs.gridx = 0;
+		cs.gridy = 0;
+		cs.gridwidth = 1;
+		panelNotesCenter.add(labelNotes, cs);
+		
+		textBudgetNotes = new JTextArea(20, 50);
+		cs.gridx = 0;
+		cs.gridy = 1;
+		cs.gridwidth = 50;
+		textBudgetNotes.setEditable(false);
+		panelNotesCenter.add(textBudgetNotes, cs);
+		
+		BudgetButtonListener lForBudgetButton = new BudgetButtonListener();
+		
+		panelBudgetNotesEditSaveCancel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		
+		buttonBudgetNotesEditSave = new JButton("Guardar");
+		buttonBudgetNotesEditSave.setEnabled(false);
+		buttonBudgetNotesEditSave.setActionCommand("budget.notes.edit.save");
+		buttonBudgetNotesEditSave.addActionListener(lForBudgetButton);
+		buttonBudgetNotesEditCancel = new JButton("Cancelar");
+		buttonBudgetNotesEditCancel.setActionCommand("budget.notes.edit.cancel");
+		buttonBudgetNotesEditCancel.addActionListener(lForBudgetButton);
+		buttonBudgetNotesEditCancel.setEnabled(false);
+		panelBudgetNotesEditSaveCancel.add(buttonBudgetNotesEditSave);
+		panelBudgetNotesEditSaveCancel.add(buttonBudgetNotesEditCancel);
+		
+		cs.gridx = 0;
+		cs.gridy = 45;
+		cs.gridwidth = 50;
+		panelNotesCenter.add(panelBudgetNotesEditSaveCancel,cs);
+		panelBudgetNotesEditSaveCancel.setVisible(false);
+		
+		panelNotes.add(panelNotesCenter, BorderLayout.CENTER);
+		
+		buttonBudgetNotesEdit = new JButton("Editar");
+		buttonBudgetNotesEdit.setActionCommand("budget.notes.edit");
+		buttonBudgetNotesEdit.addActionListener(lForBudgetButton);
+		buttonBudgetNotesEdit.setEnabled(false);
+		
+		JPanel panelNotesButtons = new JPanel();
+		panelNotesButtons.add(buttonBudgetNotesEdit);
+		
+		panelNotes.add(panelNotesButtons, BorderLayout.SOUTH);
+		
+		return panelNotes;
 	}
 	
 	private void loadBudgetTable(String whereQuery) {
 		
 		if(null != textBudgetSearchClient && !textBudgetSearchClient.getText().isEmpty()) {
-			whereQuery += " AND " + MainView.CLIENTS_TABLE + ".client LIKE '%" + textBudgetSearchClient.getText() + "%'";
+			whereQuery += " AND " + SalesMainView.CLIENTS_TABLE + ".client LIKE '%" + textBudgetSearchClient.getText() + "%'";
 		}
 		if(null != textBudgetSearchId && !textBudgetSearchId.getText().isEmpty()) {
-			whereQuery += " AND " + MainView.BUDGET_TABLE + ".code LIKE '%" + textBudgetSearchId.getText() + "%'";
+			whereQuery += " AND " + SalesMainView.BUDGET_TABLE + ".code LIKE '%" + textBudgetSearchId.getText() + "%'";
 		}
 		
 		ArrayList<String> fields = new ArrayList<String>();
-		fields.add(MainView.BUDGET_ID_FIELD);
-		fields.add(MainView.BUDGET_CODE_FIELD);
-		fields.add(MainView.BUDGET_DATE_FIELD);
-		fields.add(MainView.BUDGET_EXPIRY_DAYS_FIELD);
-		fields.add(MainView.CLIENT_CODE_FIELD);
-		fields.add(MainView.CLIENT_FIELD);
-		fields.add(MainView.CLIENT_REPRESENTATIVE_FIELD);
-		fields.add(MainView.BUDGET_WORK_NAME_FIELD);
-		fields.add(MainView.METHOD_FIELD);
-		fields.add(MainView.USERNAME_FIELD);
-		fields.add(MainView.PLACE_FIELD);
-		fields.add(MainView.BUDGET_DELIVERY_TIME_FIELD);
-		fields.add(MainView.BUDGET_DELIVERY_PERIOD_FIELD);
+		fields.add(SalesMainView.BUDGET_ID_FIELD);
+		fields.add(SalesMainView.BUDGET_CODE_FIELD);
+		fields.add(SalesMainView.BUDGET_DATE_FIELD);
+		fields.add(SalesMainView.BUDGET_EXPIRY_DAYS_FIELD);
+		fields.add(SalesMainView.CLIENT_CODE_FIELD);
+		fields.add(SalesMainView.CLIENT_FIELD);
+		fields.add(SalesMainView.CLIENT_REPRESENTATIVE_FIELD);
+		fields.add(SalesMainView.BUDGET_WORK_NAME_FIELD);
+		fields.add(SalesMainView.METHOD_FIELD);
+		fields.add(SalesMainView.USERNAME_FIELD);
+		fields.add(SalesMainView.PLACE_FIELD);
+		fields.add(SalesMainView.BUDGET_DELIVERY_TIME_FIELD);
+		fields.add(SalesMainView.BUDGET_DELIVERY_PERIOD_FIELD);
 		//fields.add(MainView.BUDGET_TRACING_FIELD);
 		
 		ArrayList<String> tables = new ArrayList<String>();
-		tables.add(MainView.BUDGET_TABLE);
-		tables.add(MainView.BUDGET_DISPATCH_PLACES_TABLE);
-		tables.add(MainView.BUDGET_DELIVERY_PERIOD_TABLE);
-		tables.add(MainView.BUDGET_PAYMENT_METHODS_TABLE);
-		tables.add(MainView.BUDGET_STAGES_TABLE);
-		tables.add(MainView.USERS_TABLE);
-		tables.add(MainView.CLIENTS_TABLE);
+		tables.add(SalesMainView.BUDGET_TABLE);
+		tables.add(SalesMainView.BUDGET_DISPATCH_PLACES_TABLE);
+		tables.add(SalesMainView.BUDGET_DELIVERY_PERIODS_TABLE);
+		tables.add(SalesMainView.BUDGET_PAYMENT_METHODS_TABLE);
+		tables.add(SalesMainView.BUDGET_STAGES_TABLE);
+		tables.add(SalesMainView.USERS_TABLE);
+		tables.add(SalesMainView.CLIENTS_TABLE);
 		
 		String fieldsQuery = StringTools.implode(",", fields);
 		String tablesQuery = StringTools.implode(",", tables);
 		String budgetsQuery = "SELECT " + fieldsQuery
 						+ " FROM "
 						+ tablesQuery
-						+ " WHERE budgets.id = budgets.id "
+						+ " WHERE budgets.client_id = clients.id "
 						// Fix these conditions to make them disappear when filtering
 						
-						+ "AND budgets.client_id = clients.id "
+//						+ "AND budgets.client_id = clients.id "
 						+ "AND budgets.payment_method_id = budget_payment_methods.id "
 						+ "AND budgets.seller_id = users.id "
 						+ "AND budgets.dispatch_place_id = budget_dispatch_places.id "
-						+ "AND budgets.delivery_period_id = budget_delivery_period.id "
-						+ "AND budgets.stage_id = budget_stages.id "
+						+ "AND budgets.delivery_period_id = budget_delivery_periods.id "
+//						+ "AND budgets.stage_id = budget_stages.id "
 						+ whereQuery
 						+ " GROUP BY budgets.id ";
 
@@ -6520,90 +6239,204 @@ public class MainView extends JFrame{
 		}
 	}
 	
-	private void loadBudgetCompanyTable(String whereQuery) {
+	private void loadBudgetSwitchTable() {
+		String budgetSwitchesQuery = "SELECT budget_switches.id, "
+				+ " CONCAT('Interruptor ', switches.phases, 'X', currents.current, 'A,', switch_types.type, ',', switch_brands.brand) as description, "
+				+ " budget_switches.quantity, "
+				+ " switches.price, "
+				+ " (budget_switches.quantity * switches.price) as total "
+			+ " FROM budgets, budget_switches, switches, switch_types, switch_brands, currents "
+			+ " WHERE budget_switches.budget_container_id = " + selectedBudgetId
+				+ " AND budgets.id = budget_switches.budget_container_id"
+				+ " AND switches.id = budget_switches.switch_id "
+				+ " AND switches.current_id = currents.id"
+				+ " AND switches.type_id = switch_types.id"
+				+ " AND switches.brand_id = switch_brands.id"
+			+ " ORDER BY switches.phases DESC, currents.current DESC ";
 		
-		if(null != textBudgetCompanySearchClient && !textBudgetCompanySearchClient.getText().isEmpty()) {
-			whereQuery += " WHERE " + MainView.CLIENTS_TABLE + ".client LIKE '%" + textBudgetCompanySearchClient.getText() + "%'";
-		}
+		String budgetBoardSwitchesQuery = "SELECT CONCAT('Tablero(', boards.`name`, ') (id=', board_switches.switch_id, ')') as id, "
+					+ " CONCAT('Interruptor ', switches.phases, 'X', currents.current, 'A,', switch_types.type, ',', switch_brands.brand) as description, "
+					+ " board_switches.quantity, "
+					+ " switches.price, "
+					+ " (board_switches.quantity * switches.price) as total "
+				+ " FROM boards, board_switches, switches, switch_types, switch_brands, currents, budget_boards "
+				+ " WHERE budget_boards.budget_container_id = " + selectedBudgetId
+					+ " AND boards.id = budget_boards.board_id "
+					+ " AND boards.id = board_switches.board_container_id "
+					+ " AND switches.id = board_switches.switch_id "
+					+ " AND switches.current_id = currents.id "
+					+ " AND switches.type_id = switch_types.id "
+					+ " AND switches.brand_id = switch_brands.id "
+				+ " ORDER BY boards.`name` DESC, switches.phases DESC, currents.current DESC ";
 		
-		String budgetCompaniesQuery = "SELECT clients.id, "
-				+ " clients.client, "
-				+ " clients.client_code, "
-				+ " clients.representative, "
-				+ " clients.rif "
-			+ " FROM clients "
-			+ whereQuery
-			+ " ORDER BY id ASC";
+		String unionQuery = "(" + budgetSwitchesQuery + ") UNION (" + budgetBoardSwitchesQuery + ")";
 		
-		String[] budgetCompaniesColumnNames = { "Id", "Empresa", "Codigo", "Representante", "Rif"};
-		budgetCompaniesData = db.fetchAllAddBoolean(db.select(budgetCompaniesQuery), budgetCompaniesColumnNames.length);
+		String[] budgetSwitchesColumnNames = { "Id", "Descripcion", "Cantidad", "Precio", "Total"};
+		budgetSwitchesSearchData = db.fetchAll(db.select(unionQuery));
 		
-		if(budgetCompaniesData.length > 0) {
-			MyTableModel mForTable = new MyTableModel(budgetCompaniesData, budgetCompaniesColumnNames);
-			tableBudgetCompaniesSearchResult.setModel(mForTable);
+		if(budgetSwitchesSearchData.length > 0) {
+			MyTableModel mForTable = new MyTableModel(budgetSwitchesSearchData, budgetSwitchesColumnNames);
+			tableBudgetSwitchesResult.setModel(mForTable);
+//			if(null != tableBudgetSwitchesResult && tableBudgetSwitchesResult.getSelectedRow() == -1) {
+//				buttonRemoveBudgetSwitch.setEnabled(false);
+//			}
 		} else {
-			tableBudgetCompaniesSearchResult.setModel(new DefaultTableModel());
+			tableBudgetSwitchesResult.setModel(new DefaultTableModel());
+//			buttonRemoveBudgetSwitch.setEnabled(false);
 		}
+//		buttonAddBudgetSwitch.setEnabled(true);
 	}
 	
-	private void loadBudgetSellerTable(String whereQuery) {
-		if(null != textBudgetSellerSearchUser && !textBudgetSellerSearchUser.getText().isEmpty()) {
-			whereQuery += " WHERE " + MainView.USERS_TABLE + ".username LIKE '%" + textBudgetSellerSearchUser.getText() + "%'";
-		}
+	private void loadBudgetBoxTable() {
+		ArrayList<String> fields = new ArrayList<String>();
+		fields.add("budget_boxes.id");
+		fields.add(" CONCAT('Caja ', box_types.type, ', ', IF(boxes.height=0,'N/A',boxes.height), ' x ', IF(boxes.width=0,'N/A',boxes.width), ' x ', IF(boxes.depth=0,'N/A',boxes.depth), ' ' , IF(boxes.units_id=0,'N/A',box_measure_units.units), ', ' ," + SalesMainView.NEMA_FIELD + ") as description");
+		fields.add(SalesMainView.INSTALLATION_FIELD);
+		fields.add(SalesMainView.BOX_PAIRS_FIELD);
+		fields.add(SalesMainView.BOX_FINISH_FIELD);
+		fields.add(SalesMainView.BOX_COLOR_FIELD);
+		fields.add(SalesMainView.BOX_CALIBER_FIELD);
+		fields.add(SalesMainView.BOX_LOCK_TYPE_FIELD);
+		fields.add("budget_boxes.quantity");
+		fields.add(SalesMainView.BOX_PRICE_FIELD);
+		fields.add("(budget_boxes.quantity * " + SalesMainView.BOX_PRICE_FIELD + ") as total");
 		
-		if (null != textBudgetSellerSearchName && !textBudgetSellerSearchName.getText().isEmpty()) {
-			if(whereQuery.isEmpty()) {
-				whereQuery += " WHERE ";
-			} else {
-				whereQuery += " AND ";
+		ArrayList<String> tables = new ArrayList<String>();
+		tables.add(SalesMainView.BOXES_TABLE);
+		tables.add(SalesMainView.BOX_TYPES_TABLE);
+		tables.add(SalesMainView.INSTALLATIONS_TABLE);
+		tables.add(SalesMainView.NEMAS_TABLE);
+		tables.add(SalesMainView.BOX_SHEETS_TABLE);
+		tables.add(SalesMainView.BOX_FINISHES_TABLE);
+		tables.add(SalesMainView.BOX_COLORS_TABLE);
+		tables.add(SalesMainView.BOX_UNITS_TABLE);
+		tables.add(SalesMainView.BOX_CALIBERS_TABLE);
+		tables.add(SalesMainView.LOCK_TYPES_TABLE);
+		tables.add("budget_boxes");
+		
+		String whereQuery = 
+				" AND ( (boxes.sheet_id > 0 "
+					+ " AND boxes.sheet_id = " + SalesMainView.BOX_SHEETS_TABLE + ".id) "
+					+ " OR boxes.sheet_id = 0) "
+				+ " AND ( (boxes.finish_id > 0 "
+					+ " AND boxes.finish_id = " + SalesMainView.BOX_FINISHES_TABLE + ".id) "
+					+ " OR boxes.finish_id = 0) "
+				+ " AND ( (boxes.color_id > 0 "
+					+ " AND boxes.color_id = " + SalesMainView.BOX_COLORS_TABLE + ".id) "
+					+ " OR boxes.color_id = 0) "
+				+ " AND ( (boxes.units_id > 0 "
+					+ " AND boxes.units_id = " + SalesMainView.BOX_UNITS_TABLE + ".id) "
+					+ " OR boxes.units_id = 0) "
+				+ " AND ( (boxes.caliber_id > 0 "
+					+ " AND boxes.caliber_id = " + SalesMainView.BOX_CALIBERS_TABLE + ".id) "
+					+ " OR boxes.caliber_id = 0) "
+				+ " AND ( (boxes.lock_type_id > 0 "
+					+ " AND boxes.lock_type_id = " + SalesMainView.LOCK_TYPES_TABLE + ".id) "
+					+ " OR boxes.lock_type_id = 0) ";
+		
+		String fieldsQuery = StringTools.implode(",", fields);
+		String tablesQuery = StringTools.implode(",", tables);
+		String budgetBoxesQuery = "SELECT " + fieldsQuery
+						+ " FROM "
+						+ tablesQuery
+						+ " WHERE budget_boxes.budget_container_id = " + selectedBudgetId
+						+ " AND boxes.id = budget_boxes.box_id "
+						+ " AND boxes.type_id = box_types.id "
+						+ " AND boxes.installation_id = installations.id "
+						+ " AND boxes.nema_id = nemas.id "
+						+ " AND boxes.active = '1' "
+						+ whereQuery
+						+ " GROUP BY boxes.id";
+		
+		String[] budgetBoxesColumnNames = { "Id", "Descripcion", "Instalacion", "Pares Tel.", "Acabado", "Color", "Calibre", "Cerradura", "Cantidad", "Precio", "Total"};
+		budgetBoxesData = db.fetchAll(db.select(budgetBoxesQuery));
+		
+		if(budgetBoxesData.length > 0) {
+			MyTableModel mForTable = new MyTableModel(budgetBoxesData, budgetBoxesColumnNames);
+			tableBudgetBoxesResult.setModel(mForTable);
+			if(null != tableBudgetBoxesResult && tableBudgetBoxesResult.getSelectedRow() == -1) {
+				buttonRemoveBudgetBox.setEnabled(false);
 			}
-			whereQuery += MainView.USERS_TABLE + ".first_name LIKE '%" + textBudgetSellerSearchName.getText() + "%' "
-					+ " OR " + MainView.USERS_TABLE + ".last_name LIKE '%" + textBudgetSellerSearchName.getText() + "%' ";
-		}
-		
-		if (null != textBudgetSellerSearchPassport && !textBudgetSellerSearchPassport.getText().isEmpty()) {
-			if(whereQuery.isEmpty()) {
-				whereQuery += " WHERE ";
-			} else {
-				whereQuery += " AND ";
-			}
-			whereQuery += MainView.USERS_TABLE + ".passport LIKE '%" + textBudgetSellerSearchPassport.getText() + "%' ";
-		}
-		
-		String budgetSellersQuery = "SELECT users.id, "
-				+ " users.username, "
-				+ " users.passport, "
-				+ " users.first_name, "
-				+ " users.last_name, "
-				+ " users.phone "
-			+ " FROM users "
-			+ whereQuery
-			+ " ORDER BY id ASC";
-		
-		String[] budgetSellersColumnNames = { "Id", "Usuario", "Cedula", "Nombre", "Apellido", "Telefono"};
-		budgetSellersData = db.fetchAll(db.select(budgetSellersQuery));
-		
-		if(budgetSellersData.length > 0) {
-			MyTableModel mForTable = new MyTableModel(budgetSellersData, budgetSellersColumnNames);
-			tableBudgetSellersSearchResult.setModel(mForTable);
 		} else {
-			tableBudgetSellersSearchResult.setModel(new DefaultTableModel());
+			tableBudgetBoxesResult.setModel(new DefaultTableModel());
+			buttonRemoveBudgetBox.setEnabled(false);
 		}
+		buttonAddBudgetBox.setEnabled(true);
 	}
 	
-	private void updateBudgetTextAddDescription() {
+	private void loadBudgetBoardTable() {
+		ArrayList<String> fields = new ArrayList<String>();
+		fields.add("budget_boards.id");
+		fields.add("CONCAT('Caja para Tablero, ', board_types.type, ', ', boards.phases, ', de ', board_circuits.circuits, ' circuitos, ', nemas.nema) as description");
+		fields.add(SalesMainView.BOARD_NAME_FIELD);
+		fields.add(SalesMainView.INSTALLATION_FIELD);
+		fields.add(SalesMainView.BOARD_BAR_CAPACITY_FIELD);
+		fields.add(SalesMainView.BOARD_BAR_TYPE_FIELD);
+		fields.add(SalesMainView.BOARD_VOLTAGE_FIELD);
+		fields.add(SalesMainView.BOARD_GROUND_FIELD);
+		fields.add(SalesMainView.INTERRUPTION_FIELD);
+		fields.add(SalesMainView.BOARD_LOCK_TYPE_FIELD);
+		fields.add("budget_boards.quantity");
+		fields.add(SalesMainView.BOARD_PRICE_FIELD);
+		fields.add("(budget_boards.quantity * " + SalesMainView.BOARD_PRICE_FIELD + ") as total");
 		
+		ArrayList<String> tables = new ArrayList<String>();
+		tables.add(SalesMainView.BOARD_TABLE);
+		tables.add(SalesMainView.BOARD_TYPES_TABLE);
+		tables.add(SalesMainView.INSTALLATIONS_TABLE);
+		tables.add(SalesMainView.NEMAS_TABLE);
+		tables.add(SalesMainView.BOARD_BAR_CAPACITIES_TABLE);
+		tables.add(SalesMainView.BOARD_BAR_TYPES_TABLE);
+		tables.add(SalesMainView.BOARD_CIRCUITS_TABLE);
+		tables.add(SalesMainView.BOARD_VOLTAGES_TABLE);
+		tables.add(SalesMainView.INTERRUPTIONS_TABLE);
+		tables.add(SalesMainView.LOCK_TYPES_TABLE);
+		tables.add("budget_boards");
+		
+		String fieldsQuery = StringTools.implode(",", fields);
+		String tablesQuery = StringTools.implode(",", tables);
+		String budgetBoardsQuery = "SELECT " + fieldsQuery
+						+ " FROM "
+						+ tablesQuery
+						+ " WHERE budget_boards.budget_container_id = " + selectedBudgetId
+						+ " AND boards.id = budget_boards.board_id "
+						+ "AND boards.type_id = board_types.id "
+						+ "AND boards.installation_id = installations.id "
+						+ "AND boards.nema_id = nemas.id "
+						+ "AND boards.bar_capacity_id = board_bar_capacities.id "
+						+ "AND boards.bar_type_id = board_bar_types.id "
+						+ "AND boards.circuits_id = board_circuits.id "
+						+ "AND boards.voltage_id = board_voltages.id "
+						+ "AND boards.interruption_id = interruptions.id "
+						+ "AND boards.lock_type_id = lock_types.id "
+						+ "AND boards.active = '1' "
+						+ " GROUP BY boards.id";
+		
+		String[] budgetBoardsColumnNames = { "Id", "Descripcion", "Nombre", "Instalacion", "Cap. Barra", "Tipo Barra", "Voltaje", "Tierra", "Interrupcion", "Cerradura", "Cantidad", "Precio", "Total"};
+		budgetBoardsData = db.fetchAll(db.select(budgetBoardsQuery));
+		
+		if(budgetBoardsData.length > 0) {
+			MyTableModel mForTable = new MyTableModel(budgetBoardsData, budgetBoardsColumnNames);
+			tableBudgetBoardsResult.setModel(mForTable);
+			if(null != tableBudgetBoardsResult && tableBudgetBoardsResult.getSelectedRow() == -1) {
+				buttonRemoveBudgetBoard.setEnabled(false);
+			}
+		} else {
+			tableBudgetBoardsResult.setModel(new DefaultTableModel());
+			buttonRemoveBudgetBoard.setEnabled(false);
+		}
+		buttonAddBudgetBoard.setEnabled(true);
 	}
 	
 	private void setBudgetsMode(int mode){
 		
-		if(mode == MainView.VIEW_MODE) {
+		if(mode == SalesMainView.VIEW_MODE) {
 			if(panelBudgetAddNew.isVisible()) {
 				addBudgetDateModel.setSelected(false);
 				buttonBudgetAdd.setEnabled(true);
 				textBudgetAddClientCode.setText("");
-				textBudgetAddCompany.setText("");
-				textBudgetAddCompanyRepresentative.setText("");
+				textBudgetAddClient.setText("");
+				textBudgetAddClientRepresentative.setText("");
 				textBudgetAddWorkName.setText("");
 				textBudgetAddExpiryDays.setText("");
 				
@@ -6647,7 +6480,7 @@ public class MainView extends JFrame{
 					}
 				});
 			}
-		} else if(mode == MainView.ADD_MODE) {
+		} else if(mode == SalesMainView.ADD_MODE) {
 			buttonBudgetAdd.setEnabled(false);
 			tableBudgetsResult.clearSelection();
 			SwingUtilities.invokeLater(new Runnable(){
@@ -6663,14 +6496,39 @@ public class MainView extends JFrame{
 					panelWrapperBudgetDescription.validate();
 					panelWrapperBudgetDescription.repaint();
 					
-					updateBudgetTextAddDescription();
+//					updateBudgetTextAddDescription();
 					
 					budgetsFrame.validate();
 					budgetsFrame.repaint();
 				}
 			});
-		} else if(mode == MainView.EDIT_MODE) {
+		} else if(mode == SalesMainView.EDIT_MODE) {
 			buttonBudgetAdd.setEnabled(false);
+			buttonBudgetEdit.setEnabled(false);
+			editBudgetId = Integer.valueOf(String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_ID_COLUMN)));
+			editBudgetDate = String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_DATE_COLUMN));
+			editBudgetExpiryDays = Integer.valueOf(String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_EXPIRY_DAYS_COLUMN)));
+			editBudgetClientId = db.getBudgetClientId(editBudgetId);
+			editBudgetClientCode = Integer.valueOf(String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_CLIENT_ID_COLUMN)));
+			editBudgetClient = String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_COMPANY_COLUMN));
+			editBudgetClientRepresentative = String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_COMPANY_REPRESENTATIVE_COLUMN));
+			editBudgetWorkName = String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_WORK_NAME_COLUMN));
+			editBudgetPaymentMethod = String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_PAYMENT_METHOD_COLUMN));
+			editBudgetSellerId = db.getBudgetSellerId(editBudgetId);
+			editBudgetSeller = String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_SELLER_COLUMN));
+			editBudgetDispatchPlace = String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_DISPATCH_PLACE_COLUMN));
+			editBudgetDeliveryTime = Integer.valueOf(String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_DELIVERY_TIME_COLUMN)));
+			editBudgetDeliveryPeriod = String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_DELIVERY_PERIOD_COLUMN));
+//			editBudgetTracing = String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_TRACING_COLUMN));
+//			editBudgetStage = String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_STAGE_COLUMN));
+
+			String queryDeliveryPeriod = "SELECT budget_delivery_periods.delivery_period "
+					+ "FROM budget_delivery_periods "
+					+ "GROUP BY budget_delivery_periods.delivery_period";
+			
+//			String queryStage = "SELECT  budget_stages.stage "
+//					+ "FROM budget_stages "
+//					+ "GROUP BY budget_stages.stage";
 			
 			String queryDispatchPlace = "SELECT  budget_dispatch_places.place "
 					+ "FROM budget_dispatch_places "
@@ -6680,13 +6538,17 @@ public class MainView extends JFrame{
 					+ "FROM budget_payment_methods  "
 					+ "GROUP BY budget_payment_methods.method ";
 			
-			DateTime dt = new DateTime(editBudgetDate);
+//			String querySeller = "SELECT  budgets_sellers.seller"
+//					+ "FROM budgets_sellers  "
+//					+ "GROUP BY budgets_sellers.seller ";
+			DateTimeFormatter dtf = DateTimeFormat.forPattern("dd-MM-yyyy");
+			DateTime dt = dtf.parseDateTime(editBudgetDate);
 			editBudgetDateModel.setDate(dt.getYear(), dt.getMonthOfYear() - 1, dt.getDayOfMonth());
 			editBudgetDateModel.setSelected(true);
 			textBudgetEditExpiryDays.setText(String.valueOf(editBudgetExpiryDays));
 			textBudgetEditClientCode.setText(String.valueOf(editBudgetClientCode));
-			textBudgetEditCompany.setText(editBudgetCompany);
-			textBudgetEditCompanyRepresentative.setText(editBudgetCompanyRepresentative);
+			textBudgetEditClient.setText(editBudgetClient);
+			textBudgetEditClientRepresentative.setText(editBudgetClientRepresentative);
 			textBudgetEditWorkName.setText(editBudgetWorkName);
 			
 			comboBudgetEditPaymentMethod.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadComboList(queryPaymentMethod, "method"))));
@@ -6700,8 +6562,8 @@ public class MainView extends JFrame{
 			comboBudgetEditDispatchPlace.setSelectedItem(editBudgetDispatchPlace);
 			
 			textBudgetEditDeliveryTime.setText(String.valueOf(editBudgetDeliveryTime));
-//			comboBudgetEditDeliveryTime.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadComboList(queryDeliveryTime, "delivery_time"))));
-//			comboBudgetEditDeliveryTime.removeItem("Todas");
+			comboBudgetEditDeliveryPeriod.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadComboList(queryDeliveryPeriod, "delivery_period"))));
+			comboBudgetEditDeliveryPeriod.removeItem("Todas");
 			comboBudgetEditDeliveryPeriod.setSelectedItem(editBudgetDeliveryPeriod);
 			
 //			checkBudgetEditTracing.setSelected((editBudgetTracing.equalsIgnoreCase("SI")?true:false));
@@ -6731,12 +6593,20 @@ public class MainView extends JFrame{
 			textBudgetDescriptionId.setText("");
 			textBudgetDescriptionCode.setText("");
 			textBudgetDescriptionClientCode.setText("");
-			textBudgetDescriptionCompany.setText("");
-			textBudgetDescriptionCompanyRepresentative.setText("");
+			textBudgetDescriptionClient.setText("");
+			textBudgetDescriptionClientRepresentative.setText("");
 			textBudgetDescriptionExpiryDays.setText("");
 			textBudgetDescriptionWorkName.setText("");
 		}	
 		
+	}
+	
+	private void setTabsEnabled(JTabbedPane budgetTabbedPane, Boolean state) {
+		for(Integer i = 0; i < budgetTabbedPane.getTabCount(); i++) {
+			if (budgetTabbedPane.getSelectedIndex() != i) {
+				budgetTabbedPane.setEnabledAt(i, state);
+			}
+		}
 	}
 	
 	private List<String> loadComboList(String queryString, String columnName) {
@@ -6881,8 +6751,8 @@ public class MainView extends JFrame{
 				}
 				updateSwitchTextEditDescription();
 			} else if (actionCommand.equalsIgnoreCase("box.search.type")) {
-				fromQuery = MainView.BOXES_TABLE + "," + MainView.BOX_TYPES_TABLE;
-				whereQuery = " WHERE " + MainView.BOXES_TABLE + ".type_id = " + MainView.BOX_TYPES_TABLE + ".id ";
+				fromQuery = SalesMainView.BOXES_TABLE + "," + SalesMainView.BOX_TYPES_TABLE;
+				whereQuery = " WHERE " + SalesMainView.BOXES_TABLE + ".type_id = " + SalesMainView.BOX_TYPES_TABLE + ".id ";
 				searchSelectedBoxType = comboBoxTypes.getSelectedItem().toString();
 				this.clearSelectedBoxOptions("type");
 				
@@ -6944,34 +6814,34 @@ public class MainView extends JFrame{
 				
 				if(!searchSelectedBoxType.equalsIgnoreCase("Todas")) {
 					this.selectWhereQuery();
-					whereQuery += MainView.BOX_TYPES_TABLE + ".type = '"+searchSelectedBoxType+"' ";
+					whereQuery += SalesMainView.BOX_TYPES_TABLE + ".type = '"+searchSelectedBoxType+"' ";
 				}
 				this.loadComboBox("types");
 			} else if (actionCommand.equalsIgnoreCase("box.search.installation")) {
 				searchSelectedBoxInstallation = comboBoxInstallations.getSelectedItem().toString();
 				this.clearSelectedBoxOptions("installation");
-				fromQuery = MainView.BOXES_TABLE + "," + MainView.INSTALLATIONS_TABLE;
+				fromQuery = SalesMainView.BOXES_TABLE + "," + SalesMainView.INSTALLATIONS_TABLE;
 				if(!searchSelectedBoxInstallation.equalsIgnoreCase("Todas")) {
 					this.selectWhereQuery();
-					whereQuery += MainView.INSTALLATIONS_TABLE + ".installation = '"+searchSelectedBoxInstallation+"' ";
+					whereQuery += SalesMainView.INSTALLATIONS_TABLE + ".installation = '"+searchSelectedBoxInstallation+"' ";
 				}
 				this.loadComboBox("installations");
 			} else if (actionCommand.equalsIgnoreCase("box.search.nema")) {
 				searchSelectedBoxNema = comboBoxNemas.getSelectedItem().toString();
 				this.clearSelectedBoxOptions("nema");
-				fromQuery = MainView.BOXES_TABLE + "," + MainView.NEMAS_TABLE;
+				fromQuery = SalesMainView.BOXES_TABLE + "," + SalesMainView.NEMAS_TABLE;
 				if(!searchSelectedBoxNema.equalsIgnoreCase("Todas")) {
 					this.selectWhereQuery();
-					whereQuery += MainView.NEMAS_TABLE + ".nema = '"+searchSelectedBoxNema+"' ";
+					whereQuery += SalesMainView.NEMAS_TABLE + ".nema = '"+searchSelectedBoxNema+"' ";
 				}
 				this.loadComboBox("nemas");
 			} else if (actionCommand.equalsIgnoreCase("box.search.pairs")) {
 				searchSelectedBoxPairs = comboBoxPairs.getSelectedItem().toString();
 				this.clearSelectedBoxOptions("pairs");
-				fromQuery = MainView.BOXES_TABLE;
+				fromQuery = SalesMainView.BOXES_TABLE;
 				if(!searchSelectedBoxPairs.equalsIgnoreCase("Todas")) {
 					this.selectWhereQuery();
-					whereQuery += MainView.BOXES_TABLE + ".pairs = '"+searchSelectedBoxPairs+"' ";
+					whereQuery += SalesMainView.BOXES_TABLE + ".pairs = '"+searchSelectedBoxPairs+"' ";
 				}
 				this.loadComboBox("pairs");
 			} else if (actionCommand.equalsIgnoreCase("box.search.sheet")) {
@@ -6984,46 +6854,46 @@ public class MainView extends JFrame{
 					comboBoxFinishes.setEnabled(true);
 					comboBoxColors.setEnabled(true);
 				}
-				fromQuery = MainView.BOXES_TABLE + "," + MainView.BOX_SHEETS_TABLE;
+				fromQuery = SalesMainView.BOXES_TABLE + "," + SalesMainView.BOX_SHEETS_TABLE;
 				if(!searchSelectedBoxSheet.equalsIgnoreCase("Todas")) {
 					this.selectWhereQuery();
-					whereQuery += MainView.BOX_SHEETS_TABLE + ".sheet = '"+searchSelectedBoxSheet+"' ";
+					whereQuery += SalesMainView.BOX_SHEETS_TABLE + ".sheet = '"+searchSelectedBoxSheet+"' ";
 				}
 				this.loadComboBox("sheets");
 			} else if (actionCommand.equalsIgnoreCase("box.search.finish")) {
 				searchSelectedBoxFinish = comboBoxFinishes.getSelectedItem().toString();
 				this.clearSelectedBoxOptions("finish");
-				fromQuery = MainView.BOXES_TABLE + "," + MainView.BOX_FINISHES_TABLE;
+				fromQuery = SalesMainView.BOXES_TABLE + "," + SalesMainView.BOX_FINISHES_TABLE;
 				if(!searchSelectedBoxFinish.equalsIgnoreCase("Todas")) {
 					this.selectWhereQuery();
-					whereQuery += MainView.BOX_FINISHES_TABLE + ".finish = '"+searchSelectedBoxFinish+"' ";
+					whereQuery += SalesMainView.BOX_FINISHES_TABLE + ".finish = '"+searchSelectedBoxFinish+"' ";
 				}
 				this.loadComboBox("finishes");
 			} else if (actionCommand.equalsIgnoreCase("box.search.color")) {
 				searchSelectedBoxColor = comboBoxColors.getSelectedItem().toString();
 				this.clearSelectedBoxOptions("color");
-				fromQuery = MainView.BOXES_TABLE + "," + MainView.BOX_COLORS_TABLE;
+				fromQuery = SalesMainView.BOXES_TABLE + "," + SalesMainView.BOX_COLORS_TABLE;
 				if(!searchSelectedBoxColor.equalsIgnoreCase("Todas")) {
 					this.selectWhereQuery();
-					whereQuery += MainView.BOX_COLORS_TABLE + ".color = '"+searchSelectedBoxColor+"' ";
+					whereQuery += SalesMainView.BOX_COLORS_TABLE + ".color = '"+searchSelectedBoxColor+"' ";
 				}
 				this.loadComboBox("colors");
 			} else if (actionCommand.equalsIgnoreCase("box.search.caliber")) {
 				searchSelectedBoxCaliber = comboBoxCalibers.getSelectedItem().toString();
 				this.clearSelectedBoxOptions("caliber");
-				fromQuery = MainView.BOXES_TABLE + "," + MainView.BOX_CALIBERS_TABLE;
+				fromQuery = SalesMainView.BOXES_TABLE + "," + SalesMainView.BOX_CALIBERS_TABLE;
 				if(!searchSelectedBoxCaliber.equalsIgnoreCase("Todas")) {
 					this.selectWhereQuery();
-					whereQuery += MainView.BOX_CALIBERS_TABLE + ".caliber = '"+searchSelectedBoxCaliber+"' ";
+					whereQuery += SalesMainView.BOX_CALIBERS_TABLE + ".caliber = '"+searchSelectedBoxCaliber+"' ";
 				}
 				this.loadComboBox("calibers");
 			} else if (actionCommand.equalsIgnoreCase("box.search.lock_type")) {
 				searchSelectedBoxLockType = comboBoxLockTypes.getSelectedItem().toString();
 				this.clearSelectedBoxOptions("lock_type");
-				fromQuery = MainView.BOXES_TABLE + "," + MainView.LOCK_TYPES_TABLE;
+				fromQuery = SalesMainView.BOXES_TABLE + "," + SalesMainView.LOCK_TYPES_TABLE;
 				if(!searchSelectedBoxLockType.equalsIgnoreCase("Todas")) {
 					this.selectWhereQuery();
-					whereQuery += MainView.LOCK_TYPES_TABLE + ".lock_type = '"+searchSelectedBoxLockType+"' ";
+					whereQuery += SalesMainView.LOCK_TYPES_TABLE + ".lock_type = '"+searchSelectedBoxLockType+"' ";
 				}
 				this.loadComboBox("lock_types");
 			} else if (actionCommand.equalsIgnoreCase("box.description.add.type")) {
@@ -7085,87 +6955,87 @@ public class MainView extends JFrame{
 			} else if (actionCommand.equalsIgnoreCase("board.search.type")) {
 				searchSelectedBoardType = comboBoardTypes.getSelectedItem().toString();
 				this.clearSelectedBoardOptions("type");
-				fromQuery = MainView.BOARD_TABLE + "," + MainView.BOARD_TYPES_TABLE;
+				fromQuery = SalesMainView.BOARD_TABLE + "," + SalesMainView.BOARD_TYPES_TABLE;
 				if(!searchSelectedBoardType.equalsIgnoreCase("Todas")) {
 					this.selectWhereQuery();
-					whereQuery += MainView.BOARD_TYPES_TABLE + ".type = '"+searchSelectedBoardType+"' ";
+					whereQuery += SalesMainView.BOARD_TYPES_TABLE + ".type = '"+searchSelectedBoardType+"' ";
 				}
 				this.loadComboBoard("types");
 			} else if (actionCommand.equalsIgnoreCase("board.search.installation")) {
 				searchSelectedBoardInstallation = comboBoardInstallations.getSelectedItem().toString();
 				this.clearSelectedBoardOptions("installation");
-				fromQuery = MainView.BOARD_TABLE + "," + MainView.INSTALLATIONS_TABLE;
+				fromQuery = SalesMainView.BOARD_TABLE + "," + SalesMainView.INSTALLATIONS_TABLE;
 				if(!searchSelectedBoardInstallation.equalsIgnoreCase("Todas")) {
 					this.selectWhereQuery();
-					whereQuery += MainView.INSTALLATIONS_TABLE + ".installation = '"+searchSelectedBoardInstallation+"' ";
+					whereQuery += SalesMainView.INSTALLATIONS_TABLE + ".installation = '"+searchSelectedBoardInstallation+"' ";
 				}
 				this.loadComboBoard("installations");
 			} else if (actionCommand.equalsIgnoreCase("board.search.nema")) {
 				searchSelectedBoardNema = comboBoardNemas.getSelectedItem().toString();
 				this.clearSelectedBoardOptions("nema");
-				fromQuery = MainView.BOARD_TABLE + "," + MainView.NEMAS_TABLE;
+				fromQuery = SalesMainView.BOARD_TABLE + "," + SalesMainView.NEMAS_TABLE;
 				if(!searchSelectedBoardNema.equalsIgnoreCase("Todas")) {
 					this.selectWhereQuery();
-					whereQuery += MainView.NEMAS_TABLE + ".nema = '"+searchSelectedBoardNema+"' ";
+					whereQuery += SalesMainView.NEMAS_TABLE + ".nema = '"+searchSelectedBoardNema+"' ";
 				}
 				this.loadComboBoard("nemas");
 			} else if (actionCommand.equalsIgnoreCase("board.search.bar_capacity")) {
 				searchSelectedBoardBarCapacity = comboBoardBarCapacities.getSelectedItem().toString();
 				this.clearSelectedBoardOptions("bar_capacity");
-				fromQuery = MainView.BOARD_TABLE + "," + MainView.BOARD_BAR_CAPACITIES_TABLE;
+				fromQuery = SalesMainView.BOARD_TABLE + "," + SalesMainView.BOARD_BAR_CAPACITIES_TABLE;
 				if(!searchSelectedBoardBarCapacity.equalsIgnoreCase("Todas")) {
 					this.selectWhereQuery();
-					whereQuery += MainView.BOARD_BAR_CAPACITIES_TABLE + ".bar_capacity = '"+searchSelectedBoardBarCapacity+"' ";
+					whereQuery += SalesMainView.BOARD_BAR_CAPACITIES_TABLE + ".bar_capacity = '"+searchSelectedBoardBarCapacity+"' ";
 				}
 				this.loadComboBoard("bar_capacities");
 			} else if (actionCommand.equalsIgnoreCase("board.search.bar_type")) {
 				searchSelectedBoardBarType = comboBoardBarTypes.getSelectedItem().toString();
 				this.clearSelectedBoardOptions("bar_type");
-				fromQuery = MainView.BOARD_TABLE + "," + MainView.BOARD_BAR_TYPES_TABLE;
+				fromQuery = SalesMainView.BOARD_TABLE + "," + SalesMainView.BOARD_BAR_TYPES_TABLE;
 				if(!searchSelectedBoardBarType.equalsIgnoreCase("Todas")) {
 					this.selectWhereQuery();
-					whereQuery += MainView.BOARD_BAR_TYPES_TABLE + ".bar_type = '"+searchSelectedBoardBarType+"' ";
+					whereQuery += SalesMainView.BOARD_BAR_TYPES_TABLE + ".bar_type = '"+searchSelectedBoardBarType+"' ";
 				}
 				this.loadComboBoard("bar_types");
 			} else if (actionCommand.equalsIgnoreCase("board.search.circuits")) {
 				searchSelectedBoardCircuits = comboBoardCircuits.getSelectedItem().toString();
 				this.clearSelectedBoardOptions("circuits");
-				fromQuery = MainView.BOARD_TABLE + "," + MainView.BOARD_CIRCUITS_TABLE;
+				fromQuery = SalesMainView.BOARD_TABLE + "," + SalesMainView.BOARD_CIRCUITS_TABLE;
 				if(!searchSelectedBoardCircuits.equalsIgnoreCase("Todas")) {
 					this.selectWhereQuery();
-					whereQuery += MainView.BOARD_CIRCUITS_TABLE + ".circuits = '"+searchSelectedBoardCircuits+"' ";
+					whereQuery += SalesMainView.BOARD_CIRCUITS_TABLE + ".circuits = '"+searchSelectedBoardCircuits+"' ";
 				}
 				this.loadComboBoard("circuits");
 			} else if (actionCommand.equalsIgnoreCase("board.search.voltage")) {
 				searchSelectedBoardVoltage = comboBoardVoltages.getSelectedItem().toString();
 				this.clearSelectedBoardOptions("voltage");
-				fromQuery = MainView.BOARD_TABLE + "," + MainView.BOARD_VOLTAGES_TABLE;
+				fromQuery = SalesMainView.BOARD_TABLE + "," + SalesMainView.BOARD_VOLTAGES_TABLE;
 				if(!searchSelectedBoardVoltage.equalsIgnoreCase("Todas")) {
 					this.selectWhereQuery();
-					whereQuery += MainView.BOARD_VOLTAGES_TABLE + ".voltage = '"+searchSelectedBoardVoltage+"' ";
+					whereQuery += SalesMainView.BOARD_VOLTAGES_TABLE + ".voltage = '"+searchSelectedBoardVoltage+"' ";
 				}
 				this.loadComboBoard("voltages");
 			} else if (actionCommand.equalsIgnoreCase("board.search.phases")) {
 					searchSelectedBoardPhases = comboBoardPhases.getSelectedItem().toString();
 					this.clearSelectedBoardOptions("phases");
-					fromQuery = MainView.BOARD_TABLE;
+					fromQuery = SalesMainView.BOARD_TABLE;
 					if(!searchSelectedBoardPhases.equalsIgnoreCase("Todas")) {
 						this.selectWhereQuery();
-						whereQuery += MainView.BOARD_TABLE + ".phases = '"+searchSelectedBoardPhases+"' ";
+						whereQuery += SalesMainView.BOARD_TABLE + ".phases = '"+searchSelectedBoardPhases+"' ";
 					}
 					this.loadComboBoard("phases");
 			} else if (actionCommand.equalsIgnoreCase("board.search.ground")) {
 				searchSelectedBoardGround = comboBoardGround.getSelectedItem().toString();
 				this.clearSelectedBoardOptions("ground");
-				fromQuery = MainView.BOARD_TABLE;
+				fromQuery = SalesMainView.BOARD_TABLE;
 				this.loadComboBoard("ground");
 			} else if (actionCommand.equalsIgnoreCase("board.search.interruption")) {
 				searchSelectedBoardInterruption = comboBoardInterruptions.getSelectedItem().toString();
 				this.clearSelectedBoardOptions("interruption");
-				fromQuery = MainView.BOARD_TABLE + "," + MainView.INTERRUPTIONS_TABLE;
+				fromQuery = SalesMainView.BOARD_TABLE + "," + SalesMainView.INTERRUPTIONS_TABLE;
 				if(!searchSelectedBoardInterruption.equalsIgnoreCase("Todas")) {
 					this.selectWhereQuery();
-					whereQuery += MainView.INTERRUPTIONS_TABLE + ".interruption = '"+searchSelectedBoardInterruption+"' ";
+					whereQuery += SalesMainView.INTERRUPTIONS_TABLE + ".interruption = '"+searchSelectedBoardInterruption+"' ";
 				}
 				this.loadComboBoard("interruptions");
 			} else if (actionCommand.equalsIgnoreCase("board.description.add.type") || 
@@ -7420,74 +7290,74 @@ public class MainView extends JFrame{
 			switch(start) {
 				case "types":
 					this.selectWhereQuery();
-					fromQuery += "," + MainView.INSTALLATIONS_TABLE;
-					whereQuery += MainView.BOXES_TABLE + ".type_id = " + MainView.BOX_TYPES_TABLE + ".id";
+					fromQuery += "," + SalesMainView.INSTALLATIONS_TABLE;
+					whereQuery += SalesMainView.BOXES_TABLE + ".type_id = " + SalesMainView.BOX_TYPES_TABLE + ".id";
 					this.selectWhereQuery();
-					whereQuery += MainView.BOXES_TABLE + ".installation_id = " + MainView.INSTALLATIONS_TABLE + ".id ";
-					comboBoxInstallations.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(MainView.INSTALLATIONS_TABLE, "installation"))));
+					whereQuery += SalesMainView.BOXES_TABLE + ".installation_id = " + SalesMainView.INSTALLATIONS_TABLE + ".id ";
+					comboBoxInstallations.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(SalesMainView.INSTALLATIONS_TABLE, "installation"))));
 				case "installations":
-					fromQuery += "," + MainView.NEMAS_TABLE;
+					fromQuery += "," + SalesMainView.NEMAS_TABLE;
 					if(!searchSelectedBoxInstallation.isEmpty()) {
 						this.selectWhereQuery();
-						whereQuery += MainView.BOXES_TABLE + ".installation_id = " + MainView.INSTALLATIONS_TABLE + ".id";
+						whereQuery += SalesMainView.BOXES_TABLE + ".installation_id = " + SalesMainView.INSTALLATIONS_TABLE + ".id";
 					}
 					this.addBoxAdditionalWhere("installation");
 					this.selectWhereQuery();
-					whereQuery += MainView.BOXES_TABLE + ".nema_id = " + MainView.NEMAS_TABLE + ".id ";
-					comboBoxNemas.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(MainView.NEMAS_TABLE, "nema"))));
+					whereQuery += SalesMainView.BOXES_TABLE + ".nema_id = " + SalesMainView.NEMAS_TABLE + ".id ";
+					comboBoxNemas.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(SalesMainView.NEMAS_TABLE, "nema"))));
 				case "nemas":
 					if (!searchSelectedBoxNema.isEmpty()) {
 						this.selectWhereQuery();
-						whereQuery += MainView.BOXES_TABLE + ".nema_id = " + MainView.NEMAS_TABLE + ".id";
+						whereQuery += SalesMainView.BOXES_TABLE + ".nema_id = " + SalesMainView.NEMAS_TABLE + ".id";
 					}
 					this.addBoxAdditionalWhere("nema");
 					if(searchSelectedBoxType.equalsIgnoreCase("para Pares Telefonicos")) {
 						this.selectWhereQuery();
 						whereQuery += "boxes.pairs > 0";
-						comboBoxPairs.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(MainView.BOXES_TABLE, "pairs"))));
+						comboBoxPairs.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(SalesMainView.BOXES_TABLE, "pairs"))));
 					} else if(((!searchSelectedBoxInstallation.equalsIgnoreCase("Todas") ||
 							searchSelectedBoxInstallation.isEmpty()) ||
 							!searchSelectedBoxNema.equalsIgnoreCase("Todas")) && 
 							(searchSelectedBoxType.equalsIgnoreCase("Todas") ||
 									searchSelectedBoxType.isEmpty())){
 						String tempWhereQuery = this.getSelectWhereQuery(whereQuery) + "boxes.pairs > 0";
-						comboBoxPairs.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(MainView.BOXES_TABLE, "pairs", tempWhereQuery))));
+						comboBoxPairs.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(SalesMainView.BOXES_TABLE, "pairs", tempWhereQuery))));
 					}
 				case "pairs":
-					fromQuery += "," + MainView.BOX_SHEETS_TABLE;
+					fromQuery += "," + SalesMainView.BOX_SHEETS_TABLE;
 					if(!searchSelectedBoxPairs.isEmpty()) {
 						this.selectWhereQuery();
-						whereQuery += MainView.BOXES_TABLE + ".pairs = '" + searchSelectedBoxPairs + "' ";
+						whereQuery += SalesMainView.BOXES_TABLE + ".pairs = '" + searchSelectedBoxPairs + "' ";
 					}
 					this.addBoxAdditionalWhere("pairs");
 					this.selectWhereQuery();
-					whereQuery += MainView.BOXES_TABLE + ".sheet_id = " + MainView.BOX_SHEETS_TABLE + ".id ";
-					comboBoxSheets.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(MainView.BOX_SHEETS_TABLE, "sheet"))));
+					whereQuery += SalesMainView.BOXES_TABLE + ".sheet_id = " + SalesMainView.BOX_SHEETS_TABLE + ".id ";
+					comboBoxSheets.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(SalesMainView.BOX_SHEETS_TABLE, "sheet"))));
 				case "sheets":
-					fromQuery += "," + MainView.BOX_FINISHES_TABLE;
+					fromQuery += "," + SalesMainView.BOX_FINISHES_TABLE;
 					if(!searchSelectedBoxSheet.isEmpty()) {
 						this.selectWhereQuery();
-						whereQuery += MainView.BOXES_TABLE + ".sheet_id = " + MainView.BOX_SHEETS_TABLE + ".id";
+						whereQuery += SalesMainView.BOXES_TABLE + ".sheet_id = " + SalesMainView.BOX_SHEETS_TABLE + ".id";
 					}
 					this.addBoxAdditionalWhere("sheet");
 					this.selectWhereQuery();
-					whereQuery += MainView.BOXES_TABLE + ".finish_id = " + MainView.BOX_FINISHES_TABLE + ".id ";
-					comboBoxFinishes.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(MainView.BOX_FINISHES_TABLE, "finish"))));
+					whereQuery += SalesMainView.BOXES_TABLE + ".finish_id = " + SalesMainView.BOX_FINISHES_TABLE + ".id ";
+					comboBoxFinishes.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(SalesMainView.BOX_FINISHES_TABLE, "finish"))));
 				case "finishes":
-					fromQuery += "," + MainView.BOX_COLORS_TABLE;
+					fromQuery += "," + SalesMainView.BOX_COLORS_TABLE;
 					if(!searchSelectedBoxFinish.isEmpty()) {
 						this.selectWhereQuery();
-						whereQuery += MainView.BOXES_TABLE + ".finish_id = " + MainView.BOX_FINISHES_TABLE + ".id";
+						whereQuery += SalesMainView.BOXES_TABLE + ".finish_id = " + SalesMainView.BOX_FINISHES_TABLE + ".id";
 					}
 					this.addBoxAdditionalWhere("finish");
 					this.selectWhereQuery();
 					whereQuery += "((boxes.color_id > 0 "
 							+ "AND boxes.color_id = box_colors.id) "
 							+ "OR boxes.color_id = 0)";
-					String tempWhereQuery = this.getSelectWhereQuery(whereQuery) + MainView.BOXES_TABLE + ".color_id = " + MainView.BOX_COLORS_TABLE + ".id";
-					comboBoxColors.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(MainView.BOX_COLORS_TABLE, "color", tempWhereQuery))));
+					String tempWhereQuery = this.getSelectWhereQuery(whereQuery) + SalesMainView.BOXES_TABLE + ".color_id = " + SalesMainView.BOX_COLORS_TABLE + ".id";
+					comboBoxColors.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(SalesMainView.BOX_COLORS_TABLE, "color", tempWhereQuery))));
 				case "colors":
-					fromQuery += "," + MainView.BOX_CALIBERS_TABLE;
+					fromQuery += "," + SalesMainView.BOX_CALIBERS_TABLE;
 					if(!searchSelectedBoxColor.isEmpty()) {
 						this.selectWhereQuery();
 						whereQuery += "((boxes.color_id > 0 "
@@ -7496,18 +7366,18 @@ public class MainView extends JFrame{
 					}
 					this.addBoxAdditionalWhere("color");
 					this.selectWhereQuery();
-					whereQuery += MainView.BOXES_TABLE + ".caliber_id = " + MainView.BOX_CALIBERS_TABLE + ".id ";
-					comboBoxCalibers.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(MainView.BOX_CALIBERS_TABLE, "caliber"))));
+					whereQuery += SalesMainView.BOXES_TABLE + ".caliber_id = " + SalesMainView.BOX_CALIBERS_TABLE + ".id ";
+					comboBoxCalibers.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(SalesMainView.BOX_CALIBERS_TABLE, "caliber"))));
 				case "calibers":
-					fromQuery += "," + MainView.LOCK_TYPES_TABLE;
+					fromQuery += "," + SalesMainView.LOCK_TYPES_TABLE;
 					if(!searchSelectedBoxCaliber.isEmpty()) {
 						this.selectWhereQuery();
-						whereQuery += MainView.BOXES_TABLE + ".caliber_id = " + MainView.BOX_CALIBERS_TABLE + ".id";
+						whereQuery += SalesMainView.BOXES_TABLE + ".caliber_id = " + SalesMainView.BOX_CALIBERS_TABLE + ".id";
 					}
 					this.addBoxAdditionalWhere("caliber");
 					this.selectWhereQuery();
-					whereQuery += MainView.BOXES_TABLE + ".lock_type_id = " + MainView.LOCK_TYPES_TABLE + ".id ";
-					comboBoxLockTypes.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(MainView.LOCK_TYPES_TABLE, "lock_type"))));
+					whereQuery += SalesMainView.BOXES_TABLE + ".lock_type_id = " + SalesMainView.LOCK_TYPES_TABLE + ".id ";
+					comboBoxLockTypes.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(SalesMainView.LOCK_TYPES_TABLE, "lock_type"))));
 					break;
 			}
 		}
@@ -7517,74 +7387,74 @@ public class MainView extends JFrame{
 			//Need to fix this to add the filters backward, NOT ADDING YET WELL
 			switch(start) {
 				case "caliber":
-					if(!fromQuery.contains(MainView.BOX_COLORS_TABLE)) {
-						fromQuery += "," + MainView.BOX_COLORS_TABLE;
+					if(!fromQuery.contains(SalesMainView.BOX_COLORS_TABLE)) {
+						fromQuery += "," + SalesMainView.BOX_COLORS_TABLE;
 					}
 					if(!searchSelectedBoxColor.isEmpty() && !searchSelectedBoxColor.equalsIgnoreCase("Todas")) {
 						this.selectWhereQuery();
-						whereQuery += MainView.BOX_COLORS_TABLE + ".color = '" + searchSelectedBoxColor + "'";
+						whereQuery += SalesMainView.BOX_COLORS_TABLE + ".color = '" + searchSelectedBoxColor + "'";
 						this.selectWhereQuery();
 						whereQuery += "((boxes.color_id > 0 "
 								+ "AND boxes.color_id = box_colors.id) "
 								+ "OR boxes.color_id = 0)";
 					}
 				case "color":
-					if(!fromQuery.contains(MainView.BOX_FINISHES_TABLE)) {
-						fromQuery += "," + MainView.BOX_FINISHES_TABLE;
+					if(!fromQuery.contains(SalesMainView.BOX_FINISHES_TABLE)) {
+						fromQuery += "," + SalesMainView.BOX_FINISHES_TABLE;
 					}
 					if(!searchSelectedBoxFinish.isEmpty() && !searchSelectedBoxFinish.equalsIgnoreCase("Todas")) {
 						this.selectWhereQuery();
-						whereQuery += MainView.BOX_FINISHES_TABLE + ".finish = '" + searchSelectedBoxFinish + "'";
+						whereQuery += SalesMainView.BOX_FINISHES_TABLE + ".finish = '" + searchSelectedBoxFinish + "'";
 						this.selectWhereQuery();
-						whereQuery += MainView.BOXES_TABLE + ".finish_id = " + MainView.BOX_FINISHES_TABLE + ".id";
+						whereQuery += SalesMainView.BOXES_TABLE + ".finish_id = " + SalesMainView.BOX_FINISHES_TABLE + ".id";
 					}
 				case "finish":
-					if(!fromQuery.contains(MainView.BOX_SHEETS_TABLE)) {
-						fromQuery += "," + MainView.BOX_SHEETS_TABLE;
+					if(!fromQuery.contains(SalesMainView.BOX_SHEETS_TABLE)) {
+						fromQuery += "," + SalesMainView.BOX_SHEETS_TABLE;
 					}
 					if(!searchSelectedBoxSheet.isEmpty() && !searchSelectedBoxSheet.equalsIgnoreCase("Todas")) {
 						this.selectWhereQuery();
-						whereQuery += MainView.BOX_SHEETS_TABLE + ".sheet = '" + searchSelectedBoxSheet + "'";
+						whereQuery += SalesMainView.BOX_SHEETS_TABLE + ".sheet = '" + searchSelectedBoxSheet + "'";
 						this.selectWhereQuery();
-						whereQuery += MainView.BOXES_TABLE + ".sheet_id = " + MainView.BOX_SHEETS_TABLE + ".id";
+						whereQuery += SalesMainView.BOXES_TABLE + ".sheet_id = " + SalesMainView.BOX_SHEETS_TABLE + ".id";
 					}
 				case "sheet":
-					if(!fromQuery.contains(MainView.BOXES_TABLE)) {
-						fromQuery += "," + MainView.BOXES_TABLE;
+					if(!fromQuery.contains(SalesMainView.BOXES_TABLE)) {
+						fromQuery += "," + SalesMainView.BOXES_TABLE;
 					}
 					if(!searchSelectedBoxPairs.isEmpty() && !searchSelectedBoxPairs.equalsIgnoreCase("Todas")) {
 						this.selectWhereQuery();
-						whereQuery += MainView.BOXES_TABLE + ".pairs = '" + searchSelectedBoxPairs + "' ";
+						whereQuery += SalesMainView.BOXES_TABLE + ".pairs = '" + searchSelectedBoxPairs + "' ";
 					}
 				case "pairs":
-					if(!fromQuery.contains(MainView.NEMAS_TABLE)) {
-						fromQuery += "," + MainView.NEMAS_TABLE;
+					if(!fromQuery.contains(SalesMainView.NEMAS_TABLE)) {
+						fromQuery += "," + SalesMainView.NEMAS_TABLE;
 					}
 					if (!searchSelectedBoxNema.isEmpty() && !searchSelectedBoxNema.equalsIgnoreCase("Todas")) {
 						this.selectWhereQuery();
-						whereQuery += MainView.NEMAS_TABLE + ".nema = '" + searchSelectedBoxNema + "'";
+						whereQuery += SalesMainView.NEMAS_TABLE + ".nema = '" + searchSelectedBoxNema + "'";
 						this.selectWhereQuery();
-						whereQuery += MainView.BOXES_TABLE + ".nema_id = " + MainView.NEMAS_TABLE + ".id";
+						whereQuery += SalesMainView.BOXES_TABLE + ".nema_id = " + SalesMainView.NEMAS_TABLE + ".id";
 					}
 				case "nema":
-					if(!fromQuery.contains(MainView.INSTALLATIONS_TABLE)) {
-						fromQuery += "," + MainView.INSTALLATIONS_TABLE;
+					if(!fromQuery.contains(SalesMainView.INSTALLATIONS_TABLE)) {
+						fromQuery += "," + SalesMainView.INSTALLATIONS_TABLE;
 					}
 					if(!searchSelectedBoxInstallation.isEmpty() && !searchSelectedBoxInstallation.equalsIgnoreCase("Todas")) {
 						this.selectWhereQuery();
-						whereQuery += MainView.INSTALLATIONS_TABLE + ".installation = '" + searchSelectedBoxInstallation + "'";
+						whereQuery += SalesMainView.INSTALLATIONS_TABLE + ".installation = '" + searchSelectedBoxInstallation + "'";
 						this.selectWhereQuery();
-						whereQuery += MainView.BOXES_TABLE + ".installation_id = " + MainView.INSTALLATIONS_TABLE + ".id";
+						whereQuery += SalesMainView.BOXES_TABLE + ".installation_id = " + SalesMainView.INSTALLATIONS_TABLE + ".id";
 					}
 				case "installation":
-					if(!fromQuery.contains(MainView.BOX_TYPES_TABLE)) {
-						fromQuery += "," + MainView.BOX_TYPES_TABLE;
+					if(!fromQuery.contains(SalesMainView.BOX_TYPES_TABLE)) {
+						fromQuery += "," + SalesMainView.BOX_TYPES_TABLE;
 					}
 					if(!searchSelectedBoxType.isEmpty() && !searchSelectedBoxType.equalsIgnoreCase("Todas")) {
 						this.selectWhereQuery();
-						whereQuery += MainView.BOX_TYPES_TABLE + ".type = '" + searchSelectedBoxType + "'";
+						whereQuery += SalesMainView.BOX_TYPES_TABLE + ".type = '" + searchSelectedBoxType + "'";
 						this.selectWhereQuery();
-						whereQuery += MainView.BOXES_TABLE + ".type_id = " + MainView.BOX_TYPES_TABLE + ".id";
+						whereQuery += SalesMainView.BOXES_TABLE + ".type_id = " + SalesMainView.BOX_TYPES_TABLE + ".id";
 					}
 					break;
 			}
@@ -7593,104 +7463,104 @@ public class MainView extends JFrame{
 		private void addBoardAdditionalWhere(String start) {
 			switch(start) {
 				case "lock_type":
-					if(!fromQuery.contains(MainView.INTERRUPTIONS_TABLE)) {
-						fromQuery += "," + MainView.INTERRUPTIONS_TABLE;
+					if(!fromQuery.contains(SalesMainView.INTERRUPTIONS_TABLE)) {
+						fromQuery += "," + SalesMainView.INTERRUPTIONS_TABLE;
 					}
 					if(!searchSelectedBoardInterruption.isEmpty() && !searchSelectedBoardInterruption.equalsIgnoreCase("Todas")) {
 						this.selectWhereQuery();
-						whereQuery += MainView.INTERRUPTIONS_TABLE + ".interruption = '" + searchSelectedBoardInterruption + "'";
+						whereQuery += SalesMainView.INTERRUPTIONS_TABLE + ".interruption = '" + searchSelectedBoardInterruption + "'";
 						this.selectWhereQuery();
-						whereQuery += MainView.BOARD_TABLE + ".interruption_id = " + MainView.INTERRUPTIONS_TABLE + ".id";
+						whereQuery += SalesMainView.BOARD_TABLE + ".interruption_id = " + SalesMainView.INTERRUPTIONS_TABLE + ".id";
 					}
 				case "interruption":
-					if(!fromQuery.contains(MainView.BOARD_TABLE)) {
-						fromQuery += "," + MainView.BOARD_TABLE;
+					if(!fromQuery.contains(SalesMainView.BOARD_TABLE)) {
+						fromQuery += "," + SalesMainView.BOARD_TABLE;
 					}
 					if(!searchSelectedBoardGround.isEmpty() && !searchSelectedBoardGround.equalsIgnoreCase("Todas")) {
 						this.selectWhereQuery();
-						whereQuery += MainView.BOARD_TABLE + ".ground = '" + ((searchSelectedBoardGround.equalsIgnoreCase("SI"))?"1":"0") + "'";
+						whereQuery += SalesMainView.BOARD_TABLE + ".ground = '" + ((searchSelectedBoardGround.equalsIgnoreCase("SI"))?"1":"0") + "'";
 					}
 				case "ground":
-					if(!fromQuery.contains(MainView.BOARD_TABLE)) {
-						fromQuery += "," + MainView.BOARD_TABLE;
+					if(!fromQuery.contains(SalesMainView.BOARD_TABLE)) {
+						fromQuery += "," + SalesMainView.BOARD_TABLE;
 					}
 					if(!searchSelectedBoardPhases.isEmpty() && !searchSelectedBoardPhases.equalsIgnoreCase("Todas")) {
 						this.selectWhereQuery();
-						whereQuery += MainView.BOARD_TABLE + ".phases = '" + searchSelectedBoardPhases + "'";
+						whereQuery += SalesMainView.BOARD_TABLE + ".phases = '" + searchSelectedBoardPhases + "'";
 					}
 				case "phases":
-					if(!fromQuery.contains(MainView.BOARD_VOLTAGES_TABLE)) {
-						fromQuery += "," + MainView.BOARD_VOLTAGES_TABLE;
+					if(!fromQuery.contains(SalesMainView.BOARD_VOLTAGES_TABLE)) {
+						fromQuery += "," + SalesMainView.BOARD_VOLTAGES_TABLE;
 					}
 					if(!searchSelectedBoardVoltage.isEmpty() && !searchSelectedBoardVoltage.equalsIgnoreCase("Todas")) {
 						this.selectWhereQuery();
-						whereQuery += MainView.BOARD_VOLTAGES_TABLE + ".voltage = '" + searchSelectedBoardVoltage + "' ";
+						whereQuery += SalesMainView.BOARD_VOLTAGES_TABLE + ".voltage = '" + searchSelectedBoardVoltage + "' ";
 						this.selectWhereQuery();
-						whereQuery += MainView.BOARD_TABLE + ".voltage_id = " + MainView.BOARD_VOLTAGES_TABLE + ".id";
+						whereQuery += SalesMainView.BOARD_TABLE + ".voltage_id = " + SalesMainView.BOARD_VOLTAGES_TABLE + ".id";
 					}
 				case "voltage":
-					if(!fromQuery.contains(MainView.BOARD_CIRCUITS_TABLE)) {
-						fromQuery += "," + MainView.BOARD_CIRCUITS_TABLE;
+					if(!fromQuery.contains(SalesMainView.BOARD_CIRCUITS_TABLE)) {
+						fromQuery += "," + SalesMainView.BOARD_CIRCUITS_TABLE;
 					}
 					if (!searchSelectedBoardCircuits.isEmpty() && !searchSelectedBoardCircuits.equalsIgnoreCase("Todas")) {
 						this.selectWhereQuery();
-						whereQuery += MainView.BOARD_CIRCUITS_TABLE + ".circuits = '" + searchSelectedBoardCircuits + "'";
+						whereQuery += SalesMainView.BOARD_CIRCUITS_TABLE + ".circuits = '" + searchSelectedBoardCircuits + "'";
 						this.selectWhereQuery();
-						whereQuery += MainView.BOARD_TABLE + ".circuits_id = " + MainView.BOARD_CIRCUITS_TABLE + ".id";
+						whereQuery += SalesMainView.BOARD_TABLE + ".circuits_id = " + SalesMainView.BOARD_CIRCUITS_TABLE + ".id";
 					}
 				case "circuits":
-					if(!fromQuery.contains(MainView.BOARD_BAR_TYPES_TABLE)) {
-						fromQuery += "," + MainView.BOARD_BAR_TYPES_TABLE;
+					if(!fromQuery.contains(SalesMainView.BOARD_BAR_TYPES_TABLE)) {
+						fromQuery += "," + SalesMainView.BOARD_BAR_TYPES_TABLE;
 					}
 					if (!searchSelectedBoardBarType.isEmpty() && !searchSelectedBoardBarType.equalsIgnoreCase("Todas")) {
 						this.selectWhereQuery();
-						whereQuery += MainView.BOARD_BAR_TYPES_TABLE + ".bar_type = '" + searchSelectedBoardBarType + "'";
+						whereQuery += SalesMainView.BOARD_BAR_TYPES_TABLE + ".bar_type = '" + searchSelectedBoardBarType + "'";
 						this.selectWhereQuery();
-						whereQuery += MainView.BOARD_TABLE + ".bar_type_id = " + MainView.BOARD_BAR_TYPES_TABLE + ".id";
+						whereQuery += SalesMainView.BOARD_TABLE + ".bar_type_id = " + SalesMainView.BOARD_BAR_TYPES_TABLE + ".id";
 					}
 				case "bar_type":
-					if(!fromQuery.contains(MainView.BOARD_BAR_CAPACITIES_TABLE)) {
-						fromQuery += "," + MainView.BOARD_BAR_CAPACITIES_TABLE;
+					if(!fromQuery.contains(SalesMainView.BOARD_BAR_CAPACITIES_TABLE)) {
+						fromQuery += "," + SalesMainView.BOARD_BAR_CAPACITIES_TABLE;
 					}
 					if (!searchSelectedBoardBarCapacity.isEmpty() && !searchSelectedBoardBarCapacity.equalsIgnoreCase("Todas")) {
 						this.selectWhereQuery();
-						whereQuery += MainView.BOARD_BAR_CAPACITIES_TABLE + ".bar_capacity = '" + searchSelectedBoardBarCapacity + "'";
+						whereQuery += SalesMainView.BOARD_BAR_CAPACITIES_TABLE + ".bar_capacity = '" + searchSelectedBoardBarCapacity + "'";
 						this.selectWhereQuery();
-						whereQuery += MainView.BOARD_TABLE + ".bar_capacity_id = " + MainView.BOARD_BAR_CAPACITIES_TABLE + ".id";
+						whereQuery += SalesMainView.BOARD_TABLE + ".bar_capacity_id = " + SalesMainView.BOARD_BAR_CAPACITIES_TABLE + ".id";
 					}
 				case "bar_capacity":
-					if(!fromQuery.contains(MainView.NEMAS_TABLE)) {
-						fromQuery += "," + MainView.NEMAS_TABLE;
+					if(!fromQuery.contains(SalesMainView.NEMAS_TABLE)) {
+						fromQuery += "," + SalesMainView.NEMAS_TABLE;
 					}
 					if (!searchSelectedBoardNema.isEmpty() && !searchSelectedBoardNema.equalsIgnoreCase("Todas")) {
 						this.selectWhereQuery();
-						whereQuery += MainView.NEMAS_TABLE + ".nema = '" + searchSelectedBoardNema + "'";
+						whereQuery += SalesMainView.NEMAS_TABLE + ".nema = '" + searchSelectedBoardNema + "'";
 						this.selectWhereQuery();
-						whereQuery += MainView.BOARD_TABLE + ".nema_id = " + MainView.NEMAS_TABLE + ".id";
+						whereQuery += SalesMainView.BOARD_TABLE + ".nema_id = " + SalesMainView.NEMAS_TABLE + ".id";
 					}
 				case "nema":
-					if(!fromQuery.contains(MainView.INSTALLATIONS_TABLE)) {
-						fromQuery += "," + MainView.INSTALLATIONS_TABLE;
+					if(!fromQuery.contains(SalesMainView.INSTALLATIONS_TABLE)) {
+						fromQuery += "," + SalesMainView.INSTALLATIONS_TABLE;
 					}
 					if(!searchSelectedBoardInstallation.isEmpty() && !searchSelectedBoardInstallation.equalsIgnoreCase("Todas")) {
 						this.selectWhereQuery();
-						whereQuery += MainView.INSTALLATIONS_TABLE + ".installation = '" + searchSelectedBoardInstallation + "'";
+						whereQuery += SalesMainView.INSTALLATIONS_TABLE + ".installation = '" + searchSelectedBoardInstallation + "'";
 						this.selectWhereQuery();
-						whereQuery += MainView.BOARD_TABLE + ".installation_id = " + MainView.INSTALLATIONS_TABLE + ".id";
+						whereQuery += SalesMainView.BOARD_TABLE + ".installation_id = " + SalesMainView.INSTALLATIONS_TABLE + ".id";
 					}
 				case "installation":
-					if(!fromQuery.contains(MainView.BOARD_TYPES_TABLE)) {
-						fromQuery += "," + MainView.BOARD_TYPES_TABLE;
+					if(!fromQuery.contains(SalesMainView.BOARD_TYPES_TABLE)) {
+						fromQuery += "," + SalesMainView.BOARD_TYPES_TABLE;
 					}
 					if(!searchSelectedBoardType.isEmpty() && !searchSelectedBoardType.equalsIgnoreCase("Todas")) {
 						this.selectWhereQuery();
-						whereQuery += MainView.BOARD_TYPES_TABLE + ".type = '" + searchSelectedBoardType + "'";
+						whereQuery += SalesMainView.BOARD_TYPES_TABLE + ".type = '" + searchSelectedBoardType + "'";
 						this.selectWhereQuery();
-						whereQuery += MainView.BOARD_TABLE + ".type_id = " + MainView.BOARD_TYPES_TABLE + ".id";
+						whereQuery += SalesMainView.BOARD_TABLE + ".type_id = " + SalesMainView.BOARD_TYPES_TABLE + ".id";
 					}
 					if(null != textBoardSearchNames && !textBoardSearchNames.getText().isEmpty()) {
 						this.selectWhereQuery();
-						whereQuery += MainView.BOARD_TABLE + ".name LIKE '%" + textBoardSearchNames.getText() + "%'";
+						whereQuery += SalesMainView.BOARD_TABLE + ".name LIKE '%" + textBoardSearchNames.getText() + "%'";
 					}
 					break;
 			}
@@ -7700,101 +7570,101 @@ public class MainView extends JFrame{
 			switch(start) {
 			case "types":
 				this.selectWhereQuery();
-				fromQuery += "," + MainView.INSTALLATIONS_TABLE;
-				whereQuery += MainView.BOARD_TABLE + ".type_id = " + MainView.BOARD_TYPES_TABLE + ".id";
+				fromQuery += "," + SalesMainView.INSTALLATIONS_TABLE;
+				whereQuery += SalesMainView.BOARD_TABLE + ".type_id = " + SalesMainView.BOARD_TYPES_TABLE + ".id";
 				this.selectWhereQuery();
-				whereQuery += MainView.BOARD_TABLE + ".installation_id = " + MainView.INSTALLATIONS_TABLE + ".id ";
-				comboBoardInstallations.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(MainView.INSTALLATIONS_TABLE, "installation"))));
+				whereQuery += SalesMainView.BOARD_TABLE + ".installation_id = " + SalesMainView.INSTALLATIONS_TABLE + ".id ";
+				comboBoardInstallations.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(SalesMainView.INSTALLATIONS_TABLE, "installation"))));
 			case "installations":
-				fromQuery += "," + MainView.NEMAS_TABLE;
+				fromQuery += "," + SalesMainView.NEMAS_TABLE;
 				if(!searchSelectedBoardInstallation.isEmpty()) {
 					this.selectWhereQuery();
-					whereQuery += MainView.BOARD_TABLE + ".installation_id = " + MainView.INSTALLATIONS_TABLE + ".id";
+					whereQuery += SalesMainView.BOARD_TABLE + ".installation_id = " + SalesMainView.INSTALLATIONS_TABLE + ".id";
 				}
 				this.addBoardAdditionalWhere("installation");
 				this.selectWhereQuery();
-				whereQuery += MainView.BOARD_TABLE + ".nema_id = " + MainView.NEMAS_TABLE + ".id ";
-				comboBoardNemas.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(MainView.NEMAS_TABLE, "nema"))));
+				whereQuery += SalesMainView.BOARD_TABLE + ".nema_id = " + SalesMainView.NEMAS_TABLE + ".id ";
+				comboBoardNemas.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(SalesMainView.NEMAS_TABLE, "nema"))));
 			case "nemas":
-				fromQuery += "," + MainView.BOARD_BAR_CAPACITIES_TABLE;
+				fromQuery += "," + SalesMainView.BOARD_BAR_CAPACITIES_TABLE;
 				if(!searchSelectedBoardNema.isEmpty()) {
 					this.selectWhereQuery();
-					whereQuery += MainView.BOARD_TABLE + ".nema_id = " + MainView.NEMAS_TABLE + ".id";
+					whereQuery += SalesMainView.BOARD_TABLE + ".nema_id = " + SalesMainView.NEMAS_TABLE + ".id";
 				}
 				this.addBoardAdditionalWhere("nema");
 				this.selectWhereQuery();
-				whereQuery += MainView.BOARD_TABLE + ".bar_capacity_id = " + MainView.BOARD_BAR_CAPACITIES_TABLE + ".id ";
-				comboBoardBarCapacities.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(MainView.BOARD_BAR_CAPACITIES_TABLE, "bar_capacity"))));
+				whereQuery += SalesMainView.BOARD_TABLE + ".bar_capacity_id = " + SalesMainView.BOARD_BAR_CAPACITIES_TABLE + ".id ";
+				comboBoardBarCapacities.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(SalesMainView.BOARD_BAR_CAPACITIES_TABLE, "bar_capacity"))));
 			case "bar_capacity":
-				fromQuery += "," + MainView.BOARD_BAR_TYPES_TABLE;
+				fromQuery += "," + SalesMainView.BOARD_BAR_TYPES_TABLE;
 				if(!searchSelectedBoardBarCapacity.isEmpty()) {
 					this.selectWhereQuery();
-					whereQuery += MainView.BOARD_TABLE + ".bar_capacity_id = " + MainView.BOARD_BAR_CAPACITIES_TABLE + ".id";
+					whereQuery += SalesMainView.BOARD_TABLE + ".bar_capacity_id = " + SalesMainView.BOARD_BAR_CAPACITIES_TABLE + ".id";
 				}
 				this.addBoardAdditionalWhere("bar_capacity");
 				this.selectWhereQuery();
-				whereQuery += MainView.BOARD_TABLE + ".bar_type_id = " + MainView.BOARD_BAR_TYPES_TABLE + ".id ";
-				comboBoardBarTypes.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(MainView.BOARD_BAR_TYPES_TABLE, "bar_type"))));
+				whereQuery += SalesMainView.BOARD_TABLE + ".bar_type_id = " + SalesMainView.BOARD_BAR_TYPES_TABLE + ".id ";
+				comboBoardBarTypes.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(SalesMainView.BOARD_BAR_TYPES_TABLE, "bar_type"))));
 			case "bar_type":
-				fromQuery += "," + MainView.BOARD_CIRCUITS_TABLE;
+				fromQuery += "," + SalesMainView.BOARD_CIRCUITS_TABLE;
 				if(!searchSelectedBoardBarType.isEmpty()) {
 					this.selectWhereQuery();
-					whereQuery += MainView.BOARD_TABLE + ".bar_type_id = " + MainView.BOARD_BAR_TYPES_TABLE + ".id";
+					whereQuery += SalesMainView.BOARD_TABLE + ".bar_type_id = " + SalesMainView.BOARD_BAR_TYPES_TABLE + ".id";
 				}
 				this.addBoardAdditionalWhere("bar_type");
 				this.selectWhereQuery();
-				whereQuery += MainView.BOARD_TABLE + ".circuits_id = " + MainView.BOARD_CIRCUITS_TABLE + ".id ";
-				comboBoardCircuits.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(MainView.BOARD_CIRCUITS_TABLE, "circuits"))));
+				whereQuery += SalesMainView.BOARD_TABLE + ".circuits_id = " + SalesMainView.BOARD_CIRCUITS_TABLE + ".id ";
+				comboBoardCircuits.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(SalesMainView.BOARD_CIRCUITS_TABLE, "circuits"))));
 			case "circuits":
-				fromQuery += "," + MainView.BOARD_VOLTAGES_TABLE;
+				fromQuery += "," + SalesMainView.BOARD_VOLTAGES_TABLE;
 				if(!searchSelectedBoardCircuits.isEmpty()) {
 					this.selectWhereQuery();
-					whereQuery += MainView.BOARD_TABLE + ".circuits_id = " + MainView.BOARD_CIRCUITS_TABLE + ".id";
+					whereQuery += SalesMainView.BOARD_TABLE + ".circuits_id = " + SalesMainView.BOARD_CIRCUITS_TABLE + ".id";
 				}
 				this.addBoardAdditionalWhere("circuits");
 				this.selectWhereQuery();
-				whereQuery += MainView.BOARD_TABLE + ".voltage_id = " + MainView.BOARD_VOLTAGES_TABLE + ".id ";
-				comboBoardVoltages.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(MainView.BOARD_VOLTAGES_TABLE, "voltage"))));
+				whereQuery += SalesMainView.BOARD_TABLE + ".voltage_id = " + SalesMainView.BOARD_VOLTAGES_TABLE + ".id ";
+				comboBoardVoltages.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(SalesMainView.BOARD_VOLTAGES_TABLE, "voltage"))));
 			case "voltage":
-				if(!fromQuery.contains(MainView.BOARD_TABLE)) {
-					fromQuery += "," + MainView.BOARD_TABLE;
+				if(!fromQuery.contains(SalesMainView.BOARD_TABLE)) {
+					fromQuery += "," + SalesMainView.BOARD_TABLE;
 				}
 				if(!searchSelectedBoardVoltage.isEmpty()) {
 					this.selectWhereQuery();
-					whereQuery += MainView.BOARD_TABLE + ".voltage_id = " + MainView.BOARD_VOLTAGES_TABLE + ".id";
+					whereQuery += SalesMainView.BOARD_TABLE + ".voltage_id = " + SalesMainView.BOARD_VOLTAGES_TABLE + ".id";
 				}
 				this.addBoardAdditionalWhere("voltage");
-				comboBoardPhases.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(MainView.BOARD_TABLE, "phases"))));
+				comboBoardPhases.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(SalesMainView.BOARD_TABLE, "phases"))));
 			case "phases":
-				if(!fromQuery.contains(MainView.BOARD_TABLE)) {
-					fromQuery += "," + MainView.BOARD_TABLE;
+				if(!fromQuery.contains(SalesMainView.BOARD_TABLE)) {
+					fromQuery += "," + SalesMainView.BOARD_TABLE;
 				}
 				if(!searchSelectedBoardPhases.isEmpty() && !searchSelectedBoardPhases.equalsIgnoreCase("Todas")) {
 					this.selectWhereQuery();
-					whereQuery += MainView.BOARD_TABLE + ".phases = '" + searchSelectedBoardPhases + "' ";
+					whereQuery += SalesMainView.BOARD_TABLE + ".phases = '" + searchSelectedBoardPhases + "' ";
 				}
 				this.addBoardAdditionalWhere("phases");
-				comboBoardGround.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(MainView.BOARD_TABLE, "ground", MainView.BOARD_GROUND_FIELD, true))));
+				comboBoardGround.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(SalesMainView.BOARD_TABLE, "ground", SalesMainView.BOARD_GROUND_FIELD, true))));
 			case "ground":
-				fromQuery += "," + MainView.INTERRUPTIONS_TABLE;
+				fromQuery += "," + SalesMainView.INTERRUPTIONS_TABLE;
 				if(!searchSelectedBoardGround.isEmpty() && !searchSelectedBoardGround.equalsIgnoreCase("Todas")) {
 					this.selectWhereQuery();
-					whereQuery += MainView.BOARD_TABLE + ".ground = '" + (searchSelectedBoardGround.equalsIgnoreCase("SI")?"1":"0") + "'";
+					whereQuery += SalesMainView.BOARD_TABLE + ".ground = '" + (searchSelectedBoardGround.equalsIgnoreCase("SI")?"1":"0") + "'";
 				}
 				this.addBoardAdditionalWhere("ground");
 				this.selectWhereQuery();
-				whereQuery += MainView.BOARD_TABLE + ".interruption_id = " + MainView.INTERRUPTIONS_TABLE + ".id ";
-				comboBoardInterruptions.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(MainView.INTERRUPTIONS_TABLE, "interruption"))));
+				whereQuery += SalesMainView.BOARD_TABLE + ".interruption_id = " + SalesMainView.INTERRUPTIONS_TABLE + ".id ";
+				comboBoardInterruptions.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(SalesMainView.INTERRUPTIONS_TABLE, "interruption"))));
 			case "interruption":
-				fromQuery += "," + MainView.LOCK_TYPES_TABLE;
+				fromQuery += "," + SalesMainView.LOCK_TYPES_TABLE;
 				if(!searchSelectedBoardInterruption.isEmpty()) {
 					this.selectWhereQuery();
-					whereQuery += MainView.BOARD_TABLE + ".interruption_id = " + MainView.INTERRUPTIONS_TABLE + ".id";
+					whereQuery += SalesMainView.BOARD_TABLE + ".interruption_id = " + SalesMainView.INTERRUPTIONS_TABLE + ".id";
 				}
 				this.addBoardAdditionalWhere("interruption");
 				this.selectWhereQuery();
-				whereQuery += MainView.BOARD_TABLE + ".lock_type_id = " + MainView.LOCK_TYPES_TABLE + ".id ";
-				comboBoardLockTypes.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(MainView.LOCK_TYPES_TABLE, "lock_type"))));
+				whereQuery += SalesMainView.BOARD_TABLE + ".lock_type_id = " + SalesMainView.LOCK_TYPES_TABLE + ".id ";
+				comboBoardLockTypes.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(SalesMainView.LOCK_TYPES_TABLE, "lock_type"))));
 				break;
 			}
 		}
@@ -7818,7 +7688,7 @@ public class MainView extends JFrame{
 	private class SearchButtonListener implements ActionListener {
 		
 		String whereQuery = "";
-		
+				
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			String actionCommand = e.getActionCommand();
@@ -7883,81 +7753,81 @@ public class MainView extends JFrame{
 				searchSelectedBoxDepth = textBoxDepth.getText();
 				if(searchSelectedBoxType != null && !searchSelectedBoxType.equalsIgnoreCase("Todas") &&
 						!searchSelectedBoxType.isEmpty()) {
-					whereQuery += " AND " + MainView.BOX_TYPES_TABLE + ".type = '" + searchSelectedBoxType + "'";
+					whereQuery += " AND " + SalesMainView.BOX_TYPES_TABLE + ".type = '" + searchSelectedBoxType + "'";
 				}
 				if(searchSelectedBoxInstallation != null && !searchSelectedBoxInstallation.equalsIgnoreCase("Todas") &&
 						!searchSelectedBoxInstallation.isEmpty()) {
 					whereQuery += " AND boxes.installation_id = installations.id ";
-					whereQuery += " AND " + MainView.INSTALLATIONS_TABLE + ".installation = '" + searchSelectedBoxInstallation + "'";
+					whereQuery += " AND " + SalesMainView.INSTALLATIONS_TABLE + ".installation = '" + searchSelectedBoxInstallation + "'";
 				}
 				if(searchSelectedBoxNema != null && !searchSelectedBoxNema.equalsIgnoreCase("Todas") &&
 						!searchSelectedBoxNema.isEmpty()) {
-					whereQuery += " AND " + MainView.NEMAS_TABLE + ".nema = '" + searchSelectedBoxNema + "'";
+					whereQuery += " AND " + SalesMainView.NEMAS_TABLE + ".nema = '" + searchSelectedBoxNema + "'";
 				}
 				if(searchSelectedBoxPairs != null && !searchSelectedBoxPairs.equalsIgnoreCase("Todas") &&
 						!searchSelectedBoxPairs.isEmpty() && (searchSelectedBoxType.equalsIgnoreCase("Todas") ||
 								searchSelectedBoxType.equalsIgnoreCase("para Pares Telefonicos") ||
 								searchSelectedBoxType.isEmpty())) {
-					whereQuery += " AND " + MainView.BOXES_TABLE + ".pairs = '" + searchSelectedBoxPairs + "'";
+					whereQuery += " AND " + SalesMainView.BOXES_TABLE + ".pairs = '" + searchSelectedBoxPairs + "'";
 				}
 				if(searchSelectedBoxSheet != null && !searchSelectedBoxSheet.equalsIgnoreCase("Todas") &&
 						!searchSelectedBoxSheet.isEmpty()) {
-					whereQuery += " AND " + MainView.BOX_SHEETS_TABLE + ".id = " + MainView.BOXES_TABLE + ".sheet_id";
-					whereQuery += " AND " + MainView.BOX_SHEETS_TABLE + ".sheet = '" + searchSelectedBoxSheet + "'";
+					whereQuery += " AND " + SalesMainView.BOX_SHEETS_TABLE + ".id = " + SalesMainView.BOXES_TABLE + ".sheet_id";
+					whereQuery += " AND " + SalesMainView.BOX_SHEETS_TABLE + ".sheet = '" + searchSelectedBoxSheet + "'";
 				} else {
 					whereQuery += "AND ( (boxes.sheet_id > 0 "
-							+ "AND boxes.sheet_id = " + MainView.BOX_SHEETS_TABLE + ".id) "
+							+ "AND boxes.sheet_id = " + SalesMainView.BOX_SHEETS_TABLE + ".id) "
 							+ "OR boxes.sheet_id = 0)";
 				}
 				if(searchSelectedBoxFinish != null && !searchSelectedBoxFinish.equalsIgnoreCase("Todas") &&
 						!searchSelectedBoxFinish.isEmpty()) {
-					whereQuery += " AND " + MainView.BOX_FINISHES_TABLE + ".id = " + MainView.BOXES_TABLE + ".finish_id";
-					whereQuery += " AND " + MainView.BOX_FINISHES_TABLE + ".finish = '" + searchSelectedBoxFinish + "'";
+					whereQuery += " AND " + SalesMainView.BOX_FINISHES_TABLE + ".id = " + SalesMainView.BOXES_TABLE + ".finish_id";
+					whereQuery += " AND " + SalesMainView.BOX_FINISHES_TABLE + ".finish = '" + searchSelectedBoxFinish + "'";
 				} else {
 					whereQuery += "AND ( (boxes.finish_id > 0 "
-							+ "AND boxes.finish_id = " + MainView.BOX_FINISHES_TABLE + ".id) "
+							+ "AND boxes.finish_id = " + SalesMainView.BOX_FINISHES_TABLE + ".id) "
 							+ "OR boxes.finish_id = 0)";
 				}
 				if(searchSelectedBoxColor != null && !searchSelectedBoxColor.equalsIgnoreCase("Todas") &&
 						!searchSelectedBoxColor.isEmpty()) {
-					whereQuery += " AND " + MainView.BOX_COLORS_TABLE + ".id = " + MainView.BOXES_TABLE + ".color_id";
-					whereQuery += " AND " + MainView.BOX_COLORS_TABLE + ".color = '" + searchSelectedBoxColor + "'";
+					whereQuery += " AND " + SalesMainView.BOX_COLORS_TABLE + ".id = " + SalesMainView.BOXES_TABLE + ".color_id";
+					whereQuery += " AND " + SalesMainView.BOX_COLORS_TABLE + ".color = '" + searchSelectedBoxColor + "'";
 				} else {
 					whereQuery += "AND ( (boxes.color_id > 0 "
-							+ "AND boxes.color_id = " + MainView.BOX_COLORS_TABLE + ".id) "
+							+ "AND boxes.color_id = " + SalesMainView.BOX_COLORS_TABLE + ".id) "
 							+ "OR boxes.color_id = 0)";
 				}
 				if(searchSelectedBoxHeight != null && !searchSelectedBoxHeight.equalsIgnoreCase("Todas") &&
 						!searchSelectedBoxHeight.isEmpty() && !searchSelectedBoxType.equalsIgnoreCase("para Tablero")) {
-					whereQuery += " AND " + MainView.BOXES_TABLE + ".height = '" + searchSelectedBoxHeight + "'";
+					whereQuery += " AND " + SalesMainView.BOXES_TABLE + ".height = '" + searchSelectedBoxHeight + "'";
 				}
 				if(searchSelectedBoxWidth != null && !searchSelectedBoxWidth.equalsIgnoreCase("Todas") &&
 						!searchSelectedBoxWidth.isEmpty() && !searchSelectedBoxType.equalsIgnoreCase("para Tablero")) {
-					whereQuery += " AND " + MainView.BOXES_TABLE + ".width = '" + searchSelectedBoxWidth + "'";
+					whereQuery += " AND " + SalesMainView.BOXES_TABLE + ".width = '" + searchSelectedBoxWidth + "'";
 				}
 				if(searchSelectedBoxDepth != null && !searchSelectedBoxDepth.equalsIgnoreCase("Todas") &&
 						!searchSelectedBoxDepth.isEmpty() && !searchSelectedBoxType.equalsIgnoreCase("para Tablero")) {
-					whereQuery += " AND " + MainView.BOXES_TABLE + ".depth = '" + searchSelectedBoxDepth + "'";
+					whereQuery += " AND " + SalesMainView.BOXES_TABLE + ".depth = '" + searchSelectedBoxDepth + "'";
 				}
 				whereQuery += "AND ( (boxes.units_id > 0 "
-						+ "AND boxes.units_id = " + MainView.BOX_UNITS_TABLE + ".id) "
+						+ "AND boxes.units_id = " + SalesMainView.BOX_UNITS_TABLE + ".id) "
 						+ "OR boxes.units_id = 0)";
 				if(searchSelectedBoxCaliber != null && !searchSelectedBoxCaliber.equalsIgnoreCase("Todas") &&
 						!searchSelectedBoxCaliber.isEmpty()) {
-					whereQuery += " AND " + MainView.BOX_CALIBERS_TABLE + ".id = " + MainView.BOXES_TABLE + ".caliber_id";
-					whereQuery += " AND " + MainView.BOX_CALIBERS_TABLE + ".caliber = '" + searchSelectedBoxCaliber + "'";
+					whereQuery += " AND " + SalesMainView.BOX_CALIBERS_TABLE + ".id = " + SalesMainView.BOXES_TABLE + ".caliber_id";
+					whereQuery += " AND " + SalesMainView.BOX_CALIBERS_TABLE + ".caliber = '" + searchSelectedBoxCaliber + "'";
 				} else {
 					whereQuery += "AND ( (boxes.caliber_id > 0 "
-							+ "AND boxes.caliber_id = " + MainView.BOX_CALIBERS_TABLE + ".id) "
+							+ "AND boxes.caliber_id = " + SalesMainView.BOX_CALIBERS_TABLE + ".id) "
 							+ "OR boxes.caliber_id = 0)";
 				}
 				if(searchSelectedBoxLockType != null && !searchSelectedBoxLockType.equalsIgnoreCase("Todas") &&
 						!searchSelectedBoxLockType.isEmpty()) {
 					whereQuery += " AND boxes.lock_type_id = lock_types.id ";
-					whereQuery += "AND " + MainView.LOCK_TYPES_TABLE + ".lock_type = '" + searchSelectedBoxLockType + "'";
+					whereQuery += "AND " + SalesMainView.LOCK_TYPES_TABLE + ".lock_type = '" + searchSelectedBoxLockType + "'";
 				} else {
 					whereQuery += "AND ( (boxes.lock_type_id > 0 "
-							+ "AND boxes.lock_type_id = " + MainView.LOCK_TYPES_TABLE + ".id) "
+							+ "AND boxes.lock_type_id = " + SalesMainView.LOCK_TYPES_TABLE + ".id) "
 							+ "OR boxes.lock_type_id = 0)";
 				}
 				
@@ -7985,8 +7855,8 @@ public class MainView extends JFrame{
 				textMaterialsPrice.setText("");
 				textMaterialsPrice.setEditable(false);
 				buttonBoardMaterialsEdit.setEnabled(false);
-				textComments.setText("");
-				textComments.setEditable(false);
+				textBoardComments.setText("");
+				textBoardComments.setEditable(false);
 				buttonBoardCommentsEdit.setEnabled(false);
 			} else if(actionCommand.equalsIgnoreCase("board.switch.search.bar.button")) {
 				whereQuery = "";
@@ -8017,7 +7887,7 @@ public class MainView extends JFrame{
 		
 	}
 	
-	public class SharedListSelectionListener implements ListSelectionListener {
+	private class SharedListSelectionListener implements ListSelectionListener {
 		
 		public static final int SWITCH_ID_COLUMN = 0;
 		public static final int SWITCH_MODEL_COLUMN = 1;
@@ -8073,8 +7943,8 @@ public class MainView extends JFrame{
 		public static final int BUDGET_DISPATCH_PLACE_COLUMN = 10;
 		public static final int BUDGET_DELIVERY_TIME_COLUMN = 11;
 		public static final int BUDGET_DELIVERY_PERIOD_COLUMN = 12;
-		public static final int BUDGET_TRACING_COLUMN = 13;
-		public static final int BUDGET_STAGE_COLUMN = 14;
+//		public static final int BUDGET_TRACING_COLUMN = 13;
+//		public static final int BUDGET_STAGE_COLUMN = 14;
 		
 		@Override
 		public void valueChanged(ListSelectionEvent e) {
@@ -8198,7 +8068,7 @@ public class MainView extends JFrame{
 							textMaterials.setEditable(false);
 							textMaterialsPrice.setEditable(false);
 							buttonBoardMaterialsEdit.setEnabled(true);
-							textComments.setEditable(false);
+							textBoardComments.setEditable(false);
 							buttonBoardCommentsEdit.setEnabled(true);
 						}
 						
@@ -8219,10 +8089,11 @@ public class MainView extends JFrame{
 						textBoardDescriptionLockType.setText((String) tableBoardsResult.getValueAt(boardsTableSelectedIndex, BOARD_LOCK_TYPE_COLUMN));
 						textBoardDescriptionPrice.setText("BsF " + tableBoardsResult.getValueAt(boardsTableSelectedIndex, BOARD_PRICE_COLUMN));
 						
-						textMaterials.setText(db.getBoardMaterials(selectedBoardId));
+						// TODO Fix materials tab and place a table to show the materials
+//						textMaterials.setText(db.getBoardMaterials(selectedBoardId));
 						textMaterialsPrice.setText(String.valueOf(db.getBoardMaterialsPrice(selectedBoardId)));
 						
-						textComments.setText(db.getBoardComments(selectedBoardId));
+						textBoardComments.setText(db.getBoardComments(selectedBoardId));
 						
 						textBoardDescription.setText("Caja para Tablero, " +
 								tableBoardsResult.getValueAt(boardsTableSelectedIndex, BOARD_TYPE_COLUMN) +
@@ -8239,63 +8110,67 @@ public class MainView extends JFrame{
 				selectedBoardSwitchId = Integer.valueOf((String) tableBoardSwitchesResult.getValueAt(boardSwitchesTableSelectedIndex, BOARD_ID_COLUMN));
 				buttonRemoveBoardSwitch.setEnabled(true);
 			} else if (null != tableBudgetsResult && tableBudgetsResult.isFocusOwner() && lsm.getMinSelectionIndex() > -1) {
-				budgetsTableSelectedIndex = lsm.getMinSelectionIndex();
-				
+				budgetsTableSelectedIndex = lsm.getMinSelectionIndex();				
 				if(lsm.isSelectionEmpty()) {
-//					buttonAddBoardSwitch.setEnabled(false);
 					tableBudgetsResult.setModel(new DefaultTableModel());
 				} else {
 					selectedBudgetId = Integer.valueOf((String) tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, 0));
 					
-					if(lsm.isSelectionEmpty()) {
-						buttonBudgetEdit.setEnabled(false);
-						textBudgetDescriptionId.setText("");
-						textBudgetDescriptionCode.setText("");
-						textBudgetDescriptionDate.setText("");
-						textBudgetDescriptionExpiryDays.setText("");
-						textBudgetDescriptionExpiryDate.setText("");
-						textBudgetDescriptionClientCode.setText("");
-						textBudgetDescriptionCompany.setText("");
-						textBudgetDescriptionCompanyRepresentative.setText("");
-						textBudgetDescriptionWorkName.setText("");
-						textBudgetDescriptionPaymentMethod.setText("");
-						textBudgetDescriptionSeller.setText("");
-						textBudgetDescriptionDispatchPlace.setText("");
-						textBudgetDescriptionDeliveryTime.setText("");
-						textBudgetDescriptionDeliveryPeriod.setText("");
-					} else {
-						if(panelBudgetDescription.isShowing()) {
-							buttonBudgetEdit.setEnabled(true);
-						}
-						
-						DateTime dt = new DateTime(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_DATE_COLUMN));
-						
-						Integer expiryDays = Integer.valueOf(String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_EXPIRY_DAYS_COLUMN)));
-						
-						textBudgetDescriptionId.setText((String) tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_ID_COLUMN));
-						textBudgetDescriptionCode.setText((String) tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_CODE_COLUMN));
-						textBudgetDescriptionDate.setText(dt.toLocalDate().toString());
-						textBudgetDescriptionExpiryDays.setText(expiryDays.toString());
-						textBudgetDescriptionExpiryDate.setText(dt.plusDays(expiryDays).toLocalDate().toString());
-//						textBudgetDescriptionClientCode.setText(db.getBudgetClientCode(Integer.valueOf((String)tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_ID_COLUMN))));
-						textBudgetDescriptionCompany.setText(db.getBudgetClientName(Integer.valueOf((String)tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_ID_COLUMN))));
-						textBudgetDescriptionCompanyRepresentative.setText(db.getBudgetClientRepresentative(Integer.valueOf((String)tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_ID_COLUMN))));
-						textBudgetDescriptionWorkName.setText((String) tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_WORK_NAME_COLUMN));
-						textBudgetDescriptionPaymentMethod.setText((String)tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_PAYMENT_METHOD_COLUMN));
-						textBudgetDescriptionSeller.setText((String) tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_SELLER_COLUMN));
-						textBudgetDescriptionDispatchPlace.setText((String) tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_DISPATCH_PLACE_COLUMN));
-						textBudgetDescriptionDeliveryTime.setText((String)tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_DELIVERY_TIME_COLUMN));
-						textBudgetDescriptionDeliveryPeriod.setText((String)tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_DELIVERY_PERIOD_COLUMN));
-//						textBoardDescription.setText("Caja para Tablero, " +
-//								tableBoardsResult.getValueAt(boardsTableSelectedIndex, BOARD_TYPE_COLUMN) +
-//								", " +
-//								tableBoardsResult.getValueAt(boardsTableSelectedIndex, BOARD_PHASES_COLUMN) +
-//								", de " +
-//								tableBoardsResult.getValueAt(boardsTableSelectedIndex, BOARD_CIRCUITS_COLUMN) +
-//								" circuitos, " +
-//								tableBoardsResult.getValueAt(boardsTableSelectedIndex, BOARD_NEMA_COLUMN));
+					JTabbedPane budgetTabbedPane = (JTabbedPane) budgetSwitchesPanel.getParent();
+					setTabsEnabled(budgetTabbedPane, true);
+					loadBudgetSwitchTable();
+					loadBudgetBoxTable();
+					loadBudgetBoardTable();
+					buttonAddBudgetSwitch.setEnabled(true);
+					buttonAddBudgetBox.setEnabled(true);
+					buttonAddBudgetBoard.setEnabled(true);
+					buttonBudgetNotesEdit.setEnabled(true);
+					
+					
+					if(panelBudgetDescription.isShowing()) {
+						buttonBudgetEdit.setEnabled(true);
 					}
+					
+					DateTimeFormatter dtf = DateTimeFormat.forPattern("dd-MM-yyyy");
+					
+					DateTime dt = dtf.parseDateTime((String) tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_DATE_COLUMN));
+					
+					Integer expiryDays = Integer.valueOf(String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_EXPIRY_DAYS_COLUMN)));
+					textBudgetDescriptionId.setText((String) tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_ID_COLUMN));
+					textBudgetDescriptionCode.setText((String) tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_CODE_COLUMN));
+					textBudgetDescriptionDate.setText(dtf.print(dt));
+					textBudgetDescriptionExpiryDays.setText(expiryDays.toString());
+					textBudgetDescriptionExpiryDate.setText(dtf.print(dt.plusDays(expiryDays).toLocalDate()));
+					textBudgetDescriptionClientCode.setText(db.getBudgetClientCode(selectedBudgetId));
+					textBudgetDescriptionClient.setText(db.getBudgetClientName(selectedBudgetId));
+					textBudgetDescriptionClientRepresentative.setText(db.getBudgetClientRepresentative(selectedBudgetId));
+					textBudgetDescriptionWorkName.setText((String) tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_WORK_NAME_COLUMN));
+					textBudgetDescriptionPaymentMethod.setText((String)tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_PAYMENT_METHOD_COLUMN));
+					textBudgetDescriptionSeller.setText((String) tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_SELLER_COLUMN));
+					textBudgetDescriptionDispatchPlace.setText((String) tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_DISPATCH_PLACE_COLUMN));
+					textBudgetDescriptionDeliveryTime.setText((String)tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_DELIVERY_TIME_COLUMN));
+					textBudgetDescriptionDeliveryPeriod.setText((String)tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_DELIVERY_PERIOD_COLUMN));
+					
+					textBudgetNotes.setText(db.getBudgetNotes(selectedBudgetId));
 				}
+			} else if (null != tableBudgetSwitchesResult && tableBudgetSwitchesResult.isFocusOwner() && lsm.getMinSelectionIndex() > -1) {
+				budgetSwitchesTableSelectedIndex = lsm.getMinSelectionIndex();
+				stringSelectedBudgetSwitch = (String) tableBudgetSwitchesResult.getValueAt(budgetSwitchesTableSelectedIndex, BUDGET_ID_COLUMN);
+				if (Numbers.isNumeric(stringSelectedBudgetSwitch)) {
+					selectedBudgetSwitchId = Integer.valueOf((String) tableBudgetSwitchesResult.getValueAt(budgetSwitchesTableSelectedIndex, BUDGET_ID_COLUMN));
+				} else {
+					selectedBudgetSwitchId = 0;
+				}
+				
+				buttonRemoveBudgetSwitch.setEnabled(true);
+			} else if (null != tableBudgetBoxesResult && tableBudgetBoxesResult.isFocusOwner() && lsm.getMinSelectionIndex() > -1) {
+				budgetSwitchesTableSelectedIndex = lsm.getMinSelectionIndex();
+				selectedBudgetBoxId = Integer.valueOf((String) tableBudgetBoxesResult.getValueAt(budgetSwitchesTableSelectedIndex, BUDGET_ID_COLUMN));
+				buttonRemoveBudgetBox.setEnabled(true);
+			} else if (null != tableBudgetBoardsResult && tableBudgetBoardsResult.isFocusOwner() && lsm.getMinSelectionIndex() > -1) {
+				budgetSwitchesTableSelectedIndex = lsm.getMinSelectionIndex();
+				selectedBudgetBoardId = Integer.valueOf((String) tableBudgetBoardsResult.getValueAt(budgetSwitchesTableSelectedIndex, BUDGET_ID_COLUMN));
+				buttonRemoveBudgetBoard.setEnabled(true);
 			}
 			
 			if(lsm.isSelectionEmpty() && null != panelSwitchDescription && tableSwitchesResult.getSelectedRow() == -1) {
@@ -8345,21 +8220,45 @@ public class MainView extends JFrame{
 				textBoardDescriptionPrice.setText("");
 				textBoardDescription.setText("");
 			} else if (lsm.isSelectionEmpty() && null != panelBudgetDescription && tableBudgetsResult.getSelectedRow() == -1) {
+				selectedBudgetId = 0;
 				buttonBudgetEdit.setEnabled(false);
+				buttonBudgetNotesEdit.setEnabled(false);
+				buttonAddBudgetSwitch.setEnabled(false);
+				buttonAddBudgetBox.setEnabled(false);
+				buttonAddBudgetBoard.setEnabled(false);
+				buttonBudgetNotesEdit.setEnabled(false);
+				tableBudgetSwitchesResult.setModel(new DefaultTableModel());
+				tableBudgetBoxesResult.setModel(new DefaultTableModel());
+				tableBudgetBoardsResult.setModel(new DefaultTableModel());
 				textBudgetDescriptionId.setText("");
 				textBudgetDescriptionCode.setText("");
 				textBudgetDescriptionDate.setText("");
 				textBudgetDescriptionExpiryDays.setText("");
 				textBudgetDescriptionExpiryDate.setText("");
 				textBudgetDescriptionClientCode.setText("");
-				textBudgetDescriptionCompany.setText("");
-				textBudgetDescriptionCompanyRepresentative.setText("");
+				textBudgetDescriptionClient.setText("");
+				textBudgetDescriptionClientRepresentative.setText("");
 				textBudgetDescriptionWorkName.setText("");
 				textBudgetDescriptionPaymentMethod.setText("");
 				textBudgetDescriptionSeller.setText("");
 				textBudgetDescriptionDispatchPlace.setText("");
 				textBudgetDescriptionDeliveryTime.setText("");
 				textBudgetDescriptionDeliveryPeriod.setText("");
+				textBudgetNotes.setText("");
+				
+				JTabbedPane budgetTabbedPane = (JTabbedPane) budgetSwitchesPanel.getParent();
+				for(Integer i = 1; i < budgetTabbedPane.getTabCount(); i++) {
+					budgetTabbedPane.setEnabledAt(i, false);
+				}
+			} else if (lsm.isSelectionEmpty() && null != panelBudgetDescription && tableBudgetSwitchesResult.getSelectedRow() == -1) {
+				buttonRemoveBudgetSwitch.setEnabled(false);
+				selectedBudgetSwitchId = -1;
+			} else if (lsm.isSelectionEmpty() && null != panelBudgetDescription && tableBudgetBoxesResult.getSelectedRow() == -1) {
+				buttonRemoveBudgetBox.setEnabled(false);
+				selectedBudgetBoxId = -1;
+			} else if (lsm.isSelectionEmpty() && null != panelBudgetDescription && tableBudgetBoardsResult.getSelectedRow() == -1) {
+				buttonRemoveBudgetBoard.setEnabled(false);
+				selectedBudgetBoardId = -1;
 			}
 			
 		}
@@ -8371,9 +8270,9 @@ public class MainView extends JFrame{
 		public void actionPerformed(ActionEvent e) {
 			String actionCommand = e.getActionCommand();
 			if(actionCommand.equalsIgnoreCase("switch.search.buttons.add")) {
-				setSwitchesMode(MainView.ADD_MODE);
+				setSwitchesMode(SalesMainView.ADD_MODE);
 			} else if (actionCommand.equalsIgnoreCase("switch.search.buttons.edit")) {
-				setSwitchesMode(MainView.EDIT_MODE);
+				setSwitchesMode(SalesMainView.EDIT_MODE);
 			} else if (actionCommand.equalsIgnoreCase("switch.description.add.save")) {
 				if(textSwitchAddPrice.getText() == null || textSwitchAddPrice.getText().isEmpty() || !Numbers.isNumeric(textSwitchAddPrice.getText())) {
 					JOptionPane.showMessageDialog(null, "Precio invalido");
@@ -8408,7 +8307,7 @@ public class MainView extends JFrame{
 								Integer.valueOf(comboSwitchAddInterruptions.getSelectedItem().toString()),
 								textSwitchAddPrice.getText())) {
 							JOptionPane.showMessageDialog(null, "Interruptor agregado exitosamente");
-							setSwitchesMode(MainView.VIEW_MODE);
+							setSwitchesMode(SalesMainView.VIEW_MODE);
 						} else {
 							JOptionPane.showMessageDialog(null, "Ocurrio un error al agregar el interruptor");
 						}
@@ -8417,7 +8316,7 @@ public class MainView extends JFrame{
 					}
 				}
 			} else if (actionCommand.equalsIgnoreCase("switch.description.add.cancel") || e.getActionCommand().equalsIgnoreCase("description.edit.cancel")) {
-				setSwitchesMode(MainView.VIEW_MODE);
+				setSwitchesMode(SalesMainView.VIEW_MODE);
 			} else if (actionCommand.equalsIgnoreCase("switch.description.edit.save")) {
 				ArrayList<Object> listFields = new ArrayList<Object>();
 				ArrayList<Object> listValues = new ArrayList<Object>();
@@ -8463,7 +8362,7 @@ public class MainView extends JFrame{
 						!textSwitchEditModel.getText().isEmpty() && comboSwitchEditVoltage.getItemCount() > 0) {
 					boolean switchEdited = db.editSwitch(editSwitchId, listFields, listValues);
 				if (switchEdited) {
-					setSwitchesMode(MainView.VIEW_MODE);
+					setSwitchesMode(SalesMainView.VIEW_MODE);
 				} else {
 					JOptionPane.showMessageDialog(null, "No se pudo actualizar el interruptor debido a un error");
 				}
@@ -8471,7 +8370,7 @@ public class MainView extends JFrame{
 					JOptionPane.showMessageDialog(null, "Todos los campos deben estar llenos");
 				}
 			} else if (actionCommand.equalsIgnoreCase("switch.description.edit.cancel")) {
-				setSwitchesMode(MainView.VIEW_MODE);
+				setSwitchesMode(SalesMainView.VIEW_MODE);
 			}
 		}
 		
@@ -8483,9 +8382,9 @@ public class MainView extends JFrame{
 		public void actionPerformed(ActionEvent e) {
 			String actionCommand = e.getActionCommand();
 			if (actionCommand.equalsIgnoreCase("box.description.buttons.add")) {
-				setBoxesMode(MainView.ADD_MODE);
+				setBoxesMode(SalesMainView.ADD_MODE);
 			} else if (actionCommand.equalsIgnoreCase("box.description.buttons.edit")) {
-				setBoxesMode(MainView.EDIT_MODE);
+				setBoxesMode(SalesMainView.EDIT_MODE);
 			} else if (actionCommand.equalsIgnoreCase("box.description.add.save")) {
 				String boxType = comboBoxAddTypes.getSelectedItem().toString();
 				String boxInstallation = comboBoxAddInstallations.getSelectedItem().toString();
@@ -8537,13 +8436,13 @@ public class MainView extends JFrame{
 					boolean saved = db.addBox(boxType, boxInstallation, boxNema, Integer.valueOf(boxPairs), boxSheet, boxFinish, boxColor, Double.valueOf(boxHeight), Double.valueOf(boxWidth), Double.valueOf(boxDepth), boxUnits, boxCaliber, boxCaliberComments, boxLockType, Double.valueOf(boxPrice));
 					if(saved) {
 						JOptionPane.showMessageDialog(null, "Caja creada exitosamente");
-						setBoxesMode(MainView.VIEW_MODE);
+						setBoxesMode(SalesMainView.VIEW_MODE);
 					}
 				} else {
 					err.dump();
 				}
 			} else if (actionCommand.equalsIgnoreCase("box.description.add.cancel")) {
-				setBoxesMode(MainView.VIEW_MODE);
+				setBoxesMode(SalesMainView.VIEW_MODE);
 			} else if (actionCommand.equalsIgnoreCase("box.description.edit.save")) {
 				ArrayList<Object> listFields = new ArrayList<Object>();
 				ArrayList<Object> listValues = new ArrayList<Object>();
@@ -8723,18 +8622,18 @@ public class MainView extends JFrame{
 					if(listFields.size() > 0 && listValues.size() > 0) {
 						boolean boxEdited = db.editBox(editBoxId, listFields, listValues);
 						if (boxEdited) {
-							setBoxesMode(MainView.VIEW_MODE);
+							setBoxesMode(SalesMainView.VIEW_MODE);
 						} else {
 							JOptionPane.showMessageDialog(null, "No se pudo actualizar la caja debido a un error");
 						}
 					} else {
-						setBoxesMode(MainView.VIEW_MODE);
+						setBoxesMode(SalesMainView.VIEW_MODE);
 					}
 				} else {
 					err.dump();
 				}
 			} else if (actionCommand.equalsIgnoreCase("box.description.edit.cancel")) {
-				setBoxesMode(MainView.VIEW_MODE);
+				setBoxesMode(SalesMainView.VIEW_MODE);
 			}
 		}
 		
@@ -8746,9 +8645,9 @@ public class MainView extends JFrame{
 		public void actionPerformed(ActionEvent e) {
 			String actionCommand = e.getActionCommand();
 			if (actionCommand.equalsIgnoreCase("board.description.buttons.add")) {
-				setBoardsMode(MainView.ADD_MODE);
+				setBoardsMode(SalesMainView.ADD_MODE);
 			} else if (actionCommand.equalsIgnoreCase("board.description.buttons.edit")) {
-				setBoardsMode(MainView.EDIT_MODE);
+				setBoardsMode(SalesMainView.EDIT_MODE);
 			} else if (actionCommand.equalsIgnoreCase("board.description.add.save")) {
 				String boardName = textBoardAddName.getText();
 				String boardType = comboBoardAddType.getSelectedItem().toString();
@@ -8775,13 +8674,13 @@ public class MainView extends JFrame{
 					boolean saved = db.addBoard(boardName, boardType, boardInstallation, boardNema, Integer.valueOf(boardBarCapacity), boardBarType, Integer.valueOf(boardCircuits), boardVoltage, Integer.valueOf(boardPhases), boardGround, Integer.valueOf(boardInterruption), boardLockType, Double.valueOf(boardPrice));
 					if(saved) {
 						JOptionPane.showMessageDialog(null, "Tablero creado exitosamente");
-						setBoardsMode(MainView.VIEW_MODE);
+						setBoardsMode(SalesMainView.VIEW_MODE);
 					}
 				} else {
 					err.dump();
 				}
 			} else if (actionCommand.equalsIgnoreCase("board.description.add.cancel")) {
-				setBoardsMode(MainView.VIEW_MODE);
+				setBoardsMode(SalesMainView.VIEW_MODE);
 			} else if (actionCommand.equalsIgnoreCase("board.description.edit.save")) {
 				ArrayList<Object> listFields = new ArrayList<Object>();
 				ArrayList<Object> listValues = new ArrayList<Object>();
@@ -8947,64 +8846,33 @@ public class MainView extends JFrame{
 					if(listFields.size() > 0 && listValues.size() > 0) {
 						boolean boardEdited = db.editBoard(editBoardId, listFields, listValues);
 						if (boardEdited) {
-							setBoardsMode(MainView.VIEW_MODE);
+							setBoardsMode(SalesMainView.VIEW_MODE);
 						} else {
 							JOptionPane.showMessageDialog(null, "No se pudo actualizar el tablero debido a un error");
 						}
 					} else {
-						setBoardsMode(MainView.VIEW_MODE);
+						setBoardsMode(SalesMainView.VIEW_MODE);
 					}
 				} else {
 					err.dump();
 				}
 			} else if (actionCommand.equalsIgnoreCase("board.description.edit.cancel")) {
-				setBoardsMode(MainView.VIEW_MODE);
+				setBoardsMode(SalesMainView.VIEW_MODE);
 			} else if (actionCommand.equalsIgnoreCase("board.switch.add")) {
-				dialogBoardSwitchAdd = new JDialog(null, "Agregar Interruptor", Dialog.DEFAULT_MODALITY_TYPE);
-				dialogBoardSwitchAdd.setMinimumSize(new Dimension(800, 300));
-				dialogBoardSwitchAdd.setSize(800, 300);
-				dialogBoardSwitchAdd.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-				
-				Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-				int x = (dim.width / 2) - (dialogBoardSwitchAdd.getWidth() / 2);
-				int y = (dim.height / 2) - (dialogBoardSwitchAdd.getHeight() / 2);
-				dialogBoardSwitchAdd.setLocation(x, y);
-				// finish the createBoardSwitchAddPanel() method and replace it at the line below
-				// add the listener to handle the accept button
-				JPanel panelCenter = new JPanel();
-				panelCenter.setLayout(new BoxLayout(panelCenter, BoxLayout.PAGE_AXIS));
-				panelCenter.add(createBoardSwitchAddSearchPanel());
-				panelCenter.add(Box.createRigidArea(new Dimension(0, 10)));
-				panelCenter.add(createBoardSwitchAddTablePanel());
-				dialogBoardSwitchAdd.add(panelCenter, BorderLayout.CENTER);
-				
-				JPanel panelLower = new JPanel();
-				panelLower.setLayout(new BoxLayout(panelLower, BoxLayout.LINE_AXIS));
-				panelLower.add(createBoardSwitchAddCountPanel());
-				panelLower.add(createBoardSwitchAddButtonPanel());
-				dialogBoardSwitchAdd.add(panelLower, BorderLayout.SOUTH);
-				
+				dialogBoardSwitchAdd = new SwitchDialog(null, "Agregar Interruptor");
 				WindowsListener lForWindow = new WindowsListener();
 				dialogBoardSwitchAdd.addWindowListener(lForWindow);
-				
-				dialogBoardSwitchAdd.setVisible(true);
 			} else if (actionCommand.equalsIgnoreCase("board.switch.remove")) {
 				int response = JOptionPane.showConfirmDialog(null, "Esta seguro que desea remover este interruptor del tablero?", "Remover interruptor del tablero", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 				if(response == JOptionPane.YES_OPTION) {
 					int boardContainerId = db.getSwitchBoardId(selectedBoardSwitchId);
-					String boardMainSwitches = db.getBoardSwitchMainId(boardContainerId);
+					ArrayList<Integer> boardMainSwitches = db.getBoardSwitchMainId(boardContainerId);
 					if(db.removeBoardSwitch(selectedBoardSwitchId)) {
-						boardMainSwitches = boardMainSwitches.replace(String.valueOf(selectedBoardSwitchId), "");
-						if(boardMainSwitches.endsWith(",")) {
-							boardMainSwitches = StringTools.removeLastChar(boardMainSwitches);
-						}
-						if(boardMainSwitches.startsWith(",")) {
-							boardMainSwitches = StringTools.removeFirstChar(boardMainSwitches);
-						}
+						boardMainSwitches.remove(String.valueOf(selectedBoardSwitchId));
 						ArrayList<Object> listFields = new ArrayList<Object>();
 						ArrayList<Object> listValues = new ArrayList<Object>();
 						listFields.add("main_switch_id");
-						listValues.add("'" + boardMainSwitches + "'");
+						listValues.add("'" + StringTools.implode(",", boardMainSwitches) + "'");
 						db.editBoard(boardContainerId, listFields, listValues);
 						if(tableBoardsResult.getSelectedRow() > -1) {
 							selectedBoardId = Integer.valueOf( (String) tableBoardsResult.getValueAt(tableBoardsResult.getSelectedRow(), SharedListSelectionListener.BOARD_ID_COLUMN));
@@ -9052,7 +8920,7 @@ public class MainView extends JFrame{
 			} else if(actionCommand.equalsIgnoreCase("board.comments.edit")) {
 				boardViewTabbedPane.setEnabled(false);
 				buttonBoardCommentsEdit.setEnabled(false);
-				textComments.setEditable(true);
+				textBoardComments.setEditable(true);
 				panelBoardCommentsEditSaveCancel.setVisible(true);
 				buttonBoardCommentsEditSave.setEnabled(true);
 				buttonBoardCommentsEditCancel.setEnabled(true);
@@ -9061,11 +8929,11 @@ public class MainView extends JFrame{
 					ArrayList<Object> listFields = new ArrayList<Object>();
 					ArrayList<Object> listValues = new ArrayList<Object>();
 					listFields.add("comments");
-					listValues.add("'" + textComments.getText() + "'");
+					listValues.add("'" + textBoardComments.getText() + "'");
 					db.editBoard(selectedBoardId, listFields, listValues);
 					boardViewTabbedPane.setEnabled(true);
 					buttonBoardCommentsEdit.setEnabled(true);
-					textComments.setEditable(false);
+					textBoardComments.setEditable(false);
 					buttonBoardCommentsEditSave.setEnabled(false);
 					buttonBoardCommentsEditCancel.setEnabled(false);
 					panelBoardCommentsEditSaveCancel.setVisible(false);
@@ -9075,7 +8943,7 @@ public class MainView extends JFrame{
 			} else if (actionCommand.equalsIgnoreCase("board.comments.edit.cancel")) {
 				boardViewTabbedPane.setEnabled(true);
 				buttonBoardCommentsEdit.setEnabled(true);
-				textComments.setEditable(false);
+				textBoardComments.setEditable(false);
 				buttonBoardCommentsEditSave.setEnabled(false);
 				buttonBoardCommentsEditCancel.setEnabled(false);
 				panelBoardCommentsEditSaveCancel.setVisible(false);
@@ -9090,78 +8958,29 @@ public class MainView extends JFrame{
 		public void actionPerformed(ActionEvent e) {
 			String actionCommand = e.getActionCommand();
 			if (actionCommand.equalsIgnoreCase("budget.description.buttons.add")) {
-				setBudgetsMode(MainView.ADD_MODE);
-			}
-			else if (actionCommand.equalsIgnoreCase("budget.description.buttons.edit")) {
-				setBudgetsMode(MainView.EDIT_MODE);
-			} else if(actionCommand.equalsIgnoreCase("budget.description.add.company")) {
-				dialogBudgetCompanyAdd = new JDialog(null, "Agregar Compañia", Dialog.DEFAULT_MODALITY_TYPE);
-				dialogBudgetCompanyAdd.setMinimumSize(new Dimension(800, 300));
-				dialogBudgetCompanyAdd.setSize(800, 400);
-				dialogBudgetCompanyAdd.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-				
-				Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-				int x = (dim.width / 2) - (dialogBudgetCompanyAdd.getWidth() / 2);
-				int y = (dim.height / 2) - (dialogBudgetCompanyAdd.getHeight() / 2);
-				dialogBudgetCompanyAdd.setLocation(x, y);
-				
-				JPanel panelCenter = new JPanel();
-				panelCenter.setLayout(new BoxLayout(panelCenter, BoxLayout.PAGE_AXIS));
-				panelCenter.add(createBudgetCompanyAddSearchPanel());
-				panelCenter.add(Box.createRigidArea(new Dimension(0, 10)));
-				panelCenter.add(createBudgetCompanyAddTablePanel());
-				dialogBudgetCompanyAdd.add(panelCenter, BorderLayout.CENTER);
-				
-				JPanel panelLower = new JPanel();
-				panelLower.setLayout(new BoxLayout(panelLower, BoxLayout.LINE_AXIS));
-				
-//				panelLower.add(createBudgetCompanyAddNewPanel());
-				panelLower.add(createBudgetCompanyAddButtonPanel());
-				dialogBudgetCompanyAdd.add(panelLower, BorderLayout.SOUTH);
+				setBudgetsMode(SalesMainView.ADD_MODE);
+			} else if (actionCommand.equalsIgnoreCase("budget.description.buttons.edit")) {
+				setBudgetsMode(SalesMainView.EDIT_MODE);
+			} else if(actionCommand.equalsIgnoreCase("budget.description.company.add")) {
+				dialogBudgetClientAdd = new ClientDialog(null, "Agregar Compañia");
 				
 				WindowsListener lForWindow = new WindowsListener();
-				dialogBudgetCompanyAdd.addWindowListener(lForWindow);
-				
-				dialogBudgetCompanyAdd.setVisible(true);
-			} else if(actionCommand.equalsIgnoreCase("budget.description.add.seller")) {
-				dialogBudgetSellerAdd = new JDialog(null, "Agregar Vendedor", Dialog.DEFAULT_MODALITY_TYPE);
-				dialogBudgetSellerAdd.setMinimumSize(new Dimension(800, 300));
-				dialogBudgetSellerAdd.setSize(800, 400);
-				dialogBudgetSellerAdd.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-				
-				Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-				int x = (dim.width / 2) - (dialogBudgetSellerAdd.getWidth() / 2);
-				int y = (dim.height / 2) - (dialogBudgetSellerAdd.getHeight() / 2);
-				dialogBudgetSellerAdd.setLocation(x, y);
-				
-				JPanel panelCenter = new JPanel();
-				panelCenter.setLayout(new BoxLayout(panelCenter, BoxLayout.PAGE_AXIS));
-				panelCenter.add(createBudgetSellerAddSearchPanel());
-				panelCenter.add(Box.createRigidArea(new Dimension(0, 10)));
-				panelCenter.add(createBudgetSellerAddTablePanel());
-				dialogBudgetSellerAdd.add(panelCenter, BorderLayout.CENTER);
-				
-				JPanel panelLower = new JPanel();
-				panelLower.setLayout(new BoxLayout(panelLower, BoxLayout.LINE_AXIS));
-				
-//				panelLower.add(createBudgetCompanyAddNewPanel());
-				panelLower.add(createBudgetSellerAddButtonPanel());
-				dialogBudgetSellerAdd.add(panelLower, BorderLayout.SOUTH);
+				dialogBudgetClientAdd.addWindowListener(lForWindow);
+			} else if(actionCommand.equalsIgnoreCase("budget.description.seller.add")) {
+				dialogBudgetSellerAdd = new SellerDialog(null, "Agregar Vendedor");
 				
 				WindowsListener lForWindow = new WindowsListener();
 				dialogBudgetSellerAdd.addWindowListener(lForWindow);
-				
-				dialogBudgetSellerAdd.setVisible(true);
 			} else if(actionCommand.equalsIgnoreCase("budget.description.add.save")) {
-				String budgetDate = addBudgetDateModel.toString();
-				String budgetExpiryDays = comboBoardAddType.getSelectedItem().toString();
-				String budgetClientId = String.valueOf(budgetCompanyAddSearchId);
-				String budgetWorkName = comboBoardAddBarType.getSelectedItem().toString();
-				String budgetPaymentMethod = comboBoardAddCircuits.getSelectedItem().toString();
-				String budgetSellerId = String.valueOf(budgetSellerAddSearchId);
-				String budgetDispatchPlace = comboBoardAddPhases.getSelectedItem().toString();
-				String budgetDeliveryTime = (checkBoardAddGround.isSelected())?"1":"0";
-				String budgetDeliveryPeriod = comboBoardAddInterruption.getSelectedItem().toString();
+				String budgetDate = addBudgetDateModel.getYear() + "-" + (addBudgetDateModel.getMonth() + 1) + "-" + addBudgetDateModel.getDay();
+				String budgetExpiryDays = textBudgetAddExpiryDays.getText().toString();
+				String budgetClientId = String.valueOf(budgetClientAddId);
+				String budgetWorkName = textBudgetAddWorkName.getText();
+				String budgetPaymentMethod = comboBudgetAddPaymentMethod.getSelectedItem().toString();
+				String budgetDispatchPlace = comboBudgetAddDispatchPlace.getSelectedItem().toString();
+				String budgetDeliveryTime = textBudgetAddDeliveryTime.getText().toString();
+				String budgetDeliveryPeriod = comboBudgetAddDeliveryPeriod.getSelectedItem().toString();
+				Integer budgetSellerId = budgetSellerAddSearchId;
 				
 				Errors err = new Errors();
 				
@@ -9180,25 +8999,13 @@ public class MainView extends JFrame{
 				if(null == budgetPaymentMethod || budgetPaymentMethod.isEmpty()) {
 					err.add("Debe especificar un metodo de pago valido");
 				}
-				if(null == budgetSellerId || budgetSellerId.isEmpty() || !Numbers.isNumeric(budgetSellerId)) {
-					err.add("Los dias de vencimiento solo debe contener digitos numericos");
+				if(null == budgetSellerId || budgetSellerId < 1) {
+					err.add("Debe ingresar el vendedor");
 				}
 				if(null == budgetDispatchPlace || budgetDispatchPlace.isEmpty()) {
 					err.add("Debe especificar un sitio de entrega valido");
 				}
-				
-				if(budgetWorkName.isEmpty()) {
-					err.add("Debe especificar el nombre de la obra");
-				}
-				if(null == budgetPaymentMethod || budgetPaymentMethod.isEmpty()) {
-					err.add("Debe especificar un metodo de pago valido");
-				}
-//				if(budgetSeller.isEmpty()) {
-//					err.add("Debe especificar un vendedor");
-//				}
-				if(null == budgetDispatchPlace || budgetDispatchPlace.isEmpty()) {
-					err.add("Debe especificar un sitio de entrega valido");
-				}
+
 				if(budgetDeliveryTime.isEmpty() || !Numbers.isNumeric(budgetDeliveryTime)) {
 					err.add("El tiempo de entrega solo debe contener digitos numericos");
 				}
@@ -9207,20 +9014,225 @@ public class MainView extends JFrame{
 				}
 				
 				if(err.isEmpty()) {
-//					boolean saved = db.addBudget(budgetDate, Integer.valueOf(budgetExpiryDays), budgetClientId, budgetWorkName, budgetPaymentMethod, budgetSellerId, budgetDispatchPlace, Integer.valueOf(budgetDeliveryTime), budgetDeliveryPeriod);
-//					if(saved) {
-//						JOptionPane.showMessageDialog(null, "Presupuesto creado exitosamente");
-//						setBudgetsMode(MainView.VIEW_MODE);
-//					}
+					boolean saved = db.addBudget(budgetDate, Integer.valueOf(budgetExpiryDays), budgetClientId, budgetWorkName, budgetPaymentMethod, budgetSellerId, budgetDispatchPlace, Integer.valueOf(budgetDeliveryTime), budgetDeliveryPeriod);
+					if(saved) {
+						JOptionPane.showMessageDialog(null, "Presupuesto creado exitosamente");
+						setBudgetsMode(SalesMainView.VIEW_MODE);
+					}
 				} else {
 					err.dump();
 				}
 			} else if(actionCommand.equalsIgnoreCase("budget.description.add.cancel")) {
-				setBudgetsMode(MainView.VIEW_MODE);
+				setBudgetsMode(SalesMainView.VIEW_MODE);
+			} else if(actionCommand.equalsIgnoreCase("budget.description.company.edit")) {
+				dialogBudgetClientEdit = new ClientDialog(null, "Buscar Cliente");
+				
+				WindowsListener lForWindow = new WindowsListener();
+				dialogBudgetClientEdit.addWindowListener(lForWindow);
+			} else if(actionCommand.equalsIgnoreCase("budget.description.seller.edit")) {
+				dialogBudgetSellerEdit = new SellerDialog(null, "Seleccionar Vendedor");
+				
+				WindowsListener lForWindow = new WindowsListener();
+				dialogBudgetSellerEdit.addWindowListener(lForWindow);
 			} else if (actionCommand.equalsIgnoreCase("budget.description.edit.save")) {
 				
+				ArrayList<Object> listFields = new ArrayList<Object>();
+				ArrayList<Object> listValues = new ArrayList<Object>();
+				Errors err = new Errors();
+				
+				String editedBudgetDate = String.format("%02d", editBudgetDateModel.getDay()) + "-" + String.format("%02d", (editBudgetDateModel.getMonth() + 1)) + "-" + editBudgetDateModel.getYear();
+				Integer editedBudgetExpiryDays = Integer.valueOf(textBudgetEditExpiryDays.getText());
+				Integer editedBudgetClientId = budgetClientEditedId;
+				String editedBudgetWorkName = textBudgetEditWorkName.getText();
+				String editedBudgetPaymentMethod = comboBudgetEditPaymentMethod.getSelectedItem().toString();
+				Integer editedBudgetSellerId = budgetSellerEditedId;
+				String editedBudgetDispatchPlace = comboBudgetEditDispatchPlace.getSelectedItem().toString();
+				Integer editedBudgetDeliveryTime = Integer.valueOf(textBudgetEditDeliveryTime.getText());
+				String editedBudgetDeliveryPeriod = comboBudgetEditDeliveryPeriod.getSelectedItem().toString();
+				
+				if (!editBudgetDate.equals(editedBudgetDate)) {
+					DateTimeFormatter dtf = DateTimeFormat.forPattern("dd-MM-yyyy");
+					DateTimeFormatter dtf2 = DateTimeFormat.forPattern("yyyy-MM-dd");
+					DateTime newDate = dtf.parseDateTime(editedBudgetDate);
+					// TODO Edit Budget code here after the date has been modified
+					listFields.add("`date`");
+					listValues.add("'" + dtf2.print(newDate) + "'");
+				}
+				if (!textBudgetEditExpiryDays.getText().isEmpty()) {
+					if	(!String.valueOf(editBudgetExpiryDays).equals(editedBudgetExpiryDays)) {
+						listFields.add("`expiry_days`");
+						listValues.add("'" + editedBudgetExpiryDays + "'");
+					}
+				} else {
+					err.add("Debe ingresar los días de vencimiento");
+				}
+				if(editBudgetClientId != editedBudgetClientId && editedBudgetClientId > 0) {
+					listFields.add("`client_id`");
+					listValues.add("'" + editedBudgetClientId + "'");
+				}
+				if(!editedBudgetWorkName.isEmpty()) {
+					if (!editBudgetWorkName.equals(editedBudgetWorkName))  {
+						listFields.add("`work_name`");
+						listValues.add("'" + editedBudgetWorkName + "'");
+					}
+				} else {
+					err.add("Debe ingresar el nombre de la obra");
+				}
+				if(comboBudgetEditPaymentMethod.getItemCount() > 0) {
+					if (comboBudgetEditPaymentMethod.getSelectedIndex() > -1) {
+						if (!editBudgetPaymentMethod.equals(editedBudgetPaymentMethod)) {
+							listFields.add("payment_method_id");
+							listValues.add("'" + db.getPaymentMethodId(editedBudgetPaymentMethod) + "'");
+						}
+					} else {
+						err.add("Debe seleccionar un metodo de pago");
+					}
+				} else {
+					err.add("No hay ningun tipo de metodo de pago registrado, debe registrar uno primero");
+				}
+				if(editBudgetSellerId != editedBudgetSellerId && editedBudgetSellerId > 0) {
+					listFields.add("`seller_id`");
+					listValues.add("'" + editedBudgetSellerId + "'");
+				}
+				if(comboBudgetEditDispatchPlace.getItemCount() > 0) {
+					if (comboBudgetEditDispatchPlace.getSelectedIndex() > -1) {
+						if (!editBudgetDispatchPlace.equals(editedBudgetDispatchPlace)) {
+							listFields.add("dispatch_place_id");
+							listValues.add("'" + db.getDispachPlaceId(editedBudgetDispatchPlace) + "'");
+						}
+					} else {
+						err.add("Debe seleccionar un sitio de entrega");
+					}
+				} else {
+					err.add("No hay ningun sitio de entrega registrado, debe registrar uno primero");
+				}
+				if(!textBudgetEditDeliveryTime.getText().isEmpty()) {
+					if (editBudgetDeliveryTime != editedBudgetDeliveryTime)  {
+						listFields.add("`delivery_time`");
+						listValues.add("'" + editedBudgetDeliveryTime + "'");
+					}
+				} else {
+					err.add("Debe ingresar el tiempo de entrega");
+				}
+				if(comboBudgetEditDeliveryPeriod.getItemCount() > 0) {
+					if (comboBudgetEditDeliveryPeriod.getSelectedIndex() > -1) {
+						if (!editBudgetDeliveryPeriod.equals(editedBudgetDeliveryPeriod)) {
+							listFields.add("delivery_period_id");
+							listValues.add("'" + db.getDeliveryPeriodId(editedBudgetDeliveryPeriod) + "'");
+						}
+					} else {
+						err.add("Debe seleccionar un tiempo de entrega");
+					}
+				} else {
+					err.add("No hay ningun tiempo de entrega registrado, debe registrar uno primero");
+				}
+				
+				if(err.isEmpty()) {
+					if(listFields.size() > 0 && listValues.size() > 0) {
+						boolean budgetEdited = db.editBudget(editBudgetId, listFields, listValues);
+						if (budgetEdited) {
+							setBudgetsMode(SalesMainView.VIEW_MODE);
+						} else {
+							JOptionPane.showMessageDialog(null, "No se pudo actualizar el presupuesto debido a un error");
+						}
+					} else {
+						setBudgetsMode(SalesMainView.VIEW_MODE);
+					}
+				} else {
+					err.dump();
+				}
+				
 			} else if (actionCommand.equalsIgnoreCase("budget.description.edit.cancel")) {
-				setBudgetsMode(MainView.VIEW_MODE);
+				setBudgetsMode(SalesMainView.VIEW_MODE);
+			} else if (actionCommand.equalsIgnoreCase("budget.switch.add")) {
+				dialogBudgetSwitchAdd = new SwitchDialog(null, "Agregar Interruptor");
+				WindowsListener lForWindow = new WindowsListener();
+				dialogBudgetSwitchAdd.addWindowListener(lForWindow);
+			} else if (actionCommand.equalsIgnoreCase("budget.switch.remove")) {
+				String stringSelectedBudgetSwitchId = (String) tableBudgetSwitchesResult.getValueAt(tableBudgetSwitchesResult.getSelectedRow(), 0);
+				if (stringSelectedBudgetSwitchId.contains("Tablero")) {
+					JOptionPane.showMessageDialog(null, "El interruptor pertenece a un tablero y por lo tanto no puede ser removido");
+				} else {
+					int response = JOptionPane.showConfirmDialog(null, "Esta seguro que desea remover este interruptor del presupuesto?", "Remover interruptor del presupuesto", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+					if(response == JOptionPane.YES_OPTION) {
+						if(db.removeBudgetSwitch(selectedBudgetSwitchId)) {
+							if(tableBudgetsResult.getSelectedRow() > -1) {
+								selectedBudgetId = Integer.valueOf( (String) tableBudgetsResult.getValueAt(tableBudgetsResult.getSelectedRow(), SharedListSelectionListener.BUDGET_ID_COLUMN));
+								loadBudgetSwitchTable();
+							}
+						} else {
+							JOptionPane.showMessageDialog(null, "Error al remover interruptor del presupuesto");
+						}
+					}
+				}
+			} else if (actionCommand.equalsIgnoreCase("budget.box.add")) {
+				dialogBudgetBoxAdd = new BoxDialog(null, "Agregar Caja");
+				WindowsListener lForWindow = new WindowsListener();
+				dialogBudgetBoxAdd.addWindowListener(lForWindow);
+			} else if (actionCommand.equalsIgnoreCase("budget.box.remove")) {
+				int response = JOptionPane.showConfirmDialog(null, "Esta seguro que desea remover esta caja del presupuesto?", "Remover caja del presupuesto", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+				if(response == JOptionPane.YES_OPTION) {
+					if(db.removeBudgetBox(selectedBudgetBoxId)) {
+						if(tableBudgetsResult.getSelectedRow() > -1) {
+							selectedBudgetId = Integer.valueOf( (String) tableBudgetsResult.getValueAt(tableBudgetsResult.getSelectedRow(), SharedListSelectionListener.BUDGET_ID_COLUMN));
+							loadBudgetBoxTable();
+						}
+					} else {
+						JOptionPane.showMessageDialog(null, "Error al remover caja del presupuesto");
+					}
+				}
+			} else if (actionCommand.equalsIgnoreCase("budget.board.add")) {
+				dialogBudgetBoardAdd = new BoardDialog(null, "Agregar Tablero");
+				WindowsListener lForWindow = new WindowsListener();
+				dialogBudgetBoardAdd.addWindowListener(lForWindow);
+			} else if (actionCommand.equalsIgnoreCase("budget.board.remove")) {
+				int response = JOptionPane.showConfirmDialog(null, "Esta seguro que desea remover este tablero del presupuesto?", "Remover tablero del presupuesto", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+				if(response == JOptionPane.YES_OPTION) {
+					if(db.removeBudgetBoard(selectedBudgetBoardId)) {
+						if(tableBudgetsResult.getSelectedRow() > -1) {
+							selectedBudgetId = Integer.valueOf( (String) tableBudgetsResult.getValueAt(tableBudgetsResult.getSelectedRow(), SharedListSelectionListener.BUDGET_ID_COLUMN));
+							loadBudgetBoardTable();
+						}
+					} else {
+						JOptionPane.showMessageDialog(null, "Error al remover tablero del presupuesto");
+					}
+				}
+			} else if (actionCommand.equalsIgnoreCase("budget.notes.edit")) {
+				panelBudgetNotesEditSaveCancel.setVisible(true);
+				textBudgetNotes.setEditable(true);
+				buttonBudgetNotesEditSave.setEnabled(true);
+				buttonBudgetNotesEditCancel.setEnabled(true);
+				buttonBudgetNotesEdit.setEnabled(false);
+				JTabbedPane budgetTabbedPane = (JTabbedPane) budgetNotesPanel.getParent();
+				budgetTabbedPane.setEnabled(false);
+			} else if (actionCommand.equalsIgnoreCase("budget.notes.edit.save")) {
+				if(selectedBudgetId > 0) {
+					ArrayList<Object> listFields = new ArrayList<Object>();
+					ArrayList<Object> listValues = new ArrayList<Object>();
+					listFields.add("notes");
+					listValues.add("'" + textBudgetNotes.getText() + "'");
+					db.editBudget(selectedBudgetId, listFields, listValues);
+					
+					JTabbedPane budgetTabbedPane = (JTabbedPane) budgetNotesPanel.getParent();
+					budgetTabbedPane.setEnabled(true);
+					buttonBudgetNotesEdit.setEnabled(true);
+					textBudgetNotes.setEditable(false);
+					buttonBudgetNotesEditSave.setEnabled(false);
+					buttonBudgetNotesEditCancel.setEnabled(false);
+					panelBudgetNotesEditSaveCancel.setVisible(false);
+				} else {
+					JOptionPane.showMessageDialog(null, "No hay ningun presupuesto seleccionado");
+				}
+			} else if (actionCommand.equalsIgnoreCase("budget.notes.edit.cancel")) {
+				JTabbedPane budgetTabbedPane = (JTabbedPane) budgetNotesPanel.getParent();
+				budgetTabbedPane.setEnabled(true);
+				buttonBudgetNotesEdit.setEnabled(true);
+				buttonBudgetNotesEditSave.setEnabled(false);
+				buttonBudgetNotesEditCancel.setEnabled(false);
+				textBudgetNotes.setEditable(false);
+				panelBudgetNotesEditSaveCancel.setVisible(false);
+			} else if (actionCommand.equalsIgnoreCase("budget.clone")) {
+				clonedBudgetId = db.cloneBudget(selectedBudgetId);
 			}
 			
 		}
@@ -9241,16 +9253,80 @@ public class MainView extends JFrame{
 
 		@Override
 		public void windowClosed(WindowEvent e) {
-			if(boardSwitchSearchId > 0) {
-				//JOptionPane.showMessageDialog(null, "El id seleccionado fue: " + boardSwitchSearchId + " y una cantidad de " + boardSwitchSearchQuantity + " interruptores");
-				if ((boardSwitchSearchQuantity * db.getSwitchPhases(boardSwitchSearchId)) + db.getBoardSwitchesQuantity(selectedBoardId) <= selectedTableBoardCircuits) {
-					if(db.addBoardSwitch(selectedBoardId, boardSwitchSearchId, boardSwitchSearchQuantity)) {
-						loadBoardSwitchTable();
+			Window window = (Window)e.getSource();
+			if (window.equals(dialogBoardSwitchAdd)) {
+				Integer switchSearchId = dialogBoardSwitchAdd.getSwitchSearchId();
+				Integer switchQuantity = dialogBoardSwitchAdd.getSwitchAddQuantity();
+				if(switchSearchId > 0) {
+					if ((switchQuantity * db.getSwitchPhases(switchSearchId)) + db.getBoardSwitchesQuantity(selectedBoardId) <= selectedTableBoardCircuits) {
+						if(db.addBoardSwitch(selectedBoardId, switchSearchId, switchQuantity)) {
+							loadBoardSwitchTable();
+						}
+					} else {
+						JOptionPane.showMessageDialog(null, "No puede agregar mas de " + selectedTableBoardCircuits + " circuitos");
 					}
-				} else {
-					JOptionPane.showMessageDialog(null, "No puede agregar mas de " + selectedTableBoardCircuits + " circuitos");
+				}
+			} else if (window.equals(dialogBudgetSwitchAdd)) {
+				Integer switchSearchId = dialogBudgetSwitchAdd.getSwitchSearchId();
+				Integer switchQuantity = dialogBudgetSwitchAdd.getSwitchAddQuantity();
+				if(switchSearchId > 0) {
+					if(db.addBudgetSwitch(selectedBudgetId, switchSearchId, switchQuantity)) {
+						loadBudgetSwitchTable();
+					}
+				}
+			} else if (window.equals(dialogBudgetBoxAdd)) {
+				Integer boxSearchId = dialogBudgetBoxAdd.getBoxSearchId();
+				Integer boxQuantity = dialogBudgetBoxAdd.getBoxAddQuantity();
+				if(boxSearchId > 0) {
+					if(db.addBudgetBox(selectedBudgetId, boxSearchId, boxQuantity)) {
+						loadBudgetBoxTable();
+					}
+				}
+			} else if (window.equals(dialogBudgetBoardAdd)) {
+				Integer boardSearchId = dialogBudgetBoardAdd.getBoardSearchId();
+				Integer boardQuantity = dialogBudgetBoardAdd.getBoardAddQuantity();
+				if(boardSearchId > 0) {
+					if(db.addBudgetBoard(selectedBudgetId, boardSearchId, boardQuantity)) {
+						loadBudgetBoardTable();
+					}
+				}
+			} else if (window.equals(dialogBudgetClientAdd)) {
+				Integer searchClientId = dialogBudgetClientAdd.getSearchId();
+				budgetClientAddId = searchClientId;
+				if (budgetClientAddId > 0) {
+					String searchClient = dialogBudgetClientAdd.getSearchClient();
+					String searchClientCode = dialogBudgetClientAdd.getSearchClientCode();
+					String searchClientRepresentative = dialogBudgetClientAdd.getSearchRepresentative();
+					textBudgetAddClient.setText(searchClient);
+					textBudgetAddClientCode.setText(searchClientCode);
+					textBudgetAddClientRepresentative.setText(searchClientRepresentative);
+				}
+			} else if (window.equals(dialogBudgetClientEdit)) {
+				Integer searchClientId = dialogBudgetClientEdit.getSearchId();
+				budgetClientEditedId = searchClientId;
+				if (budgetClientEditedId > 0) {
+					String searchClient = dialogBudgetClientEdit.getSearchClient();
+					String searchClientCode = dialogBudgetClientEdit.getSearchClientCode();
+					String searchClientRepresentative = dialogBudgetClientEdit.getSearchRepresentative();
+					textBudgetEditClient.setText(searchClient);
+					textBudgetEditClientCode.setText(searchClientCode);
+					textBudgetEditClientRepresentative.setText(searchClientRepresentative);
+				}
+			} else if (window.equals(dialogBudgetSellerAdd)) {
+				Integer searchSellerId = dialogBudgetSellerAdd.getSearchId();
+				if (searchSellerId > 0) {
+					String searchSellerUser = dialogBudgetSellerAdd.getSellerUser();
+					textBudgetAddSeller.setText(searchSellerUser);
+				}
+			} else if (window.equals(dialogBudgetSellerEdit)) {
+				Integer searchSellerId = dialogBudgetSellerEdit.getSearchId();
+				budgetSellerEditedId = searchSellerId;
+				if (searchSellerId > 0) {
+					String searchSellerUser = dialogBudgetSellerEdit.getSellerUser();
+					textBudgetEditSeller.setText(searchSellerUser);
 				}
 			}
+			
 		}
 
 		@Override
@@ -9566,5 +9642,24 @@ public class MainView extends JFrame{
 		}
 		
 	}
+	
+	private class PrinterButtonListener implements ActionListener {
 
+		@Override
+		public void actionPerformed(ActionEvent ev) {
+			String actionCommand = ev.getActionCommand();
+			
+			if(actionCommand.equalsIgnoreCase("budget.print")) {
+				if(tableBudgetsResult.getSelectedRow() > -1) {
+					budgetPrintDialog = new PrintDialog(null, "Imprimir Presupuesto");
+					WindowsListener lForWindow = new WindowsListener();
+					budgetPrintDialog.addWindowListener(lForWindow);
+				} else {
+					JOptionPane.showMessageDialog(null, "Debe seleccionar el presupuesto a imprimir");
+				}
+			}
+		}
+		
+	}
+	
 }

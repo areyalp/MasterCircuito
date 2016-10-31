@@ -15,6 +15,11 @@ public class BudgetStage {
 		this.stage = stage;
 	}
 	
+	public BudgetStage(BudgetStage budgetStageInfo) {
+		this.id = budgetStageInfo.getId();
+		this.stage = budgetStageInfo.getStage();
+	}
+
 	public String getStage() {
 		return this.stage;
 	}

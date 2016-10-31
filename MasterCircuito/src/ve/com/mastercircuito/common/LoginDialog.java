@@ -31,10 +31,10 @@ public class LoginDialog extends JDialog{
 
 	public LoginDialog(Frame parent) {
         super(parent, "Login", true);
-        //
+        
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints cs = new GridBagConstraints();
- 
+        
         cs.fill = GridBagConstraints.HORIZONTAL;
  
         labelUsername = new JLabel("Usuario: ");
@@ -118,7 +118,7 @@ public class LoginDialog extends JDialog{
 		
 	}
 	
-	protected String getUsername() {
+	public String getUsername() {
         return textUsername.getText().trim();
     }
  
@@ -126,7 +126,7 @@ public class LoginDialog extends JDialog{
         return new String(textPassword.getPassword());
     }
  
-    protected boolean isSucceeded() {
+    public boolean isSucceeded() {
         return succeeded;
     }
 	

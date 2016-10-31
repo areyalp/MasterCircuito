@@ -1,17 +1,46 @@
 package ve.com.mastercircuito.db;
 
+import java.sql.CallableStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
-
 import javax.swing.JOptionPane;
 
 import org.joda.time.DateTime;
 
-import ve.com.mastercircuito.components.MCSwitch;
+import ve.com.mastercircuito.components.BarCapacity;
+import ve.com.mastercircuito.components.BarType;
+import ve.com.mastercircuito.components.Board;
+import ve.com.mastercircuito.components.BoardType;
+import ve.com.mastercircuito.components.BoardVoltage;
+import ve.com.mastercircuito.components.Box;
+import ve.com.mastercircuito.components.BoxType;
+import ve.com.mastercircuito.components.Budget;
+import ve.com.mastercircuito.components.BudgetStage;
+import ve.com.mastercircuito.components.Caliber;
+import ve.com.mastercircuito.components.Circuits;
+import ve.com.mastercircuito.components.Client;
+import ve.com.mastercircuito.components.Color;
+import ve.com.mastercircuito.components.DeliveryPeriod;
+import ve.com.mastercircuito.components.DispatchPlace;
+import ve.com.mastercircuito.components.Finish;
+import ve.com.mastercircuito.components.Installation;
+import ve.com.mastercircuito.components.Interruption;
+import ve.com.mastercircuito.components.LockType;
+import ve.com.mastercircuito.components.Material;
+import ve.com.mastercircuito.components.MeasureUnits;
+import ve.com.mastercircuito.components.Nema;
+import ve.com.mastercircuito.components.PaymentMethod;
+import ve.com.mastercircuito.components.Product;
+import ve.com.mastercircuito.components.ProductionOrder;
+import ve.com.mastercircuito.components.User;
+import ve.com.mastercircuito.components.Sheet;
+import ve.com.mastercircuito.components.Switch;
+import ve.com.mastercircuito.components.UserType;
+import ve.com.mastercircuito.components.WorkOrder;
 import ve.com.mastercircuito.utils.StringTools;
 
 public class Db extends MysqlDriver {
@@ -669,7 +698,7 @@ public class Db extends MysqlDriver {
 	public Integer getDeliveryPeriodId(String delivery_period) {
 		ResultSet setDeliveryPeriod;
 		int deliveryPeriodId = 0;
-		setDeliveryPeriod = this.select("SELECT id FROM budget_delivery_period WHERE delivery_period = '" + delivery_period + "'");
+		setDeliveryPeriod = this.select("SELECT id FROM budget_delivery_periods WHERE delivery_period = '" + delivery_period + "'");
 		
 		try {
 			setDeliveryPeriod.first();
@@ -805,7 +834,7 @@ public class Db extends MysqlDriver {
 		Integer budgetId = 0;
 		
 		try {
-			DateTime serverDateTime = new DateTime(new Date());
+			DateTime serverDateTime = new DateTime(new java.util.Date());
 			Integer serverYear = serverDateTime.getYear();
 			
 			Boolean deleteResult = this.delete("DELETE FROM budget_code_ids WHERE year < " + serverYear);
@@ -872,8 +901,10 @@ public class Db extends MysqlDriver {
 		return this.delete(queryDelete);
 	}
 	
-	public String getBoardSwitchMainId(Integer boardId) {
+	public ArrayList<Integer> getBoardSwitchMainId(Integer boardId) {
 		String queryString;
+		String strBoardSwitchMainIds = null;
+		ArrayList<Integer> boardSwitchMainIds = new ArrayList<Integer>();
 		ResultSet setBoardSwitchMainId;
 		
 		queryString = "SELECT boards.main_switch_id FROM boards "
@@ -883,12 +914,17 @@ public class Db extends MysqlDriver {
 		
 		try {
 			if (setBoardSwitchMainId.next()) {
-				return setBoardSwitchMainId.getString("boards.main_switch_id");
+				strBoardSwitchMainIds = setBoardSwitchMainId.getString("boards.main_switch_id");
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return null;
+		
+		if(null != strBoardSwitchMainIds) {
+			boardSwitchMainIds = StringTools.explodeInt(strBoardSwitchMainIds);
+		}
+		
+		return boardSwitchMainIds;
 	}
 	
 	public Integer getBoardSwitchesQuantity(Integer boardId) {
@@ -981,14 +1017,18 @@ public class Db extends MysqlDriver {
 		return this.update(queryString);
 	}
 	
-	public String getBoardMaterials(Integer boardId) {
+	public ArrayList<Material> getBoardMaterials(Integer boardId) {
 		ResultSet setBoardMaterials;
-		String materials = "";
-		setBoardMaterials = this.select("SELECT materials FROM boards WHERE id = '" + boardId + "'");
+		ArrayList<Material> materials = new ArrayList<Material>();
+		setBoardMaterials = this.select("SELECT * FROM materials WHERE id = '" + boardId + "'");
 		
 		try {
-			setBoardMaterials.first();
-			materials = setBoardMaterials.getString("materials");
+			while(setBoardMaterials.next()) {
+				Integer id = setBoardMaterials.getInt("id");
+				String material = setBoardMaterials.getString("material");
+				Double price = setBoardMaterials.getDouble("price");
+				materials.add(new Material(id, material, price));
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(null, "Error al obtener los materiales del tablero");
@@ -1388,25 +1428,35 @@ public class Db extends MysqlDriver {
 		return notes;
 	}
 	
-	public ArrayList<MCSwitch> getBudgetSwitches(Integer budgetId) {
-		ArrayList<MCSwitch> switches = new ArrayList<MCSwitch>();
-		ResultSet setBudgetSwitches;
-		
-		setBudgetSwitches = this.select("SELECT * FROM budgets WHERE id = " + budgetId);
+	public ArrayList<Switch> getBudgetSwitches(Integer budgetId) {
+		ArrayList<Switch> switches = new ArrayList<Switch>();
+		ResultSet setBudgetSwitches = null;
+		CallableStatement statement = null;
 		
 		try {
+			statement = this.conn.prepareCall("{call SP_GET_BUDGET_SWITCHES(?)}");
+			statement.setInt(1, budgetId);
+			setBudgetSwitches = statement.executeQuery();
+			
 			while(setBudgetSwitches.next()) {
 				Integer id = setBudgetSwitches.getInt("id");
 				Integer brandId = setBudgetSwitches.getInt("brand_id");
+				String brand = setBudgetSwitches.getString("brand");
 				Integer typeId = setBudgetSwitches.getInt("type_id");
+				String type = setBudgetSwitches.getString("type");
 				String model = setBudgetSwitches.getString("model");
 				Integer phases = setBudgetSwitches.getInt("phases");
 				Integer currentId = setBudgetSwitches.getInt("current_id");
+				String current = setBudgetSwitches.getString("current");
 				Integer voltageId = setBudgetSwitches.getInt("voltage_id");
-				Integer interruptionId = setBudgetSwitches.getInt("voltage_id");
+				String voltage = setBudgetSwitches.getString("voltage");
+				Integer interruptionId = setBudgetSwitches.getInt("interruption_id");
+				String interruption = setBudgetSwitches.getString("interruption");
 				Double price = setBudgetSwitches.getDouble("price");
 				Boolean active = (setBudgetSwitches.getInt("active")==1?true:false);
-				switches.add(new MCSwitch(id, brandId, typeId, model, phases, currentId, voltageId, interruptionId, price, active));
+				Integer containerId = setBudgetSwitches.getInt("container_id");
+				Integer quantity = setBudgetSwitches.getInt("quantity");
+				switches.add(new Switch(id, brandId, brand, typeId, type, model, phases, currentId, current, voltageId, voltage, interruptionId, interruption, price, active, containerId, quantity));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -1416,6 +1466,185 @@ public class Db extends MysqlDriver {
 		return switches;
 	}
 	
+	public ArrayList<Switch> getBoardSwitches(Integer budgetId) {
+		ArrayList<Switch> switches = new ArrayList<Switch>();
+		ResultSet setBoardSwitches = null;
+		CallableStatement statement = null;
+		
+		try {
+			statement = this.conn.prepareCall("{call SP_GET_BOARD_SWITCHES(?)}");
+			statement.setInt(1, budgetId);
+			setBoardSwitches = statement.executeQuery();
+			
+			while(setBoardSwitches.next()) {
+				Integer id = setBoardSwitches.getInt("id");
+				Integer brandId = setBoardSwitches.getInt("brand_id");
+				String brand = setBoardSwitches.getString("brand");
+				Integer typeId = setBoardSwitches.getInt("type_id");
+				String type = setBoardSwitches.getString("type");
+				String model = setBoardSwitches.getString("model");
+				Integer phases = setBoardSwitches.getInt("phases");
+				Integer currentId = setBoardSwitches.getInt("current_id");
+				String current = setBoardSwitches.getString("current");
+				Integer voltageId = setBoardSwitches.getInt("voltage_id");
+				String voltage = setBoardSwitches.getString("voltage");
+				Integer interruptionId = setBoardSwitches.getInt("interruption_id");
+				String interruption = setBoardSwitches.getString("interruption");
+				Double price = setBoardSwitches.getDouble("price");
+				Boolean active = (setBoardSwitches.getInt("active")==1?true:false);
+				Integer containerId = setBoardSwitches.getInt("container_id");
+				Integer quantity = setBoardSwitches.getInt("quantity");
+				switches.add(new Switch(id, brandId, brand, typeId, type, model, phases, currentId, current, voltageId, voltage, interruptionId, interruption, price, active, containerId, quantity));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener los interruptores del tablero");
+		}
+		
+		return switches;
+	}
+	
+	public ArrayList<Box> getBudgetBoxes(Integer budgetId) {
+		ArrayList<Box> boxes = new ArrayList<Box>();
+		ResultSet setBudgetBoxes;
+		CallableStatement statement;
+		
+		try {
+			statement = this.conn.prepareCall("{call SP_GET_BUDGET_BOXES(?)}");
+			statement.setInt(1, budgetId);
+			setBudgetBoxes = statement.executeQuery();
+			
+			while(setBudgetBoxes.next()) {
+				Integer id = setBudgetBoxes.getInt("id");
+				Integer typeId = setBudgetBoxes.getInt("type_id");
+				String type = setBudgetBoxes.getString("type");
+				BoxType boxType = new BoxType(typeId, type);
+				
+				Integer installationId = setBudgetBoxes.getInt("installation_id");
+				String strInstallation = setBudgetBoxes.getString("installation");
+				Installation installation = new Installation(installationId, strInstallation);
+				
+				Integer nemaId = setBudgetBoxes.getInt("nema_id");
+				String strNema = setBudgetBoxes.getString("nema");
+				Nema nema = new Nema(nemaId, strNema);
+				
+				String strPairs = setBudgetBoxes.getString("pairs");
+				String strPairsNumeric = (strPairs.equals("N/A"))?"0":strPairs;
+				Integer pairs = Integer.valueOf(strPairsNumeric);
+				
+				Integer sheetId = setBudgetBoxes.getInt("sheet_id");
+				String strSheet = setBudgetBoxes.getString("sheet");
+				Sheet sheet = new Sheet(sheetId, strSheet);
+				
+				Integer finishId = setBudgetBoxes.getInt("finish_id");
+				String strFinish = setBudgetBoxes.getString("finish");
+				Finish finish = new Finish(finishId, strFinish);
+				
+				Integer colorId = setBudgetBoxes.getInt("color_id");
+				String strColor = setBudgetBoxes.getString("color");
+				Color color = new Color(colorId, strColor);
+				
+				Integer height = setBudgetBoxes.getInt("height");
+				Integer width = setBudgetBoxes.getInt("width");
+				Integer depth = setBudgetBoxes.getInt("depth");
+				Integer unitsId = setBudgetBoxes.getInt("units_id");
+				String strUnits = setBudgetBoxes.getString("units");
+				MeasureUnits units = new MeasureUnits(unitsId, strUnits);
+				
+				Integer caliberId = setBudgetBoxes.getInt("caliber_id");
+				String strCaliber = setBudgetBoxes.getString("caliber");
+				Integer intCaliber = Integer.valueOf(((strCaliber.equals("N/A"))?"0":strCaliber));
+				Caliber caliber = new Caliber(caliberId, intCaliber);
+				
+				String caliberComments = setBudgetBoxes.getString("caliber_comments");
+				Integer lockTypeId = setBudgetBoxes.getInt("lock_type_id");
+				String strLockType = setBudgetBoxes.getString("lock_type");
+				LockType lockType = new LockType(lockTypeId, strLockType);
+				
+				Double price = setBudgetBoxes.getDouble("price");
+				String comments = setBudgetBoxes.getString("comments");
+				Boolean active = (setBudgetBoxes.getInt("active")==1?true:false);
+				boxes.add(new Box(id, boxType, installation, nema, pairs, sheet, finish, color, height, width, depth, units, caliber, caliberComments, lockType, price, comments, active));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener las cajas del presupuesto");
+		}
+		
+		return boxes;
+	}
+	
+	public ArrayList<Board> getBudgetBoards(Integer budgetId) {
+		ArrayList<Board> boards = new ArrayList<Board>();
+		ResultSet setBudgetBoards;
+		CallableStatement statement;
+		
+		try {
+			statement = this.conn.prepareCall("{call SP_GET_BUDGET_BOARDS(?)}");
+			statement.setInt(1, budgetId);
+			setBudgetBoards = statement.executeQuery();
+			
+			while(setBudgetBoards.next()) {
+				Integer id = setBudgetBoards.getInt("id");
+				String name = setBudgetBoards.getString("name");
+				Integer boardTypeId = setBudgetBoards.getInt("type_id");
+				String strBoardtype = setBudgetBoards.getString("type");
+				BoardType boardType = new BoardType(boardTypeId, strBoardtype);
+				
+				Integer installationId = setBudgetBoards.getInt("installation_id");
+				String strInstallation = setBudgetBoards.getString("installation");
+				Installation installation = new Installation(installationId, strInstallation);
+				
+				Integer nemaId = setBudgetBoards.getInt("nema_id");
+				String strNema = setBudgetBoards.getString("nema");
+				Nema nema = new Nema(nemaId, strNema);
+				
+				Integer barCapacityId = setBudgetBoards.getInt("bar_capacity_id");
+				Integer strBarCapacity = setBudgetBoards.getInt("bar_capacity");
+				BarCapacity barCapacity = new BarCapacity(barCapacityId, strBarCapacity);
+				
+				Integer barTypeId = setBudgetBoards.getInt("bar_type_id");
+				String strBarType = setBudgetBoards.getString("nema");
+				BarType barType = new BarType(barTypeId, strBarType);
+				
+				Integer circuitsId = setBudgetBoards.getInt("circuits_id");
+				Integer strCircuits = setBudgetBoards.getInt("circuits");
+				Circuits circuits = new Circuits(circuitsId, strCircuits);
+				
+				Integer boardVoltageId = setBudgetBoards.getInt("voltage_id");
+				String strBoardVoltage = setBudgetBoards.getString("voltage");
+				BoardVoltage boardVoltage = new BoardVoltage(boardVoltageId, strBoardVoltage);
+				
+				Integer phases = setBudgetBoards.getInt("phases");
+				Boolean ground = setBudgetBoards.getBoolean("ground");
+				
+				Integer interruptionId = setBudgetBoards.getInt("interruption_id");
+				Integer strInterruption = setBudgetBoards.getInt("interruption");
+				Interruption interruption = new Interruption(interruptionId, strInterruption);
+				
+				Integer lockTypeId = setBudgetBoards.getInt("lock_type_id");
+				String strLockType = setBudgetBoards.getString("lock_type");
+				LockType lockType = new LockType(lockTypeId, strLockType);
+				
+				ArrayList<Integer> mainSwitchIds = this.getBoardSwitchMainId(id);
+				
+				ArrayList<Material> materials = this.getBoardMaterials(id);
+				
+				Double price = setBudgetBoards.getDouble("price");
+				String comments = setBudgetBoards.getString("comments");
+				Boolean active = (setBudgetBoards.getInt("active")==1?true:false);
+				
+				ArrayList<Switch> switches = new ArrayList<Switch>();
+				switches = this.getBoardSwitches(id);
+				boards.add(new Board(id, name, boardType, installation, nema, barCapacity, barType, circuits, boardVoltage, phases, ground, interruption, lockType, mainSwitchIds, materials, price, comments, active, switches));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener los tableros del presupuesto");
+		}
+		
+		return boards;
+	}
 	
 	public Integer cloneBudget(Integer selectedBudgetId) {
 		Integer clonedBudgetId = 0;
@@ -1448,11 +1677,11 @@ public class Db extends MysqlDriver {
 	
 	private void cloneBudgetSwitches(Integer selectedBudgetId, Integer clonedBudgetId) {
 		ResultSet setBudgetSwitches;
-		ArrayList<MCSwitch> switches = this.getBudgetSwitches(selectedBudgetId);
-		ArrayList<MCSwitch> clonedSwitches = (ArrayList<MCSwitch>) switches.clone();
-		Iterator<MCSwitch> it = clonedSwitches.iterator();
+		ArrayList<Switch> switches = this.getBudgetSwitches(selectedBudgetId);
+		ArrayList<Switch> clonedSwitches = (ArrayList<Switch>) switches.clone();
+		Iterator<Switch> it = clonedSwitches.iterator();
 		
-		// TODO Iterate through all of them an change the budget container
+		// TODO Iterate through all of them and change the budget container
 		it.next();
 	}
 
@@ -1460,11 +1689,519 @@ public class Db extends MysqlDriver {
 		// TODO Auto-generated method stub
 		
 	}
-
 	
 	private void cloneBudgetBoards(Integer selectedBudgetId, Integer clonedBudgetId) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	public ArrayList<Budget> getBudgets(Integer stageId) {
+		ArrayList<Budget> budgets = new ArrayList<Budget>();
+		ResultSet setBudgets;
+		
+		setBudgets = this.select("SELECT * FROM budgets WHERE stage_id = " + stageId);
+		
+		try {
+			while(setBudgets.next()) {
+				Integer id = setBudgets.getInt("id");
+				String code = setBudgets.getString("code");
+				java.sql.Date date = setBudgets.getDate("date");
+				Integer expiryDays = setBudgets.getInt("expiry_days");
+				
+				Integer clientId = setBudgets.getInt("client_id");
+				Client client = new Client(this.getClientInfo(clientId));
+				
+				String workName = setBudgets.getString("work_name");
+				
+				Integer paymentMethodId = setBudgets.getInt("payment_method_id");
+				PaymentMethod paymentMethod = new PaymentMethod(this.getPaymentMethodInfo(paymentMethodId));
+				
+				Integer sellerId = setBudgets.getInt("seller_id");
+				User seller = new User(this.getSellerInfo(sellerId));
+				
+				Integer dispatchPlaceId = setBudgets.getInt("dispatch_place_id");
+				DispatchPlace dispatchPlace = new DispatchPlace(this.getDispachPlaceInfo(dispatchPlaceId));
+				
+				Integer deliveryTime = setBudgets.getInt("delivery_time");
+				
+				Integer deliveryPeriodId = setBudgets.getInt("delivery_period_id");
+				DeliveryPeriod deliveryPeriod = new DeliveryPeriod(this.getDeliveryPeriodInfo(deliveryPeriodId));
+				
+				Boolean tracing = (setBudgets.getInt("tracing")==1)?true:false;
+				
+				BudgetStage stage = new BudgetStage(this.getBudgetStageInfo(stageId)); 
+				
+				String notes = setBudgets.getString("notes");
+				ArrayList<Switch> switches = new ArrayList<Switch>();
+				switches = this.getBudgetSwitches(id);
+				ArrayList<Box> boxes = new ArrayList<Box>();
+				boxes = this.getBudgetBoxes(id);
+				ArrayList<Board> boards = new ArrayList<Board>();
+				boards = this.getBudgetBoards(id);
+				budgets.add(new Budget(id, code, date, expiryDays, client, workName, paymentMethod, seller, dispatchPlace, deliveryTime, deliveryPeriod, tracing, stage, notes, switches, boxes, boards));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener los interruptores del presupuesto");
+		}
+		
+		return budgets;
+	}
+
+	private BudgetStage getBudgetStageInfo(Integer stageId) {
+		BudgetStage budgetStage = null;
+		ResultSet setBudgetStage;
+		
+		setBudgetStage = this.select("SELECT * FROM budget_stages WHERE budget_stages.id = " + stageId);
+		
+		try {
+			if (setBudgetStage.next()) {
+				String stage = setBudgetStage.getString("stage");
+				budgetStage = new BudgetStage(stageId, stage);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return budgetStage;
+	}
+
+	private DeliveryPeriod getDeliveryPeriodInfo(Integer deliveryPeriodId) {
+		DeliveryPeriod deliveryPeriod = null;
+		ResultSet setDeliveryPeriod;
+		
+		setDeliveryPeriod = this.select("SELECT * FROM budget_delivery_periods WHERE budget_delivery_periods.id = " + deliveryPeriodId);
+		
+		try {
+			if (setDeliveryPeriod.next()) {
+				String period = setDeliveryPeriod.getString("delivery_period");
+				deliveryPeriod = new DeliveryPeriod(deliveryPeriodId, period);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return deliveryPeriod;
+	}
+
+	private DispatchPlace getDispachPlaceInfo(Integer dispatchPlaceId) {
+		DispatchPlace dispatchPlace = null;
+		ResultSet setDispatchPlace;
+		
+		setDispatchPlace = this.select("SELECT * FROM budget_dispatch_places WHERE budget_dispatch_places.id = " + dispatchPlaceId);
+		
+		try {
+			if (setDispatchPlace.next()) {
+				String place = setDispatchPlace.getString("place");
+				dispatchPlace = new DispatchPlace(dispatchPlaceId, place);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return dispatchPlace;
+	}
+
+	private User getSellerInfo(Integer sellerId) {
+		User seller = null;
+		ResultSet setSeller;
+		String query = "SELECT *, UNIX_TIMESTAMP(date_created) as date_timestamp FROM users WHERE users.id = " + sellerId;
+		
+		setSeller = this.select(query);
+		
+		try {
+			if (setSeller.next()) {
+				String username = setSeller.getString("username");
+				String passport = setSeller.getString("passport");
+				String password = setSeller.getString("password");
+				Integer userTypeId = setSeller.getInt("user_type_id");
+				UserType userType = new UserType(this.getUserTypeInfo(userTypeId));
+				String firstName = setSeller.getString("first_name");
+				String lastName = setSeller.getString("last_name");
+				String email = setSeller.getString("email");
+				String phone = setSeller.getString("phone");
+				Timestamp timestamp = setSeller.getTimestamp("date_timestamp");
+				DateTime dateCreated = new DateTime(timestamp.getTime());
+				Boolean status = (setSeller.getInt("status")==1)?true:false;
+				seller = new User(sellerId, username, passport, password, userType, firstName, lastName, email, phone, dateCreated, status);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return seller;
+	}
+
+	private UserType getUserTypeInfo(Integer userTypeId) {
+		UserType userType = null;
+		ResultSet setUserType;
+		
+		setUserType = this.select("SELECT * FROM user_types WHERE user_types.id = " + userTypeId);
+		
+		try {
+			if (setUserType.next()) {
+				String type = setUserType.getString("type");
+				userType = new UserType(userTypeId, type);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return userType;
+	}
+
+	private PaymentMethod getPaymentMethodInfo(Integer paymentMethodId) {
+		PaymentMethod paymentMethod = null;
+		ResultSet setPaymentMethod;
+		
+		setPaymentMethod = this.select("SELECT * FROM budget_payment_methods WHERE budget_payment_methods.id = " + paymentMethodId);
+		
+		try {
+			if (setPaymentMethod.next()) {
+				String method = setPaymentMethod.getString("method");
+				paymentMethod = new PaymentMethod(paymentMethodId, method);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return paymentMethod;
+	}
+
+	private Client getClientInfo(Integer clientId) {
+		Client client = null;
+		ResultSet setClient;
+		
+		setClient = this.select("SELECT * FROM clients WHERE clients.id = " + clientId);
+		
+		try {
+			if (setClient.next()) {
+				String clientName = setClient.getString("client");
+				String code = setClient.getString("client_code");
+				String representative = setClient.getString("representative");
+				String rif = setClient.getString("rif");
+				String address = setClient.getString("address");
+				String phone = setClient.getString("phone");
+				String email = setClient.getString("email");
+				String facebookProfile = setClient.getString("facebook_profile");
+				String twitterUser = setClient.getString("twitter_user");
+				String InstagramUser = setClient.getString("instagram_user");
+				client = new Client(clientId, clientName, code, representative, rif, address, phone, email, facebookProfile, twitterUser, InstagramUser);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return client;
+	}
+
+	public User fetchUserInfo(String username) {
+		User user = null;
+		ResultSet setUserInfo;
+		CallableStatement statement;
+		
+		try {
+			statement = this.conn.prepareCall("{call SP_GET_USER_INFO(?)}");
+			statement.setString(1, username);
+			setUserInfo = statement.executeQuery();
+			
+			if (setUserInfo.next()) {
+				Integer id = setUserInfo.getInt("id");
+				String password = setUserInfo.getString("password");
+				String passport = setUserInfo.getString("passport");
+				Integer userTypeId = setUserInfo.getInt("user_type_id");
+				String strUserType = setUserInfo.getString("type");
+				UserType userType = new UserType(userTypeId, strUserType);
+				String firstName = setUserInfo.getString("first_name");
+				String lastName = setUserInfo.getString("last_name");
+				String email = setUserInfo.getString("email");
+				String phone = setUserInfo.getString("phone");
+				Timestamp timestamp = setUserInfo.getTimestamp("date_timestamp");
+				DateTime dateCreated = new DateTime(timestamp.getTime());
+				Boolean status = (setUserInfo.getInt("status")==1?true:false);
+				
+				user = new User(id, username, password, passport, userType, firstName, lastName, email, phone, dateCreated, status);
+			}
+			
+		} catch(SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return user;
+	}
+	
+	public ProductionOrder pullProductionOrder(Integer orderId) {
+		ProductionOrder productionOrder = new ProductionOrder();
+		ResultSet setProductionOrder;
+		CallableStatement statement;
+		
+		try {
+			statement = this.conn.prepareCall("{call SP_GET_PRODUCTION_ORDER_INFO(?)}");
+			statement.setInt(1, orderId);
+			setProductionOrder = statement.executeQuery();
+			if (setProductionOrder.next()) {
+				Integer id = setProductionOrder.getInt("id");
+				Integer budgetId = setProductionOrder.getInt("budget_id");
+				Timestamp timestampProcessed = setProductionOrder.getTimestamp("date_processed_ts");
+				DateTime dateProcessed = new DateTime(timestampProcessed.getTime());
+				Timestamp timestampFinished = setProductionOrder.getTimestamp("date_finished_ts");
+				DateTime dateFinished = new DateTime(timestampFinished.getTime());
+				Integer creatorId = setProductionOrder.getInt("creator_id");
+				Integer authorizerId = setProductionOrder.getInt("authorizer_id");
+				Boolean processed = (setProductionOrder.getInt("processed")==1?true:false);
+				productionOrder = new ProductionOrder(id, budgetId, dateProcessed, dateFinished, creatorId, authorizerId, processed);
+			}
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return productionOrder;
+	}
+
+	
+	public Boolean productionOrderExists(Integer budgetId) {
+		String queryString;
+		
+		queryString = "SELECT id FROM production_orders WHERE budget_id = '" + budgetId + "'";
+		this.select(queryString);
+		
+		return (this.getNumRows() > 0)? true:false;
+	}
+
+	
+	public ProductionOrder pullProductionOrderByBudget(Integer budgetId) {
+		ProductionOrder productionOrder = new ProductionOrder();
+		ResultSet setProductionOrder;
+		CallableStatement statement;
+		
+		try {
+			statement = this.conn.prepareCall("{call SP_GET_PRODUCTION_ORDER_INFO_BY_BUDGET(?)}");
+			statement.setInt(1, budgetId);
+			setProductionOrder = statement.executeQuery();
+			if (setProductionOrder.next()) {
+				Integer id = setProductionOrder.getInt("id");
+				Timestamp timestampProcessed = setProductionOrder.getTimestamp("date_processed_ts");
+				DateTime dateProcessed = new DateTime(timestampProcessed.getTime());
+				Timestamp timestampFinished = setProductionOrder.getTimestamp("date_finished_ts");
+				DateTime dateFinished = new DateTime(timestampFinished.getTime());
+				Integer creatorId = setProductionOrder.getInt("creator_id");
+				Integer authorizerId = setProductionOrder.getInt("authorizer_id");
+				Boolean processed = (setProductionOrder.getInt("processed")==1?true:false);
+				productionOrder = new ProductionOrder(id, budgetId, dateProcessed, dateFinished, creatorId, authorizerId, processed);
+			}
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return productionOrder;
+	}
+
+	public ArrayList<Product> getProductionOrderProducts(Integer productionOrderId) {
+		ArrayList<Product> products = new ArrayList<Product>();
+		ResultSet setProducts;
+		CallableStatement statement;
+		
+		try {
+			statement = this.conn.prepareCall("{call SP_GET_PRODUCTION_ORDER_SWITCHES(?)}");
+			statement.setInt(1, productionOrderId);
+			setProducts = statement.executeQuery();
+			while (setProducts.next()) {
+				Integer id = setProducts.getInt("id");
+				Integer brandId = setProducts.getInt("brand_id");
+				String brand = setProducts.getString("brand");
+				Integer typeId = setProducts.getInt("type_id");
+				String type = setProducts.getString("type");
+				String model = setProducts.getString("model");
+				Integer phases = setProducts.getInt("phases");
+				Integer currentId = setProducts.getInt("current_id");
+				String current = setProducts.getString("current");
+				Integer voltageId = setProducts.getInt("voltage_id");
+				String voltage = setProducts.getString("voltage");
+				Integer interruptionId = setProducts.getInt("interruption_id");
+				String interruption = setProducts.getString("interruption");
+				Double price = setProducts.getDouble("price");
+				Boolean active = (setProducts.getInt("active")==1?true:false);
+				Integer containerId = setProducts.getInt("container_id");
+				Integer quantity = setProducts.getInt("quantity");
+				products.add(new Switch(id, brandId, brand, typeId, type, model, phases, currentId, current, voltageId, voltage, interruptionId, interruption, price, active, containerId, quantity));
+			}
+			
+			statement = this.conn.prepareCall("{call SP_GET_PRODUCTION_ORDER_BOXES(?)}");
+			statement.setInt(1, productionOrderId);
+			setProducts = statement.executeQuery();
+			while (setProducts.next()) {
+				Integer id = setProducts.getInt("id");
+				Integer typeId = setProducts.getInt("type_id");
+				String type = setProducts.getString("type");
+				BoxType boxType = new BoxType(typeId, type);
+				
+				Integer installationId = setProducts.getInt("installation_id");
+				String strInstallation = setProducts.getString("installation");
+				Installation installation = new Installation(installationId, strInstallation);
+				
+				Integer nemaId = setProducts.getInt("nema_id");
+				String strNema = setProducts.getString("nema");
+				Nema nema = new Nema(nemaId, strNema);
+				
+				String strPairs = setProducts.getString("pairs");
+				String strPairsNumeric = (strPairs.equals("N/A"))?"0":strPairs;
+				Integer pairs = Integer.valueOf(strPairsNumeric);
+				
+				Integer sheetId = setProducts.getInt("sheet_id");
+				String strSheet = setProducts.getString("sheet");
+				Sheet sheet = new Sheet(sheetId, strSheet);
+				
+				Integer finishId = setProducts.getInt("finish_id");
+				String strFinish = setProducts.getString("finish");
+				Finish finish = new Finish(finishId, strFinish);
+				
+				Integer colorId = setProducts.getInt("color_id");
+				String strColor = setProducts.getString("color");
+				Color color = new Color(colorId, strColor);
+				
+				Integer height = setProducts.getInt("height");
+				Integer width = setProducts.getInt("width");
+				Integer depth = setProducts.getInt("depth");
+				Integer unitsId = setProducts.getInt("units_id");
+				String strUnits = setProducts.getString("units");
+				MeasureUnits units = new MeasureUnits(unitsId, strUnits);
+				
+				Integer caliberId = setProducts.getInt("caliber_id");
+				String strCaliber = setProducts.getString("caliber");
+				Integer intCaliber = Integer.valueOf(((strCaliber.equals("N/A"))?"0":strCaliber));
+				Caliber caliber = new Caliber(caliberId, intCaliber);
+				
+				String caliberComments = setProducts.getString("caliber_comments");
+				Integer lockTypeId = setProducts.getInt("lock_type_id");
+				String strLockType = setProducts.getString("lock_type");
+				LockType lockType = new LockType(lockTypeId, strLockType);
+				
+				Double price = setProducts.getDouble("price");
+				String comments = setProducts.getString("comments");
+				Boolean active = (setProducts.getInt("active")==1?true:false);
+				products.add(new Box(id, boxType, installation, nema, pairs, sheet, finish, color, height, width, depth, units, caliber, caliberComments, lockType, price, comments, active));
+			}
+			
+			statement = this.conn.prepareCall("{call SP_GET_PRODUCTION_ORDER_BOARDS(?)}");
+			statement.setInt(1, productionOrderId);
+			setProducts = statement.executeQuery();
+			while (setProducts.next()) {
+				Integer id = setProducts.getInt("id");
+				String name = setProducts.getString("name");
+				Integer boardTypeId = setProducts.getInt("type_id");
+				String strBoardtype = setProducts.getString("type");
+				BoardType boardType = new BoardType(boardTypeId, strBoardtype);
+				
+				Integer installationId = setProducts.getInt("installation_id");
+				String strInstallation = setProducts.getString("installation");
+				Installation installation = new Installation(installationId, strInstallation);
+				
+				Integer nemaId = setProducts.getInt("nema_id");
+				String strNema = setProducts.getString("nema");
+				Nema nema = new Nema(nemaId, strNema);
+				
+				Integer barCapacityId = setProducts.getInt("bar_capacity_id");
+				Integer strBarCapacity = setProducts.getInt("bar_capacity");
+				BarCapacity barCapacity = new BarCapacity(barCapacityId, strBarCapacity);
+				
+				Integer barTypeId = setProducts.getInt("bar_type_id");
+				String strBarType = setProducts.getString("nema");
+				BarType barType = new BarType(barTypeId, strBarType);
+				
+				Integer circuitsId = setProducts.getInt("circuits_id");
+				Integer strCircuits = setProducts.getInt("circuits");
+				Circuits circuits = new Circuits(circuitsId, strCircuits);
+				
+				Integer boardVoltageId = setProducts.getInt("voltage_id");
+				String strBoardVoltage = setProducts.getString("voltage");
+				BoardVoltage boardVoltage = new BoardVoltage(boardVoltageId, strBoardVoltage);
+				
+				Integer phases = setProducts.getInt("phases");
+				Boolean ground = setProducts.getBoolean("ground");
+				
+				Integer interruptionId = setProducts.getInt("interruption_id");
+				Integer strInterruption = setProducts.getInt("interruption");
+				Interruption interruption = new Interruption(interruptionId, strInterruption);
+				
+				Integer lockTypeId = setProducts.getInt("lock_type_id");
+				String strLockType = setProducts.getString("lock_type");
+				LockType lockType = new LockType(lockTypeId, strLockType);
+				
+				ArrayList<Integer> mainSwitchIds = this.getBoardSwitchMainId(id);
+				
+				ArrayList<Material> materials = this.getBoardMaterials(id);
+				
+				Double price = setProducts.getDouble("price");
+				String comments = setProducts.getString("comments");
+				Boolean active = (setProducts.getInt("active")==1?true:false);
+				
+				ArrayList<Switch> switches = new ArrayList<Switch>();
+				switches = this.getBoardSwitches(id);
+				products.add(new Board(id, name, boardType, installation, nema, barCapacity, barType, circuits, boardVoltage, phases, ground, interruption, lockType, mainSwitchIds, materials, price, comments, active, switches));
+			}
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return products;
+	}
+
+	public WorkOrder pullWorkOrder(Integer orderId) {
+		WorkOrder workOrder = new WorkOrder();
+		ResultSet setWorkOrder;
+		CallableStatement statement;
+		
+		try {
+			statement = this.conn.prepareCall("{call SP_GET_WORK_ORDER_INFO_BY_ID(?)}");
+			statement.setInt(1, orderId);
+			setWorkOrder = statement.executeQuery();
+			if (setWorkOrder.next()) {
+				Integer id = setWorkOrder.getInt("id");
+				Integer productionOrderId = setWorkOrder.getInt("production_order_id");
+				Integer productId = setWorkOrder.getInt("product_id");
+				Integer productTypeId = setWorkOrder.getInt("product_type_id");
+				Integer creatorId = setWorkOrder.getInt("creator_id");
+				Integer authorizerId = setWorkOrder.getInt("authorizer_id");
+				Timestamp timestampProcessed = setWorkOrder.getTimestamp("date_processed_ts");
+				DateTime dateProcessed = new DateTime(timestampProcessed.getTime());
+				Timestamp timestampFinished = setWorkOrder.getTimestamp("date_finished_ts");
+				DateTime dateFinished = new DateTime(timestampFinished.getTime());
+				Boolean processed = (setWorkOrder.getInt("processed")==1?true:false);
+				workOrder = new WorkOrder(id, productionOrderId, productId, productTypeId, creatorId, authorizerId, dateProcessed, dateFinished, processed);
+			}
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return workOrder;
+	}
+
+	public ArrayList<WorkOrder> pullAllWorkOrders(Integer productionOrderId) {
+		ArrayList<WorkOrder> workOrders = new ArrayList<WorkOrder>();
+		ResultSet setWorkOrder;
+		CallableStatement statement;
+		
+		try {
+			statement = this.conn.prepareCall("{call SP_GET_WORK_ORDER_INFO_BY_PRODUCTION_ORDER_ID(?)}");
+			statement.setInt(1, productionOrderId);
+			setWorkOrder = statement.executeQuery();
+			while (setWorkOrder.next()) {
+				Integer id = setWorkOrder.getInt("id");
+				Integer productId = setWorkOrder.getInt("product_id");
+				Integer productTypeId = setWorkOrder.getInt("product_type_id");
+				Integer creatorId = setWorkOrder.getInt("creator_id");
+				Integer authorizerId = setWorkOrder.getInt("authorizer_id");
+				Timestamp timestampProcessed = setWorkOrder.getTimestamp("date_processed_ts");
+				DateTime dateProcessed = new DateTime(timestampProcessed.getTime());
+				Timestamp timestampFinished = setWorkOrder.getTimestamp("date_finished_ts");
+				DateTime dateFinished = new DateTime(timestampFinished.getTime());
+				Boolean processed = (setWorkOrder.getInt("processed")==1?true:false);
+				workOrders.add(new WorkOrder(id, productionOrderId, productId, productTypeId, creatorId, authorizerId, dateProcessed, dateFinished, processed));
+			}
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return workOrders;
+	}
+
+	public Boolean setProductionOrderProcessed(Integer orderId) {
+		return this.update("UPDATE production_orders SET processed = 1 WHERE id = " + orderId);
 	}
 	
 }

@@ -20,7 +20,6 @@ import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.view.JasperViewer;
 import ve.com.mastercircuito.components.Client;
 import ve.com.mastercircuito.db.Db;
-import ve.com.mastercircuito.sales.MainView;
 import ve.com.mastercircuito.utils.StringTools;
 
 import java.awt.EventQueue;

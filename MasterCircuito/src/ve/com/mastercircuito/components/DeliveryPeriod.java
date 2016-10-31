@@ -15,6 +15,11 @@ public class DeliveryPeriod {
 		this.period = period;
 	}
 	
+	public DeliveryPeriod(DeliveryPeriod deliveryPeriodInfo) {
+		this.id = deliveryPeriodInfo.getId();
+		this.period = deliveryPeriodInfo.getPeriod();
+	}
+
 	public String getPeriod() {
 		return period;
 	}
