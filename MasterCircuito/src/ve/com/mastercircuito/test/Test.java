@@ -97,9 +97,20 @@ public class Test {
 //			ex.printStackTrace();
 //		}
 	
-		
 		conectToDatabase();
-		openReportFrame();
+
+		Map parametersMap = new HashMap();  
+		parametersMap.put("budgetid",2);
+		
+		JasperReport report = (JasperReport) JRLoader.loadObjectFromFile( "Presupuesto.jasper" );
+
+		
+		JasperPrint jasperPrint = JasperFillManager.fillReport(report, parametersMap, con.getConn());
+		
+		JasperViewer.viewReport(jasperPrint);    //VIEWER OF THE JASPER PRINT OBJECT
+
+		
+//		openReportFrame();
 	}
 	
 	private static void conectToDatabase()
