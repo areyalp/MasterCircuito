@@ -1,12 +1,12 @@
 package ve.com.mastercircuito.components;
 
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 
 import ve.com.mastercircuito.db.Db;
-import ve.com.mastercircuito.utils.StringTools;
 
 public class MyTableModel extends AbstractTableModel {
 	/**
@@ -72,37 +72,25 @@ public class MyTableModel extends AbstractTableModel {
 	public void setValueAt(Object value, int row, int col) {
 		if(this.getColumnClass(col).equals(Boolean.class)) {
 			Db db = new Db();
-			String boardMainSwitches = "";
-			int boardMains = 0;
-			int boardContainerId = 0;
+			Map<Integer,Boolean> mainSwitchesMap = new HashMap<Integer,Boolean>();
 			for(int i = 0; i < data.length; i++) {
-				if(data[i][col].equals(true)) {
-					boardMains++;
-					boardMainSwitches = boardMainSwitches.concat(data[i][0] + ",");
+				if(data[i][col].equals(Boolean.TRUE)) {
+					mainSwitchesMap.put(Integer.valueOf(String.valueOf(this.data[i][0])), Boolean.valueOf(String.valueOf(this.data[i][col])));
 				}
 			}
-			if(value.equals(false)) {
-				boardMainSwitches = boardMainSwitches.replace(this.data[row][0] + ",", "");
-				boardMains--;
-			}
-			if(boardMains < 2) {
+			
+			Integer boardSwitchId = Integer.valueOf(String.valueOf(this.data[row][0]));
+			
+			if(value.equals(Boolean.FALSE)) {
+				mainSwitchesMap.remove(Integer.valueOf(String.valueOf(this.data[row][0])));
+				db.removeBoardMainSwitch(Integer.valueOf(String.valueOf(this.data[row][0])), boardSwitchId);
 				this.data[row][col] = value;
 				fireTableCellUpdated(row, col);
-				if(value.equals(true)) {
-					boardMainSwitches = boardMainSwitches.concat(data[row][0] + ",");
-				}
-				
-				if(boardMainSwitches.endsWith(",")) {
-					boardMainSwitches = StringTools.removeLastChar(boardMainSwitches);
-				}
-				
-				Object boardSwitchId = this.data[row][0];
-				boardContainerId = db.getBoardContainerId(Integer.valueOf((String) boardSwitchId));
-				ArrayList<Object> listFields = new ArrayList<Object>();
-				ArrayList<Object> listValues = new ArrayList<Object>();
-				listFields.add("main_switch_id");
-				listValues.add("'" + boardMainSwitches + "'");
-				db.editBoard(boardContainerId, listFields, listValues);
+			} else if(value.equals(Boolean.TRUE) && mainSwitchesMap.size() < 2) {
+				mainSwitchesMap.put(Integer.valueOf(String.valueOf(this.data[row][0])), (Boolean) this.data[row][col]);
+				db.addBoardMainSwitch(Integer.valueOf(String.valueOf(this.data[row][0])), boardSwitchId);
+				this.data[row][col] = value;
+				fireTableCellUpdated(row, col);
 			}
 		} else {
 			this.data[row][col] = value;

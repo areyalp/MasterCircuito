@@ -1956,7 +1956,6 @@ public class Db extends MysqlDriver {
 		}
 		return productionOrder;
 	}
-
 	
 	public Boolean productionOrderExists(Integer budgetId) {
 		String queryString;
@@ -1966,7 +1965,6 @@ public class Db extends MysqlDriver {
 		
 		return (this.getNumRows() > 0)? true:false;
 	}
-
 	
 	public ProductionOrder pullProductionOrderByBudget(Integer budgetId) {
 		ProductionOrder productionOrder = new ProductionOrder();
@@ -2202,6 +2200,14 @@ public class Db extends MysqlDriver {
 
 	public Boolean setProductionOrderProcessed(Integer orderId) {
 		return this.update("UPDATE production_orders SET processed = 1 WHERE id = " + orderId);
+	}
+	
+	public Boolean addBoardMainSwitch(Integer switchId, int boardContainerId) {
+		return this.update("UPDATE board_switches SET main = 1 WHERE id = " + switchId);
+	}
+	
+	public Boolean removeBoardMainSwitch(Integer switchId, int boardContainerId) {
+		return this.update("UPDATE board_switches SET main = 0 WHERE id = " + switchId);
 	}
 	
 }

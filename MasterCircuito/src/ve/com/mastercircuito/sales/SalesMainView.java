@@ -4952,7 +4952,7 @@ public class SalesMainView extends JFrame{
 				+ " board_switches.quantity, "
 				+ " switches.price, "
 				+ " (board_switches.quantity * switches.price) as total, "
-				+ " IF(FIND_IN_SET(board_switches.id,boards.main_switch_id),'1','0') as principal "
+				+ " board_switches.main as principal "
 			+ " FROM boards, board_switches, switches, switch_types, switch_brands, currents "
 			+ " WHERE board_switches.board_container_id = " + selectedBoardId
 			+ " AND boards.id = board_switches.board_container_id"
