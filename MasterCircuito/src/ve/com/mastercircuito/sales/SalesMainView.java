@@ -8866,7 +8866,7 @@ public class SalesMainView extends JFrame{
 				int response = JOptionPane.showConfirmDialog(null, "Esta seguro que desea remover este interruptor del tablero?", "Remover interruptor del tablero", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 				if(response == JOptionPane.YES_OPTION) {
 					int boardContainerId = db.getSwitchBoardId(selectedBoardSwitchId);
-					ArrayList<Integer> boardMainSwitches = db.getBoardSwitchMainId(boardContainerId);
+					ArrayList<Integer> boardMainSwitches = db.getBoardSwitchMainIds(boardContainerId);
 					if(db.removeBoardSwitch(selectedBoardSwitchId)) {
 						boardMainSwitches.remove(String.valueOf(selectedBoardSwitchId));
 						ArrayList<Object> listFields = new ArrayList<Object>();

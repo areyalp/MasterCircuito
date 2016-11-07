@@ -901,27 +901,22 @@ public class Db extends MysqlDriver {
 		return this.delete(queryDelete);
 	}
 	
-	public ArrayList<Integer> getBoardSwitchMainId(Integer boardId) {
-		String queryString;
-		String strBoardSwitchMainIds = null;
+	public ArrayList<Integer> getBoardSwitchMainIds(Integer boardId) {
 		ArrayList<Integer> boardSwitchMainIds = new ArrayList<Integer>();
-		ResultSet setBoardSwitchMainId;
-		
-		queryString = "SELECT boards.main_switch_id FROM boards "
-					+ "WHERE boards.id = '" + boardId + "'";
-		
-		setBoardSwitchMainId = this.select(queryString);
+		ResultSet setBoardSwitchMainIds;
+		CallableStatement statement;
 		
 		try {
-			if (setBoardSwitchMainId.next()) {
-				strBoardSwitchMainIds = setBoardSwitchMainId.getString("boards.main_switch_id");
+			statement = this.conn.prepareCall("{call SP_GET_BOARD_MAIN_SWITCHES(?)}");
+			statement.setInt(1, boardId);
+			setBoardSwitchMainIds = statement.executeQuery();
+			
+			while(setBoardSwitchMainIds.next()) {
+				boardSwitchMainIds.add(setBoardSwitchMainIds.getInt(1));
 			}
+			
 		} catch (SQLException e) {
 			e.printStackTrace();
-		}
-		
-		if(null != strBoardSwitchMainIds) {
-			boardSwitchMainIds = StringTools.explodeInt(strBoardSwitchMainIds);
 		}
 		
 		return boardSwitchMainIds;
@@ -1626,7 +1621,7 @@ public class Db extends MysqlDriver {
 				String strLockType = setBudgetBoards.getString("lock_type");
 				LockType lockType = new LockType(lockTypeId, strLockType);
 				
-				ArrayList<Integer> mainSwitchIds = this.getBoardSwitchMainId(id);
+				ArrayList<Integer> mainSwitchIds = this.getBoardSwitchMainIds(id);
 				
 				ArrayList<Material> materials = this.getBoardMaterials(id);
 				
@@ -1943,13 +1938,11 @@ public class Db extends MysqlDriver {
 				Integer id = setProductionOrder.getInt("id");
 				Integer budgetId = setProductionOrder.getInt("budget_id");
 				Timestamp timestampProcessed = setProductionOrder.getTimestamp("date_processed_ts");
-				DateTime dateProcessed = new DateTime(timestampProcessed.getTime());
 				Timestamp timestampFinished = setProductionOrder.getTimestamp("date_finished_ts");
-				DateTime dateFinished = new DateTime(timestampFinished.getTime());
 				Integer creatorId = setProductionOrder.getInt("creator_id");
 				Integer authorizerId = setProductionOrder.getInt("authorizer_id");
 				Boolean processed = (setProductionOrder.getInt("processed")==1?true:false);
-				productionOrder = new ProductionOrder(id, budgetId, dateProcessed, dateFinished, creatorId, authorizerId, processed);
+				productionOrder = new ProductionOrder(id, budgetId, timestampProcessed, timestampFinished, creatorId, authorizerId, processed);
 			}
 		}catch(SQLException e) {
 			e.printStackTrace();
@@ -1977,14 +1970,12 @@ public class Db extends MysqlDriver {
 			setProductionOrder = statement.executeQuery();
 			if (setProductionOrder.next()) {
 				Integer id = setProductionOrder.getInt("id");
-				Timestamp timestampProcessed = setProductionOrder.getTimestamp("date_processed_ts");
-				DateTime dateProcessed = new DateTime(timestampProcessed.getTime());
-				Timestamp timestampFinished = setProductionOrder.getTimestamp("date_finished_ts");
-				DateTime dateFinished = new DateTime(timestampFinished.getTime());
+				Timestamp timestampProcessed = setProductionOrder.getTimestamp("date_processed");
+				Timestamp timestampFinished = setProductionOrder.getTimestamp("date_finished");
 				Integer creatorId = setProductionOrder.getInt("creator_id");
 				Integer authorizerId = setProductionOrder.getInt("authorizer_id");
 				Boolean processed = (setProductionOrder.getInt("processed")==1?true:false);
-				productionOrder = new ProductionOrder(id, budgetId, dateProcessed, dateFinished, creatorId, authorizerId, processed);
+				productionOrder = new ProductionOrder(id, budgetId, timestampProcessed, timestampFinished, creatorId, authorizerId, processed);
 			}
 		}catch(SQLException e) {
 			e.printStackTrace();
@@ -2123,7 +2114,7 @@ public class Db extends MysqlDriver {
 				String strLockType = setProducts.getString("lock_type");
 				LockType lockType = new LockType(lockTypeId, strLockType);
 				
-				ArrayList<Integer> mainSwitchIds = this.getBoardSwitchMainId(id);
+				ArrayList<Integer> mainSwitchIds = this.getBoardSwitchMainIds(id);
 				
 				ArrayList<Material> materials = this.getBoardMaterials(id);
 				
@@ -2157,19 +2148,17 @@ public class Db extends MysqlDriver {
 				Integer productTypeId = setWorkOrder.getInt("product_type_id");
 				Integer creatorId = setWorkOrder.getInt("creator_id");
 				Integer authorizerId = setWorkOrder.getInt("authorizer_id");
-				Timestamp timestampProcessed = setWorkOrder.getTimestamp("date_processed_ts");
-				DateTime dateProcessed = new DateTime(timestampProcessed.getTime());
-				Timestamp timestampFinished = setWorkOrder.getTimestamp("date_finished_ts");
-				DateTime dateFinished = new DateTime(timestampFinished.getTime());
+				Timestamp timestampProcessed = setWorkOrder.getTimestamp("date_processed");
+				Timestamp timestampFinished = setWorkOrder.getTimestamp("date_finished");
 				Boolean processed = (setWorkOrder.getInt("processed")==1?true:false);
-				workOrder = new WorkOrder(id, productionOrderId, productId, productTypeId, creatorId, authorizerId, dateProcessed, dateFinished, processed);
+				workOrder = new WorkOrder(id, productionOrderId, productId, productTypeId, creatorId, authorizerId, timestampProcessed, timestampFinished, processed);
 			}
 		}catch(SQLException e) {
 			e.printStackTrace();
 		}
 		return workOrder;
 	}
-
+	
 	public ArrayList<WorkOrder> pullAllWorkOrders(Integer productionOrderId) {
 		ArrayList<WorkOrder> workOrders = new ArrayList<WorkOrder>();
 		ResultSet setWorkOrder;
@@ -2185,19 +2174,17 @@ public class Db extends MysqlDriver {
 				Integer productTypeId = setWorkOrder.getInt("product_type_id");
 				Integer creatorId = setWorkOrder.getInt("creator_id");
 				Integer authorizerId = setWorkOrder.getInt("authorizer_id");
-				Timestamp timestampProcessed = setWorkOrder.getTimestamp("date_processed_ts");
-				DateTime dateProcessed = new DateTime(timestampProcessed.getTime());
-				Timestamp timestampFinished = setWorkOrder.getTimestamp("date_finished_ts");
-				DateTime dateFinished = new DateTime(timestampFinished.getTime());
+				Timestamp timestampProcessed = setWorkOrder.getTimestamp("date_processed");
+				Timestamp timestampFinished = setWorkOrder.getTimestamp("date_finished");
 				Boolean processed = (setWorkOrder.getInt("processed")==1?true:false);
-				workOrders.add(new WorkOrder(id, productionOrderId, productId, productTypeId, creatorId, authorizerId, dateProcessed, dateFinished, processed));
+				workOrders.add(new WorkOrder(id, productionOrderId, productId, productTypeId, creatorId, authorizerId, timestampProcessed, timestampFinished, processed));
 			}
 		}catch(SQLException e) {
 			e.printStackTrace();
 		}
 		return workOrders;
 	}
-
+	
 	public Boolean setProductionOrderProcessed(Integer orderId) {
 		return this.update("UPDATE production_orders SET processed = 1 WHERE id = " + orderId);
 	}

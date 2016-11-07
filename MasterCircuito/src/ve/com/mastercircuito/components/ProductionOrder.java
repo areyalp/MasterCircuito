@@ -1,6 +1,6 @@
 package ve.com.mastercircuito.components;
 
-import org.joda.time.DateTime;
+import java.sql.Timestamp;
 
 import ve.com.mastercircuito.db.Db;
 
@@ -8,8 +8,8 @@ public class ProductionOrder {
 	
 	private Integer id;
 	private Integer budgetId;
-	private DateTime dateProcessed;
-	private DateTime dateFinished;
+	private Timestamp dateProcessed;
+	private Timestamp dateFinished;
 	private Integer creatorId;
 	private Integer authorizerId;
 	private Boolean processed;
@@ -18,7 +18,7 @@ public class ProductionOrder {
 		super();
 	}
 
-	public ProductionOrder(Integer id, Integer budgetId, DateTime dateProcessed, DateTime dateFinished, Integer creatorId,
+	public ProductionOrder(Integer id, Integer budgetId, Timestamp dateProcessed, Timestamp dateFinished, Integer creatorId,
 			Integer authorizerId, Boolean processed) {
 		super();
 		this.id = id;
@@ -57,19 +57,19 @@ public class ProductionOrder {
 		this.budgetId = budgetId;
 	}
 
-	public DateTime getDateProcessed() {
+	public Timestamp getDateProcessed() {
 		return dateProcessed;
 	}
 
-	public void setDateProcessed(DateTime dateProcessed) {
+	public void setDateProcessed(Timestamp dateProcessed) {
 		this.dateProcessed = dateProcessed;
 	}
 
-	public DateTime getDateFinished() {
+	public Timestamp getDateFinished() {
 		return dateFinished;
 	}
 
-	public void setDateFinished(DateTime dateFinished) {
+	public void setDateFinished(Timestamp dateFinished) {
 		this.dateFinished = dateFinished;
 	}
 
