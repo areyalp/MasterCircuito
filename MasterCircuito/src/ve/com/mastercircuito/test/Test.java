@@ -1,27 +1,17 @@
 package ve.com.mastercircuito.test;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.joda.time.DateTime;
 
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.view.JasperViewer;
-import ve.com.mastercircuito.components.Client;
 import ve.com.mastercircuito.db.Db;
-import ve.com.mastercircuito.utils.StringTools;
-
 import java.awt.EventQueue;
 
 public class Test {
@@ -86,21 +76,25 @@ public class Test {
 //        	 Client d = new Client(i, "id " + i, "client " + i, "code  " + i, "representative " + i,  "rif " + i, "address " + i, "phone " + i, "email " + i, "facebookProfile " + i, "twitterUser " + i);
 //        	 listaClient.add(d);
 //        }
+		
+		DateTime dt = new DateTime(new Date());
+		int year = dt.getYear();
+		Db db = new Db();
+		String queryInsert = "INSERT INTO budget_code_ids (budget_code_id, year) VALUES(2, " + year + "),(3, " + year + ")";
+		db.insert(queryInsert);
+		db.delete("DELETE FROM budget_code_ids WHERE year < 2017");
+		db.query("ALTER TABLE budget_code_ids AUTO_INCREMENT=1");
+
 //        
 //		JasperPrint jasperPrint = JasperFillManager.fillReport(report, parametros, new JRBeanCollectionDataSource(listaClient));
 //		JasperViewer.viewReport(jasperPrint);    //VIEWER OF THE JASPER PRINT OBJECT
 //		//EXPORTING THE PDF FILE
-//		try { 
-//			JasperExportManager.exportReportToPdfFile("src\\reporte2.pdf");
-//		}
-//		catch( JRException ex ) {
-//			ex.printStackTrace();
-//		}
+
 	
 		conectToDatabase();
 
 		Map parametersMap = new HashMap();  
-		parametersMap.put("budgetid",2);
+		parametersMap.put("budgetid",1);
 		
 		JasperReport report = (JasperReport) JRLoader.loadObjectFromFile( "Presupuesto.jasper" );
 
@@ -108,9 +102,13 @@ public class Test {
 		JasperPrint jasperPrint = JasperFillManager.fillReport(report, parametersMap, con.getConn());
 		
 		JasperViewer.viewReport(jasperPrint);    //VIEWER OF THE JASPER PRINT OBJECT
+//		try { 
+//		JasperExportManager.exportReportToPdfFile("src\\reporte2.pdf");
+//	}
+//	catch( JRException ex ) {
+//		ex.printStackTrace();
+//	}
 
-		
-//		openReportFrame();
 	}
 	
 	private static void conectToDatabase()
