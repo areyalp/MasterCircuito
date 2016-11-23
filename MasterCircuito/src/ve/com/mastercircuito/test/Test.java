@@ -28,13 +28,13 @@ public class Test {
 	private static ConnectionDB con;
 	
 	public static void main(String[] args) throws Exception {
-		DateTime dt = new DateTime(new Date());
-		int year = dt.getYear();
-		Db db = new Db();
-		String queryInsert = "INSERT INTO budget_code_ids (budget_code_id, year) VALUES(2, " + year + "),(3, " + year + ")";
-		db.insert(queryInsert);
-		db.delete("DELETE FROM budget_code_ids WHERE year < 2017");
-		db.query("ALTER TABLE budget_code_ids AUTO_INCREMENT=1");
+//		DateTime dt = new DateTime(new Date());
+//		int year = dt.getYear();
+//		Db db = new Db();
+//		String queryInsert = "INSERT INTO budget_code_ids (budget_code_id, year) VALUES(2, " + year + "),(3, " + year + ")";
+//		db.insert(queryInsert);
+//		db.delete("DELETE FROM budget_code_ids WHERE year < 2017");
+//		db.query("ALTER TABLE budget_code_ids AUTO_INCREMENT=1");
 		
 //		String ClientCode = "SELECT clients.client_code"
 //				+ "FROM clients "

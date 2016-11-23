@@ -1,6 +1,6 @@
 package ve.com.mastercircuito.components;
 
-import org.joda.time.DateTime;
+import java.sql.Timestamp;
 
 import ve.com.mastercircuito.db.Db;
 
@@ -15,7 +15,7 @@ public class User {
 	private String lastName;
 	private String email;
 	private String phone;
-	private DateTime dateCreated;
+	private Timestamp dateCreated;
 	private Boolean status;
 	
 	public User() {
@@ -23,7 +23,7 @@ public class User {
 	}
 	
 	public User(Integer id, String username, String password, String passport, UserType userType, String firstName,
-			String lastName, String email, String phone, DateTime dateCreated, Boolean status) {
+			String lastName, String email, String phone, Timestamp dateCreated, Boolean status) {
 		super();
 		this.id = id;
 		this.username = username;
@@ -120,11 +120,11 @@ public class User {
 		this.phone = phone;
 	}
 	
-	public DateTime getDateCreated() {
+	public Timestamp getDateCreated() {
 		return this.dateCreated;
 	}
 	
-	public void setDateCreated(DateTime dateCreated) {
+	public void setDateCreated(Timestamp dateCreated) {
 		this.dateCreated = dateCreated;
 	}
 	
