@@ -1821,8 +1821,7 @@ public class Db extends MysqlDriver {
 				String lastName = setSeller.getString("last_name");
 				String email = setSeller.getString("email");
 				String phone = setSeller.getString("phone");
-				Timestamp timestamp = setSeller.getTimestamp("date_timestamp");
-				DateTime dateCreated = new DateTime(timestamp.getTime());
+				Timestamp dateCreated = setSeller.getTimestamp("date_timestamp");
 				Boolean status = (setSeller.getInt("status")==1)?true:false;
 				seller = new User(sellerId, username, passport, password, userType, firstName, lastName, email, phone, dateCreated, status);
 			}
@@ -1917,8 +1916,7 @@ public class Db extends MysqlDriver {
 				String lastName = setUserInfo.getString("last_name");
 				String email = setUserInfo.getString("email");
 				String phone = setUserInfo.getString("phone");
-				Timestamp timestamp = setUserInfo.getTimestamp("date_timestamp");
-				DateTime dateCreated = new DateTime(timestamp.getTime());
+				Timestamp dateCreated = setUserInfo.getTimestamp("date_timestamp");
 				Boolean status = (setUserInfo.getInt("status")==1?true:false);
 				
 				user = new User(id, username, password, passport, userType, firstName, lastName, email, phone, dateCreated, status);
