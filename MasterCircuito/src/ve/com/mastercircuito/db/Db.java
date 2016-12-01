@@ -1,6 +1,7 @@
 package ve.com.mastercircuito.db;
 
 import java.sql.CallableStatement;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -51,6 +52,11 @@ public class Db extends MysqlDriver {
 	
 	public Db(String host, String dbuser, String dbpassword, String database) {
 		super(host,dbuser,dbpassword,database);
+	}
+	
+	public Connection getConnection(){
+		return this.conn;
+		
 	}
 	
 	public Boolean switchExists(String phases, String current, String brand, String type, String interruption, String model) {

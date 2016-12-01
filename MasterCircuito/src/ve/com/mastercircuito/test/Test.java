@@ -44,7 +44,7 @@ public class Test {
 		
 		JasperViewer.viewReport(jasperPrint);    //VIEWER OF THE JASPER PRINT OBJECT
 //		try { 
-//		JasperExportManager.exportReportToPdfFile("src\\reporte2.pdf");
+//		JasperExportManager.exportReportToPdfFile("src\\presupuesto.pdf");
 //	}
 //	catch( JRException ex ) {
 //		ex.printStackTrace();

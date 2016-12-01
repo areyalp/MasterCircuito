@@ -8,6 +8,7 @@ import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,10 +18,12 @@ import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
@@ -47,13 +50,15 @@ public class PrintDialog extends JDialog {
 	private Integer height = 200;
 	private Integer width = 300;
 	
+	private Map parametersMap;
+	
 	private Db db;	
 	
 	public PrintDialog(Window owner) {
-		this(owner, "");
+		this(owner, "", "", "");
 	}
 	
-	public PrintDialog(Window owner, String title) {
+	public PrintDialog(Window owner, String title, Object key, Object value) {
 		super(owner, title, JDialog.DEFAULT_MODALITY_TYPE);
 		this.setMinimumSize(new Dimension(this.width, this.height));
 		this.setSize(new Dimension(this.width, this.height));
@@ -73,7 +78,17 @@ public class PrintDialog extends JDialog {
 		panelCenter.add(createPrintButtonPanel());
 		this.add(panelCenter, BorderLayout.CENTER);
 		
+		parametersMap = new HashMap();
+		this.setParameter(key, value);
 		this.setVisible(true);
+	}
+	
+	public void setParameter(Object key, Object value){
+		this.parametersMap.put(key, value);
+	}
+	
+	private Object getParameter(Object key){
+		return this.parametersMap.get(key);
 	}
 	
 	private JPanel createPrintMainPanel() {
@@ -98,17 +113,30 @@ public class PrintDialog extends JDialog {
 		JPanel panelPrintButtons = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		
 		JButton buttonAccept = new JButton("Aceptar");
-		//Added listener for printButton Accept
 		buttonAccept.addActionListener(new ActionListener() {			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				String typePrint="";
-				typePrint="detallado"; //check if its better to use numbers to this variable...
-				//TODO Insert code to get the type of print from the ButtonGroup
-//	            if(detailedPrint.isSelected()){
-//	                
-//	            }
-//	            String typePrint= this.ButtonGroup.getSelection().getActionCommand();
+				
+//				Map parametersMap = new HashMap();  
+//				parametersMap.put("budgetid",1);	//Change number 1 for the budgetid from the budget
+				
+				try {
+					
+					InputStream jasperStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("Presupuesto.jasper");
+					JasperReport report = (JasperReport) JRLoader.loadObject(jasperStream);
+					
+//					JasperReport report = (JasperReport) JRLoader.loadObjectFromFile( "Presupuesto.jasper" );					
+					JasperPrint jasperPrint = JasperFillManager.fillReport(report, parametersMap, db.getConnection());					
+					JasperViewer.viewReport(jasperPrint);    //VIEWER OF THE JASPER PRINT OBJECT					 
+					JasperExportManager.exportReportToPdfFile("src\\presupuesto"+parametersMap.get("budgetid")+".pdf");
+					//checkear si el archivo no existe debe  crearlo
+					//si existe preguntar si lo quiere sobreescribir filenotfoundexception 
+				}
+				catch( JRException ex ) {
+					ex.printStackTrace();
+				}
+				dispose();
+//				JOptionPane.showMessageDialog(null, "Imprimiendo");
 				}
 			}
 		);				

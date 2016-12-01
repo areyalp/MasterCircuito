@@ -415,7 +415,7 @@ public class SalesMainView extends JFrame{
 		
 		DateTime dt = new DateTime();
 		
-		if(dt.isAfter(new DateTime(2016, 11, 30, 0, 0))) {
+		if(dt.isAfter(new DateTime(2016, 12, 30, 0, 0))) {
 			JOptionPane.showMessageDialog(null, "Error, debe comunicarse con el programador");
 			System.exit(0);
 		}
@@ -9651,7 +9651,8 @@ public class SalesMainView extends JFrame{
 			
 			if(actionCommand.equalsIgnoreCase("budget.print")) {
 				if(tableBudgetsResult.getSelectedRow() > -1) {
-					budgetPrintDialog = new PrintDialog(null, "Imprimir Presupuesto");
+					budgetPrintDialog = new PrintDialog(null, "Imprimir Presupuesto","budgetid", selectedBudgetId);
+//					budgetPrintDialog.setParameter("budgetid", selectedBudgetId );
 					WindowsListener lForWindow = new WindowsListener();
 					budgetPrintDialog.addWindowListener(lForWindow);
 				} else {
