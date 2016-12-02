@@ -482,7 +482,7 @@ public class ProductionMainView extends JFrame{
 					WindowsListener lForWindow = new WindowsListener();
 					workOrderPrintDialog.addWindowListener(lForWindow);
 				} else if (selectedList.equals(ProductionMainView.LIST_PRODUCTION) && listProductionOrders.getSelectedIndex() > -1) {
-					productionOrderPrintDialog = new PrintDialog(null, "Imprimir Orden de Produccion", "productionorderid", 1);
+					productionOrderPrintDialog = new PrintDialog(null, "Imprimir Orden de Produccion", "productionorderid", 2);
 					WindowsListener lForWindow = new WindowsListener();
 					productionOrderPrintDialog.addWindowListener(lForWindow);
 				}
