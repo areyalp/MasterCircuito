@@ -72,7 +72,8 @@ public class PrintDialog extends JDialog {
 		
 		this.parametersMap = new HashMap<String, Object>();		
 		this.setParameter(key, value);
-		this.setParameter("logo", ClassLoader.getSystemResource("logo.jpg").getPath());
+		this.setParameter("logoini", ClassLoader.getSystemResource("logoini.png").getPath());
+		this.setParameter("logofondonorma", ClassLoader.getSystemResource("logofondonorma.png").getPath());
 		this.setVisible(true);
 	}
 	
@@ -120,8 +121,7 @@ public class PrintDialog extends JDialog {
 					InputStream jasperStream = getClass().getResourceAsStream("Presupuesto.jasper");
 					JasperReport report = (JasperReport) JRLoader.loadObject(jasperStream);
 					String pdfFile = "src\\Presupuesto.pdf";
-//					JasperReport report = (JasperReport) JRLoader.loadObjectFromFile( "Presupuesto.jasper" );					
-					@SuppressWarnings("unchecked")
+//					JasperReport report = (JasperReport) JRLoader.loadObjectFromFile( "Presupuesto.jasper" );
 					JasperPrint jasperPrint = JasperFillManager.fillReport(report, parametersMap, db.getConnection());					
 					JasperViewer.viewReport(jasperPrint);    //VIEWER OF THE JASPER PRINT OBJECT					 
 //					JasperExportManager.exportReportToPdfFile("src\\presupuesto"+parametersMap.get("budgetid")+".pdf");
