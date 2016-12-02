@@ -1,6 +1,7 @@
 package ve.com.mastercircuito.components;
 
 import java.awt.BorderLayout;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
@@ -8,6 +9,8 @@ import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.util.HashMap;
@@ -50,7 +53,7 @@ public class PrintDialog extends JDialog {
 	private Integer height = 200;
 	private Integer width = 300;
 	
-	private Map parametersMap;
+	private Map<String, Object> parametersMap;
 	
 	private Db db;	
 	
@@ -58,7 +61,7 @@ public class PrintDialog extends JDialog {
 		this(owner, "", "", "");
 	}
 	
-	public PrintDialog(Window owner, String title, Object key, Object value) {
+	public PrintDialog(Window owner, String title, String key, Object value) {
 		super(owner, title, JDialog.DEFAULT_MODALITY_TYPE);
 		this.setMinimumSize(new Dimension(this.width, this.height));
 		this.setSize(new Dimension(this.width, this.height));
@@ -83,11 +86,11 @@ public class PrintDialog extends JDialog {
 		this.setVisible(true);
 	}
 	
-	public void setParameter(Object key, Object value){
+	public void setParameter(String key, Object value){
 		this.parametersMap.put(key, value);
 	}
 	
-	private Object getParameter(Object key){
+	private Object getParameter(String key){
 		return this.parametersMap.get(key);
 	}
 	
@@ -122,17 +125,25 @@ public class PrintDialog extends JDialog {
 				
 				try {
 					
-					InputStream jasperStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("Presupuesto.jasper");
+					InputStream jasperStream = getClass().getResourceAsStream("Presupuesto.jasper");
 					JasperReport report = (JasperReport) JRLoader.loadObject(jasperStream);
-					
+					String pdfFile = "src\\Presupuesto.pdf";
 //					JasperReport report = (JasperReport) JRLoader.loadObjectFromFile( "Presupuesto.jasper" );					
+					@SuppressWarnings("unchecked")
 					JasperPrint jasperPrint = JasperFillManager.fillReport(report, parametersMap, db.getConnection());					
 					JasperViewer.viewReport(jasperPrint);    //VIEWER OF THE JASPER PRINT OBJECT					 
-					JasperExportManager.exportReportToPdfFile("src\\presupuesto"+parametersMap.get("budgetid")+".pdf");
+//					JasperExportManager.exportReportToPdfFile("src\\presupuesto"+parametersMap.get("budgetid")+".pdf");
+//					File file = new File("presupuesto.pdf");
+//					file.getParentFile().mkdir();
+//					file.createNewFile();				
+					
+					JasperExportManager.exportReportToPdfFile(pdfFile);
 					//checkear si el archivo no existe debe  crearlo
 					//si existe preguntar si lo quiere sobreescribir filenotfoundexception 
+					
+					
 				}
-				catch( JRException ex ) {
+				catch( JRException  ex ) {
 					ex.printStackTrace();
 				}
 				dispose();

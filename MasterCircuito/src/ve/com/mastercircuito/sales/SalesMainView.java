@@ -9651,6 +9651,7 @@ public class SalesMainView extends JFrame{
 			
 			if(actionCommand.equalsIgnoreCase("budget.print")) {
 				if(tableBudgetsResult.getSelectedRow() > -1) {
+					
 					budgetPrintDialog = new PrintDialog(null, "Imprimir Presupuesto","budgetid", selectedBudgetId);
 //					budgetPrintDialog.setParameter("budgetid", selectedBudgetId );
 					WindowsListener lForWindow = new WindowsListener();

@@ -6,6 +6,8 @@ import java.util.Map;
 
 import org.joda.time.DateTime;
 
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
@@ -104,10 +106,10 @@ public class Test {
 		JasperViewer.viewReport(jasperPrint);    //VIEWER OF THE JASPER PRINT OBJECT
 //		try { 
 //		JasperExportManager.exportReportToPdfFile("src\\presupuesto.pdf");
-//	}
-//	catch( JRException ex ) {
-//		ex.printStackTrace();
-//	}
+//		}
+//		catch( JRException ex ) {
+//			ex.printStackTrace();
+//		}
 
 	}
 	
