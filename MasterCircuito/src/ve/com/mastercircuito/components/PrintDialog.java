@@ -1,7 +1,6 @@
 package ve.com.mastercircuito.components;
 
 import java.awt.BorderLayout;
-import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
@@ -9,10 +8,7 @@ import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
-import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,7 +17,6 @@ import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
@@ -33,13 +28,6 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.view.JasperViewer;
 import ve.com.mastercircuito.db.Db;
-import ve.com.mastercircuito.db.MysqlDriver;
-import ve.com.mastercircuito.sales.SalesMainView;
-import ve.com.mastercircuito.test.ConnectionDB;
-
-import java.util.Date;
-import org.joda.time.DateTime;
-import java.awt.EventQueue;
 
 
 
@@ -53,7 +41,8 @@ public class PrintDialog extends JDialog {
 	private Integer height = 200;
 	private Integer width = 300;
 	
-	private Map<String, Object> parametersMap;
+	@SuppressWarnings("rawtypes")
+	private Map parametersMap;
 	
 	private Db db;	
 	
@@ -61,6 +50,7 @@ public class PrintDialog extends JDialog {
 		this(owner, "", "", "");
 	}
 	
+	@SuppressWarnings("rawtypes")
 	public PrintDialog(Window owner, String title, String key, Object value) {
 		super(owner, title, JDialog.DEFAULT_MODALITY_TYPE);
 		this.setMinimumSize(new Dimension(this.width, this.height));
@@ -81,15 +71,17 @@ public class PrintDialog extends JDialog {
 		panelCenter.add(createPrintButtonPanel());
 		this.add(panelCenter, BorderLayout.CENTER);
 		
-		parametersMap = new HashMap();
+		this.parametersMap = new HashMap();
 		this.setParameter(key, value);
 		this.setVisible(true);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void setParameter(String key, Object value){
 		this.parametersMap.put(key, value);
 	}
 	
+	@SuppressWarnings("unused")
 	private Object getParameter(String key){
 		return this.parametersMap.get(key);
 	}

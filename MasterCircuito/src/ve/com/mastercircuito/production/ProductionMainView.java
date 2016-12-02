@@ -478,11 +478,11 @@ public class ProductionMainView extends JFrame{
 			if(actionCommand.equalsIgnoreCase("production.print")) {
 				
 				if(selectedList.equals(ProductionMainView.LIST_WORK) && listWorkOrders.getSelectedIndex() > -1) {
-					workOrderPrintDialog = new PrintDialog(null, "Imprimir Orden de Trabajo");
+					workOrderPrintDialog = new PrintDialog(null, "Imprimir Orden de Trabajo", "workorderid", 1);
 					WindowsListener lForWindow = new WindowsListener();
 					workOrderPrintDialog.addWindowListener(lForWindow);
 				} else if (selectedList.equals(ProductionMainView.LIST_PRODUCTION) && listProductionOrders.getSelectedIndex() > -1) {
-					productionOrderPrintDialog = new PrintDialog(null, "Imprimir Orden de Produccion");
+					productionOrderPrintDialog = new PrintDialog(null, "Imprimir Orden de Produccion", "productionorderid", 1);
 					WindowsListener lForWindow = new WindowsListener();
 					productionOrderPrintDialog.addWindowListener(lForWindow);
 				}
