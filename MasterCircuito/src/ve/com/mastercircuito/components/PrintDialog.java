@@ -114,7 +114,7 @@ public class PrintDialog extends JDialog {
 				
 //				Map parametersMap = new HashMap();  
 //				parametersMap.put("budgetid",1);	//Change number 1 for the budgetid from the budget
-				
+				 
 				try {
 					
 					InputStream jasperStream = getClass().getResourceAsStream("Presupuesto.jasper");
