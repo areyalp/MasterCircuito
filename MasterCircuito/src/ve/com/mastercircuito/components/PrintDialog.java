@@ -41,8 +41,7 @@ public class PrintDialog extends JDialog {
 	private Integer height = 200;
 	private Integer width = 300;
 	
-	@SuppressWarnings("rawtypes")
-	private Map parametersMap;
+	private Map<String, Object> parametersMap;
 	
 	private Db db;	
 	
@@ -71,12 +70,13 @@ public class PrintDialog extends JDialog {
 		panelCenter.add(createPrintButtonPanel());
 		this.add(panelCenter, BorderLayout.CENTER);
 		
-		this.parametersMap = new HashMap();
+		this.parametersMap = new HashMap<String, Object>();		
 		this.setParameter(key, value);
+		this.setParameter("logo", ClassLoader.getSystemResource("logo.jpg").getPath());
 		this.setVisible(true);
 	}
 	
-	@SuppressWarnings("unchecked")
+//	@SuppressWarnings("unchecked")
 	public void setParameter(String key, Object value){
 		this.parametersMap.put(key, value);
 	}
