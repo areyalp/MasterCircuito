@@ -337,6 +337,7 @@ public class SalesMainView extends JFrame{
 		private Integer budgetsTableSelectedIndex;
 		private JButton buttonBudgetAddClient, buttonBudgetAddSeller, buttonBudgetEditSave, buttonBudgetEditCancel;
 		private Integer selectedBudgetId;
+		private String selectedBudgetCode;
 	// Budget Clone
 		private Integer clonedBudgetId;
 	// Budget Client Add
@@ -8115,7 +8116,7 @@ public class SalesMainView extends JFrame{
 					tableBudgetsResult.setModel(new DefaultTableModel());
 				} else {
 					selectedBudgetId = Integer.valueOf((String) tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, 0));
-					
+					selectedBudgetCode = (String) tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, 1);
 					JTabbedPane budgetTabbedPane = (JTabbedPane) budgetSwitchesPanel.getParent();
 					setTabsEnabled(budgetTabbedPane, true);
 					loadBudgetSwitchTable();
@@ -9652,7 +9653,7 @@ public class SalesMainView extends JFrame{
 			if(actionCommand.equalsIgnoreCase("budget.print")) {
 				if(tableBudgetsResult.getSelectedRow() > -1) {
 					
-					budgetPrintDialog = new PrintDialog(null, "Imprimir Presupuesto","budgetid", selectedBudgetId);
+					budgetPrintDialog = new PrintDialog(null, "Imprimir Presupuesto","budgetid", selectedBudgetId, "budgetcode", selectedBudgetCode);
 //					budgetPrintDialog.setParameter("budgetid", selectedBudgetId );
 					WindowsListener lForWindow = new WindowsListener();
 					budgetPrintDialog.addWindowListener(lForWindow);

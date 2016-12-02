@@ -8,6 +8,9 @@ import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -46,11 +49,11 @@ public class PrintDialog extends JDialog {
 	private Db db;	
 	
 	public PrintDialog(Window owner) {
-		this(owner, "", "", "");
+		this(owner, "", "", "", "", "");
 	}
 	
 	@SuppressWarnings("rawtypes")
-	public PrintDialog(Window owner, String title, String key, Object value) {
+	public PrintDialog(Window owner, String title, String key, Object value, String key2, Object value2) {
 		super(owner, title, JDialog.DEFAULT_MODALITY_TYPE);
 		this.setMinimumSize(new Dimension(this.width, this.height));
 		this.setSize(new Dimension(this.width, this.height));
@@ -72,8 +75,9 @@ public class PrintDialog extends JDialog {
 		
 		this.parametersMap = new HashMap<String, Object>();		
 		this.setParameter(key, value);
-		this.setParameter("logoini", ClassLoader.getSystemResource("logoini.png").getPath());
-		this.setParameter("logofondonorma", ClassLoader.getSystemResource("logofondonorma.png").getPath());
+		this.setParameter(key2, value2);
+		this.setParameter("logoini", this.getClass().getResource("logoini.png").getPath());
+		this.setParameter("logofondonorma", this.getClass().getResource("logofondonorma.png").getPath());
 		this.setVisible(true);
 	}
 	
@@ -118,24 +122,20 @@ public class PrintDialog extends JDialog {
 				 
 				try {
 					
-					InputStream jasperStream = getClass().getResourceAsStream("Presupuesto.jasper");
-					JasperReport report = (JasperReport) JRLoader.loadObject(jasperStream);
-					String pdfFile = "src\\Presupuesto.pdf";
-//					JasperReport report = (JasperReport) JRLoader.loadObjectFromFile( "Presupuesto.jasper" );
+//					InputStream jasperStream = getClass().getResourceAsStream("Presupuesto.jasper");
+//					JasperReport report = (JasperReport) JRLoader.loadObject(jasperStream);
+					JasperReport report = (JasperReport) JRLoader.loadObjectFromFile( "Presupuesto.jasper" );
 					JasperPrint jasperPrint = JasperFillManager.fillReport(report, parametersMap, db.getConnection());					
-					JasperViewer.viewReport(jasperPrint);    //VIEWER OF THE JASPER PRINT OBJECT					 
+//					JasperViewer.viewReport(jasperPrint);    //VIEWER OF THE JASPER PRINT OBJECT					 
 //					JasperExportManager.exportReportToPdfFile("src\\presupuesto"+parametersMap.get("budgetid")+".pdf");
-//					File file = new File("presupuesto.pdf");
-//					file.getParentFile().mkdir();
-//					file.createNewFile();				
-					
-					JasperExportManager.exportReportToPdfFile(pdfFile);
+					File pdf = new File("presupuesto "+parametersMap.get("budgetcode")+".pdf");
+					FileOutputStream fos = new FileOutputStream(pdf);
+					JasperExportManager.exportReportToPdfStream(jasperPrint, fos);
+					fos.close();
 					//checkear si el archivo no existe debe  crearlo
 					//si existe preguntar si lo quiere sobreescribir filenotfoundexception 
-					
-					
 				}
-				catch( JRException  ex ) {
+				catch( JRException | IOException  ex ) {
 					ex.printStackTrace();
 				}
 				dispose();
