@@ -9510,7 +9510,7 @@ public class SalesMainView extends JFrame{
 				}
 			} else if (actionCommand.equalsIgnoreCase("switch.settings.voltages.remove")) {
 				String voltageRemove = comboSwitchSettingsVoltages.getSelectedItem().toString();
-				int answer = JOptionPane.showConfirmDialog(null, "Esta seguro que desea eliminar el voltaje " + voltageRemove + "? Puede perder datos importantes", "Confirmar eliminacion", JOptionPane.YES_NO_OPTION);
+				Integer answer = JOptionPane.showConfirmDialog(null, "Esta seguro que desea eliminar el voltaje " + voltageRemove + "? Puede perder datos importantes", "Confirmar eliminacion", JOptionPane.YES_NO_OPTION);
 				
 				if(answer == JOptionPane.YES_OPTION) {
 					if(db.voltageExists(voltageRemove)) {

@@ -20,8 +20,10 @@ import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.filechooser.FileSystemView;
 
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperExportManager;
@@ -116,34 +118,49 @@ public class PrintDialog extends JDialog {
 		buttonAccept.addActionListener(new ActionListener() {			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
-//				Map parametersMap = new HashMap();  
-//				parametersMap.put("budgetid",1);	//Change number 1 for the budgetid from the budget
 				 
 				try {
-					
-//					InputStream jasperStream = getClass().getResourceAsStream("Presupuesto.jasper");
-//					JasperReport report = (JasperReport) JRLoader.loadObject(jasperStream);
 					JasperReport report = (JasperReport) JRLoader.loadObjectFromFile( "Presupuesto.jasper" );
-					JasperPrint jasperPrint = JasperFillManager.fillReport(report, parametersMap, db.getConnection());					
-//					JasperViewer.viewReport(jasperPrint);    //VIEWER OF THE JASPER PRINT OBJECT					 
-//					JasperExportManager.exportReportToPdfFile("src\\presupuesto"+parametersMap.get("budgetid")+".pdf");
-					File pdf = new File("presupuesto "+parametersMap.get("budgetcode")+".pdf");
-					FileOutputStream fos = new FileOutputStream(pdf);
-					JasperExportManager.exportReportToPdfStream(jasperPrint, fos);
-					fos.close();
-					//checkear si el archivo no existe debe  crearlo
-					//si existe preguntar si lo quiere sobreescribir filenotfoundexception 
+					JasperPrint jasperPrint = JasperFillManager.fillReport(report, parametersMap, db.getConnection());
+					String savePath = "";
+					
+					String documentsDirPath = FileSystemView.getFileSystemView().getDefaultDirectory().getPath();
+					String desktopDirPath = System.getProperty("user.home") + "/Desktop";
+					
+					File softparkDocumentsDir = new File(documentsDirPath + "/SoftPark");
+					File softparkDesktopDir = new File(desktopDirPath + "/SoftPark");
+					if(!softparkDesktopDir.exists()) {
+						if(softparkDesktopDir.mkdir()) {
+							savePath = softparkDesktopDir.getPath() + "/";
+						} else {
+							if(!softparkDocumentsDir.exists()) {
+								if(softparkDocumentsDir.mkdir()) {
+									savePath = softparkDocumentsDir.getPath() + "/";
+								}
+							}
+						}
+					} else {
+						savePath = softparkDesktopDir.getPath() + "/";
+					}
+					File pdf = new File(savePath + "presupuesto " + parametersMap.get("budgetcode")+".pdf");
+					if(pdf.exists()) {
+						Integer answer = JOptionPane.showConfirmDialog(null, "Este pdf ya esta creado en " + pdf.getPath() + ", desea sobreescribirlo?", "Confirmar sobreescritura", JOptionPane.YES_NO_OPTION);
+						if(answer == JOptionPane.YES_OPTION) {
+							FileOutputStream fos = new FileOutputStream(pdf);
+							JasperExportManager.exportReportToPdfStream(jasperPrint, fos);
+							fos.close();
+						}
+					}
 				}
 				catch( JRException | IOException  ex ) {
 					ex.printStackTrace();
 				}
-				dispose();
-//				JOptionPane.showMessageDialog(null, "Imprimiendo");
+				finally {
+					dispose();
 				}
 			}
-		);				
-		//
+		});				
+		
 		panelPrintButtons.add(buttonAccept);
 		JButton buttonCancel = new JButton("Cancelar");
 		buttonCancel.addActionListener(new ActionListener() {			

@@ -1,8 +1,11 @@
 package ve.com.mastercircuito.test;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.swing.filechooser.FileSystemView;
 
 import org.joda.time.DateTime;
 
@@ -79,13 +82,13 @@ public class Test {
 //        	 listaClient.add(d);
 //        }
 		
-		DateTime dt = new DateTime(new Date());
-		int year = dt.getYear();
-		Db db = new Db();
-		String queryInsert = "INSERT INTO budget_code_ids (budget_code_id, year) VALUES(2, " + year + "),(3, " + year + ")";
-		db.insert(queryInsert);
-		db.delete("DELETE FROM budget_code_ids WHERE year < 2017");
-		db.query("ALTER TABLE budget_code_ids AUTO_INCREMENT=1");
+//		DateTime dt = new DateTime(new Date());
+//		int year = dt.getYear();
+//		Db db = new Db();
+//		String queryInsert = "INSERT INTO budget_code_ids (budget_code_id, year) VALUES(2, " + year + "),(3, " + year + ")";
+//		db.insert(queryInsert);
+//		db.delete("DELETE FROM budget_code_ids WHERE year < 2017");
+//		db.query("ALTER TABLE budget_code_ids AUTO_INCREMENT=1");
 
 //        
 //		JasperPrint jasperPrint = JasperFillManager.fillReport(report, parametros, new JRBeanCollectionDataSource(listaClient));
@@ -93,17 +96,17 @@ public class Test {
 //		//EXPORTING THE PDF FILE
 
 	
-		conectToDatabase();
-
-		Map parametersMap = new HashMap();  
-		parametersMap.put("budgetid",1);
-		
-		JasperReport report = (JasperReport) JRLoader.loadObjectFromFile( "Presupuesto.jasper" );
-
-		
-		JasperPrint jasperPrint = JasperFillManager.fillReport(report, parametersMap, con.getConn());
-		
-		JasperViewer.viewReport(jasperPrint);    //VIEWER OF THE JASPER PRINT OBJECT
+//		conectToDatabase();
+//
+//		Map parametersMap = new HashMap();  
+//		parametersMap.put("budgetid",1);
+//		
+//		JasperReport report = (JasperReport) JRLoader.loadObjectFromFile( "Presupuesto.jasper" );
+//
+//		
+//		JasperPrint jasperPrint = JasperFillManager.fillReport(report, parametersMap, con.getConn());
+//		
+//		JasperViewer.viewReport(jasperPrint);    //VIEWER OF THE JASPER PRINT OBJECT
 //		try { 
 //		JasperExportManager.exportReportToPdfFile("src\\presupuesto.pdf");
 //		}
