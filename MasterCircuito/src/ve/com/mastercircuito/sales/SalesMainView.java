@@ -29,7 +29,9 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Vector;
 
@@ -9652,9 +9654,11 @@ public class SalesMainView extends JFrame{
 			
 			if(actionCommand.equalsIgnoreCase("budget.print")) {
 				if(tableBudgetsResult.getSelectedRow() > -1) {
-					
-					budgetPrintDialog = new PrintDialog(null, "Imprimir Presupuesto","budgetid", selectedBudgetId, "budgetcode", selectedBudgetCode);
-//					budgetPrintDialog.setParameter("budgetid", selectedBudgetId );
+					Map<String, Object> parametersMap = new HashMap<String, Object>();
+					parametersMap.put("actioncommand", "budget");
+					parametersMap.put("budgetid", selectedBudgetId);
+					parametersMap.put("budgetcode", selectedBudgetCode);
+					budgetPrintDialog = new PrintDialog(null, "Imprimir Presupuesto", parametersMap);
 					WindowsListener lForWindow = new WindowsListener();
 					budgetPrintDialog.addWindowListener(lForWindow);
 				} else {

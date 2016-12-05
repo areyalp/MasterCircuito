@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
@@ -81,6 +83,7 @@ public class ProductionMainView extends JFrame{
 	private JList<WorkOrder> listWorkOrders;
 	private ListSelectionModel listInboxSelectionModel, listProductionOrdersSelectionModel, listWorkOrdersSelectionModel;
 	private JButton buttonProcessBudget, buttonProcessProductionOrder;
+	private Integer selectedProductionOrderId, selectedWorkOrderId, selectedWorkOrderProductId;
 	
 	public static void main(String[] args) {
 		new ve.com.mastercircuito.production.ProductionMainView();
@@ -130,6 +133,8 @@ public class ProductionMainView extends JFrame{
 		desktop = new JDesktopPane();
 		desktop.setDragMode(JDesktopPane.LIVE_DRAG_MODE);
 		this.add(desktop, BorderLayout.CENTER);
+		
+		this.selectedList = -1;
 		
 		this.setVisible(true);
 	}
@@ -202,7 +207,7 @@ public class ProductionMainView extends JFrame{
 		
 		JButton buttonProductionPrint = new JButton(Fa.fa_print);
 		buttonProductionPrint.setContentAreaFilled(false);
-		buttonProductionPrint.setActionCommand("production.print");
+		buttonProductionPrint.setActionCommand("print.order");
 		buttonProductionPrint.addActionListener(lForPrinterButton);
 		buttonProductionPrint.setMargin(new Insets(0, 0, 0, 0));
 		buttonProductionPrint.setFocusPainted(true);
@@ -437,11 +442,13 @@ public class ProductionMainView extends JFrame{
 				selectedList = 0;
 				if (listInbox.getSelectedIndex() != -1 && listInbox.isFocusOwner()) {
 					buttonProcessBudget.setEnabled(true);
-					selectedList = ProductionMainView.LIST_INBOX;
 				} else if (listProductionOrders.getSelectedIndex() != -1 && listProductionOrders.isFocusOwner()) {
 					buttonProcessProductionOrder.setEnabled(true);
+					selectedProductionOrderId = listProductionOrders.getSelectedValue().getId();
 					selectedList = ProductionMainView.LIST_PRODUCTION;
 				} else if (listWorkOrders.getSelectedIndex() != -1 && listWorkOrders.isFocusOwner()) {
+					selectedWorkOrderId = listWorkOrders.getSelectedValue().getId();
+					selectedWorkOrderProductId = listWorkOrders.getSelectedValue().getProductTypeId();
 					selectedList = ProductionMainView.LIST_WORK;
 				}
 				
@@ -475,21 +482,35 @@ public class ProductionMainView extends JFrame{
 		public void actionPerformed(ActionEvent ev) {
 			String actionCommand = ev.getActionCommand();
 			
-			if(actionCommand.equalsIgnoreCase("production.print")) {
-				
-				if(selectedList.equals(ProductionMainView.LIST_WORK) && listWorkOrders.getSelectedIndex() > -1) {
-					workOrderPrintDialog = new PrintDialog(null, "Imprimir Orden de Trabajo", "workorderid", 1, "", "");
-					WindowsListener lForWindow = new WindowsListener();
-					workOrderPrintDialog.addWindowListener(lForWindow);
-				} else if (selectedList.equals(ProductionMainView.LIST_PRODUCTION) && listProductionOrders.getSelectedIndex() > -1) {
-					productionOrderPrintDialog = new PrintDialog(null, "Imprimir Orden de Produccion", "productionorderid", 2, "", "");
-					WindowsListener lForWindow = new WindowsListener();
-					productionOrderPrintDialog.addWindowListener(lForWindow);
+			if (actionCommand.equalsIgnoreCase("print.order")) {
+				if(selectedList == ProductionMainView.LIST_PRODUCTION) {
+					Map<String, Object> parametersMap = new HashMap<String, Object>();
+					parametersMap.put("actioncommand", "productionorder");
+					parametersMap.put("productionorderid", selectedProductionOrderId);
+					
+					productionOrderPrintDialog = new PrintDialog(null, "Imprimir Orden de Produccion", parametersMap);
+//					WindowsListener lForWindow = new WindowsListener();
+//					productionOrderPrintDialog.addWindowListener(lForWindow);
+				} else if(selectedList == ProductionMainView.LIST_WORK) {
+					String product = "";
+					if (selectedWorkOrderProductId == 1) {
+						product = "switch";
+					} else if (selectedWorkOrderProductId == 2) {
+						product = "box";
+					} else if (selectedWorkOrderProductId == 3) {
+						product = "board";
+					}
+					Map<String, Object> parametersMap = new HashMap<String, Object>();
+					parametersMap.put("actioncommand", "workorder");
+					parametersMap.put("workorderid", selectedWorkOrderId);
+					parametersMap.put("workorderproduct", product);
+					
+					workOrderPrintDialog = new PrintDialog(null, "Imprimir Orden de Trabajo", parametersMap);
+//					WindowsListener lForWindow = new WindowsListener();
+//					workOrderPrintDialog.addWindowListener(lForWindow);
 				}
-				
 			}
 		}
-		
 	}
 	
 	private class WindowsListener implements WindowListener {

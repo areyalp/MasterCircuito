@@ -11,7 +11,6 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,7 +30,6 @@ import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.util.JRLoader;
-import net.sf.jasperreports.view.JasperViewer;
 import ve.com.mastercircuito.db.Db;
 
 
@@ -51,12 +49,12 @@ public class PrintDialog extends JDialog {
 	private Db db;	
 	
 	public PrintDialog(Window owner) {
-		this(owner, "", "", "", "", "");
+		this(owner, "", new HashMap<String, Object>());
 	}
 	
-	@SuppressWarnings("rawtypes")
-	public PrintDialog(Window owner, String title, String key, Object value, String key2, Object value2) {
+	public PrintDialog(Window owner, String title, Map<String, Object> parametersMap) {
 		super(owner, title, JDialog.DEFAULT_MODALITY_TYPE);
+		this.parametersMap = new HashMap<String, Object>(parametersMap);
 		this.setMinimumSize(new Dimension(this.width, this.height));
 		this.setSize(new Dimension(this.width, this.height));
 		this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -75,9 +73,7 @@ public class PrintDialog extends JDialog {
 		panelCenter.add(createPrintButtonPanel());
 		this.add(panelCenter, BorderLayout.CENTER);
 		
-		this.parametersMap = new HashMap<String, Object>();		
-		this.setParameter(key, value);
-		this.setParameter(key2, value2);
+		
 		this.setParameter("logoini", this.getClass().getResource("logoini.png").getPath());
 		this.setParameter("logofondonorma", this.getClass().getResource("logofondonorma.png").getPath());
 		this.setVisible(true);
@@ -118,9 +114,31 @@ public class PrintDialog extends JDialog {
 		buttonAccept.addActionListener(new ActionListener() {			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				 
+				String actionCommand = (String) parametersMap.get("actioncommand");
+				String reportType = "";
+				String filename = "";
+				if(actionCommand.equalsIgnoreCase("budget")) {
+					reportType = "Presupuesto";
+					filename = reportType + " " + parametersMap.get("budgetcode");
+				} else if (actionCommand.equalsIgnoreCase("productionorder")) {
+					reportType = "OrdenProduccion";
+					filename = reportType + " " + parametersMap.get("productionorderid");
+				} else if (actionCommand.equalsIgnoreCase("workorder")) {
+					String product = (String) parametersMap.get("workorderproduct");
+					String addType = "";
+					if (product.equalsIgnoreCase("switch")) {
+						addType = "Interruptor";
+					} else if (product.equalsIgnoreCase("box")) {
+						addType = "Caja";
+					} else if (product.equalsIgnoreCase("board")) {
+						addType = "Tablero";
+					}
+					reportType = "OrdenTrabajo" + addType;
+					filename = reportType + " " + parametersMap.get("workorderid");
+				}
+				
 				try {
-					JasperReport report = (JasperReport) JRLoader.loadObjectFromFile( "Presupuesto.jasper" );
+					JasperReport report = (JasperReport) JRLoader.loadObjectFromFile( reportType + ".jasper" );
 					JasperPrint jasperPrint = JasperFillManager.fillReport(report, parametersMap, db.getConnection());
 					String savePath = "";
 					
@@ -142,7 +160,7 @@ public class PrintDialog extends JDialog {
 					} else {
 						savePath = softparkDesktopDir.getPath() + "/";
 					}
-					File pdf = new File(savePath + "presupuesto " + parametersMap.get("budgetcode")+".pdf");
+					File pdf = new File(savePath + filename + ".pdf");
 					if(pdf.exists()) {
 						Integer answer = JOptionPane.showConfirmDialog(null, "Este pdf ya esta creado en " + pdf.getPath() + ", desea sobreescribirlo?", "Confirmar sobreescritura", JOptionPane.YES_NO_OPTION);
 						if(answer == JOptionPane.YES_OPTION) {
@@ -154,6 +172,7 @@ public class PrintDialog extends JDialog {
 				}
 				catch( JRException | IOException  ex ) {
 					ex.printStackTrace();
+					JOptionPane.showMessageDialog(null, "Ha ocurrido un error inesperado al imprimir");
 				}
 				finally {
 					dispose();
