@@ -145,20 +145,20 @@ public class PrintDialog extends JDialog {
 					String documentsDirPath = FileSystemView.getFileSystemView().getDefaultDirectory().getPath();
 					String desktopDirPath = System.getProperty("user.home") + "/Desktop";
 					
-					File softparkDocumentsDir = new File(documentsDirPath + "/SoftPark");
-					File softparkDesktopDir = new File(desktopDirPath + "/SoftPark");
-					if(!softparkDesktopDir.exists()) {
-						if(softparkDesktopDir.mkdir()) {
-							savePath = softparkDesktopDir.getPath() + "/";
+					File mastercircuitoDocumentsDir = new File(documentsDirPath + "/MasterCircuito");
+					File mastercircuitoDesktopDir = new File(desktopDirPath + "/MasterCircuito");
+					if(!mastercircuitoDesktopDir.exists()) {
+						if(mastercircuitoDesktopDir.mkdir()) {
+							savePath = mastercircuitoDesktopDir.getPath() + "/";
 						} else {
-							if(!softparkDocumentsDir.exists()) {
-								if(softparkDocumentsDir.mkdir()) {
-									savePath = softparkDocumentsDir.getPath() + "/";
+							if(!mastercircuitoDocumentsDir.exists()) {
+								if(mastercircuitoDocumentsDir.mkdir()) {
+									savePath = mastercircuitoDocumentsDir.getPath() + "/";
 								}
 							}
 						}
 					} else {
-						savePath = softparkDesktopDir.getPath() + "/";
+						savePath = mastercircuitoDesktopDir.getPath() + "/";
 					}
 					File pdf = new File(savePath + filename + ".pdf");
 					if(pdf.exists()) {
@@ -168,6 +168,11 @@ public class PrintDialog extends JDialog {
 							JasperExportManager.exportReportToPdfStream(jasperPrint, fos);
 							fos.close();
 						}
+					}
+					else {
+						FileOutputStream fos = new FileOutputStream(pdf);
+						JasperExportManager.exportReportToPdfStream(jasperPrint, fos);
+						fos.close();
 					}
 				}
 				catch( JRException | IOException  ex ) {
