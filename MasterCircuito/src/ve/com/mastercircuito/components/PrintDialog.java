@@ -11,9 +11,11 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.swing.AbstractButton;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
@@ -45,6 +47,8 @@ public class PrintDialog extends JDialog {
 	private Integer width = 300;
 	
 	private Map<String, Object> parametersMap;
+	
+	private ButtonGroup radioGroup;
 	
 	private Db db;	
 	
@@ -91,11 +95,14 @@ public class PrintDialog extends JDialog {
 	
 	private JPanel createPrintMainPanel() {
 		JRadioButton detailedPrint = new JRadioButton("Detallado (Interno)");
+		detailedPrint.setActionCommand("Detailed");
 		detailedPrint.setSelected(true);
 		JRadioButton normalPrint = new JRadioButton("Sencillo (Cliente)");
+		normalPrint.setActionCommand("Simple");
 		JRadioButton pricelessPrint = new JRadioButton("Sin precios");
+		pricelessPrint.setActionCommand("Priceless");
 		
-		ButtonGroup radioGroup = new ButtonGroup();
+		radioGroup = new ButtonGroup();
 		radioGroup.add(detailedPrint);
 		radioGroup.add(normalPrint);
 		radioGroup.add(pricelessPrint);
@@ -114,10 +121,13 @@ public class PrintDialog extends JDialog {
 		buttonAccept.addActionListener(new ActionListener() {			
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				String printType = "";
+				
 				String actionCommand = (String) parametersMap.get("actioncommand");
 				String reportType = "";
 				String filename = "";
 				if(actionCommand.equalsIgnoreCase("budget")) {
+					printType = getSelectedButtonActionCommand(radioGroup);
 					reportType = "Presupuesto";
 					filename = reportType + " " + parametersMap.get("budgetcode");
 				} else if (actionCommand.equalsIgnoreCase("productionorder")) {
@@ -138,7 +148,7 @@ public class PrintDialog extends JDialog {
 				}
 				
 				try {
-					JasperReport report = (JasperReport) JRLoader.loadObjectFromFile( reportType + ".jasper" );
+					JasperReport report = (JasperReport) JRLoader.loadObjectFromFile( reportType + printType + ".jasper" );
 					JasperPrint jasperPrint = JasperFillManager.fillReport(report, parametersMap, db.getConnection());
 					String savePath = "";
 					
@@ -182,6 +192,18 @@ public class PrintDialog extends JDialog {
 				finally {
 					dispose();
 				}
+			}
+
+			private String getSelectedButtonActionCommand(ButtonGroup radioGroup) {
+				for (Enumeration<AbstractButton> buttons = radioGroup.getElements(); buttons.hasMoreElements();) {
+		            AbstractButton button = buttons.nextElement();
+
+		            if (button.isSelected()) {
+		                return button.getActionCommand();
+		            }
+		        }
+				
+				return null;
 			}
 		});				
 		
