@@ -9655,7 +9655,7 @@ public class SalesMainView extends JFrame{
 			if(actionCommand.equalsIgnoreCase("budget.print")) {
 				if(tableBudgetsResult.getSelectedRow() > -1) {
 					Map<String, Object> parametersMap = new HashMap<String, Object>();
-					parametersMap.put("actioncommand", "budget");
+					parametersMap.put("action_command", "budget");
 					parametersMap.put("budgetid", selectedBudgetId);
 					parametersMap.put("budgetcode", selectedBudgetCode);
 					budgetPrintDialog = new PrintDialog(null, "Imprimir Presupuesto", parametersMap);
