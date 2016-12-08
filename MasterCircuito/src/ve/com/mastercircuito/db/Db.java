@@ -2200,5 +2200,25 @@ public class Db extends MysqlDriver {
 	public Boolean removeBoardMainSwitch(Integer switchId, int boardContainerId) {
 		return this.update("UPDATE board_switches SET main = 0 WHERE id = " + switchId);
 	}
+
+	public Integer getWorkOrderBudgetId(Integer workOrderId) {
+		String queryString;
+		ResultSet setWorkOrderBudgetId;
+		
+		queryString = "SELECT production_orders.budget_id FROM production_orders "
+					+ "INNER JOIN work_orders ON work_orders.production_order_id = production_orders.id "
+					+ "WHERE work_orders.id = " + workOrderId;
+		
+		setWorkOrderBudgetId = this.select(queryString);
+		
+		try {
+			if (setWorkOrderBudgetId.next()) {
+				return setWorkOrderBudgetId.getInt("production_orders.budget_id");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return -1;
+	}
 	
 }

@@ -77,7 +77,6 @@ public class PrintDialog extends JDialog {
 		panelCenter.add(createPrintButtonPanel());
 		this.add(panelCenter, BorderLayout.CENTER);
 		
-		
 		this.setParameter("logoini", this.getClass().getResource("logoini.png").getPath());
 		this.setParameter("logofondonorma", this.getClass().getResource("logofondonorma.png").getPath());
 		this.setVisible(true);
@@ -86,11 +85,6 @@ public class PrintDialog extends JDialog {
 //	@SuppressWarnings("unchecked")
 	public void setParameter(String key, Object value){
 		this.parametersMap.put(key, value);
-	}
-	
-	@SuppressWarnings("unused")
-	private Object getParameter(String key){
-		return this.parametersMap.get(key);
 	}
 	
 	private JPanel createPrintMainPanel() {
@@ -123,18 +117,18 @@ public class PrintDialog extends JDialog {
 			public void actionPerformed(ActionEvent e) {
 				String printType = "";
 				
-				String actionCommand = (String) parametersMap.get("actioncommand");
+				String actionCommand = (String) parametersMap.get("action_command");
 				String reportType = "";
 				String filename = "";
 				if(actionCommand.equalsIgnoreCase("budget")) {
 					printType = getSelectedButtonActionCommand(radioGroup);
 					reportType = "Presupuesto";
 					filename = reportType + " " + parametersMap.get("budgetcode");
-				} else if (actionCommand.equalsIgnoreCase("productionorder")) {
+				} else if (actionCommand.equalsIgnoreCase("production_order")) {
 					reportType = "OrdenProduccion";
-					filename = reportType + " " + parametersMap.get("productionorderid");
-				} else if (actionCommand.equalsIgnoreCase("workorder")) {
-					String product = (String) parametersMap.get("workorderproduct");
+					filename = reportType + " " + parametersMap.get("production_order_id");
+				} else if (actionCommand.equalsIgnoreCase("work_order")) {
+					String product = (String) parametersMap.get("work_order_product");
 					String addType = "";
 					if (product.equalsIgnoreCase("switch")) {
 						addType = "Interruptor";
@@ -144,7 +138,7 @@ public class PrintDialog extends JDialog {
 						addType = "Tablero";
 					}
 					reportType = "OrdenTrabajo" + addType;
-					filename = reportType + " " + parametersMap.get("workorderid");
+					filename = reportType + " " + parametersMap.get("work_order_id");
 				}
 				
 				try {

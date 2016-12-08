@@ -83,7 +83,7 @@ public class ProductionMainView extends JFrame{
 	private JList<WorkOrder> listWorkOrders;
 	private ListSelectionModel listInboxSelectionModel, listProductionOrdersSelectionModel, listWorkOrdersSelectionModel;
 	private JButton buttonProcessBudget, buttonProcessProductionOrder;
-	private Integer selectedProductionOrderId, selectedWorkOrderId, selectedWorkOrderProductId;
+	private Integer selectedProductionOrderId, selectedWorkOrderBudgetId, selectedWorkOrderId, selectedWorkOrderProductId;
 	
 	public static void main(String[] args) {
 		new ve.com.mastercircuito.production.ProductionMainView();
@@ -447,7 +447,10 @@ public class ProductionMainView extends JFrame{
 					selectedProductionOrderId = listProductionOrders.getSelectedValue().getId();
 					selectedList = ProductionMainView.LIST_PRODUCTION;
 				} else if (listWorkOrders.getSelectedIndex() != -1 && listWorkOrders.isFocusOwner()) {
-					selectedWorkOrderId = listWorkOrders.getSelectedValue().getId();
+					Db db = new Db();
+					Integer WorkOrderId = listWorkOrders.getSelectedValue().getId();
+					selectedWorkOrderBudgetId = db.getWorkOrderBudgetId(WorkOrderId);
+					selectedWorkOrderId = WorkOrderId;
 					selectedWorkOrderProductId = listWorkOrders.getSelectedValue().getProductTypeId();
 					selectedList = ProductionMainView.LIST_WORK;
 				}
@@ -485,8 +488,8 @@ public class ProductionMainView extends JFrame{
 			if (actionCommand.equalsIgnoreCase("print.order")) {
 				if(selectedList == ProductionMainView.LIST_PRODUCTION) {
 					Map<String, Object> parametersMap = new HashMap<String, Object>();
-					parametersMap.put("actioncommand", "productionorder");
-					parametersMap.put("productionorderid", selectedProductionOrderId);
+					parametersMap.put("action_command", "production_order");
+					parametersMap.put("production_order_id", selectedProductionOrderId);
 					
 					productionOrderPrintDialog = new PrintDialog(null, "Imprimir Orden de Produccion", parametersMap);
 //					WindowsListener lForWindow = new WindowsListener();
@@ -501,9 +504,10 @@ public class ProductionMainView extends JFrame{
 						product = "board";
 					}
 					Map<String, Object> parametersMap = new HashMap<String, Object>();
-					parametersMap.put("actioncommand", "workorder");
-					parametersMap.put("workorderid", selectedWorkOrderId);
-					parametersMap.put("workorderproduct", product);
+					parametersMap.put("action_command", "work_order");
+					parametersMap.put("budgetid", selectedWorkOrderBudgetId);
+					parametersMap.put("work_order_id", selectedWorkOrderId);
+					parametersMap.put("work_order_product", product);
 					
 					workOrderPrintDialog = new PrintDialog(null, "Imprimir Orden de Trabajo", parametersMap);
 //					WindowsListener lForWindow = new WindowsListener();
