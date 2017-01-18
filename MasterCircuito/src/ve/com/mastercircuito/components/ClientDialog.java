@@ -296,19 +296,19 @@ public class ClientDialog extends JDialog {
 	
 	private void loadCompanySearchTable(String whereQuery) {
 		if(null != textSearchClient && !textSearchClient.getText().isEmpty()) {
-			whereQuery += this.selectWhereQuery(whereQuery);
+			whereQuery = this.selectWhereQuery(whereQuery);
 			whereQuery += this.CLIENTS_TABLE + ".client LIKE '%" + textSearchClient.getText() + "%'";
 		}
 		if(null != textSearchClientCode && !textSearchClientCode.getText().isEmpty()) {
-			whereQuery += this.selectWhereQuery(whereQuery);
+			whereQuery = this.selectWhereQuery(whereQuery);
 			whereQuery += this.CLIENTS_TABLE + ".client_code LIKE '%" + textSearchClientCode.getText() + "%'";
 		}
 		if(null != textSearchRepresentative && !textSearchRepresentative.getText().isEmpty()) {
-			whereQuery += this.selectWhereQuery(whereQuery);
+			whereQuery = this.selectWhereQuery(whereQuery);
 			whereQuery += this.CLIENTS_TABLE + ".representative LIKE '%" + textSearchRepresentative.getText() + "%'";
 		}
 		if(null != textSearchRif && !textSearchRif.getText().isEmpty()) {
-			whereQuery += this.selectWhereQuery(whereQuery);
+			whereQuery = this.selectWhereQuery(whereQuery);
 			whereQuery += this.CLIENTS_TABLE + ".rif LIKE '%" + textSearchRif.getText() + "%'";
 		}
 		
