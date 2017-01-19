@@ -215,7 +215,7 @@ public class SalesMainView extends JFrame{
 		private String searchSelectedBoxType = "", searchSelectedBoxInstallation = "", searchSelectedBoxNema = "", searchSelectedBoxPairs = "", searchSelectedBoxSheet = "", searchSelectedBoxFinish = "", searchSelectedBoxColor = "", searchSelectedBoxHeight = "", searchSelectedBoxWidth = "", searchSelectedBoxDepth = "", searchSelectedBoxCaliber = "", searchSelectedBoxLockType = "";
 		private JPanel panelBoxDescription, panelWrapperBoxDescription, panelBoxAddNew, panelBoxEdit;
 		private JTextField textBoxDescriptionType, textBoxDescriptionInstallation, textBoxDescriptionNema, textBoxDescriptionPairs, textBoxDescriptionSheet, textBoxDescriptionFinish, textBoxDescriptionColor, textBoxDescriptionHeight, textBoxDescriptionWidth, textBoxDescriptionDepth, textBoxDescriptionUnits, textBoxDescriptionCaliber, textBoxDescriptionLockType, textBoxDescriptionPrice;
-		private JTextArea textBoxDescription;
+		private JTextArea textBoxDescription, textBoxComments;
 		private JLabel labelBoxCopy;
 	// Box Table Objects
 		private JScrollPane tableBoxScrollPane;
@@ -227,15 +227,15 @@ public class SalesMainView extends JFrame{
 		private JComboBox<String> comboBoxAddTypes, comboBoxAddInstallations, comboBoxAddNemas, comboBoxAddSheets, comboBoxAddFinishes, comboBoxAddColors, comboBoxAddUnits, comboBoxAddCalibers, comboBoxAddLockTypes;
 		private JTextField textBoxAddPairs, textBoxAddHeight, textBoxAddWidth, textBoxAddDepth, textBoxAddCaliberComments, textBoxAddPrice;
 		private String addSelectedBoxType = "", addSelectedBoxSheet = "";
-		private JTextArea textBoxAddDescription;
+		private JTextArea textBoxAddDescription, textBoxAddComments;
 	// Box Edit Objects
 		private Double editBoxPrice = 0.00;
 		private Integer editBoxId = 0, editBoxPairs = 0, editBoxHeight = 0, editBoxWidth = 0, editBoxDepth = 0;
 		private String editSelectedBoxType, editSelectedBoxSheet;
-		private String editBoxType, editBoxInstallation, editBoxNema, editBoxSheet, editBoxFinish, editBoxColor, editBoxUnits, editBoxCaliber, editBoxCaliberComments, editBoxLockType;
+		private String editBoxType, editBoxInstallation, editBoxNema, editBoxSheet, editBoxFinish, editBoxColor, editBoxUnits, editBoxCaliber, editBoxCaliberComments, editBoxLockType, editBoxComments;
 		private JTextField textBoxEditPairs, textBoxEditHeight, textBoxEditWidth, textBoxEditDepth, textBoxEditCaliberComments, textBoxEditPrice;
 		private JComboBox<String> comboBoxEditTypes, comboBoxEditInstallations, comboBoxEditNemas, comboBoxEditSheets, comboBoxEditFinishes, comboBoxEditColors, comboBoxEditUnits, comboBoxEditCalibers, comboBoxEditLockTypes;
-		private JTextArea textBoxEditDescription;
+		private JTextArea textBoxEditDescription, textBoxEditComments;
 	// Box Settings Objects
 		private JComboBox<String> comboBoxSettingsColors, comboBoxSettingsCalibers;
 	
@@ -2347,14 +2347,29 @@ public class SalesMainView extends JFrame{
 		cs.gridwidth = 1;
 		descriptionPanel.add(labelDescription, cs);
 		
-		textBoxDescription = new JTextArea(1, 26);
+		textBoxDescription = new JTextArea(6, 20);
 		textBoxDescription.setEditable(false);
 		textBoxDescription.setLineWrap(true);
 		textBoxDescription.setWrapStyleWord(true);
 		cs.gridx = 0;
 		cs.gridy = 4;
-		cs.gridwidth = 26;
+		cs.gridwidth = 20;
 		descriptionPanel.add(textBoxDescription, cs);
+		
+		JLabel labelComments = new JLabel("Comentarios:");
+		cs.gridx = 21;
+		cs.gridy = 3;
+		cs.gridwidth = 1;
+		descriptionPanel.add(labelComments, cs);
+		
+		textBoxComments = new JTextArea(6, 20);
+		textBoxComments.setEditable(false);
+		textBoxComments.setLineWrap(true);
+		textBoxComments.setWrapStyleWord(true);
+		cs.gridx = 21;
+		cs.gridy = 4;
+		cs.gridwidth = 20;
+		descriptionPanel.add(textBoxComments, cs);
 		
 		SearchButtonListener lForButton = new SearchButtonListener();
 		
@@ -2648,7 +2663,7 @@ public class SalesMainView extends JFrame{
 		cs.gridwidth = 1;
 		addPanel.add(labelDescription, cs);
 		
-		textBoxAddDescription = new JTextArea(1,16);
+		textBoxAddDescription = new JTextArea(6,16);
 		textBoxAddDescription.setEditable(false);
 		textBoxAddDescription.setLineWrap(true);
 		textBoxAddDescription.setWrapStyleWord(true);
@@ -2656,6 +2671,20 @@ public class SalesMainView extends JFrame{
 		cs.gridy = 4;
 		cs.gridwidth = 16;
 		addPanel.add(textBoxAddDescription, cs);
+		
+		JLabel labelComments = new JLabel("Comentarios:");
+		cs.gridx = 17;
+		cs.gridy = 3;
+		cs.gridwidth = 1;
+		addPanel.add(labelComments, cs);
+		
+		textBoxAddComments = new JTextArea(6,16);
+		textBoxAddComments.setLineWrap(true);
+		textBoxAddComments.setWrapStyleWord(true);
+		cs.gridx = 17;
+		cs.gridy = 4;
+		cs.gridwidth = 16;
+		addPanel.add(textBoxAddComments, cs);
 		
 		BoxButtonListener lForBoxButton = new BoxButtonListener();
 		
@@ -2950,7 +2979,7 @@ public class SalesMainView extends JFrame{
 		cs.gridwidth = 1;
 		editPanel.add(labelDescription, cs);
 		
-		textBoxEditDescription = new JTextArea(1,16);
+		textBoxEditDescription = new JTextArea(6,16);
 		textBoxEditDescription.setEditable(false);
 		textBoxEditDescription.setLineWrap(true);
 		textBoxEditDescription.setWrapStyleWord(true);
@@ -2958,6 +2987,20 @@ public class SalesMainView extends JFrame{
 		cs.gridy = 4;
 		cs.gridwidth = 16;
 		editPanel.add(textBoxEditDescription, cs);
+		
+		JLabel labelComments = new JLabel("Comentarios:");
+		cs.gridx = 17;
+		cs.gridy = 3;
+		cs.gridwidth = 1;
+		editPanel.add(labelComments, cs);
+		
+		textBoxEditComments = new JTextArea(6,16);
+		textBoxEditComments.setLineWrap(true);
+		textBoxEditComments.setWrapStyleWord(true);
+		cs.gridx = 17;
+		cs.gridy = 4;
+		cs.gridwidth = 16;
+		editPanel.add(textBoxEditComments, cs);
 		
 		BoxButtonListener lForBoxButton = new BoxButtonListener();
 		
@@ -2994,6 +3037,7 @@ public class SalesMainView extends JFrame{
 				textBoxAddDepth.setText("");
 				textBoxAddCaliberComments.setText("");
 				textBoxAddPrice.setText("");
+				textBoxAddComments.setText("");
 				loadBoxTable("");
 				SwingUtilities.invokeLater(new Runnable(){
 					@Override
@@ -3020,6 +3064,7 @@ public class SalesMainView extends JFrame{
 				textBoxEditDepth.setText("");
 				textBoxEditCaliberComments.setText("");
 				textBoxEditPrice.setText("");
+				textBoxEditComments.setText("");
 				loadBoxTable("");
 				SwingUtilities.invokeLater(new Runnable(){
 					@Override
@@ -3046,6 +3091,7 @@ public class SalesMainView extends JFrame{
 			textBoxDescriptionPrice.setText("");
 			textBoxAddPairs.setText("");
 			textBoxAddPrice.setText("");
+			textBoxAddComments.setText("");
 			tableBoxesResult.clearSelection();
 			SwingUtilities.invokeLater(new Runnable(){
 				@Override
@@ -3084,6 +3130,7 @@ public class SalesMainView extends JFrame{
 			editBoxCaliberComments = String.valueOf(db.getBoxCaliberComments(editBoxId));
 			editBoxLockType = String.valueOf(tableBoxesResult.getValueAt(boxTableSelectedIndex, SharedListSelectionListener.BOX_LOCK_TYPE_COLUMN));
 			editBoxPrice = Double.valueOf(String.valueOf(tableBoxesResult.getValueAt(boxTableSelectedIndex, SharedListSelectionListener.BOX_PRICE_COLUMN)));
+			editBoxComments = db.getBoxComments(editBoxId);
 			
 			String queryTypes = "SELECT box_types.type "
 					+ "FROM box_types "
@@ -3184,6 +3231,7 @@ public class SalesMainView extends JFrame{
 			}
 			
 			textBoxEditPrice.setText(String.valueOf(editBoxPrice));
+			textBoxEditComments.setText(editBoxComments);
 			
 			SwingUtilities.invokeLater(new Runnable(){
 				@Override
@@ -7917,6 +7965,7 @@ public class SalesMainView extends JFrame{
 		public static final int BOX_CALIBER_COLUMN = 12;
 		public static final int BOX_LOCK_TYPE_COLUMN = 13;
 		public static final int BOX_PRICE_COLUMN = 14;
+		public static final int BOX_COMMENTS_COLUMN = 15;
 		
 		public static final int BOARD_ID_COLUMN = 0;
 		public static final int BOARD_NAME_COLUMN = 1;
@@ -8004,10 +8053,12 @@ public class SalesMainView extends JFrame{
 					textBoxDescriptionLockType.setText("");
 					textBoxDescriptionPrice.setText("");
 					textBoxDescription.setText("");
+					textBoxComments.setText("");
 				} else {
 					if(panelBoxDescription.isShowing()) {
 						buttonBoxEdit.setEnabled(true);
 					}
+					Integer boxId = Integer.valueOf((String) tableBoxesResult.getValueAt(boxTableSelectedIndex, BOX_ID_COLUMN));
 					textBoxDescriptionType.setText((String) tableBoxesResult.getValueAt(boxTableSelectedIndex, BOX_TYPE_COLUMN));
 					textBoxDescriptionInstallation.setText((String) tableBoxesResult.getValueAt(boxTableSelectedIndex, BOX_INSTALLATION_COLUMN));
 					textBoxDescriptionNema.setText((String) tableBoxesResult.getValueAt(boxTableSelectedIndex, BOX_NEMA_COLUMN));
@@ -8032,6 +8083,7 @@ public class SalesMainView extends JFrame{
 							tableBoxesResult.getValueAt(boxTableSelectedIndex, BOX_DEPTH_COLUMN) +
 							", " +
 							tableBoxesResult.getValueAt(boxTableSelectedIndex, BOX_NEMA_COLUMN));
+					textBoxComments.setText(db.getBoxComments(boxId));
 				}
 			} else if (null != tableBoardsResult && tableBoardsResult.isFocusOwner() && lsm.getMinSelectionIndex() > -1) {
 				boardsTableSelectedIndex = lsm.getMinSelectionIndex();
@@ -8201,6 +8253,7 @@ public class SalesMainView extends JFrame{
 				textBoxDescriptionLockType.setText("");
 				textBoxDescriptionPrice.setText("");
 				textBoxDescription.setText("");
+				textBoxComments.setText("");
 			} else if(lsm.isSelectionEmpty() && null != panelBoardDescription && tableBoardsResult.getSelectedRow() == -1) {
 				buttonBoardEdit.setEnabled(false);
 				textMaterials.setText("");
@@ -8404,6 +8457,7 @@ public class SalesMainView extends JFrame{
 				String boxCaliberComments = textBoxAddCaliberComments.getText();
 				String boxLockType = "";
 				String boxPrice = textBoxAddPrice.getText();
+				String boxComments = textBoxAddComments.getText();
 				Errors err = new Errors();
 				// Check if fields are not empty before saving the data
 				if(boxType.equalsIgnoreCase("para Pares Telefonicos")) {
@@ -8436,7 +8490,7 @@ public class SalesMainView extends JFrame{
 					err.add("El precio no puede estar vacio y solo debe contener digitos numericos");
 				}
 				if(err.isEmpty()) {
-					boolean saved = db.addBox(boxType, boxInstallation, boxNema, Integer.valueOf(boxPairs), boxSheet, boxFinish, boxColor, Double.valueOf(boxHeight), Double.valueOf(boxWidth), Double.valueOf(boxDepth), boxUnits, boxCaliber, boxCaliberComments, boxLockType, Double.valueOf(boxPrice));
+					boolean saved = db.addBox(boxType, boxInstallation, boxNema, Integer.valueOf(boxPairs), boxSheet, boxFinish, boxColor, Double.valueOf(boxHeight), Double.valueOf(boxWidth), Double.valueOf(boxDepth), boxUnits, boxCaliber, boxCaliberComments, boxLockType, Double.valueOf(boxPrice), boxComments);
 					if(saved) {
 						JOptionPane.showMessageDialog(null, "Caja creada exitosamente");
 						setBoxesMode(SalesMainView.VIEW_MODE);
@@ -8621,6 +8675,11 @@ public class SalesMainView extends JFrame{
 				} else {
 					err.add("El precio debe ser un valor numerico");
 				}
+				if(!String.valueOf(editBoxComments).equals(textBoxEditComments.getText())) {
+					listFields.add("comments");
+					listValues.add("'" + textBoxEditComments.getText() + "'");
+				}
+				
 				if(err.isEmpty()) {
 					if(listFields.size() > 0 && listValues.size() > 0) {
 						boolean boxEdited = db.editBox(editBoxId, listFields, listValues);

@@ -791,7 +791,7 @@ public class Db extends MysqlDriver {
 		return (this.getInsertId() > 0)? true:false;
 	}
 	
-	public Boolean addBox(String type, String installation, String nema, int pairs, String sheet, String finish, String color, Double height, Double width, Double depth, String units, String caliber, String caliberComments, String lockType, Double price) {
+	public Boolean addBox(String type, String installation, String nema, int pairs, String sheet, String finish, String color, Double height, Double width, Double depth, String units, String caliber, String caliberComments, String lockType, Double price, String boxComments) {
 		int typeId = this.getBoxTypeId(type);
 		int installationId = this.getInstallationId(installation);
 		int nemaId = this.getNemaId(nema);
@@ -802,8 +802,8 @@ public class Db extends MysqlDriver {
 		int caliberId = this.getBoxCaliberId(caliber);
 		int lockTypeId = this.getLockTypeId(lockType);
 
-		String queryInsert = "INSERT INTO boxes (type_id, installation_id, nema_id, pairs, sheet_id, finish_id, color_id, height, width, depth, units_id, caliber_id, caliber_comments, lock_type_id, price) "
-				+ "VALUES(" + typeId + ", " + installationId + ", " + nemaId + ", " + pairs + ", " + sheetId + ", " + finishId + ", " + colorId + ", " + height + ", " + width + ", " + depth + ", " + unitsId + ", " + caliberId + ", '" + caliberComments + "', " + lockTypeId + ", " + price + ")";
+		String queryInsert = "INSERT INTO boxes (type_id, installation_id, nema_id, pairs, sheet_id, finish_id, color_id, height, width, depth, units_id, caliber_id, caliber_comments, lock_type_id, price, comments) "
+				+ "VALUES(" + typeId + ", " + installationId + ", " + nemaId + ", " + pairs + ", " + sheetId + ", " + finishId + ", " + colorId + ", " + height + ", " + width + ", " + depth + ", " + unitsId + ", " + caliberId + ", '" + caliberComments + "', " + lockTypeId + ", " + price + ", '" + boxComments + "')";
 		
 		this.insert(queryInsert);
 		
@@ -2219,6 +2219,21 @@ public class Db extends MysqlDriver {
 			e.printStackTrace();
 		}
 		return -1;
+	}
+
+	public String getBoxComments(Integer boxId) {
+		ResultSet setComments;
+		String comments = "";
+		setComments = this.select("SELECT comments FROM boxes WHERE id = " + boxId);
+		
+		try {
+			setComments.first();
+			comments = setComments.getString("comments");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener los comentarios de la caja");
+		}
+		return comments;
 	}
 	
 }
