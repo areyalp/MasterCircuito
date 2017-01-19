@@ -350,7 +350,7 @@ public class SalesMainView extends JFrame{
 		private Integer budgetClientEditedId;
 	// Budget Seller Add
 		private SellerDialog dialogBudgetSellerAdd;
-		private int budgetSellerAddSearchId;
+		private Integer budgetSellerAddSearchId;
 	// Budget Seller Edit
 		private SellerDialog dialogBudgetSellerEdit;
 		private Integer budgetSellerEditedId;
@@ -9042,7 +9042,7 @@ public class SalesMainView extends JFrame{
 				String budgetDispatchPlace = comboBudgetAddDispatchPlace.getSelectedItem().toString();
 				String budgetDeliveryTime = textBudgetAddDeliveryTime.getText().toString();
 				String budgetDeliveryPeriod = comboBudgetAddDeliveryPeriod.getSelectedItem().toString();
-				Integer budgetSellerId = budgetSellerAddSearchId;
+				Integer budgetSellerId = dialogBudgetSellerAdd.getSearchId();
 				
 				Errors err = new Errors();
 				
