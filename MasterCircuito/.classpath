@@ -17,7 +17,7 @@
 	<classpathentry kind="lib" path="lib/itextpdf-5.5.4.jar"/>
 	<classpathentry kind="lib" path="lib/commons-logging-1.2.jar"/>
 	<classpathentry kind="lib" path="lib/jasperreports-fonts-6.3.1.jar"/>
-	<classpathentry kind="lib" path="lib/jasperreports-javaflow-6.3.1.jar"/>
-	<classpathentry kind="lib" path="lib/jasperreports-6.3.1.jar"/>
+	<classpathentry kind="lib" path="lib/commons-javaflow.jar"/>
+	<classpathentry kind="lib" path="lib/jasperreports-6.0.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
