@@ -1941,8 +1941,8 @@ public class Db extends MysqlDriver {
 			if (setProductionOrder.next()) {
 				Integer id = setProductionOrder.getInt("id");
 				Integer budgetId = setProductionOrder.getInt("budget_id");
-				Timestamp timestampProcessed = setProductionOrder.getTimestamp("date_processed_ts");
-				Timestamp timestampFinished = setProductionOrder.getTimestamp("date_finished_ts");
+				Timestamp timestampProcessed = setProductionOrder.getTimestamp("date_processed");
+				Timestamp timestampFinished = setProductionOrder.getTimestamp("date_finished");
 				Integer creatorId = setProductionOrder.getInt("creator_id");
 				Integer authorizerId = setProductionOrder.getInt("authorizer_id");
 				Boolean processed = (setProductionOrder.getInt("processed")==1?true:false);

@@ -400,7 +400,7 @@ public class ProductionMainView extends JFrame{
 					ProductionOrder selectedProductionOrder = new ProductionOrder(listProductionOrders.getSelectedValue());
 					ArrayList<Product> products = new ArrayList<Product>();
 					products = db.getProductionOrderProducts(selectedProductionOrder.getId());
-					if (!selectedProductionOrder.isProcessed()) {
+					if (!selectedProductionOrder.isProcessed() && products.size() > 0) {
 						for (Product product:products) {
 							Integer orderId = 0;
 							if (product instanceof Switch) {
