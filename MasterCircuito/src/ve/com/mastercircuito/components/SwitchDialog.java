@@ -44,7 +44,7 @@ public class SwitchDialog extends JDialog {
 	private String searchSelectedSwitchBrand, searchSelectedSwitchType, searchSelectedSwitchPhases, searchSelectedSwitchCurrent, searchSelectedSwitchInterruption;
 	private JComboBox<String> comboSwitchBrands, comboSwitchTypes, comboSwitchPhases, comboSwitchCurrents, comboSwitchInterruptions;
 	
-	private String[] switchesColumnNames = { "Id", "Modelo", "Marca", "Tipo", "Fases", "Amperaje", "Interrupcion", "Voltaje", "Precio"};
+	private String[] switchesColumnNames = { "Id", "Referencia", "Marca", "Tipo", "Fases", "Amperaje", "Interrupcion", "Voltaje", "Precio"};
 	
 	private Integer switchSearchId = 0;
 	private Integer switchAddQuantity = 1;
@@ -265,7 +265,7 @@ public class SwitchDialog extends JDialog {
 	
 	private void loadSwitchSearchTable(String whereQuery) {
 		String switchesQuery = "SELECT switches.id, "
-				+ "switches.model, "
+				+ "switches.reference, "
 				+ "switch_brands.brand, "
 				+ "switch_types.type, "
 				+ "switches.phases, "

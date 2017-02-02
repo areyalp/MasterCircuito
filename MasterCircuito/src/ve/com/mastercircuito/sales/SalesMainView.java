@@ -178,10 +178,10 @@ public class SalesMainView extends JFrame{
 		private MyInternalFrame switchesFrame = new MyInternalFrame();
 		private Object[][] switchesData = {};
 	// Switch View Objects
-		private JComboBox<String> comboSwitchBrands, comboSwitchTypes, comboSwitchPhases, comboSwitchCurrents, comboSwitchInterruptions;
-		private String searchSelectedSwitchBrand = "", searchSelectedSwitchType = "", searchSelectedSwitchPhases = "", searchSelectedSwitchCurrent = "", searchSelectedSwitchInterruption = "";
+		private JComboBox<String> comboSwitchBrands, comboSwitchModel, comboSwitchPhases, comboSwitchCurrents, comboSwitchInterruptions;
+		private String searchSelectedSwitchBrand = "", searchSelectedSwitchModel = "", searchSelectedSwitchPhases = "", searchSelectedSwitchCurrent = "", searchSelectedSwitchInterruption = "";
 		private JPanel panelSwitchRight, panelSwitchDescription, panelWrapperSwitchDescription, panelSwitchAddNew, panelSwitchEdit;
-		private JTextField textSwitchPrice, textSwitchPhases, textSwitchCurrent, textSwitchType, textSwitchBrand;
+		private JTextField textSwitchPrice, textSwitchPhases, textSwitchCurrent, textSwitchModel, textSwitchBrand;
 		private JTextArea textSwitchDescription;
 		private JLabel labelSwitchCopy;
 	// Switch Table Objects
@@ -190,22 +190,24 @@ public class SalesMainView extends JFrame{
 		private Integer switchTableSelectedIndex = -1;
 		private ListSelectionModel listSwitchSelectionModel;
 	// Switch Add Objects
-		private JTextField textSwitchAddPrice, textSwitchAddModel;
+		private JTextField textSwitchAddPrice, textSwitchAddReference;
+;
 		private JTextArea textSwitchAddDescription;
 		private JButton buttonSwitchAdd, buttonSwitchEdit, buttonSwitchAddSave, buttonSwitchAddCancel;
-		private JComboBox<String> comboSwitchAddBrands, comboSwitchAddTypes, comboSwitchAddPhases, comboSwitchAddCurrents, comboSwitchAddInterruptions, comboSwitchAddVoltages;
+		private JComboBox<String> comboSwitchAddBrands, comboSwitchAddModels, comboSwitchAddPhases, comboSwitchAddCurrents, comboSwitchAddInterruptions, comboSwitchAddVoltages;
 		private String addSelectedSwitchBrand;
 	// Switch Edit Objects
 		private Integer editSwitchId = 0, editSwitchCurrent = 0, editSwitchInterruption = 0;
 		private Double editSwitchPrice = 0.00;
-		private String editSwitchPhases, editSwitchBrand, editSwitchType, editSwitchModel, editSwitchVoltage;
-		private JTextField textSwitchEditPrice, textSwitchEditModel;
+		private String editSwitchPhases, editSwitchBrand, editSwitchModel, editSwitchReference, editSwitchVoltage;
+		private JTextField textSwitchEditPrice, textSwitchEditReference;
 		private JTextArea textSwitchEditDescription;
-		private JComboBox<String> comboSwitchEditPhases, comboSwitchEditCurrent, comboSwitchEditBrand, comboSwitchEditType, comboSwitchEditInterruption, comboSwitchEditVoltage;
+		private JComboBox<String> comboSwitchEditPhases, comboSwitchEditCurrent, comboSwitchEditBrand, comboSwitchEditModel, comboSwitchEditInterruption, comboSwitchEditVoltage;
 		private String editSelectedSwitchBrand;
 	// Switch Settings Objects
-		private JComboBox<String> comboSwitchSettingsBrands, comboSwitchSettingsTypes, comboSwitchSettingsCurrents, comboSwitchSettingsVoltages, comboSwitchSettingsInterruptions;
-	
+		private JComboBox<String> comboSwitchSettingsBrands, comboSwitchSettingsModels, comboSwitchSettingsCurrents, comboSwitchSettingsVoltages, comboSwitchSettingsInterruptions;
+		private JComboBox<String> comboSwitchModels;
+
 	//*** Box Global Variables and objects ***//
 		private MyInternalFrame boxesFrame = new MyInternalFrame();
 		private Object[][] boxesData = {};
@@ -397,8 +399,6 @@ public class SalesMainView extends JFrame{
 		private JTextArea textBudgetNotes;
 		private JPanel panelBudgetNotesEditSaveCancel;
 		private JButton buttonBudgetNotesEdit, buttonBudgetNotesEditSave, buttonBudgetNotesEditCancel;
-	
-		
 		
 	public static void main(String[] args) {
 		new SalesMainView();
@@ -784,7 +784,7 @@ public class SalesMainView extends JFrame{
 		cs.insets = new Insets(0,0,5,5);
 		
 		String queryBrands = "SELECT brand FROM switch_brands";
-		String queryTypes = "SELECT type FROM switch_types";
+		String queryModels = "SELECT type FROM switch_models";
 		String queryCurrents = "SELECT current FROM currents";
 		String queryVoltages = "SELECT voltage FROM switch_voltages";
 		String queryInterruptions = "SELECT interruption FROM interruptions";
@@ -813,17 +813,17 @@ public class SalesMainView extends JFrame{
 		cs.gridwidth = 1;
 		subPanelSwitchSettings.add(labelType, cs);
 		
-		comboSwitchSettingsTypes = new JComboBox<String>(new Vector<String>(loadComboList(queryTypes, "type")));
-		comboSwitchSettingsTypes.removeItem("Todas");
+		comboSwitchSettingsModels = new JComboBox<String>(new Vector<String>(loadComboList(queryModels, "model")));
+		comboSwitchSettingsModels.removeItem("Todas");
 		cs.gridx = 3;
 		cs.gridy = 1;
 		cs.gridwidth = 2;
-		subPanelSwitchSettings.add(comboSwitchSettingsTypes, cs);
+		subPanelSwitchSettings.add(comboSwitchSettingsModels, cs);
 		
 		cs.gridx = 5;
 		cs.gridy = 1;
 		cs.gridwidth = 1;
-		subPanelSwitchSettings.add(createSettingsPanelAddRemove("switch", "types"), cs);
+		subPanelSwitchSettings.add(createSettingsPanelAddRemove("switch", "models"), cs);
 		
 		JLabel labelCurrents = new JLabel("Amperaje");
 		cs.gridx = 6;
@@ -937,10 +937,10 @@ public class SalesMainView extends JFrame{
 				+ "WHERE switch_brands.id = switches.brand_id "
 				+ "GROUP BY switch_brands.brand";
 		
-		String queryTypes = "SELECT type "
-				+ "FROM switch_types, switches "
-				+ "WHERE switch_types.id = switches.type_id "
-				+ "GROUP BY switch_types.type";
+		String queryModels = "SELECT model "
+				+ "FROM switch_models, switches "
+				+ "WHERE switch_models.id = switches.model_id "
+				+ "GROUP BY switch_models.model";
 		
 		String queryPhases = "SELECT phases "
 				+ "FROM switches "
@@ -957,7 +957,7 @@ public class SalesMainView extends JFrame{
 				+ "GROUP BY interruptions.interruption";
 		
 		JLabel brandsLabel = new JLabel("Marca:");
-		JLabel typesLabel = new JLabel("Tipo:");
+		JLabel modelsLabel = new JLabel("Modelo:");
 		JLabel phasesLabel = new JLabel("Fases:");
 		JLabel currentsLabel = new JLabel("Amperaje:");
 		JLabel interruptionsLabel = new JLabel("Interrupcion:");
@@ -970,11 +970,11 @@ public class SalesMainView extends JFrame{
 		searchBarPanel.add(brandsLabel);
 		searchBarPanel.add(comboSwitchBrands);
 		
-		comboSwitchTypes = new JComboBox<String>(new Vector<String>(loadComboList(queryTypes, "type")));
-		comboSwitchTypes.setActionCommand("switch.bar.type");
-		comboSwitchTypes.addActionListener(lForCombo);
-		searchBarPanel.add(typesLabel);
-		searchBarPanel.add(comboSwitchTypes);
+		comboSwitchModels = new JComboBox<String>(new Vector<String>(loadComboList(queryModels, "model")));
+		comboSwitchModels.setActionCommand("switch.bar.model");
+		comboSwitchModels.addActionListener(lForCombo);
+		searchBarPanel.add(modelsLabel);
+		searchBarPanel.add(comboSwitchModels);
 		
 		comboSwitchPhases = new JComboBox<String>(new Vector<String>(loadComboList(queryPhases, "phases")));
 		comboSwitchPhases.setActionCommand("switch.bar.phases");
@@ -1007,7 +1007,7 @@ public class SalesMainView extends JFrame{
 	
 	private JPanel createSwitchTablePanel() {
 		String switchesQuery = "SELECT switches.id, "
-									+ "switches.model, "
+									+ "switches.reference, "
 									+ "switch_brands.brand, "
 									+ "switch_types.type, "
 									+ "switches.phases, "
@@ -1030,7 +1030,7 @@ public class SalesMainView extends JFrame{
 		
 		switchesData = db.fetchAll(db.select(switchesQuery));
 		
-		String[] switchesColumnNames = { "Id", "Modelo", "Marca", "Tipo", "Fases", "Amperaje", "Interrupcion", "Voltaje", "Precio"};
+		String[] switchesColumnNames = { "Id", "Referencia", "Marca", "Tipo", "Fases", "Amperaje", "Interrupcion", "Voltaje", "Precio"};
 		
 		MyTableModel mForTable = new MyTableModel(switchesData, switchesColumnNames);
 		
@@ -1100,18 +1100,18 @@ public class SalesMainView extends JFrame{
 		cs.gridwidth = 3;
 		descriptionPanel.add(textSwitchCurrent, cs);
 		
-		JLabel labelType = new JLabel("Tipo:");
+		JLabel labelType = new JLabel("Modelo:");
 		cs.gridx = 0;
 		cs.gridy = 1;
 		cs.gridwidth = 1;
 		descriptionPanel.add(labelType, cs);
 		
-		textSwitchType = new JTextField("", 4);
-		textSwitchType.setEditable(false);
+		textSwitchModel = new JTextField("", 4);
+		textSwitchModel.setEditable(false);
 		cs.gridx = 1;
 		cs.gridy = 1;
 		cs.gridwidth = 4;
-		descriptionPanel.add(textSwitchType, cs);
+		descriptionPanel.add(textSwitchModel, cs);
 		
 		JLabel labelBrand = new JLabel("Marca:");
 		cs.gridx = 5;
@@ -1252,27 +1252,27 @@ public class SalesMainView extends JFrame{
 		cs.gridwidth = 8;
 		addPanel.add(comboSwitchAddBrands, cs);
 		
-		JLabel labelType = new JLabel("Tipo:");
+		JLabel labelModel = new JLabel("Modelo:");
 		cs.gridx = 9;
 		cs.gridy = 1;
 		cs.gridwidth = 1;
-		addPanel.add(labelType, cs);
+		addPanel.add(labelModel, cs);
 		
-		String queryTypes = "SELECT type "
-				+ "FROM switch_types "
+		String queryModels = "SELECT model "
+				+ "FROM switch_models "
 				+ additionalFrom
-				+ "WHERE switch_types.brand_id = switch_brands.id "
+				+ "WHERE switch_models.brand_id = switch_brands.id "
 				+ additionalWhere
-				+ "GROUP BY switch_types.type ";
+				+ "GROUP BY switch_models.model ";
 		
-		comboSwitchAddTypes = new JComboBox<String>(new Vector<String>(loadComboList(queryTypes, "type")));
-		comboSwitchAddTypes.removeItem("Todas");
-		comboSwitchAddTypes.setActionCommand("switch.description.add.type");
-		comboSwitchAddTypes.addActionListener(lForCombo);
+		comboSwitchAddModels = new JComboBox<String>(new Vector<String>(loadComboList(queryModels, "model")));
+		comboSwitchAddModels.removeItem("Todas");
+		comboSwitchAddModels.setActionCommand("switch.description.add.model");
+		comboSwitchAddModels.addActionListener(lForCombo);
 		cs.gridx = 10;
 		cs.gridy = 1;
 		cs.gridwidth = 4;
-		addPanel.add(comboSwitchAddTypes, cs);
+		addPanel.add(comboSwitchAddModels, cs);
 		
 		JLabel labelInterruption = new JLabel("Int.:");
 		cs.gridx = 0;
@@ -1289,17 +1289,17 @@ public class SalesMainView extends JFrame{
 		cs.gridwidth = 2;
 		addPanel.add(comboSwitchAddInterruptions, cs);
 		
-		JLabel labelModel = new JLabel("Modelo:");
+		JLabel labelReference = new JLabel("Referencia:");
 		cs.gridx = 3;
 		cs.gridy = 2;
 		cs.gridwidth = 1;
-		addPanel.add(labelModel, cs);
+		addPanel.add(labelReference, cs);
 		
-		textSwitchAddModel = new JTextField("", 6);
+		textSwitchAddReference = new JTextField("", 6);
 		cs.gridx = 4;
 		cs.gridy = 2;
 		cs.gridwidth = 6;
-		addPanel.add(textSwitchAddModel, cs);
+		addPanel.add(textSwitchAddReference, cs);
 		
 		JLabel labelVoltage = new JLabel("Voltaje:");
 		cs.gridx = 10;
@@ -1413,19 +1413,19 @@ public class SalesMainView extends JFrame{
 		cs.gridwidth = 10;
 		editPanel.add(comboSwitchEditBrand, cs);
 		
-		JLabel labelType = new JLabel("Tipo:");
+		JLabel labelModel = new JLabel("Modelo:");
 		cs.gridx = 11;
 		cs.gridy = 1;
 		cs.gridwidth = 1;
-		editPanel.add(labelType, cs);
+		editPanel.add(labelModel, cs);
 		
-		comboSwitchEditType = new JComboBox<String>();
-		comboSwitchEditType.setActionCommand("switch.description.edit.type");
-		comboSwitchEditType.addActionListener(lForCombo);
+		comboSwitchEditModel = new JComboBox<String>();
+		comboSwitchEditModel.setActionCommand("switch.description.edit.model");
+		comboSwitchEditModel.addActionListener(lForCombo);
 		cs.gridx = 12;
 		cs.gridy = 1;
 		cs.gridwidth = 4;
-		editPanel.add(comboSwitchEditType, cs);
+		editPanel.add(comboSwitchEditModel, cs);
 		
 		JLabel labelInterruption = new JLabel("Interrupcion:");
 		cs.gridx = 0;
@@ -1439,17 +1439,17 @@ public class SalesMainView extends JFrame{
 		cs.gridwidth = 2;
 		editPanel.add(comboSwitchEditInterruption, cs);
 		
-		JLabel labelModel = new JLabel("Modelo:");
+		JLabel labelReference = new JLabel("Referencia:");
 		cs.gridx = 3;
 		cs.gridy = 2;
 		cs.gridwidth = 1;
-		editPanel.add(labelModel, cs);
+		editPanel.add(labelReference, cs);
 		
-		textSwitchEditModel = new JTextField("",8);
+		textSwitchEditReference = new JTextField("",8);
 		cs.gridx = 4;
 		cs.gridy = 2;
 		cs.gridwidth = 8;
-		editPanel.add(textSwitchEditModel, cs);
+		editPanel.add(textSwitchEditReference, cs);
 		
 		JLabel labelVoltage = new JLabel("Voltaje:");
 		cs.gridx = 12;
@@ -1524,15 +1524,15 @@ public class SalesMainView extends JFrame{
 			additionalWhere = "AND switch_brands.brand = '" + selectedBrand + "' ";
 		}
 		
-		String queryTypes = "SELECT type "
-				+ "FROM switch_types "
+		String queryModels = "SELECT model "
+				+ "FROM switch_models "
 				+ additionalFrom
-				+ "WHERE switch_types.brand_id = switch_brands.id "
+				+ "WHERE switch_models.brand_id = switch_brands.id "
 				+ additionalWhere
-				+ "GROUP BY switch_types.type ";
+				+ "GROUP BY switch_models.model ";
 		
-		comboSwitchAddTypes.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadComboList(queryTypes, "type"))));
-		comboSwitchAddTypes.removeItem("Todas");
+		comboSwitchAddModels.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadComboList(queryModels, "model"))));
+		comboSwitchAddModels.removeItem("Todas");
 		
 		comboSwitchAddInterruptions.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadComboList(queryInterruptions, "interruption"))));
 		comboSwitchAddInterruptions.removeItem("Todas");
@@ -1547,7 +1547,7 @@ public class SalesMainView extends JFrame{
 			if(panelSwitchAddNew.isVisible()) {
 				buttonSwitchAdd.setEnabled(true);
 				textSwitchAddPrice.setText("");
-				textSwitchAddModel.setText("");
+				textSwitchAddReference.setText("");
 				textSwitchAddDescription.setText("");
 				loadSwitchTable("");
 				SwingUtilities.invokeLater(new Runnable(){
@@ -1594,7 +1594,7 @@ public class SalesMainView extends JFrame{
 			textSwitchPrice.setText("");
 			textSwitchPhases.setText("");
 			textSwitchCurrent.setText("");
-			textSwitchType.setText("");
+			textSwitchModel.setText("");
 			textSwitchBrand.setText("");
 			textSwitchDescription.setText("");
 			tableSwitchesResult.clearSelection();
@@ -1626,9 +1626,9 @@ public class SalesMainView extends JFrame{
 			editSwitchPhases = String.valueOf(tableSwitchesResult.getValueAt(switchTableSelectedIndex, SharedListSelectionListener.SWITCH_PHASES_COLUMN));
 			editSwitchCurrent = Integer.valueOf(String.valueOf(tableSwitchesResult.getValueAt(switchTableSelectedIndex, SharedListSelectionListener.SWITCH_CURRENT_COLUMN)));
 			editSwitchBrand = String.valueOf(tableSwitchesResult.getValueAt(switchTableSelectedIndex, SharedListSelectionListener.SWITCH_BRAND_COLUMN));
-			editSwitchType = String.valueOf(tableSwitchesResult.getValueAt(switchTableSelectedIndex, SharedListSelectionListener.SWITCH_TYPE_COLUMN));
+			editSwitchModel = String.valueOf(tableSwitchesResult.getValueAt(switchTableSelectedIndex, SharedListSelectionListener.SWITCH_TYPE_COLUMN));
 			editSwitchInterruption = Integer.valueOf(String.valueOf(tableSwitchesResult.getValueAt(switchTableSelectedIndex, SharedListSelectionListener.SWITCH_INTERRUPTION_COLUMN)));
-			editSwitchModel = String.valueOf(tableSwitchesResult.getValueAt(switchTableSelectedIndex, SharedListSelectionListener.SWITCH_MODEL_COLUMN));
+			editSwitchReference = String.valueOf(tableSwitchesResult.getValueAt(switchTableSelectedIndex, SharedListSelectionListener.SWITCH_MODEL_COLUMN));
 			editSwitchVoltage = String.valueOf(tableSwitchesResult.getValueAt(switchTableSelectedIndex, SharedListSelectionListener.SWITCH_VOLTAGE_COLUMN));
 			
 			String queryCurrents = "SELECT current "
@@ -1671,22 +1671,22 @@ public class SalesMainView extends JFrame{
 				additionalFrom = ", switch_brands ";
 				additionalWhere = "AND switch_brands.brand = '" + editSwitchBrand + "' ";
 			}
-			String queryTypes = "SELECT type "
-					+ "FROM switch_types "
+			String queryModels = "SELECT model "
+					+ "FROM switch_models "
 					+ additionalFrom
-					+ "WHERE switch_types.brand_id = switch_brands.id "
+					+ "WHERE switch_models.brand_id = switch_brands.id "
 					+ additionalWhere
-					+ "GROUP BY switch_types.type ";
+					+ "GROUP BY switch_models.model ";
 			
-			comboSwitchEditType.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadComboList(queryTypes, "type"))));
-			comboSwitchEditType.removeItem("Todas");
-			comboSwitchEditType.setSelectedItem(editSwitchType);
+			comboSwitchEditModel.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadComboList(queryModels, "model"))));
+			comboSwitchEditModel.removeItem("Todas");
+			comboSwitchEditModel.setSelectedItem(editSwitchModel);
 			
 			comboSwitchEditInterruption.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadComboList(queryInterruptions, "interruption"))));
 			comboSwitchEditInterruption.removeItem("Todas");
 			comboSwitchEditInterruption.setSelectedItem(String.valueOf(editSwitchInterruption));
 			
-			textSwitchEditModel.setText(editSwitchModel);
+			textSwitchEditReference.setText(editSwitchReference);
 			
 			comboSwitchEditVoltage.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadComboList(queryVoltages, "voltage"))));
 			comboSwitchEditVoltage.removeItem("Todas");
@@ -1717,9 +1717,9 @@ public class SalesMainView extends JFrame{
 	
 	private void loadSwitchTable(String whereQuery) {
 		String switchesQuery = "SELECT switches.id, "
-				+ "switches.model, "
+				+ "switches.reference, "
 				+ "switch_brands.brand, "
-				+ "switch_types.type, "
+				+ "switch_models.model, "
 				+ "switches.phases, "
 				+ "currents.current, "
 				+ "interruptions.interruption, "
@@ -1727,12 +1727,12 @@ public class SalesMainView extends JFrame{
 				+ "switches.price "
 			+ "FROM switches, "
 				+ "switch_brands, "
-				+ "switch_types, "
+				+ "switch_models, "
 				+ "currents, "
 				+ "interruptions, "
 				+ "switch_voltages "
 			+ "WHERE switches.brand_id = switch_brands.id "
-			+ "AND switches.type_id = switch_types.id "
+			+ "AND switches.model_id = switch_models.id "
 			+ "AND switches.current_id = currents.id "
 			+ "AND switches.interruption_id = interruptions.id "
 			+ "AND switches.voltage_id = switch_voltages.id "
@@ -1741,7 +1741,7 @@ public class SalesMainView extends JFrame{
 
 		switchesData = db.fetchAll(db.select(switchesQuery));
 		
-		String[] switchesColumnNames = { "Id", "Modelo", "Marca", "Tipo", "Fases", "Amperaje", "Interrupcion", "Voltaje", "Precio"};
+		String[] switchesColumnNames = { "Id", "Referencia", "Marca", "Modelo", "Fases", "Amperaje", "Interrupcion", "Voltaje", "Precio"};
 		
 		if(switchesData.length > 0) {
 			tableSwitchesResult.setModel(new MyTableModel(switchesData, switchesColumnNames));
@@ -1756,7 +1756,7 @@ public class SalesMainView extends JFrame{
 				"X" +
 				((null != comboSwitchAddCurrents.getSelectedItem())?comboSwitchAddCurrents.getSelectedItem().toString():"") +
 				" A, " +
-				((null != comboSwitchAddTypes.getSelectedItem())?comboSwitchAddTypes.getSelectedItem().toString():"") +
+				((null != comboSwitchAddModels.getSelectedItem())?comboSwitchAddModels.getSelectedItem().toString():"") +
 				", " +
 				((null != comboSwitchAddBrands.getSelectedItem())?comboSwitchAddBrands.getSelectedItem().toString():"")
 				);
@@ -1768,7 +1768,7 @@ public class SalesMainView extends JFrame{
 				"X" +
 				((null != comboSwitchEditCurrent.getSelectedItem())?comboSwitchEditCurrent.getSelectedItem().toString():"") +
 				" A, " +
-				((null != comboSwitchEditType.getSelectedItem())?comboSwitchEditType.getSelectedItem().toString():"") +
+				((null != comboSwitchEditModel.getSelectedItem())?comboSwitchEditModel.getSelectedItem().toString():"") +
 				", " +
 				((null != comboSwitchEditBrand.getSelectedItem())?comboSwitchEditBrand.getSelectedItem().toString():"")
 				);
@@ -1776,15 +1776,15 @@ public class SalesMainView extends JFrame{
 	
 	private void updateSwitchComboSettings() {
 		String queryBrands = "SELECT brand FROM switch_brands";
-		String queryTypes = "SELECT type FROM switch_types";
+		String queryModels = "SELECT type FROM switch_models";
 		String queryCurrents = "SELECT current FROM currents";
 		String queryVoltages = "SELECT voltage FROM switch_voltages";
 		String queryInterruptions = "SELECT interruption FROM interruptions";
 		
 		comboSwitchSettingsBrands.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadComboList(queryBrands, "brand"))));
 		comboSwitchSettingsBrands.removeItem("Todas");
-		comboSwitchSettingsTypes.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadComboList(queryTypes, "type"))));
-		comboSwitchSettingsTypes.removeItem("Todas");
+		comboSwitchSettingsModels.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadComboList(queryModels, "model"))));
+		comboSwitchSettingsModels.removeItem("Todas");
 		comboSwitchSettingsCurrents.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadComboList(queryCurrents, "current"))));
 		comboSwitchSettingsCurrents.removeItem("Todas");
 		comboSwitchSettingsVoltages.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadComboList(queryVoltages, "voltage"))));
@@ -3346,6 +3346,7 @@ public class SalesMainView extends JFrame{
 				" x " +
 				boxDepth +
 				", " +
+				"Nema, " +
 				boxNema);
 	}
 	
@@ -3364,6 +3365,7 @@ public class SalesMainView extends JFrame{
 				" x " +
 				boxDepth +
 				", " +
+				"Nema, " +
 				boxNema);
 	}
 	
@@ -5031,7 +5033,7 @@ public class SalesMainView extends JFrame{
 	
 	private void loadBoardSwitchSearchTable(String whereQuery) {
 		String switchesQuery = "SELECT switches.id, "
-				+ "switches.model, "
+				+ "switches.reference, "
 				+ "switch_brands.brand, "
 				+ "switch_types.type, "
 				+ "switches.phases, "
@@ -5055,7 +5057,7 @@ public class SalesMainView extends JFrame{
 
 		boardSwitchesSearchData = db.fetchAll(db.select(switchesQuery));
 		
-		String[] switchesColumnNames = { "Id", "Modelo", "Marca", "Tipo", "Fases", "Amperaje", "Interrupcion", "Voltaje", "Precio"};
+		String[] switchesColumnNames = { "Id", "Referencia", "Marca", "Tipo", "Fases", "Amperaje", "Interrupcion", "Voltaje", "Precio"};
 		
 		if(boardSwitchesSearchData.length > 0) {
 			tableBoardSwitchesSearchResult.setModel(new MyTableModel(boardSwitchesSearchData, switchesColumnNames));
@@ -6719,28 +6721,28 @@ public class SalesMainView extends JFrame{
 			String actionCommand = e.getActionCommand();
 			whereQuery = "";
 			if(actionCommand.equalsIgnoreCase("switch.bar.brand")) {
-				fromQuery = "switches, switch_types ";
+				fromQuery = "switches, switch_models ";
 				searchSelectedSwitchBrand = comboSwitchBrands.getSelectedItem().toString();
-				this.clearSelectedSwitchOptions("type");
+				this.clearSelectedSwitchOptions("model");
 				if(!searchSelectedSwitchBrand.equalsIgnoreCase("Todas")) {
 					fromQuery += ", switch_brands ";
 					whereQuery = "WHERE switches.brand_id = switch_brands.id "
-									+ "AND switch_types.brand_id = switch_brands.id "
-									+ "AND switch_types.id = switches.type_id "
+									+ "AND switch_models.brand_id = switch_brands.id "
+									+ "AND switch_models.id = switches.model_id "
 									+ "AND switch_brands.brand = '"+searchSelectedSwitchBrand+"' ";
 				} else {
-					whereQuery = "WHERE switch_types.id = switches.type_id ";
+					whereQuery = "WHERE switch_models.id = switches.model_id ";
 				}
 				this.addSwitchCommonQuery();
-				this.loadComboSwitch("types");
-			} else if (actionCommand.equalsIgnoreCase("switch.bar.type")) {
+				this.loadComboSwitch("models");
+			} else if (actionCommand.equalsIgnoreCase("switch.bar.model")) {
 				fromQuery = "switches ";
-				searchSelectedSwitchType = comboSwitchTypes.getSelectedItem().toString();
+				searchSelectedSwitchModel = comboSwitchModels.getSelectedItem().toString();
 				this.clearSelectedSwitchOptions("phases");
-				if(!searchSelectedSwitchType.equalsIgnoreCase("Todas")) {
-					fromQuery += ", switch_types ";
-					whereQuery = "WHERE switches.type_id = switch_types.id "
-									+ "AND switch_types.type = '"+searchSelectedSwitchType+"' ";
+				if(!searchSelectedSwitchModel.equalsIgnoreCase("Todas")) {
+					fromQuery += ", switch_models ";
+					whereQuery = "WHERE switches.model_id = switch_models.id "
+									+ "AND switch_models.model = '"+searchSelectedSwitchModel+"' ";
 				} else {
 					whereQuery = "";
 				}
@@ -6772,33 +6774,33 @@ public class SalesMainView extends JFrame{
 				searchSelectedSwitchInterruption = comboSwitchInterruptions.getSelectedItem().toString();
 			} else if (actionCommand.equalsIgnoreCase("switch.description.add.brand")) {
 				addSelectedSwitchBrand = comboSwitchAddBrands.getSelectedItem().toString();
-				fromQuery = "switch_types, switch_brands ";
+				fromQuery = "switch_models, switch_brands ";
 				whereQuery = "WHERE switch_brands.brand = '" + addSelectedSwitchBrand + "' "
-							+ "AND switch_types.brand_id = switch_brands.id ";
-				String queryType = "SELECT switch_types.type "
+							+ "AND switch_models.brand_id = switch_brands.id ";
+				String queryModel = "SELECT switch_models.model "
 								 + "FROM " + fromQuery
 								 + whereQuery
-								 + "GROUP BY switch_types.type ";
-				comboSwitchAddTypes.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadComboList(queryType, "type"))));
-				comboSwitchAddTypes.removeItem("Todas");
+								 + "GROUP BY switch_models.model ";
+				comboSwitchAddModels.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadComboList(queryModel, "model"))));
+				comboSwitchAddModels.removeItem("Todas");
 				updateSwitchTextAddDescription();
-			} else if (actionCommand.equalsIgnoreCase("switch.description.add.type") || e.getActionCommand().equalsIgnoreCase("switch.description.add.phases") || e.getActionCommand().equalsIgnoreCase("switch.description.add.current")){
+			} else if (actionCommand.equalsIgnoreCase("switch.description.add.model") || e.getActionCommand().equalsIgnoreCase("switch.description.add.phases") || e.getActionCommand().equalsIgnoreCase("switch.description.add.current")){
 				updateSwitchTextAddDescription();
-			} else if (actionCommand.equalsIgnoreCase("switch.description.edit.phases") || e.getActionCommand().equalsIgnoreCase("switch.description.edit.current") || e.getActionCommand().equalsIgnoreCase("switch.description.edit.type")) {
+			} else if (actionCommand.equalsIgnoreCase("switch.description.edit.phases") || e.getActionCommand().equalsIgnoreCase("switch.description.edit.current") || e.getActionCommand().equalsIgnoreCase("switch.description.edit.model")) {
 				updateSwitchTextEditDescription();
 			} else if (actionCommand.equalsIgnoreCase("switch.description.edit.brand")) {
 				editSelectedSwitchBrand = comboSwitchEditBrand.getSelectedItem().toString();
 				fromQuery = "switch_types, switch_brands ";
 				whereQuery = "WHERE switch_brands.brand = '" + editSelectedSwitchBrand + "' "
 							+ "AND switch_types.brand_id = switch_brands.id ";
-				String queryType = "SELECT switch_types.type "
+				String queryModel = "SELECT switch_models.model "
 								+ "FROM " + fromQuery
 								+ whereQuery
-								+ "GROUP BY switch_types.type";
-				comboSwitchEditType.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadComboList(queryType, "type"))));
-				comboSwitchEditType.removeItem("Todas");
+								+ "GROUP BY switch_models.model";
+				comboSwitchEditModel.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadComboList(queryModel, "model"))));
+				comboSwitchEditModel.removeItem("Todas");
 				if(editSwitchBrand.equalsIgnoreCase(editSelectedSwitchBrand)) {
-					comboSwitchEditType.setSelectedItem(editSwitchType);
+					comboSwitchEditModel.setSelectedItem(editSwitchModel);
 				}
 				updateSwitchTextEditDescription();
 			} else if (actionCommand.equalsIgnoreCase("box.search.type")) {
@@ -7151,8 +7153,8 @@ public class SalesMainView extends JFrame{
 		
 		private void clearSelectedSwitchOptions(String start) {
 			switch(start) {
-				case "type":
-					searchSelectedSwitchType = "";
+				case "model":
+					searchSelectedSwitchModel = "";
 				case "phases":
 					searchSelectedSwitchPhases = "";
 				case "current":
@@ -7271,12 +7273,12 @@ public class SalesMainView extends JFrame{
 				fromQuery += ", switch_brands ";
 				whereQuery += " switches.brand_id = switch_brands.id "
 								+ "AND switch_brands.brand = '" + searchSelectedSwitchBrand + "' ";
-				if(!searchSelectedSwitchType.equalsIgnoreCase("Todas")) {
-					if(!fromQuery.contains("switch_types")) {
-						fromQuery += ", switch_types ";
+				if(!searchSelectedSwitchModel.equalsIgnoreCase("Todas")) {
+					if(!fromQuery.contains("switch_models")) {
+						fromQuery += ", switch_models ";
 					}
-					whereQuery += "AND switch_types.brand_id = switch_brands.id "
-								+ "AND switch_types.id = switches.type_id ";
+					whereQuery += "AND switch_models.brand_id = switch_brands.id "
+								+ "AND switch_models.id = switches.model_id ";
 				}
 			}
 		}
@@ -7325,8 +7327,8 @@ public class SalesMainView extends JFrame{
 		
 		private void loadComboSwitch(String start) {
 			switch(start) {
-				case "types":
-					comboSwitchTypes.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList("switch_types", "type"))));
+				case "models":
+					comboSwitchModels.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList("switch_models", "model"))));
 				case "phases":
 					comboSwitchPhases.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList("switches", "phases"))));
 				case "currents":
@@ -7779,9 +7781,9 @@ public class SalesMainView extends JFrame{
 						!searchSelectedSwitchBrand.isEmpty()) {
 					whereQuery += " AND switch_brands.brand = '" + searchSelectedSwitchBrand + "'";
 				}
-				if(searchSelectedSwitchType != null && !searchSelectedSwitchType.equalsIgnoreCase("Todas") &&
-						!searchSelectedSwitchType.isEmpty()) {
-					whereQuery += " AND switch_types.type = '" + searchSelectedSwitchType + "'";
+				if(searchSelectedSwitchModel != null && !searchSelectedSwitchModel.equalsIgnoreCase("Todas") &&
+						!searchSelectedSwitchModel.isEmpty()) {
+					whereQuery += " AND switch_types.type = '" + searchSelectedSwitchModel + "'";
 				}
 				if(searchSelectedSwitchPhases != null && !searchSelectedSwitchPhases.equalsIgnoreCase("Todas") &&
 						!searchSelectedSwitchPhases.isEmpty()) {
@@ -8009,7 +8011,7 @@ public class SalesMainView extends JFrame{
 					textSwitchPrice.setText("");
 					textSwitchPhases.setText("");
 					textSwitchCurrent.setText("");
-					textSwitchType.setText("");
+					textSwitchModel.setText("");
 					textSwitchBrand.setText("");
 					textSwitchDescription.setText("");
 				} else {
@@ -8019,7 +8021,7 @@ public class SalesMainView extends JFrame{
 					textSwitchPrice.setText("BsF " + tableSwitchesResult.getValueAt(switchTableSelectedIndex, SWITCH_PRICE_COLUMN));
 					textSwitchPhases.setText((String) tableSwitchesResult.getValueAt(switchTableSelectedIndex, SWITCH_PHASES_COLUMN));
 					textSwitchCurrent.setText((String) tableSwitchesResult.getValueAt(switchTableSelectedIndex, SWITCH_CURRENT_COLUMN));
-					textSwitchType.setText((String) tableSwitchesResult.getValueAt(switchTableSelectedIndex, SWITCH_TYPE_COLUMN));
+					textSwitchModel.setText((String) tableSwitchesResult.getValueAt(switchTableSelectedIndex, SWITCH_TYPE_COLUMN));
 					textSwitchBrand.setText((String) tableSwitchesResult.getValueAt(switchTableSelectedIndex, SWITCH_BRAND_COLUMN));
 					textSwitchDescription.setText("Interruptor " +
 											tableSwitchesResult.getValueAt(switchTableSelectedIndex, SWITCH_PHASES_COLUMN) +
@@ -8258,7 +8260,7 @@ public class SalesMainView extends JFrame{
 				textSwitchPrice.setText("");
 				textSwitchPhases.setText("");
 				textSwitchCurrent.setText("");
-				textSwitchType.setText("");
+				textSwitchModel.setText("");
 				textSwitchBrand.setText("");
 				textSwitchDescription.setText("");
 			} else if(lsm.isSelectionEmpty() && null != panelBoxDescription && tableBoxesResult.getSelectedRow() == -1) {
@@ -8347,6 +8349,8 @@ public class SalesMainView extends JFrame{
 	
 	private class SwitchButtonListener implements ActionListener {
 
+		private JComboBox<String> comboSwitchEditType;
+
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			String actionCommand = e.getActionCommand();
@@ -8358,12 +8362,12 @@ public class SalesMainView extends JFrame{
 				if(textSwitchAddPrice.getText() == null || textSwitchAddPrice.getText().isEmpty() || !Numbers.isNumeric(textSwitchAddPrice.getText())) {
 					JOptionPane.showMessageDialog(null, "Precio invalido");
 					textSwitchAddPrice.setText("");
-				} else if (textSwitchAddModel.getText() == null || textSwitchAddModel.getText().isEmpty()) {
+				} else if (textSwitchAddReference.getText() == null || textSwitchAddReference.getText().isEmpty()) {
 					JOptionPane.showMessageDialog(null, "Debe escribir el modelo de interruptor");
 				} else if (comboSwitchAddBrands.getItemCount() < 1) {
 					JOptionPane.showMessageDialog(null, "No hay marcas disponibles, debe agregar una");
-				} else if (comboSwitchAddTypes.getItemCount() < 1) {
-					JOptionPane.showMessageDialog(null, "No hay tipos disponibles, debe agregar uno");
+				} else if (comboSwitchAddModels.getItemCount() < 1) {
+					JOptionPane.showMessageDialog(null, "No hay modelos disponibles, debe agregar uno");
 				} else if (comboSwitchAddPhases.getItemCount() < 1) {
 					JOptionPane.showMessageDialog(null, "No hay fases disponibles, debe agregar una");
 				} else if (comboSwitchAddCurrents.getItemCount() < 1) {
@@ -8376,12 +8380,12 @@ public class SalesMainView extends JFrame{
 					if( !db.switchExists(comboSwitchAddPhases.getSelectedItem().toString(), 
 							comboSwitchAddCurrents.getSelectedItem().toString(), 
 							comboSwitchAddBrands.getSelectedItem().toString(), 
-							comboSwitchAddTypes.getSelectedItem().toString(), 
+							comboSwitchAddModels.getSelectedItem().toString(), 
 							comboSwitchAddInterruptions.getSelectedItem().toString(), 
-							textSwitchAddModel.getText())) {
-						if(db.addSwitch(textSwitchAddModel.getText(),
+							textSwitchAddReference.getText())) {
+						if(db.addSwitch(textSwitchAddReference.getText(),
 								comboSwitchAddBrands.getSelectedItem().toString(),
-								comboSwitchAddTypes.getSelectedItem().toString(),
+								comboSwitchAddModels.getSelectedItem().toString(),
 								comboSwitchAddPhases.getSelectedItem().toString(),
 								Integer.valueOf(comboSwitchAddCurrents.getSelectedItem().toString()),
 								comboSwitchAddVoltages.getSelectedItem().toString(),
@@ -8402,14 +8406,14 @@ public class SalesMainView extends JFrame{
 				ArrayList<Object> listFields = new ArrayList<Object>();
 				ArrayList<Object> listValues = new ArrayList<Object>();
 				int brandComboCount = comboSwitchEditBrand.getItemCount();
-				int typeComboCount = comboSwitchEditType.getItemCount();
+				int modelComboCount = comboSwitchEditModel.getItemCount();
 				if (brandComboCount > 0 && !editSwitchBrand.equals(comboSwitchEditBrand.getSelectedItem().toString())) {
 					listFields.add("brand_id");
 					listValues.add("'" + db.getSwitchBrandId(comboSwitchEditBrand.getSelectedItem().toString()) + "'");
 				}
-				if (typeComboCount > 0 && !editSwitchType.equals(comboSwitchEditType.getSelectedItem().toString())) {
-					listFields.add("type_id");
-					listValues.add("'" + db.getSwitchTypeId(comboSwitchEditType.getSelectedItem().toString()) + "'");
+				if (modelComboCount > 0 && !editSwitchModel.equals(comboSwitchEditModel.getSelectedItem().toString())) {
+					listFields.add("model_id");
+					listValues.add("'" + db.getSwitchTypeId(comboSwitchEditModel.getSelectedItem().toString()) + "'");
 				}
 				if (!editSwitchPhases.equals(comboSwitchEditPhases.getSelectedItem().toString())) {
 					listFields.add("phases");
@@ -8427,9 +8431,9 @@ public class SalesMainView extends JFrame{
 					listFields.add("voltage_id");
 					listValues.add(db.getVoltageId(comboSwitchEditVoltage.getSelectedItem().toString()));
 				}
-				if (!editSwitchModel.equals(textSwitchEditModel.getText())) {
-					listFields.add("model");
-					listValues.add("'" + textSwitchEditModel.getText() + "'");
+				if (!editSwitchReference.equals(textSwitchEditReference.getText())) {
+					listFields.add("reference");
+					listValues.add("'" + textSwitchEditReference.getText() + "'");
 				}
 				if (!String.valueOf(editSwitchPrice).equals(textSwitchEditPrice.getText())) {
 					listFields.add("price");
@@ -8439,8 +8443,8 @@ public class SalesMainView extends JFrame{
 						!textSwitchEditPrice.getText().isEmpty() && Numbers.isNumeric(textSwitchEditPrice.getText()) &&
 						comboSwitchEditPhases.getItemCount() > 0 && comboSwitchEditCurrent.getItemCount() > 0 &&
 						comboSwitchEditBrand.getItemCount() > 0 && comboSwitchEditType.getItemCount() > 0 &&
-						comboSwitchEditInterruption.getItemCount() > 0 && textSwitchEditModel.getText() != null &&
-						!textSwitchEditModel.getText().isEmpty() && comboSwitchEditVoltage.getItemCount() > 0) {
+						comboSwitchEditInterruption.getItemCount() > 0 && textSwitchEditReference.getText() != null &&
+						!textSwitchEditReference.getText().isEmpty() && comboSwitchEditVoltage.getItemCount() > 0) {
 					boolean switchEdited = db.editSwitch(editSwitchId, listFields, listValues);
 				if (switchEdited) {
 					setSwitchesMode(SalesMainView.VIEW_MODE);
@@ -9440,6 +9444,8 @@ public class SalesMainView extends JFrame{
 	
 	private class MouseActionListener implements MouseListener, ActionListener {
 
+		private JComboBox<String> comboSwitchSettingsModel;
+
 		@Override
 		public void mouseClicked(MouseEvent e) {
 			
@@ -9501,19 +9507,19 @@ public class SalesMainView extends JFrame{
 						JOptionPane.showMessageDialog(null, "Esta marca no existe, asi que no puede ser eliminada", "Marca no existe!", JOptionPane.ERROR_MESSAGE);
 					}
 				}
-			} else if (actionCommand.equalsIgnoreCase("switch.settings.types.add")) {
-				String typeAdd = JOptionPane.showInputDialog(null, "Ingrese el tipo de interruptor que desea agregar");
+			} else if (actionCommand.equalsIgnoreCase("switch.settings.models.add")) {
+				String modelAdd = JOptionPane.showInputDialog(null, "Ingrese el modelo de interruptor que desea agregar");
 				
-				if(null != typeAdd && !typeAdd.isEmpty()) {
-					if(!db.switchTypeExists(typeAdd)) {
+				if(null != modelAdd && !modelAdd.isEmpty()) {
+					if(!db.switchBrandExists(modelAdd)) {
 						String queryString = "SELECT brand FROM switch_brands";
 						
 						Object[] brands = db.fetchColumnAsArray(db.select(queryString), "brand");
-						Object typeBrand = JOptionPane.showInputDialog(null, "A que marca pertenece este tipo?", "Agregar tipo", JOptionPane.QUESTION_MESSAGE, null, brands, null);
+						Object modelBrand = JOptionPane.showInputDialog(null, "A que marca pertenece este modelo?", "Agregar modelo", JOptionPane.QUESTION_MESSAGE, null, brands, null);
 						
-						if(null != typeBrand && null != typeAdd && !typeAdd.isEmpty() && !typeBrand.toString().isEmpty()) {
-							if(db.addSwitchType(typeAdd, typeBrand.toString())) {
-								JOptionPane.showMessageDialog(null, "Tipo agregado exitosamente");
+						if(null != modelBrand && null != modelAdd && !modelAdd.isEmpty() && !modelBrand.toString().isEmpty()) {
+							if(db.addSwitchType(modelAdd, modelBrand.toString())) {
+								JOptionPane.showMessageDialog(null, "Modelo agregado exitosamente");
 								updateSwitchComboSettings();
 							} else {
 								JOptionPane.showMessageDialog(null, "Ocurrio un error al agregar el tipo", "Error", JOptionPane.ERROR_MESSAGE);
@@ -9525,20 +9531,20 @@ public class SalesMainView extends JFrame{
 						JOptionPane.showMessageDialog(null, "Este tipo ya existe, no puede registrarlo de nuevo", "Tipo ya existe!", JOptionPane.ERROR_MESSAGE);
 					}
 				}
-			} else if (actionCommand.equalsIgnoreCase("switch.settings.types.remove")) {
-				String typeRemove = comboSwitchSettingsTypes.getSelectedItem().toString();
-				int answer = JOptionPane.showConfirmDialog(null, "Esta seguro que desea eliminar el tipo " + typeRemove + "? Puede perder datos importantes", "Confirmar eliminacion", JOptionPane.YES_NO_OPTION);
+			} else if (actionCommand.equalsIgnoreCase("switch.settings.models.remove")) {
+				String modelRemove = comboSwitchSettingsModel.getSelectedItem().toString();
+				int answer = JOptionPane.showConfirmDialog(null, "Esta seguro que desea eliminar el modelo " + modelRemove + "? Puede perder datos importantes", "Confirmar eliminacion", JOptionPane.YES_NO_OPTION);
 				
 				if(answer == JOptionPane.YES_OPTION) {
-					if(db.switchTypeExists(typeRemove)) {
-						if(db.removeSwitchType(typeRemove)) {
-							JOptionPane.showMessageDialog(null, "Tipo eliminado exitosamente");
+					if(db.switchTypeExists(modelRemove)) {
+						if(db.removeSwitchType(modelRemove)) {
+							JOptionPane.showMessageDialog(null, "Modelo eliminado exitosamente");
 							updateSwitchComboSettings();
 						} else {
-							JOptionPane.showMessageDialog(null, "Ocurrio un error al eliminar el tipo", "Error", JOptionPane.ERROR_MESSAGE);
+							JOptionPane.showMessageDialog(null, "Ocurrio un error al eliminar el modelo", "Error", JOptionPane.ERROR_MESSAGE);
 						}
 					} else {
-						JOptionPane.showMessageDialog(null, "Este tipo no existe, asi que no puede ser eliminado", "Tipo no existe!", JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(null, "Este modelo no existe, asi que no puede ser eliminado", "Modelo no existe!", JOptionPane.ERROR_MESSAGE);
 					}
 				}
 			} else if (actionCommand.equalsIgnoreCase("switch.settings.currents.add")) {

@@ -6,7 +6,7 @@ public class Switch extends Product {
 	private String brand;
 	private Integer typeId;
 	private String type;
-	private String model;
+	private String reference;
 	private Integer phases;
 	private Integer currentId;
 	private String current;
@@ -23,7 +23,7 @@ public class Switch extends Product {
 		super();
 	}
 	
-	public Switch(Integer id, Integer brandId, String brand, Integer typeId, String type, String model, Integer phases,
+	public Switch(Integer id, Integer brandId, String brand, Integer typeId, String type, String reference, Integer phases,
 			Integer currentId, String current, Integer voltageId, String voltage, Integer interruptionId,
 			String interruption, Double price, Boolean active, Integer containerId, Integer quantity) {
 		super();
@@ -32,7 +32,7 @@ public class Switch extends Product {
 		this.brand = brand;
 		this.typeId = typeId;
 		this.type = type;
-		this.model = model;
+		this.reference = reference;
 		this.phases = phases;
 		this.currentId = currentId;
 		this.current = current;
@@ -80,12 +80,12 @@ public class Switch extends Product {
 		this.type = type;
 	}
 
-	public String getModel() {
-		return model;
+	public String getReference() {
+		return reference;
 	}
 
-	public void setModel(String model) {
-		this.model = model;
+	public void setReference(String reference) {
+		this.reference = reference;
 	}
 
 	public Integer getPhases() {
