@@ -2520,7 +2520,7 @@ public class SalesMainView extends JFrame{
 		
 		comboBoxAddFinishes = new JComboBox<String>(new Vector<String>(loadComboList(queryFinishes, "finish")));
 		comboBoxAddFinishes.removeItem("Todas");
-		if(!addSelectedBoxSheet.equalsIgnoreCase("HNF")) {
+		if(!addSelectedBoxSheet.equalsIgnoreCase("HNP")) {
 			comboBoxAddFinishes.setEnabled(false);
 		} else {
 			comboBoxAddFinishes.setEnabled(true);
@@ -2538,7 +2538,7 @@ public class SalesMainView extends JFrame{
 		
 		comboBoxAddColors = new JComboBox<String>(new Vector<String>(loadComboList(queryColors, "color")));
 		comboBoxAddColors.removeItem("Todas");
-		if(!addSelectedBoxSheet.equalsIgnoreCase("HNF")) {
+		if(!addSelectedBoxSheet.equalsIgnoreCase("HNP")) {
 			comboBoxAddColors.setEnabled(false);
 		} else {
 			comboBoxAddColors.setEnabled(true);
@@ -2838,7 +2838,7 @@ public class SalesMainView extends JFrame{
 		
 		comboBoxEditFinishes = new JComboBox<String>(new Vector<String>(loadComboList(queryFinishes, "finish")));
 		comboBoxEditFinishes.removeItem("Todas");
-		if(!editBoxSheet.equalsIgnoreCase("HNF")) {
+		if(!editBoxSheet.equalsIgnoreCase("HNP")) {
 			comboBoxEditFinishes.setEnabled(false);
 		} else {
 			comboBoxEditFinishes.setEnabled(true);
@@ -2856,7 +2856,7 @@ public class SalesMainView extends JFrame{
 		
 		comboBoxEditColors = new JComboBox<String>(new Vector<String>(loadComboList(queryColors, "color")));
 		comboBoxEditColors.removeItem("Todas");
-		if(!editBoxSheet.equalsIgnoreCase("HNF")) {
+		if(!editBoxSheet.equalsIgnoreCase("HNP")) {
 			comboBoxEditColors.setEnabled(false);
 		} else {
 			comboBoxEditColors.setEnabled(true);
@@ -6560,7 +6560,7 @@ public class SalesMainView extends JFrame{
 			editBudgetDate = String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_DATE_COLUMN));
 			editBudgetExpiryDays = Integer.valueOf(String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_EXPIRY_DAYS_COLUMN)));
 			editBudgetClientId = db.getBudgetClientId(editBudgetId);
-			editBudgetClientCode = Integer.valueOf(String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_CLIENT_ID_COLUMN)));
+			editBudgetClientCode = Integer.valueOf(String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_CLIENT_CODE_COLUMN)));
 			editBudgetClient = String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_COMPANY_COLUMN));
 			editBudgetClientRepresentative = String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_COMPANY_REPRESENTATIVE_COLUMN));
 			editBudgetWorkName = String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_WORK_NAME_COLUMN));
@@ -6898,7 +6898,7 @@ public class SalesMainView extends JFrame{
 			} else if (actionCommand.equalsIgnoreCase("box.search.sheet")) {
 				searchSelectedBoxSheet = comboBoxSheets.getSelectedItem().toString();
 				this.clearSelectedBoxOptions("sheet");
-				if (searchSelectedBoxSheet.equalsIgnoreCase("HNF")) {
+				if (searchSelectedBoxSheet.equalsIgnoreCase("HNP")) {
 					comboBoxFinishes.setEnabled(false);
 					comboBoxColors.setEnabled(false);
 				} else {
@@ -6962,7 +6962,7 @@ public class SalesMainView extends JFrame{
 				updateBoxTextAddDescription();
 			} else if (actionCommand.equalsIgnoreCase("box.description.add.sheet")) {
 				addSelectedBoxSheet = comboBoxAddSheets.getSelectedItem().toString();
-				if(!addSelectedBoxSheet.equalsIgnoreCase("HNF")) {
+				if(!addSelectedBoxSheet.equalsIgnoreCase("HNP")) {
 					comboBoxAddFinishes.setEnabled(false);
 					comboBoxAddColors.setEnabled(false);
 				} else {
@@ -6994,7 +6994,7 @@ public class SalesMainView extends JFrame{
 				} else if (editSelectedBoxSheet.equalsIgnoreCase("Aluminizada")) {
 					comboBoxEditFinishes.setSelectedItem("Aluminizado");
 				}
-				if(!editSelectedBoxSheet.equalsIgnoreCase("HNF")) {
+				if(!editSelectedBoxSheet.equalsIgnoreCase("HNP")) {
 					comboBoxEditFinishes.setEnabled(false);
 					comboBoxEditColors.setEnabled(false);
 					comboBoxEditColors.setSelectedIndex(-1);
@@ -7986,7 +7986,7 @@ public class SalesMainView extends JFrame{
 		public static final int BUDGET_CODE_COLUMN = 1;
 		public static final int BUDGET_DATE_COLUMN = 2;
 		public static final int BUDGET_EXPIRY_DAYS_COLUMN = 3;
-		public static final int BUDGET_CLIENT_ID_COLUMN = 4;
+		public static final int BUDGET_CLIENT_CODE_COLUMN = 4;
 		public static final int BUDGET_COMPANY_COLUMN = 5;
 		public static final int BUDGET_COMPANY_REPRESENTATIVE_COLUMN = 6;
 		public static final int BUDGET_WORK_NAME_COLUMN = 7;
@@ -8168,6 +8168,31 @@ public class SalesMainView extends JFrame{
 				budgetsTableSelectedIndex = lsm.getMinSelectionIndex();				
 				if(lsm.isSelectionEmpty()) {
 					tableBudgetsResult.setModel(new DefaultTableModel());
+					selectedBudgetId = 0;
+					buttonBudgetEdit.setEnabled(false);
+					buttonBudgetNotesEdit.setEnabled(false);
+					buttonAddBudgetSwitch.setEnabled(false);
+					buttonAddBudgetBox.setEnabled(false);
+					buttonAddBudgetBoard.setEnabled(false);
+					buttonBudgetNotesEdit.setEnabled(false);
+					tableBudgetSwitchesResult.setModel(new DefaultTableModel());
+					tableBudgetBoxesResult.setModel(new DefaultTableModel());
+					tableBudgetBoardsResult.setModel(new DefaultTableModel());
+					textBudgetDescriptionId.setText("");
+					textBudgetDescriptionCode.setText("");
+					textBudgetDescriptionDate.setText("");
+					textBudgetDescriptionExpiryDays.setText("");
+					textBudgetDescriptionExpiryDate.setText("");
+					textBudgetDescriptionClientCode.setText("");
+					textBudgetDescriptionClient.setText("");
+					textBudgetDescriptionClientRepresentative.setText("");
+					textBudgetDescriptionWorkName.setText("");
+					textBudgetDescriptionPaymentMethod.setText("");
+					textBudgetDescriptionSeller.setText("");
+					textBudgetDescriptionDispatchPlace.setText("");
+					textBudgetDescriptionDeliveryTime.setText("");
+					textBudgetDescriptionDeliveryPeriod.setText("");
+					textBudgetNotes.setText("");
 				} else {
 					selectedBudgetId = Integer.valueOf((String) tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, 0));
 					selectedBudgetCode = (String) tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, 1);
@@ -8466,7 +8491,7 @@ public class SalesMainView extends JFrame{
 						err.add("Debe escribir la cantidad de pares telefonicos");
 					}
 				}
-				if(boxSheet.equalsIgnoreCase("HNF")) {
+				if(boxSheet.equalsIgnoreCase("HNP")) {
 					boxFinish = comboBoxAddFinishes.getSelectedItem().toString();
 					boxColor = comboBoxAddColors.getSelectedItem().toString();
 				} else if(boxSheet.equalsIgnoreCase("Acero Inoxidable")) {
@@ -8568,7 +8593,7 @@ public class SalesMainView extends JFrame{
 				}
 				if (!editBoxFinish.equals(comboBoxEditFinishes.getSelectedItem().toString())) {
 					if(comboBoxEditFinishes.getItemCount() > 0) {
-						if(comboBoxEditSheets.getSelectedItem().toString().equalsIgnoreCase("HNF")) {
+						if(comboBoxEditSheets.getSelectedItem().toString().equalsIgnoreCase("HNP")) {
 							listFields.add("finish_id");
 							listValues.add("'" + db.getBoxFinishId(comboBoxEditFinishes.getSelectedItem().toString()) + "'");
 						} else if (comboBoxEditSheets.getSelectedItem().toString().equalsIgnoreCase("Galvanizada")) {
@@ -8585,7 +8610,7 @@ public class SalesMainView extends JFrame{
 						err.add("No hay ningun acabado de caja registrado, debe registrar uno primero");
 					}
 				}
-				if(comboBoxEditSheets.getSelectedItem().toString().equalsIgnoreCase("HNF")) {
+				if(comboBoxEditSheets.getSelectedItem().toString().equalsIgnoreCase("HNP")) {
 					if(comboBoxEditColors.getItemCount() > 0) {
 						if (comboBoxEditColors.getSelectedIndex() > -1) {
 							if (!editBoxColor.equals(comboBoxEditColors.getSelectedItem().toString())) {
