@@ -59,16 +59,16 @@ public class Db extends MysqlDriver {
 		
 	}
 	
-	public Boolean switchExists(String phases, String current, String brand, String type, String interruption, String reference) {
+	public Boolean switchExists(String phases, String current, String brand, String model, String interruption, String reference) {
 		String queryString;
 		
-		queryString = "SELECT * FROM switches, switch_brands, switch_types, currents, interruptions "
+		queryString = "SELECT * FROM switches, switch_brands, switch_models, currents, interruptions "
 					+ "WHERE switches.brand_id = switch_brands.id "
-					+ "AND switches.type_id = switch_types.id "
+					+ "AND switches.type_id = switch_models.id "
 					+ "AND switches.interruption_id = interruptions.id "
 					+ "AND switches.current_id = currents.id "
 					+ "AND switches.phases = '" + phases + "' "
-					+ "AND switch_types.type = '" + type + "' "
+					+ "AND switch_models.model = '" + model + "' "
 					+ "AND currents.current = '" + current + "' "
 					+ "AND switch_brands.brand = '" + brand + "' "
 					+ "AND interruptions.interruption = '" + interruption + "' "
@@ -155,16 +155,16 @@ public class Db extends MysqlDriver {
 		return this.delete(queryDelete);
 	}
 	
-	public Boolean switchTypeExists(String type) {
+	public Boolean switchTypeExists(String model) {
 		String queryString;
 		
-		queryString = "SELECT id FROM switch_types WHERE type = '" + type + "'";
+		queryString = "SELECT id FROM switch_models WHERE type = '" + model + "'";
 		this.select(queryString);
 		
 		return (this.getNumRows() > 0)? true:false;
 	}
 	
-	public Boolean addSwitchType(String type, String brand) {
+	public Boolean addSwitchType(String model, String brand) {
 		String queryInsert;
 		int brandId = this.getSwitchBrandId(brand);
 		
@@ -172,16 +172,16 @@ public class Db extends MysqlDriver {
 			return false;
 		}
 		
-		queryInsert = "INSERT INTO switch_types (type, brand_id) VALUES ('" + type + "', " + brandId + ")";
+		queryInsert = "INSERT INTO switch_models (model, brand_id) VALUES ('" + model + "', " + brandId + ")";
 		this.insert(queryInsert);
 		
 		return (this.getInsertId() > 0)? true:false;
 	}
 	
-	public Boolean removeSwitchType(String type) {
+	public Boolean removeSwitchType(String model) {
 		String queryDelete;
 		
-		queryDelete = "DELETE FROM switch_types WHERE type = '" + type + "'";
+		queryDelete = "DELETE FROM switch_models WHERE type = '" + model + "'";
 		return this.delete(queryDelete);
 	}
 	
@@ -275,10 +275,10 @@ public class Db extends MysqlDriver {
 		return brandId;
 	}
 	
-	public Integer getSwitchTypeId(String type) {
+	public Integer getSwitchTypeId(String model) {
 		ResultSet setType;
 		int typeId = 0;
-		setType = this.select("SELECT id FROM switch_types WHERE type = '" + type + "'");
+		setType = this.select("SELECT id FROM switch_models WHERE type = '" + model + "'");
 		
 		try {
 			setType.first();
