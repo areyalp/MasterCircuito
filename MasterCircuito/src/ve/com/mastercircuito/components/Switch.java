@@ -4,8 +4,7 @@ public class Switch extends Product {
 	
 	private Integer brandId;
 	private String brand;
-	private Integer typeId;
-	private String type;
+	private String model;
 	private String reference;
 	private Integer phases;
 	private Integer currentId;
@@ -18,20 +17,21 @@ public class Switch extends Product {
 	private Boolean active;
 	private Integer containerId;
 	private Integer quantity;
+	private Integer modelId;
 	
 	public Switch() {
 		super();
 	}
 	
-	public Switch(Integer id, Integer brandId, String brand, Integer typeId, String type, String reference, Integer phases,
+	public Switch(Integer id, Integer brandId, String brand, Integer modelId, String model, String reference, Integer phases,
 			Integer currentId, String current, Integer voltageId, String voltage, Integer interruptionId,
 			String interruption, Double price, Boolean active, Integer containerId, Integer quantity) {
 		super();
 		this.setId(id);
 		this.brandId = brandId;
 		this.brand = brand;
-		this.typeId = typeId;
-		this.type = type;
+		this.modelId = modelId;
+		this.model = model;
 		this.reference = reference;
 		this.phases = phases;
 		this.currentId = currentId;
@@ -63,21 +63,21 @@ public class Switch extends Product {
 		this.brand = brand;
 	}
 
-	public Integer getTypeId() {
-		return typeId;
+	public Integer getModelId() {
+		return modelId;
 	}
 
-	private void setTypeId(Integer typeId) {
-		this.typeId = typeId;
+	private void setmodelId(Integer modelId) {
+		this.modelId = modelId;
 	}
 
-	public String getType() {
-		return type;
+	public String getmodel() {
+		return model;
 	}
 
-	public void setType(Integer typeId, String type) {
-		this.setTypeId(typeId);
-		this.type = type;
+	public void setmodel(Integer modelId, String model) {
+		this.setmodelId(modelId);
+		this.model = model;
 	}
 
 	public String getReference() {

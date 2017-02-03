@@ -41,10 +41,10 @@ public class SwitchDialog extends JDialog {
 	private Object[][] switchesSearchData;
 	private JTable tableSwitchesSearchResult;
 	private ListSelectionModel listSwitchSearchSelectionModel;
-	private String searchSelectedSwitchBrand, searchSelectedSwitchType, searchSelectedSwitchPhases, searchSelectedSwitchCurrent, searchSelectedSwitchInterruption;
-	private JComboBox<String> comboSwitchBrands, comboSwitchTypes, comboSwitchPhases, comboSwitchCurrents, comboSwitchInterruptions;
+	private String searchSelectedSwitchBrand, searchSelectedSwitchModel, searchSelectedSwitchPhases, searchSelectedSwitchCurrent, searchSelectedSwitchInterruption;
+	private JComboBox<String> comboSwitchBrands, comboSwitchModels, comboSwitchPhases, comboSwitchCurrents, comboSwitchInterruptions;
 	
-	private String[] switchesColumnNames = { "Id", "Referencia", "Marca", "Tipo", "Fases", "Amperaje", "Interrupcion", "Voltaje", "Precio"};
+	private String[] switchesColumnNames = { "Id", "Referencia", "Marca", "Modelo", "Fases", "Amperaje", "Interrupcion", "Voltaje", "Precio"};
 	
 	private Integer switchSearchId = 0;
 	private Integer switchAddQuantity = 1;
@@ -100,10 +100,10 @@ public class SwitchDialog extends JDialog {
 				+ "WHERE switch_brands.id = switches.brand_id "
 				+ "GROUP BY switch_brands.brand";
 		
-		String queryTypes = "SELECT type "
-				+ "FROM switch_types, switches "
-				+ "WHERE switch_types.id = switches.type_id "
-				+ "GROUP BY switch_types.type";
+		String queryModels = "SELECT model "
+				+ "FROM switch_models, switches "
+				+ "WHERE switch_models.id = switches.model_id "
+				+ "GROUP BY switch_models.model";
 		
 		String queryPhases = "SELECT phases "
 				+ "FROM switches "
@@ -120,7 +120,7 @@ public class SwitchDialog extends JDialog {
 				+ "GROUP BY interruptions.interruption";
 		
 		JLabel brandsLabel = new JLabel("Marca:");
-		JLabel typesLabel = new JLabel("Tipo:");
+		JLabel modelsLabel = new JLabel("Modelo:");
 		JLabel phasesLabel = new JLabel("Fases:");
 		JLabel currentsLabel = new JLabel("Amperaje:");
 		JLabel interruptionsLabel = new JLabel("Interrupcion:");
@@ -133,11 +133,11 @@ public class SwitchDialog extends JDialog {
 		panelSwitchAddSearch.add(brandsLabel);
 		panelSwitchAddSearch.add(comboSwitchBrands);
 		
-		comboSwitchTypes = new JComboBox<String>(new Vector<String>(loadComboList(queryTypes, "type")));
-		comboSwitchTypes.setActionCommand("switch.bar.type");
-		comboSwitchTypes.addActionListener(lForCombo);
-		panelSwitchAddSearch.add(typesLabel);
-		panelSwitchAddSearch.add(comboSwitchTypes);
+		comboSwitchModels = new JComboBox<String>(new Vector<String>(loadComboList(queryModels, "model")));
+		comboSwitchModels.setActionCommand("switch.bar.model");
+		comboSwitchModels.addActionListener(lForCombo);
+		panelSwitchAddSearch.add(modelsLabel);
+		panelSwitchAddSearch.add(comboSwitchModels);
 		
 		comboSwitchPhases = new JComboBox<String>(new Vector<String>(loadComboList(queryPhases, "phases")));
 		comboSwitchPhases.setActionCommand("switch.bar.phases");
@@ -267,7 +267,7 @@ public class SwitchDialog extends JDialog {
 		String switchesQuery = "SELECT switches.id, "
 				+ "switches.reference, "
 				+ "switch_brands.brand, "
-				+ "switch_types.type, "
+				+ "switch_models.model, "
 				+ "switches.phases, "
 				+ "currents.current, "
 				+ "interruptions.interruption, "
@@ -275,12 +275,12 @@ public class SwitchDialog extends JDialog {
 				+ "switches.price "
 			+ "FROM switches, "
 				+ "switch_brands, "
-				+ "switch_types, "
+				+ "switch_models, "
 				+ "currents, "
 				+ "interruptions, "
 				+ "switch_voltages "
 			+ "WHERE switches.brand_id = switch_brands.id "
-			+ "AND switches.type_id = switch_types.id "
+			+ "AND switches.model_id = switch_models.id "
 			+ "AND switches.current_id = currents.id "
 			+ "AND switches.interruption_id = interruptions.id "
 			+ "AND switches.voltage_id = switch_voltages.id "
@@ -323,29 +323,29 @@ public class SwitchDialog extends JDialog {
 		public void actionPerformed(ActionEvent ev) {
 			String actionCommand = ev.getActionCommand();
 			if(actionCommand.equalsIgnoreCase("switch.bar.brand")) {
-				fromQuery = "switches, switch_types ";
+				fromQuery = "switches, switch_models ";
 				searchSelectedSwitchBrand = comboSwitchBrands.getSelectedItem().toString();
-				this.clearSelectedSwitchOptions("type");
+				this.clearSelectedSwitchOptions("model");
 				if(!searchSelectedSwitchBrand.equalsIgnoreCase("Todas")) {
 					fromQuery += ", switch_brands ";
 					whereQuery = "WHERE switches.brand_id = switch_brands.id "
-									+ "AND switch_types.brand_id = switch_brands.id "
-									+ "AND switch_types.id = switches.type_id "
+									+ "AND switch_models.brand_id = switch_brands.id "
+									+ "AND switch_models.id = switches.model_id "
 									+ "AND switch_brands.brand = '"+searchSelectedSwitchBrand+"' ";
 				} else {
-					whereQuery = "WHERE switch_types.id = switches.type_id ";
+					whereQuery = "WHERE switch_models.id = switches.model_id ";
 				}
 				this.addSwitchCommonQuery();
-				this.loadComboSwitch("types");
+				this.loadComboSwitch("models");
 				this.dynamicSearch();
-			} else if (actionCommand.equalsIgnoreCase("switch.bar.type")) {
+			} else if (actionCommand.equalsIgnoreCase("switch.bar.model")) {
 				fromQuery = "switches ";
-				searchSelectedSwitchType = comboSwitchTypes.getSelectedItem().toString();
+				searchSelectedSwitchModel = comboSwitchModels.getSelectedItem().toString();
 				this.clearSelectedSwitchOptions("phases");
-				if(!searchSelectedSwitchType.equalsIgnoreCase("Todas")) {
-					fromQuery += ", switch_types ";
-					whereQuery = "WHERE switches.type_id = switch_types.id "
-									+ "AND switch_types.type = '"+searchSelectedSwitchType+"' ";
+				if(!searchSelectedSwitchModel.equalsIgnoreCase("Todas")) {
+					fromQuery += ", switch_models ";
+					whereQuery = "WHERE switches.model_id = switch_models.id "
+									+ "AND switch_models.model = '"+searchSelectedSwitchModel+"' ";
 				} else {
 					whereQuery = "";
 				}
@@ -388,9 +388,9 @@ public class SwitchDialog extends JDialog {
 					!searchSelectedSwitchBrand.isEmpty()) {
 				whereQuery += " AND switch_brands.brand = '" + searchSelectedSwitchBrand + "'";
 			}
-			if(searchSelectedSwitchType != null && !searchSelectedSwitchType.equalsIgnoreCase("Todas") &&
-					!searchSelectedSwitchType.isEmpty()) {
-				whereQuery += " AND switch_types.type = '" + searchSelectedSwitchType + "'";
+			if(searchSelectedSwitchModel != null && !searchSelectedSwitchModel.equalsIgnoreCase("Todas") &&
+					!searchSelectedSwitchModel.isEmpty()) {
+				whereQuery += " AND switch_models.model = '" + searchSelectedSwitchModel + "'";
 			}
 			if(searchSelectedSwitchPhases != null && !searchSelectedSwitchPhases.equalsIgnoreCase("Todas") &&
 					!searchSelectedSwitchPhases.isEmpty()) {
@@ -416,8 +416,8 @@ public class SwitchDialog extends JDialog {
 		
 		private void clearSelectedSwitchOptions(String start) {
 			switch(start) {
-				case "type":
-					searchSelectedSwitchType = "";
+				case "model":
+					searchSelectedSwitchModel = "";
 				case "phases":
 					searchSelectedSwitchPhases = "";
 				case "current":
@@ -446,8 +446,8 @@ public class SwitchDialog extends JDialog {
 		
 		private void loadComboSwitch(String start) {
 			switch(start) {
-				case "types":
-					comboSwitchTypes.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList("switch_types", "type"))));
+				case "models":
+					comboSwitchModels.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList("switch_models", "model"))));
 				case "phases":
 					comboSwitchPhases.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList("switches", "phases"))));
 				case "currents":
@@ -465,12 +465,12 @@ public class SwitchDialog extends JDialog {
 				fromQuery += ", switch_brands ";
 				whereQuery += " switches.brand_id = switch_brands.id "
 								+ "AND switch_brands.brand = '" + searchSelectedSwitchBrand + "' ";
-				if(!searchSelectedSwitchType.equalsIgnoreCase("Todas")) {
-					if(!fromQuery.contains("switch_types")) {
-						fromQuery += ", switch_types ";
+				if(!searchSelectedSwitchModel.equalsIgnoreCase("Todas")) {
+					if(!fromQuery.contains("switch_models")) {
+						fromQuery += ", switch_models ";
 					}
-					whereQuery += "AND switch_types.brand_id = switch_brands.id "
-								+ "AND switch_types.id = switches.type_id ";
+					whereQuery += "AND switch_models.brand_id = switch_brands.id "
+								+ "AND switch_models.id = switches.model_id ";
 				}
 			}
 		}
