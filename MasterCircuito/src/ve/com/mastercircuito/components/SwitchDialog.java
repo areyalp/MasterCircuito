@@ -48,6 +48,7 @@ public class SwitchDialog extends JDialog {
 	
 	private Integer switchSearchId = 0;
 	private Integer switchAddQuantity = 1;
+	private Double switchAddPrice = 0.00;
 	
 	public SwitchDialog(Window owner) {
 		this(owner, "");
@@ -88,6 +89,10 @@ public class SwitchDialog extends JDialog {
 	
 	public Integer getSwitchAddQuantity() {
 		return this.switchAddQuantity;
+	}
+	
+	public Double getSwitchAddPrice() {
+		return this.switchAddPrice;
 	}
 	
 	private JPanel createSwitchAddSearchPanel() {
@@ -193,6 +198,7 @@ public class SwitchDialog extends JDialog {
 		JButton buttonIncrease = new JButton("+");
 		JLabel labelQuantity = new JLabel("1");
 		switchAddQuantity = 1;
+		switchAddPrice = 0.00;
 		Integer min = 1;
 		Integer max = 100;
 		
@@ -242,7 +248,7 @@ public class SwitchDialog extends JDialog {
 			public void actionPerformed(ActionEvent e) {
 				
 				if(tableSwitchesSearchResult.getSelectedRow() > -1) {
-					
+					switchAddPrice = Double.valueOf((String) tableSwitchesSearchResult.getValueAt(tableSwitchesSearchResult.getSelectedRow(), 8));
 					dispose();
 				}
 			}
@@ -254,6 +260,7 @@ public class SwitchDialog extends JDialog {
 			public void actionPerformed(ActionEvent e) {
 				switchSearchId = 0;
 				switchAddQuantity = 0;
+				switchAddPrice = 0.00;
 				dispose();
 			}
 		});

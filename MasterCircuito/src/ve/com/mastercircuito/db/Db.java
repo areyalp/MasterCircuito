@@ -64,7 +64,7 @@ public class Db extends MysqlDriver {
 		
 		queryString = "SELECT * FROM switches, switch_brands, switch_models, currents, interruptions "
 					+ "WHERE switches.brand_id = switch_brands.id "
-					+ "AND switches.type_id = switch_models.id "
+					+ "AND switches.model_id = switch_models.id "
 					+ "AND switches.interruption_id = interruptions.id "
 					+ "AND switches.current_id = currents.id "
 					+ "AND switches.phases = '" + phases + "' "
@@ -158,7 +158,7 @@ public class Db extends MysqlDriver {
 	public Boolean switchTypeExists(String model) {
 		String queryString;
 		
-		queryString = "SELECT id FROM switch_models WHERE type = '" + model + "'";
+		queryString = "SELECT id FROM switch_models WHERE model = '" + model + "'";
 		this.select(queryString);
 		
 		return (this.getNumRows() > 0)? true:false;
@@ -178,10 +178,10 @@ public class Db extends MysqlDriver {
 		return (this.getInsertId() > 0)? true:false;
 	}
 	
-	public Boolean removeSwitchType(String model) {
+	public Boolean removeSwitchModel(String model) {
 		String queryDelete;
 		
-		queryDelete = "DELETE FROM switch_models WHERE type = '" + model + "'";
+		queryDelete = "DELETE FROM switch_models WHERE model = '" + model + "'";
 		return this.delete(queryDelete);
 	}
 	
@@ -275,19 +275,19 @@ public class Db extends MysqlDriver {
 		return brandId;
 	}
 	
-	public Integer getSwitchTypeId(String model) {
-		ResultSet setType;
-		int typeId = 0;
-		setType = this.select("SELECT id FROM switch_models WHERE type = '" + model + "'");
+	public Integer getSwitchModelId(String model) {
+		ResultSet setModel;
+		int modelId = 0;
+		setModel = this.select("SELECT id FROM switch_models WHERE model = '" + model + "'");
 		
 		try {
-			setType.first();
-			typeId = setType.getInt("id");
+			setModel.first();
+			modelId = setModel.getInt("id");
 		} catch (SQLException e) {
 			e.printStackTrace();
-			JOptionPane.showMessageDialog(null, "Error al obtener el id del tipo");
+			JOptionPane.showMessageDialog(null, "Error al obtener el id del modelo");
 		}
-		return typeId;
+		return modelId;
 	}
 	
 	public Integer getCurrentId(Integer current) {
@@ -776,15 +776,15 @@ public class Db extends MysqlDriver {
 		return date;
 	}
 	
-	public Boolean addSwitch(String reference, String brand, String type, String phases, Integer current, String voltage, Integer interruption, String price) {
+	public Boolean addSwitch(String reference, String brand, String model, String phases, Integer current, String voltage, Integer interruption, String price) {
 		int brandId = this.getSwitchBrandId(brand);
-		int typeId = this.getSwitchTypeId(type);
+		int modelId = this.getSwitchModelId(model);
 		int currentId = this.getCurrentId(current);
 		int voltageId = this.getVoltageId(voltage);
 		int interruptionId = this.getInterruptionId(interruption);
 		
-		String queryInsert = "INSERT INTO switches (reference, brand_id, type_id, phases, current_id, voltage_id, interruption_id, price) "
-				+ "VALUES('" + reference + "', " + brandId + ", " + typeId + ", '" + phases + "', " + currentId + ", " + voltageId + ", " + interruptionId + ", '" + price + "')";
+		String queryInsert = "INSERT INTO switches (reference, brand_id, model_id, phases, current_id, voltage_id, interruption_id, price) "
+				+ "VALUES('" + reference + "', " + brandId + ", " + modelId + ", '" + phases + "', " + currentId + ", " + voltageId + ", " + interruptionId + ", '" + price + "')";
 		
 		this.insert(queryInsert);
 		
@@ -994,7 +994,7 @@ public class Db extends MysqlDriver {
 		return 0;
 	}
 	
-	public Boolean addBoardSwitch(Integer containerId, Integer switchId, Integer quantity) {
+	public Boolean addBoardSwitch(Integer containerId, Integer switchId, Integer quantity, Double switchPrice) {
 		int boardSwitchId = 0;
 		if(this.boardSwitchExists(containerId, switchId)) {
 			boardSwitchId = this.getBoardSwitchId(containerId, switchId);
@@ -1004,8 +1004,8 @@ public class Db extends MysqlDriver {
 				return false;
 			}
 		} else {
-			String queryString = "INSERT INTO board_switches (board_container_id, switch_id, quantity) "
-								+ "VALUES (" + containerId + ", " + switchId + ", " + quantity + ")";
+			String queryString = "INSERT INTO board_switches (board_container_id, switch_id, quantity, price) "
+								+ "VALUES (" + containerId + ", " + switchId + ", " + quantity + ", " + switchPrice + ")";
 			this.insert(queryString);
 			return (this.getInsertId() > 0)? true:false;
 		}
@@ -1243,7 +1243,7 @@ public class Db extends MysqlDriver {
 		return (this.getNumRows() > 0)? true:false;
 	}
 	
-	public Boolean addBudgetSwitch(Integer selectedBudgetId, Integer switchSearchId, Integer switchQuantity) {
+	public Boolean addBudgetSwitch(Integer selectedBudgetId, Integer switchSearchId, Integer switchQuantity, Double switchPrice) {
 		int budgetSwitchId = 0;
 		if(this.budgetSwitchExists(selectedBudgetId, switchSearchId)) {
 			budgetSwitchId = this.getBudgetSwitchId(selectedBudgetId, switchSearchId);
@@ -1253,8 +1253,8 @@ public class Db extends MysqlDriver {
 				return false;
 			}
 		} else {
-			String queryString = "INSERT INTO budget_switches (budget_container_id, switch_id, quantity) "
-								+ "VALUES (" + selectedBudgetId + ", " + switchSearchId + ", " + switchQuantity + ")";
+			String queryString = "INSERT INTO budget_switches (budget_container_id, switch_id, quantity, price) "
+								+ "VALUES (" + selectedBudgetId + ", " + switchSearchId + ", " + switchQuantity + ", " + switchPrice + ")";
 			this.insert(queryString);
 			return (this.getInsertId() > 0)? true:false;
 		}
@@ -1443,8 +1443,8 @@ public class Db extends MysqlDriver {
 				Integer id = setBudgetSwitches.getInt("id");
 				Integer brandId = setBudgetSwitches.getInt("brand_id");
 				String brand = setBudgetSwitches.getString("brand");
-				Integer typeId = setBudgetSwitches.getInt("type_id");
-				String type = setBudgetSwitches.getString("type");
+				Integer modelId = setBudgetSwitches.getInt("model_id");
+				String model = setBudgetSwitches.getString("model");
 				String reference = setBudgetSwitches.getString("reference");
 				Integer phases = setBudgetSwitches.getInt("phases");
 				Integer currentId = setBudgetSwitches.getInt("current_id");
@@ -1457,7 +1457,7 @@ public class Db extends MysqlDriver {
 				Boolean active = (setBudgetSwitches.getInt("active")==1?true:false);
 				Integer containerId = setBudgetSwitches.getInt("container_id");
 				Integer quantity = setBudgetSwitches.getInt("quantity");
-				switches.add(new Switch(id, brandId, brand, typeId, type, reference, phases, currentId, current, voltageId, voltage, interruptionId, interruption, price, active, containerId, quantity));
+				switches.add(new Switch(id, brandId, brand, modelId, model, reference, phases, currentId, current, voltageId, voltage, interruptionId, interruption, price, active, containerId, quantity));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -1481,8 +1481,8 @@ public class Db extends MysqlDriver {
 				Integer id = setBoardSwitches.getInt("id");
 				Integer brandId = setBoardSwitches.getInt("brand_id");
 				String brand = setBoardSwitches.getString("brand");
-				Integer typeId = setBoardSwitches.getInt("type_id");
-				String type = setBoardSwitches.getString("type");
+				Integer modelId = setBoardSwitches.getInt("model_id");
+				String model = setBoardSwitches.getString("model");
 				String reference = setBoardSwitches.getString("reference");
 				Integer phases = setBoardSwitches.getInt("phases");
 				Integer currentId = setBoardSwitches.getInt("current_id");
@@ -1495,7 +1495,7 @@ public class Db extends MysqlDriver {
 				Boolean active = (setBoardSwitches.getInt("active")==1?true:false);
 				Integer containerId = setBoardSwitches.getInt("container_id");
 				Integer quantity = setBoardSwitches.getInt("quantity");
-				switches.add(new Switch(id, brandId, brand, typeId, type, reference, phases, currentId, current, voltageId, voltage, interruptionId, interruption, price, active, containerId, quantity));
+				switches.add(new Switch(id, brandId, brand, modelId, model, reference, phases, currentId, current, voltageId, voltage, interruptionId, interruption, price, active, containerId, quantity));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -1679,7 +1679,7 @@ public class Db extends MysqlDriver {
 	private void cloneBudgetSwitches(Integer selectedBudgetId, Integer clonedBudgetId) {
 		ResultSet setBudgetSwitches;
 		ArrayList<Switch> switches = this.getBudgetSwitches(selectedBudgetId);
-		ArrayList<Switch> clonedSwitches = (ArrayList<Switch>) switches.clone();
+		ArrayList<Switch> clonedSwitches = (ArrayList<Switch>) switches.subList(0, switches.size() - 1);
 		Iterator<Switch> it = clonedSwitches.iterator();
 		
 		// TODO Iterate through all of them and change the budget container
@@ -2000,8 +2000,8 @@ public class Db extends MysqlDriver {
 				Integer id = setProducts.getInt("id");
 				Integer brandId = setProducts.getInt("brand_id");
 				String brand = setProducts.getString("brand");
-				Integer typeId = setProducts.getInt("type_id");
-				String type = setProducts.getString("type");
+				Integer modelId = setProducts.getInt("model_id");
+				String model = setProducts.getString("model");
 				String reference = setProducts.getString("reference");
 				Integer phases = setProducts.getInt("phases");
 				Integer currentId = setProducts.getInt("current_id");
@@ -2014,7 +2014,7 @@ public class Db extends MysqlDriver {
 				Boolean active = (setProducts.getInt("active")==1?true:false);
 				Integer containerId = setProducts.getInt("container_id");
 				Integer quantity = setProducts.getInt("quantity");
-				products.add(new Switch(id, brandId, brand, typeId, type, reference, phases, currentId, current, voltageId, voltage, interruptionId, interruption, price, active, containerId, quantity));
+				products.add(new Switch(id, brandId, brand, modelId, model, reference, phases, currentId, current, voltageId, voltage, interruptionId, interruption, price, active, containerId, quantity));
 			}
 			
 			statement = this.conn.prepareCall("{call SP_GET_PRODUCTION_ORDER_BOXES(?)}");
