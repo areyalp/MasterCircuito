@@ -30,9 +30,11 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.BoxLayout;
@@ -67,17 +69,17 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import ve.com.mastercircuito.components.BoardDialog;
-import ve.com.mastercircuito.components.BoxDialog;
-import ve.com.mastercircuito.components.ClientDialog;
-import ve.com.mastercircuito.components.DateLabelFormatter;
 import ve.com.mastercircuito.components.MyInternalFrame;
 import ve.com.mastercircuito.components.MyTableModel;
-import ve.com.mastercircuito.components.PrintDialog;
-import ve.com.mastercircuito.components.SellerDialog;
-import ve.com.mastercircuito.components.SwitchDialog;
 import ve.com.mastercircuito.db.Db;
+import ve.com.mastercircuito.dialogs.BoardDialog;
+import ve.com.mastercircuito.dialogs.BoxDialog;
+import ve.com.mastercircuito.dialogs.ClientDialog;
+import ve.com.mastercircuito.dialogs.PrintDialog;
+import ve.com.mastercircuito.dialogs.SellerDialog;
+import ve.com.mastercircuito.dialogs.SwitchDialog;
 import ve.com.mastercircuito.font.Fa;
+import ve.com.mastercircuito.utils.DateLabelFormatter;
 import ve.com.mastercircuito.utils.Errors;
 import ve.com.mastercircuito.utils.Numbers;
 import ve.com.mastercircuito.utils.StringTools;
@@ -103,6 +105,13 @@ public class SalesMainView extends JFrame{
 		private static final String INSTALLATION_FIELD = "installations.installation";
 		private static final String NEMA_FIELD = "nemas.nema";
 		private static final String INTERRUPTION_FIELD = "interruptions.interruption";
+	// Switch Tables
+		private static final String SWITCHES_TABLES = "switches";
+		private static final String SWITCH_BRAND_TABLE = "switch_brands";
+	// Switch Fields
+		private static final String SWITCH_ID_FIELD = SWITCHES_TABLES + ".id";
+		private static final String SWITCH_BRAND_FIELD = SWITCH_BRAND_TABLE + ".brand";
+		
 	// Box Tables
 		private static final String BOXES_TABLE = "boxes";
 		private static final String BOX_TYPES_TABLE = "box_types";
@@ -145,6 +154,26 @@ public class SalesMainView extends JFrame{
 		private static final String BOARD_GROUND_FIELD = "IF(boards.ground=0,'NO','SI') as ground";
 		private static final String BOARD_LOCK_TYPE_FIELD = "lock_types.lock_type";
 		private static final String BOARD_PRICE_FIELD = "boards.price";
+	// Control Board Tables
+		private static final String CONTROL_BOARD_TABLE = "control_boards";
+		private static final String CONTROL_BOARD_BAR_CAPACITIES_TABLE = "control_board_bar_capacities";
+		private static final String CONTROL_BOARD_BAR_TYPES_TABLE = "control_board_bar_types";
+		private static final String CONTROL_BOARD_CIRCUITS_TABLE = "control_board_circuits";
+		private static final String CONTROL_BOARD_TYPES_TABLE = "control_board_types";
+		private static final String CONTROL_BOARD_VOLTAGES_TABLE = "control_board_voltages";
+	// Control Board Fields
+		private static final String CONTROL_BOARD_ID_FIELD = "control_boards.id";
+		private static final String CONTROL_BOARD_NAME_FIELD = "control_boards.`name`";
+		private static final String CONTROL_BOARD_TYPE_FIELD = "control_board_types.type";
+		private static final String CONTROL_BOARD_BAR_CAPACITY_FIELD = "if(control_boards.bar_capacity_id=0,'N/A',control_board_bar_capacities.bar_capacity) as bar_capacity";
+		private static final String CONTROL_BOARD_BAR_TYPE_FIELD = "if(control_boards.bar_type_id=0,'N/A',control_board_bar_types.bar_type) as bar_type";
+		private static final String CONTROL_BOARD_CIRCUITS_FIELD = "if(control_boards.circuits_id=0,'N/A',control_board_circuits.circuits) as circuits";
+		private static final String CONTROL_BOARD_VOLTAGE_FIELD = "control_board_voltages.voltage";
+		private static final String CONTROL_BOARD_PHASES_FIELD = "control_boards.phases";
+		private static final String CONTROL_BOARD_GROUND_FIELD = "IF(control_boards.ground=0,'NO','SI') as ground";
+		private static final String CONTROL_BOARD_INTERRUPTION_FIELD = "if(control_boards.interruption_id=0,'N/A',interruptions.interruption) as interruption";
+		private static final String CONTROL_BOARD_LOCK_TYPE_FIELD = "if(control_boards.lock_type_id=0,'N/A',lock_types.lock_type) as lock_type";
+		private static final String CONTROL_BOARD_PRICE_FIELD = "control_boards.price";
 	//Budget Tables	
 		private static final String BUDGET_TABLE = "budgets";
 		private static final String BUDGET_PAYMENT_METHODS_TABLE = "budget_payment_methods";
@@ -174,7 +203,7 @@ public class SalesMainView extends JFrame{
 		private JDesktopPane desktop;
 		private JPanel theToolBarPanel;
 		private JToolBar toolBar;
-		private JButton toolBarButtonSwitches, toolBarButtonBoxes, toolBarButtonPanels, toolBarButtonBudgets, toolBarButtonStarters, toolBarButtonTracing;
+		private JButton toolBarButtonSwitches, toolBarButtonBoxes, toolBarButtonBoards, toolBarButtonControlBoards, toolBarButtonBudgets, toolBarButtonStarters, toolBarButtonTracing;
 	//*** Switch Global Variables and objects ***//
 		private MyInternalFrame switchesFrame = new MyInternalFrame();
 		private Object[][] switchesData = {};
@@ -229,12 +258,12 @@ public class SalesMainView extends JFrame{
 		private JButton buttonBoxAdd, buttonBoxEdit, buttonBoxAddSave, buttonBoxAddCancel, buttonBoxEditSave, buttonBoxEditCancel;
 		private JComboBox<String> comboBoxAddTypes, comboBoxAddInstallations, comboBoxAddNemas, comboBoxAddSheets, comboBoxAddFinishes, comboBoxAddColors, comboBoxAddUnits, comboBoxAddCalibers, comboBoxAddLockTypes;
 		private JTextField textBoxAddPairs, textBoxAddHeight, textBoxAddWidth, textBoxAddDepth, textBoxAddCaliberComments, textBoxAddPrice;
-		private String addSelectedBoxType = "", addSelectedBoxSheet = "";
+		private String addSelectedBoxType = "", addSelectedBoxSheet = "", addSelectedBoxFinish = "";
 		private JTextArea textBoxAddDescription, textBoxAddComments;
 	// Box Edit Objects
 		private Double editBoxPrice = 0.00;
 		private Integer editBoxId = 0, editBoxPairs = 0, editBoxHeight = 0, editBoxWidth = 0, editBoxDepth = 0;
-		private String editSelectedBoxType, editSelectedBoxSheet;
+		private String editSelectedBoxType, editSelectedBoxSheet, editSelectedBoxFinish;
 		private String editBoxType, editBoxInstallation, editBoxNema, editBoxSheet, editBoxFinish, editBoxColor, editBoxUnits, editBoxCaliber, editBoxCaliberComments, editBoxLockType, editBoxComments;
 		private JTextField textBoxEditPairs, textBoxEditHeight, textBoxEditWidth, textBoxEditDepth, textBoxEditCaliberComments, textBoxEditPrice;
 		private JComboBox<String> comboBoxEditTypes, comboBoxEditInstallations, comboBoxEditNemas, comboBoxEditSheets, comboBoxEditFinishes, comboBoxEditColors, comboBoxEditUnits, comboBoxEditCalibers, comboBoxEditLockTypes;
@@ -296,15 +325,81 @@ public class SalesMainView extends JFrame{
 		private JButton buttonBoardEditSave, buttonBoardEditCancel;
 	// Board Materials Objects
 		private JPanel boardMaterialsPanel;
-		private JTextArea textMaterials;
-		private JTextField textMaterialsPrice;
+		private JTextArea textBoardMaterials;
+		private JTextField textBoardMaterialsPrice;
 		private JButton buttonBoardMaterialsEdit, buttonBoardMaterialsEditSave, buttonBoardMaterialsEditCancel;
 		private JPanel panelBoardMaterialsEditSaveCancel;
 	// Board Comments Objects
 		private JPanel boardCommentsPanel;
 		private JTextArea textBoardComments;
+		private String strBoardComments;
 		private JButton buttonBoardCommentsEdit, buttonBoardCommentsEditSave, buttonBoardCommentsEditCancel;
 		private JPanel panelBoardCommentsEditSaveCancel;
+		
+	//*** Control Board Global Variables and objects ***//
+		private MyInternalFrame controlBoardsFrame = new MyInternalFrame();
+		private Object[][] controlBoardsData = {};
+		private Object[][] controlBoardSwitchesData = {};
+//		private JTabbedPane controlBoardViewTabbedPane;
+	// Control Board View Objects
+		private JPanel panelControlBoardDescription, panelWrapperControlBoardDescription;
+		private JButton buttonControlBoardAdd, buttonControlBoardEdit;
+		private JTextField textControlBoardSearchNames;
+		private JComboBox<String> comboControlBoardTypes, comboControlBoardInstallations, comboControlBoardNemas, comboControlBoardBarCapacities, comboControlBoardBarTypes, comboControlBoardCircuits, comboControlBoardVoltages, comboControlBoardPhases, comboControlBoardGround, comboControlBoardInterruptions, comboControlBoardLockTypes;
+		private String searchSelectedControlBoardType = "", searchSelectedControlBoardInstallation = "", searchSelectedControlBoardNema = "", searchSelectedControlBoardBarCapacity = "", searchSelectedControlBoardBarType = "", searchSelectedControlBoardCircuits = "", searchSelectedControlBoardVoltage = "", searchSelectedControlBoardPhases = "", searchSelectedControlBoardGround = "", searchSelectedControlBoardInterruption = "", searchSelectedControlBoardLockType = "";
+		private JTextField textControlBoardDescriptionName, textControlBoardDescriptionType, textControlBoardDescriptionInstallation, textControlBoardDescriptionNema, textControlBoardDescriptionBarCapacity, textControlBoardDescriptionBarType, textControlBoardDescriptionCircuits, textControlBoardDescriptionVoltage, textControlBoardDescriptionPhases, textControlBoardDescriptionGround, textControlBoardDescriptionInterruption, textControlBoardDescriptionLockType, textControlBoardDescriptionPrice;
+		private JTextArea textControlBoardDescription;
+		private JLabel labelControlBoardCopy;
+	// Control Board Table Objects
+		private JScrollPane tableControlBoardScrollPane;
+		private JTable tableControlBoardsResult;
+		private ListSelectionModel listControlBoardSelectionModel;
+		private Integer controlBoardsTableSelectedIndex;
+		private Integer selectedControlBoardId = 0;
+	// Control Board Switches Objects
+		private JPanel controlBoardSwitchesPanel;
+		private JTable tableControlBoardSwitchesResult;
+		private ListSelectionModel listControlBoardSwitchesSelectionModel;
+		private Integer controlBoardSwitchesTableSelectedIndex;
+		private JButton buttonAddControlBoardSwitch, buttonRemoveControlBoardSwitch;
+		private Integer selectedControlBoardSwitchId;
+	// Control Board Switches Add Objects
+		private String selectedTableControlBoardCircuits;
+		private String searchSelectedControlBoardSwitchBrand, searchSelectedControlBoardSwitchModel, searchSelectedControlBoardSwitchPhases, searchSelectedControlBoardSwitchCurrent, searchSelectedControlBoardSwitchInterruption;
+		private SwitchDialog dialogControlBoardSwitchAdd;
+		private Object[][] controlBoardSwitchesSearchData;
+		private JTable tableControlBoardSwitchesSearchResult;
+		private JComboBox<String> comboControlBoardSwitchBrands, comboControlBoardSwitchModels, comboControlBoardSwitchPhases, comboControlBoardSwitchCurrents, comboControlBoardSwitchInterruptions;
+	// Control Board Add Objects
+		private JPanel panelControlBoardAddNew;
+		private JButton buttonControlBoardAddCancel;
+		private JTextField textControlBoardAddName, textControlBoardAddPrice;
+		private JComboBox<String> comboControlBoardAddType, comboControlBoardAddInstallation, comboControlBoardAddNema, comboControlBoardAddBarCapacity, comboControlBoardAddBarType, comboControlBoardAddCircuits, comboControlBoardAddVoltage, comboControlBoardAddPhases, comboControlBoardAddInterruption, comboControlBoardAddLockType;
+		private JCheckBox checkControlBoardAddGround;
+		private JTextArea textControlBoardAddDescription;
+	// Control Board Edit Objects
+		private JPanel panelControlBoardEdit;
+		private JButton buttonControlBoardAddSave;
+		private Integer editControlBoardId, editControlBoardPhases;
+		private Double editControlBoardPrice;
+		private String editControlBoardType, editControlBoardName, editControlBoardInstallation, editControlBoardNema, editControlBoardBarCapacity, editControlBoardBarType, editControlBoardCircuits, editControlBoardVoltage, editControlBoardGround, editControlBoardInterruption, editControlBoardLockType;
+		private JTextField textControlBoardEditName, textControlBoardEditPrice;
+		private JComboBox<String> comboControlBoardEditType, comboControlBoardEditInstallation, comboControlBoardEditNema, comboControlBoardEditBarCapacity, comboControlBoardEditBarType, comboControlBoardEditCircuits, comboControlBoardEditVoltage, comboControlBoardEditPhases, comboControlBoardEditInterruption, comboControlBoardEditLockType;
+		private JCheckBox checkControlBoardEditGround;
+		private JTextArea textControlBoardEditDescription;
+		private JButton buttonControlBoardEditSave, buttonControlBoardEditCancel;
+	// Control Board Materials Objects
+		private JPanel controlBoardMaterialsPanel;
+		private JTextArea textControlBoardMaterials;
+		private JTextField textControlBoardMaterialsPrice;
+		private JButton buttonControlBoardMaterialsEdit, buttonControlBoardMaterialsEditSave, buttonControlBoardMaterialsEditCancel;
+		private JPanel panelControlBoardMaterialsEditSaveCancel;
+	// Control Board Comments Objects
+		private JPanel controlBoardCommentsPanel;
+		private JTextArea textControlBoardComments;
+		private JButton buttonControlBoardCommentsEdit, buttonControlBoardCommentsEditSave, buttonControlBoardCommentsEditCancel;
+		private JPanel panelControlBoardCommentsEditSaveCancel;
+		
 	//*** Budget Global Variables and objects ***//
 		private MyInternalFrame budgetsFrame = new MyInternalFrame();
 		private MyInternalFrame startersFrame = new MyInternalFrame();
@@ -336,8 +431,8 @@ public class SalesMainView extends JFrame{
 		private JTextField textBudgetDescriptionExpiryDate;
 		private Object [][] budgetsData={};
 		private JComboBox<String> comboBudgetAddPaymentMethod, comboBudgetAddDispatchPlace,comboBudgetAddDeliveryPeriod;
-		private Integer editBudgetId, editBudgetClientId, editBudgetClientCode, editBudgetSellerId, editBudgetExpiryDays,editBudgetDeliveryTime;
-		private String editBudgetDate, editBudgetDeliveryPeriod;
+		private Integer editBudgetId, editBudgetClientId, editBudgetSellerId, editBudgetExpiryDays,editBudgetDeliveryTime;
+		private String editBudgetClientCode, editBudgetDate, editBudgetDeliveryPeriod;
 		private String editBudgetWorkName, editBudgetPaymentMethod, editBudgetSeller, editBudgetDispatchPlace, editBudgetTracing, editBudgetStage;
 		private Integer budgetsTableSelectedIndex;
 		private JButton buttonBudgetAddClient, buttonBudgetAddSeller, buttonBudgetEditSave, buttonBudgetEditCancel;
@@ -398,6 +493,7 @@ public class SalesMainView extends JFrame{
 	// Budget Notes Edit Objects
 		private JPanel budgetNotesPanel;
 		private JTextArea textBudgetNotes;
+		private String strBudgetNotes;
 		private JPanel panelBudgetNotesEditSaveCancel;
 		private JButton buttonBudgetNotesEdit, buttonBudgetNotesEditSave, buttonBudgetNotesEditCancel;
 		
@@ -478,13 +574,23 @@ public class SalesMainView extends JFrame{
 		
 		toolBar.addSeparator();
 		
-		toolBarButtonPanels = new JButton("Tableros", new ImageIcon("resources/tablero_32x32.jpg"));
+		toolBarButtonBoards = new JButton("Tableros", new ImageIcon("resources/tablero_32x32.jpg"));
 		
-		toolBarButtonPanels.setActionCommand("bar.button.panels");
+		toolBarButtonBoards.setActionCommand("bar.button.boards");
 		
-		toolBarButtonPanels.addActionListener(lForToolbarButton);
+		toolBarButtonBoards.addActionListener(lForToolbarButton);
 		
-		toolBar.add(toolBarButtonPanels);
+		toolBar.add(toolBarButtonBoards);
+		
+		toolBar.addSeparator();
+		
+		toolBarButtonControlBoards = new JButton("Control", new ImageIcon("resources/tablero_32x32.jpg"));
+		
+		toolBarButtonControlBoards.setActionCommand("bar.button.control");
+		
+		toolBarButtonControlBoards.addActionListener(lForToolbarButton);
+		
+		toolBar.add(toolBarButtonControlBoards);
 		
 		toolBar.addSeparator();
 		
@@ -648,6 +754,50 @@ public class SalesMainView extends JFrame{
 		desktop.add(boardsFrame);
 		try{
 			boardsFrame.setSelected(true);
+		} catch(java.beans.PropertyVetoException e) {
+			
+		}
+	}
+	
+	private void createControlBoardsFrame() {
+		controlBoardsFrame = new MyInternalFrame("Control");
+		controlBoardsFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		controlBoardsFrame.setMaximizable(false);
+		controlBoardsFrame.setFrameIcon(new ImageIcon("resources/tablero_32x32.jpg"));
+		double aspectRatio = 0.99;
+		int w = (int) (desktop.getWidth() * aspectRatio);
+		int h = (int) (desktop.getHeight() * aspectRatio);
+		controlBoardsFrame.setSize(new Dimension(w,h));
+		
+		int x = (desktop.getWidth() / 2) - (controlBoardsFrame.getWidth() / 2);
+		int y = (desktop.getHeight() / 2) - (controlBoardsFrame.getHeight() / 2);
+		controlBoardsFrame.setLocation(new Point(x, y));
+		
+		controlBoardsFrame.setLayout(new BorderLayout(50, 50));
+		
+		Font fa = null;
+		
+		try {
+			URL url = getClass().getResource("fontawesome-webfont.ttf");
+			InputStream is;
+			is = url.openStream();
+			fa = Font.createFont(Font.TRUETYPE_FONT, is);
+			fa = fa.deriveFont(Font.PLAIN, 36f);
+		} catch (IOException | FontFormatException e) {
+			e.printStackTrace();
+		}
+		
+		JTabbedPane controlBoardsTabbedPane = new JTabbedPane(JTabbedPane.LEFT);
+		controlBoardsTabbedPane.addTab(Fa.fa_search, null, createControlBoardMainPanel(), "Buscar");
+		controlBoardsTabbedPane.addTab(Fa.fa_pencil_square_o, null, createControlBoardSettingsPanel(), "Editar");
+		controlBoardsTabbedPane.setFont(fa);
+		
+		controlBoardsFrame.add(controlBoardsTabbedPane);
+		
+		controlBoardsFrame.setVisible(true);
+		desktop.add(controlBoardsFrame);
+		try{
+			controlBoardsFrame.setSelected(true);
 		} catch(java.beans.PropertyVetoException e) {
 			
 		}
@@ -1034,7 +1184,10 @@ public class SalesMainView extends JFrame{
 		
 		String[] switchesColumnNames = { "Id", "Referencia", "Marca", "Modelo", "Fases", "Amperaje", "Interrupcion", "Voltaje", "Precio"};
 		
-		MyTableModel mForTable = new MyTableModel(switchesData, switchesColumnNames);
+		HashSet<Integer> editableColumns = new HashSet<Integer>();
+		editableColumns.add(new Integer(8));
+		
+		MyTableModel mForTable = new MyTableModel(switchesData, switchesColumnNames, "switches", editableColumns);
 		
 		tableSwitchesResult = new JTable();
 		tableSwitchesResult.setModel(mForTable);
@@ -2371,13 +2524,15 @@ public class SalesMainView extends JFrame{
 		descriptionPanel.add(labelComments, cs);
 		
 		textBoxComments = new JTextArea(6, 20);
+		textBoxComments.setMaximumSize(new Dimension(400,100));
 		textBoxComments.setEditable(false);
 		textBoxComments.setLineWrap(true);
 		textBoxComments.setWrapStyleWord(true);
+		JScrollPane commentsScrollPane = new JScrollPane(textBoxComments);
 		cs.gridx = 21;
 		cs.gridy = 4;
 		cs.gridwidth = 20;
-		descriptionPanel.add(textBoxComments, cs);
+		descriptionPanel.add(commentsScrollPane, cs);
 		
 		SearchButtonListener lForButton = new SearchButtonListener();
 		
@@ -2528,6 +2683,8 @@ public class SalesMainView extends JFrame{
 		
 		comboBoxAddFinishes = new JComboBox<String>(new Vector<String>(loadComboList(queryFinishes, "finish")));
 		comboBoxAddFinishes.removeItem("Todas");
+		comboBoxAddFinishes.setActionCommand("box.description.add.finish");
+		comboBoxAddFinishes.addActionListener(lForCombo);
 		if(!addSelectedBoxSheet.equalsIgnoreCase("HNP")) {
 			comboBoxAddFinishes.setEnabled(false);
 		} else {
@@ -2689,10 +2846,12 @@ public class SalesMainView extends JFrame{
 		textBoxAddComments = new JTextArea(6,16);
 		textBoxAddComments.setLineWrap(true);
 		textBoxAddComments.setWrapStyleWord(true);
+		textBoxAddComments.setMaximumSize(new Dimension(400, 100));
+		JScrollPane commentsScrollPane = new JScrollPane(textBoxAddComments);
 		cs.gridx = 17;
 		cs.gridy = 4;
 		cs.gridwidth = 16;
-		addPanel.add(textBoxAddComments, cs);
+		addPanel.add(commentsScrollPane, cs);
 		
 		BoxButtonListener lForBoxButton = new BoxButtonListener();
 		
@@ -2846,6 +3005,8 @@ public class SalesMainView extends JFrame{
 		
 		comboBoxEditFinishes = new JComboBox<String>(new Vector<String>(loadComboList(queryFinishes, "finish")));
 		comboBoxEditFinishes.removeItem("Todas");
+		comboBoxEditFinishes.setActionCommand("box.description.edit.finish");
+		comboBoxEditFinishes.addActionListener(lForCombo);
 		if(!editBoxSheet.equalsIgnoreCase("HNP")) {
 			comboBoxEditFinishes.setEnabled(false);
 		} else {
@@ -3003,12 +3164,14 @@ public class SalesMainView extends JFrame{
 		editPanel.add(labelComments, cs);
 		
 		textBoxEditComments = new JTextArea(6,16);
+		textBoxEditComments.setMaximumSize(new Dimension(400, 100));
 		textBoxEditComments.setLineWrap(true);
 		textBoxEditComments.setWrapStyleWord(true);
+		JScrollPane commentsScrollPane = new JScrollPane(textBoxEditComments);
 		cs.gridx = 17;
 		cs.gridy = 4;
 		cs.gridwidth = 16;
-		editPanel.add(textBoxEditComments, cs);
+		editPanel.add(commentsScrollPane, cs);
 		
 		BoxButtonListener lForBoxButton = new BoxButtonListener();
 		
@@ -3158,7 +3321,8 @@ public class SalesMainView extends JFrame{
 			
 			String queryFinishes = "SELECT box_finishes.finish "
 					+ "FROM box_finishes "
-					+ "GROUP BY box_finishes.finish";
+					+ "GROUP BY box_finishes.finish "
+					+ "ORDER BY box_finishes.id ASC";
 			
 			String queryColors = "SELECT box_colors.color "
 					+ "FROM box_colors "
@@ -3362,7 +3526,7 @@ public class SalesMainView extends JFrame{
 				" x " +
 				boxDepth +
 				", " +
-				"Nema, " +
+				"Nema " +
 				boxNema);
 	}
 	
@@ -3381,7 +3545,7 @@ public class SalesMainView extends JFrame{
 				" x " +
 				boxDepth +
 				", " +
-				"Nema, " +
+				"Nema " +
 				boxNema);
 	}
 	
@@ -3560,10 +3724,10 @@ public class SalesMainView extends JFrame{
 				textBoardDescription.setText("");
 				buttonBoardAdd.setEnabled(true);
 				buttonBoardEdit.setEnabled(false);
-				textMaterials.setText("");
-				textMaterials.setEditable(false);
-				textMaterialsPrice.setText("");
-				textMaterialsPrice.setEditable(false);
+				textBoardMaterials.setText("");
+				textBoardMaterials.setEditable(false);
+				textBoardMaterialsPrice.setText("");
+				textBoardMaterialsPrice.setEditable(false);
 				buttonBoardMaterialsEdit.setEnabled(false);
 				textBoardComments.setEditable(false);
 				buttonBoardCommentsEdit.setEnabled(false);
@@ -4546,12 +4710,12 @@ public class SalesMainView extends JFrame{
 		cs.gridwidth = 1;
 		panelMaterialsCenter.add(labelMaterials, cs);
 		
-		textMaterials = new JTextArea(20, 50);
+		textBoardMaterials = new JTextArea(20, 50);
 		cs.gridx = 0;
 		cs.gridy = 1;
 		cs.gridwidth = 50;
-		textMaterials.setEditable(false);
-		panelMaterialsCenter.add(textMaterials, cs);
+		textBoardMaterials.setEditable(false);
+		panelMaterialsCenter.add(textBoardMaterials, cs);
 		
 		JLabel labelPrice = new JLabel("Precio:");
 		cs.gridx = 0;
@@ -4559,13 +4723,13 @@ public class SalesMainView extends JFrame{
 		cs.gridwidth = 1;
 		panelMaterialsCenter.add(labelPrice, cs);
 		
-		textMaterialsPrice = new JTextField();
+		textBoardMaterialsPrice = new JTextField();
 		cs.gridx = 0;
 		cs.gridy = 24;
 		cs.gridwidth = 50;
-		panelMaterialsCenter.add(textMaterialsPrice, cs);
-		textMaterialsPrice.setHorizontalAlignment(JTextField.TRAILING);
-		textMaterialsPrice.setEditable(false);
+		panelMaterialsCenter.add(textBoardMaterialsPrice, cs);
+		textBoardMaterialsPrice.setHorizontalAlignment(JTextField.TRAILING);
+		textBoardMaterialsPrice.setEditable(false);
 		
 		BoardButtonListener lForBoardButton = new BoardButtonListener();
 		
@@ -4621,12 +4785,13 @@ public class SalesMainView extends JFrame{
 		cs.gridwidth = 1;
 		panelCommentsCenter.add(labelComments, cs);
 		
-		textBoardComments = new JTextArea(20, 50);
+		textBoardComments = new JTextArea(30, 100);
+		textBoardComments.setEditable(false);
+		JScrollPane scrollPane = new JScrollPane(textBoardComments);
 		cs.gridx = 0;
 		cs.gridy = 1;
 		cs.gridwidth = 50;
-		textBoardComments.setEditable(false);
-		panelCommentsCenter.add(textBoardComments, cs);
+		panelCommentsCenter.add(scrollPane, cs);
 		
 		BoardButtonListener lForBoardButton = new BoardButtonListener();
 		
@@ -4714,10 +4879,10 @@ public class SalesMainView extends JFrame{
 		} else if(mode == SalesMainView.ADD_MODE) {
 			buttonBoardAdd.setEnabled(false);
 			buttonBoardEdit.setEnabled(false);
-			textMaterials.setText("");
-			textMaterials.setEditable(false);
-			textMaterialsPrice.setText("");
-			textMaterialsPrice.setEditable(false);
+			textBoardMaterials.setText("");
+			textBoardMaterials.setEditable(false);
+			textBoardMaterialsPrice.setText("");
+			textBoardMaterialsPrice.setEditable(false);
 			buttonBoardMaterialsEdit.setEnabled(false);
 			textBoardComments.setText("");
 			textBoardComments.setEditable(false);
@@ -4748,8 +4913,8 @@ public class SalesMainView extends JFrame{
 		} else if(mode == SalesMainView.EDIT_MODE) {
 			buttonBoardAdd.setEnabled(false);
 			buttonBoardEdit.setEnabled(false);
-			textMaterials.setEditable(false);
-			textMaterialsPrice.setEditable(false);
+			textBoardMaterials.setEditable(false);
+			textBoardMaterialsPrice.setEditable(false);
 			buttonBoardMaterialsEdit.setEnabled(false);
 			textBoardComments.setEditable(false);
 			buttonBoardCommentsEdit.setEnabled(false);
@@ -5045,8 +5210,11 @@ public class SalesMainView extends JFrame{
 		String[] boardSwitchesColumnNames = { "Id", "Descripcion", "Cantidad", "Precio", "Total", "Principal"};
 		boardSwitchesData = db.fetchAllAddBoolean(db.select(boardSwitchesQuery), boardSwitchesColumnNames.length);
 		
+		HashSet<Integer> editableColumns = new HashSet<Integer>();
+		editableColumns.add(new Integer(5));
+		
 		if(boardSwitchesData.length > 0) {
-			MyTableModel mForTable = new MyTableModel(boardSwitchesData, boardSwitchesColumnNames);
+			MyTableModel mForTable = new MyTableModel(boardSwitchesData, boardSwitchesColumnNames, "board_switches", editableColumns);
 			tableBoardSwitchesResult.setModel(mForTable);
 			if(null != tableBoardSwitchesResult && tableBoardSwitchesResult.getSelectedRow() == -1) {
 				buttonRemoveBoardSwitch.setEnabled(false);
@@ -5124,6 +5292,1789 @@ public class SalesMainView extends JFrame{
 					boardCircuits +
 					" circuitos, " +
 					boardNema);
+		}
+	}
+	
+	private JTabbedPane createControlBoardMainPanel() {
+		JTabbedPane controlBoardViewTabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		
+		JPanel controlBoardMainPanel = new JPanel();
+		controlBoardMainPanel.setLayout(new BorderLayout(20,20));
+		
+		controlBoardMainPanel.add(createControlBoardSearchBarPanel(), BorderLayout.NORTH);
+		
+		tableControlBoardScrollPane = new JScrollPane(createControlBoardTablePanel());
+		tableControlBoardsResult.setFillsViewportHeight(true);
+		controlBoardMainPanel.add(tableControlBoardScrollPane, BorderLayout.CENTER);
+		
+		JPanel panelButtons = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 20));
+		
+		ControlBoardButtonListener lForControlBoardButton = new ControlBoardButtonListener();
+		
+		buttonControlBoardAdd = new JButton("Agregar");
+		buttonControlBoardAdd.setActionCommand("control.description.buttons.add");
+		buttonControlBoardAdd.addActionListener(lForControlBoardButton);
+		panelButtons.add(buttonControlBoardAdd);
+		
+		buttonControlBoardEdit = new JButton("Editar");
+		buttonControlBoardEdit.setActionCommand("control.description.buttons.edit");
+		buttonControlBoardEdit.addActionListener(lForControlBoardButton);
+		buttonControlBoardEdit.setEnabled(false);
+		panelButtons.add(buttonControlBoardEdit);
+		
+		JPanel panelControlBoardLower = new JPanel(new BorderLayout(20,20));
+		panelControlBoardDescription = createControlBoardDescriptionPanel();
+		
+		panelWrapperControlBoardDescription = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		panelWrapperControlBoardDescription.add(panelControlBoardDescription);
+		
+		panelControlBoardAddNew = createControlBoardAddPanel();
+		panelControlBoardAddNew.setVisible(false);
+		
+		panelControlBoardEdit = createControlBoardEditPanel();
+		panelControlBoardEdit.setVisible(false);
+		
+		panelControlBoardLower.add(panelWrapperControlBoardDescription, BorderLayout.CENTER);
+		panelControlBoardLower.add(panelButtons, BorderLayout.SOUTH);
+		
+		controlBoardMainPanel.add(panelControlBoardLower, BorderLayout.SOUTH);
+		controlBoardViewTabbedPane.setFont(new Font(null, Font.BOLD, 16));
+		controlBoardViewTabbedPane.addTab("Buscar", null, controlBoardMainPanel, "Buscar");
+		
+		controlBoardSwitchesPanel = createControlBoardSwitchesPanel();
+		
+		controlBoardViewTabbedPane.addTab("Interruptores", null, controlBoardSwitchesPanel, "Interruptores");
+		
+		controlBoardMaterialsPanel = createControlBoardMaterialsPanel();
+		
+		controlBoardViewTabbedPane.addTab("Materiales", null, controlBoardMaterialsPanel, "Materiales");
+		
+		controlBoardCommentsPanel = createControlBoardCommentsPanel();
+		
+		controlBoardViewTabbedPane.addTab("Observaciones", null, controlBoardCommentsPanel, "Observaciones");
+		
+		setTabsEnabled(controlBoardViewTabbedPane, false);
+//		for(Integer i = 1; i < controlBoardViewTabbedPane.getTabCount(); i++) {
+//			controlBoardViewTabbedPane.setEnabledAt(i, false);
+//		}
+		
+		return controlBoardViewTabbedPane;
+	}
+	
+	private JPanel createControlBoardSearchBarPanel() {
+		JPanel superSearchBarPanel = new JPanel();
+		superSearchBarPanel.setLayout(new BoxLayout(superSearchBarPanel, BoxLayout.PAGE_AXIS));
+		JPanel searchBarPanel1 = new JPanel();
+		searchBarPanel1.setLayout(new FlowLayout(FlowLayout.CENTER));
+		JPanel searchBarPanel2 = new JPanel();
+		searchBarPanel2.setLayout(new FlowLayout(FlowLayout.CENTER));
+		
+		String queryTypes = "SELECT " + SalesMainView.CONTROL_BOARD_TYPE_FIELD
+				+ " FROM " + SalesMainView.CONTROL_BOARD_TYPES_TABLE + "," + SalesMainView.CONTROL_BOARD_TABLE
+				+ " WHERE " + SalesMainView.CONTROL_BOARD_TYPES_TABLE + ".id = " + SalesMainView.CONTROL_BOARD_TABLE + ".type_id "
+				+ " GROUP BY " + SalesMainView.CONTROL_BOARD_TYPES_TABLE + ".type";
+		
+		String queryInstallations = "SELECT " + SalesMainView.INSTALLATION_FIELD
+				+ " FROM " + SalesMainView.INSTALLATIONS_TABLE + "," + SalesMainView.CONTROL_BOARD_TABLE
+				+ " WHERE " + SalesMainView.INSTALLATIONS_TABLE + ".id = " + SalesMainView.CONTROL_BOARD_TABLE + ".installation_id "
+				+ " GROUP BY " + SalesMainView.INSTALLATIONS_TABLE + ".installation";
+		
+		String queryNemas = "SELECT " + SalesMainView.NEMA_FIELD
+				+ " FROM " + SalesMainView.NEMAS_TABLE + "," + SalesMainView.CONTROL_BOARD_TABLE
+				+ " WHERE " + SalesMainView.NEMAS_TABLE + ".id = " + SalesMainView.CONTROL_BOARD_TABLE + ".nema_id "
+				+ " GROUP BY " + SalesMainView.NEMAS_TABLE + ".nema";
+		
+		String queryBarCapacities = "SELECT " + SalesMainView.CONTROL_BOARD_BAR_CAPACITY_FIELD
+				+ " FROM " + SalesMainView.CONTROL_BOARD_BAR_CAPACITIES_TABLE + "," + SalesMainView.CONTROL_BOARD_TABLE
+				+ " WHERE " + SalesMainView.CONTROL_BOARD_BAR_CAPACITIES_TABLE + ".id = " + SalesMainView.CONTROL_BOARD_TABLE + ".bar_capacity_id "
+				+ " GROUP BY " + SalesMainView.CONTROL_BOARD_BAR_CAPACITIES_TABLE + ".bar_capacity";
+		
+		String queryBarTypes = "SELECT " + SalesMainView.CONTROL_BOARD_BAR_TYPE_FIELD
+				+ " FROM " + SalesMainView.CONTROL_BOARD_BAR_TYPES_TABLE + "," + SalesMainView.CONTROL_BOARD_TABLE
+				+ " WHERE " + SalesMainView.CONTROL_BOARD_BAR_TYPES_TABLE + ".id = " + SalesMainView.CONTROL_BOARD_TABLE + ".bar_type_id "
+				+ " GROUP BY " + SalesMainView.CONTROL_BOARD_BAR_TYPES_TABLE + ".bar_type";
+		
+		String queryCircuits = "SELECT " + SalesMainView.CONTROL_BOARD_CIRCUITS_FIELD
+				+ " FROM " + SalesMainView.CONTROL_BOARD_CIRCUITS_TABLE + "," + SalesMainView.CONTROL_BOARD_TABLE
+				+ " WHERE " + SalesMainView.CONTROL_BOARD_CIRCUITS_TABLE + ".id = " + SalesMainView.CONTROL_BOARD_TABLE + ".circuits_id "
+				+ " GROUP BY " + SalesMainView.CONTROL_BOARD_CIRCUITS_TABLE + ".circuits";
+		
+		String queryVoltages = "SELECT " + SalesMainView.CONTROL_BOARD_VOLTAGE_FIELD
+				+ " FROM " + SalesMainView.CONTROL_BOARD_VOLTAGES_TABLE + "," + SalesMainView.CONTROL_BOARD_TABLE
+				+ " WHERE " + SalesMainView.CONTROL_BOARD_VOLTAGES_TABLE + ".id = " + SalesMainView.CONTROL_BOARD_TABLE + ".voltage_id "
+				+ " GROUP BY " + SalesMainView.CONTROL_BOARD_VOLTAGES_TABLE + ".voltage";
+		
+		String queryPhases = "SELECT " + SalesMainView.CONTROL_BOARD_PHASES_FIELD
+				+ " FROM " + SalesMainView.CONTROL_BOARD_TABLE
+				+ " GROUP BY " + SalesMainView.CONTROL_BOARD_TABLE + ".phases";
+		
+		String queryGround = "SELECT " + SalesMainView.CONTROL_BOARD_GROUND_FIELD
+				+ " FROM " + SalesMainView.CONTROL_BOARD_TABLE
+				+ " GROUP BY " + SalesMainView.CONTROL_BOARD_TABLE + ".ground";
+		
+		String queryInterruptions = "SELECT " + SalesMainView.INTERRUPTION_FIELD
+				+ " FROM " + SalesMainView.INTERRUPTIONS_TABLE + "," + SalesMainView.CONTROL_BOARD_TABLE
+				+ " WHERE " + SalesMainView.INTERRUPTIONS_TABLE + ".id = " + SalesMainView.CONTROL_BOARD_TABLE + ".interruption_id "
+				+ " GROUP BY " + SalesMainView.INTERRUPTIONS_TABLE + ".interruption";
+		
+		String queryLockTypes = "SELECT " + SalesMainView.CONTROL_BOARD_LOCK_TYPE_FIELD
+				+ " FROM " + SalesMainView.LOCK_TYPES_TABLE + "," + SalesMainView.CONTROL_BOARD_TABLE
+				+ " WHERE " + SalesMainView.LOCK_TYPES_TABLE + ".id = " + SalesMainView.CONTROL_BOARD_TABLE + ".lock_type_id "
+				+ " GROUP BY " + SalesMainView.LOCK_TYPES_TABLE + ".lock_type";
+		
+		JLabel labelName = new JLabel("Nombre: ");
+		JLabel labelType = new JLabel("Tipo:");
+		JLabel labelInstallation = new JLabel("Instalacion:");
+		JLabel labelNema = new JLabel("Nema:");
+		JLabel labelBarCapacity = new JLabel("Cap. Barra:");
+		JLabel labelBarType = new JLabel("Tipo Barra:");
+		JLabel labelCircuits = new JLabel("Circuitos:");
+		JLabel labelVoltage = new JLabel("Voltaje:");
+		JLabel labelPhases = new JLabel("Fases:");
+		JLabel labelGround = new JLabel("Tierra:");
+		JLabel labelInterruption = new JLabel("Interrupcion:");
+		JLabel labelLockType = new JLabel("Cerradura:");
+		
+		ComboBoxListener lForCombo = new ComboBoxListener();
+		
+		textControlBoardSearchNames = new JTextField(6);
+		textControlBoardSearchNames.setActionCommand("control.search.name");
+		textControlBoardSearchNames.addKeyListener(new KeyListener() {
+			
+			@Override
+			public void keyTyped(KeyEvent e) {
+				
+			}
+			
+			@Override
+			public void keyReleased(KeyEvent e) {
+				loadControlBoardTable("");
+				textControlBoardDescriptionName.setText("");
+				textControlBoardDescriptionType.setText("");
+				textControlBoardDescriptionInstallation.setText("");
+				textControlBoardDescriptionNema.setText("");
+				textControlBoardDescriptionBarCapacity.setText("");
+				textControlBoardDescriptionBarType.setText("");
+				textControlBoardDescriptionCircuits.setText("");
+				textControlBoardDescriptionVoltage.setText("");
+				textControlBoardDescriptionPhases.setText("");
+				textControlBoardDescriptionGround.setText("");
+				textControlBoardDescriptionInterruption.setText("");
+				textControlBoardDescriptionLockType.setText("");
+				textControlBoardDescriptionPrice.setText("");
+				textControlBoardDescription.setText("");
+				buttonControlBoardAdd.setEnabled(true);
+				buttonControlBoardEdit.setEnabled(false);
+				textControlBoardMaterials.setText("");
+				textControlBoardMaterials.setEditable(false);
+				textControlBoardMaterialsPrice.setText("");
+				textControlBoardMaterialsPrice.setEditable(false);
+				buttonControlBoardMaterialsEdit.setEnabled(false);
+				textControlBoardComments.setEditable(false);
+				buttonControlBoardCommentsEdit.setEnabled(false);
+			}
+			
+			@Override
+			public void keyPressed(KeyEvent e) {
+				
+			}
+		});
+		searchBarPanel1.add(labelName);
+		searchBarPanel1.add(textControlBoardSearchNames);
+		
+		comboControlBoardTypes = new JComboBox<String>(new Vector<String>(loadComboList(queryTypes, "type")));
+		comboControlBoardTypes.setActionCommand("control.search.type");
+		comboControlBoardTypes.addActionListener(lForCombo);
+		searchBarPanel1.add(labelType);
+		searchBarPanel1.add(comboControlBoardTypes);
+		
+		comboControlBoardInstallations = new JComboBox<String>(new Vector<String>(loadComboList(queryInstallations, "installation")));
+		comboControlBoardInstallations.setActionCommand("control.search.installation");
+		comboControlBoardInstallations.addActionListener(lForCombo);
+		searchBarPanel1.add(labelInstallation);
+		searchBarPanel1.add(comboControlBoardInstallations);
+		
+		comboControlBoardNemas = new JComboBox<String>(new Vector<String>(loadComboList(queryNemas, "nema")));
+		comboControlBoardNemas.setActionCommand("control.search.nema");
+		comboControlBoardNemas.addActionListener(lForCombo);
+		searchBarPanel1.add(labelNema);
+		searchBarPanel1.add(comboControlBoardNemas);
+		
+		comboControlBoardBarCapacities = new JComboBox<String>(new Vector<String>(loadComboList(queryBarCapacities, "bar_capacity")));
+		comboControlBoardBarCapacities.setActionCommand("control.search.bar_capacity");
+		comboControlBoardBarCapacities.addActionListener(lForCombo);
+		searchBarPanel1.add(labelBarCapacity);
+		searchBarPanel1.add(comboControlBoardBarCapacities);
+		
+		comboControlBoardBarTypes = new JComboBox<String>(new Vector<String>(loadComboList(queryBarTypes, "bar_type")));
+		comboControlBoardBarTypes.setActionCommand("control.search.bar_type");
+		comboControlBoardBarTypes.addActionListener(lForCombo);
+		searchBarPanel1.add(labelBarType);
+		searchBarPanel1.add(comboControlBoardBarTypes);
+		
+		comboControlBoardCircuits = new JComboBox<String>(new Vector<String>(loadComboList(queryCircuits, "circuits")));
+		comboControlBoardCircuits.setActionCommand("control.search.circuits");
+		comboControlBoardCircuits.addActionListener(lForCombo);
+		searchBarPanel1.add(labelCircuits);
+		searchBarPanel1.add(comboControlBoardCircuits);
+		
+		comboControlBoardVoltages = new JComboBox<String>(new Vector<String>(loadComboList(queryVoltages, "voltage")));
+		comboControlBoardVoltages.setActionCommand("control.search.voltage");
+		comboControlBoardVoltages.addActionListener(lForCombo);
+		searchBarPanel2.add(labelVoltage);
+		searchBarPanel2.add(comboControlBoardVoltages);
+		
+		comboControlBoardPhases = new JComboBox<String>(new Vector<String>(loadComboList(queryPhases, "phases")));
+		comboControlBoardPhases.setActionCommand("control.search.phases");
+		comboControlBoardPhases.addActionListener(lForCombo);
+		searchBarPanel2.add(labelPhases);
+		searchBarPanel2.add(comboControlBoardPhases);
+		
+		comboControlBoardGround = new JComboBox<String>(new Vector<String>(loadComboList(queryGround, "ground")));
+		comboControlBoardGround.setActionCommand("control.search.ground");
+		comboControlBoardGround.addActionListener(lForCombo);
+		searchBarPanel2.add(labelGround);
+		searchBarPanel2.add(comboControlBoardGround);
+		
+		comboControlBoardInterruptions = new JComboBox<String>(new Vector<String>(loadComboList(queryInterruptions, "interruption")));
+		comboControlBoardInterruptions.setActionCommand("control.search.interruption");
+		comboControlBoardInterruptions.addActionListener(lForCombo);
+		searchBarPanel2.add(labelInterruption);
+		searchBarPanel2.add(comboControlBoardInterruptions);
+		
+		comboControlBoardLockTypes = new JComboBox<String>(new Vector<String>(loadComboList(queryLockTypes, "lock_type")));
+		searchBarPanel2.add(labelLockType);
+		searchBarPanel2.add(comboControlBoardLockTypes);
+		
+		searchBarPanel2.add(separator());
+		
+		JButton searchButton = new JButton("Buscar");
+		searchButton.setActionCommand("control.search.bar.button");
+		SearchButtonListener lForSearchButton = new SearchButtonListener();
+		searchButton.addActionListener(lForSearchButton);
+		searchBarPanel2.add(searchButton);
+		
+		superSearchBarPanel.add(searchBarPanel1);
+		superSearchBarPanel.add(searchBarPanel2);
+		
+		return superSearchBarPanel;
+	}
+	
+	private JPanel createControlBoardSwitchesPanel() {
+		JPanel controlBoardSwitchesPanel = new JPanel();
+		controlBoardSwitchesPanel.setLayout(new BorderLayout(20, 20));
+		
+		controlBoardSwitchesPanel.add(createControlBoardSwitchesTablePanel(), BorderLayout.CENTER);
+		return controlBoardSwitchesPanel;
+	}
+	
+	private JPanel createControlBoardSettingsPanel() {
+		JPanel panelSettings = new JPanel();
+		
+		
+		
+		return panelSettings;
+	}
+	
+	private JPanel createControlBoardTablePanel() {
+		String limitQuery = "";
+		
+		ArrayList<String> fields = new ArrayList<String>();
+		fields.add(SalesMainView.CONTROL_BOARD_ID_FIELD);
+		fields.add(SalesMainView.CONTROL_BOARD_NAME_FIELD);
+		fields.add(SalesMainView.CONTROL_BOARD_TYPE_FIELD);
+		fields.add(SalesMainView.INSTALLATION_FIELD);
+		fields.add(SalesMainView.NEMA_FIELD);
+		fields.add(SalesMainView.CONTROL_BOARD_BAR_CAPACITY_FIELD);
+		fields.add(SalesMainView.CONTROL_BOARD_BAR_TYPE_FIELD);
+		fields.add(SalesMainView.CONTROL_BOARD_CIRCUITS_FIELD);
+		fields.add(SalesMainView.CONTROL_BOARD_VOLTAGE_FIELD);
+		fields.add(SalesMainView.CONTROL_BOARD_PHASES_FIELD);
+		fields.add(SalesMainView.CONTROL_BOARD_GROUND_FIELD);
+		fields.add(SalesMainView.CONTROL_BOARD_INTERRUPTION_FIELD);
+		fields.add(SalesMainView.CONTROL_BOARD_LOCK_TYPE_FIELD);
+		fields.add(SalesMainView.CONTROL_BOARD_PRICE_FIELD);
+		
+		ArrayList<String> tables = new ArrayList<String>();
+		tables.add(SalesMainView.CONTROL_BOARD_TABLE);
+		tables.add(SalesMainView.CONTROL_BOARD_BAR_CAPACITIES_TABLE);
+		tables.add(SalesMainView.CONTROL_BOARD_BAR_TYPES_TABLE);
+		tables.add(SalesMainView.CONTROL_BOARD_CIRCUITS_TABLE);
+		tables.add(SalesMainView.CONTROL_BOARD_TYPES_TABLE);
+		tables.add(SalesMainView.CONTROL_BOARD_VOLTAGES_TABLE);
+		tables.add(SalesMainView.INSTALLATIONS_TABLE);
+		tables.add(SalesMainView.INTERRUPTIONS_TABLE);
+		tables.add(SalesMainView.LOCK_TYPES_TABLE);
+		tables.add(SalesMainView.NEMAS_TABLE);
+		
+		limitQuery = " LIMIT 10";
+		
+		String fieldsQuery = StringTools.implode(",", fields);
+		String tablesQuery = StringTools.implode(",", tables);
+		String boxesQuery = "SELECT " + fieldsQuery
+						+ " FROM "
+						+ tablesQuery
+						+ " WHERE control_boards.type_id = control_board_types.id "
+						+ "AND control_boards.installation_id = installations.id "
+						+ "AND control_boards.nema_id = nemas.id "
+						+ "AND ( (control_boards.bar_capacity_id > 0 "
+							+ "AND control_boards.bar_capacity_id = control_board_bar_capacities.id) "
+							+ "OR control_boards.bar_capacity_id = 0)"
+						+ "AND ( (control_boards.bar_type_id > 0 "
+							+ "AND control_boards.bar_type_id = control_board_bar_types.id) "
+							+ "OR control_boards.bar_type_id = 0)"
+						+ "AND ( (control_boards.circuits_id > 0 "
+							+ "AND control_boards.circuits_id = control_board_circuits.id) "
+							+ "OR control_boards.circuits_id = 0)"
+						+ "AND control_boards.voltage_id = control_board_voltages.id "
+						+ "AND ( (control_boards.interruption_id > 0 "
+							+ "AND control_boards.interruption_id = interruptions.id) "
+							+ "OR control_boards.interruption_id = 0)"
+						+ "AND ( (control_boards.lock_type_id > 0 "
+							+ "AND control_boards.lock_type_id = lock_types.id) "
+							+ "OR control_boards.lock_type_id = 0)"
+						+ "AND control_boards.active = '1' "
+						+ "GROUP BY control_boards.id "
+						+ limitQuery;
+		
+		String[] controlBoardsColumnNames = { "Id", "Nombre", "Tipo", "Instalacion", "Nema", "Cap. Barra", "Tipo Barra", "Circuitos", "Voltaje", "Fases", "Tierra", "Interrupcion", "Cerradura", "Precio"};
+//		ArrayList<String> listBoxesColumnNames = new ArrayList<String>(Arrays.asList(originalColumns));
+//		listBoxesColumnNames.add("Button");
+//		String [] boxesColumnNames = listBoxesColumnNames.toArray(new String[0]);
+		// The line below is when not adding a Button column at the end of the table
+		controlBoardsData = db.fetchAll(db.select(boxesQuery));
+		tableControlBoardsResult = new JTable();
+//		boxesData = db.fetchAllAddButton(db.select(boxesQuery), boxesColumnNames.length);
+		
+		tableControlBoardsResult.setModel(new MyTableModel(controlBoardsData, controlBoardsColumnNames));
+		tableControlBoardsResult.setAutoCreateRowSorter(true);
+		tableControlBoardsResult.getTableHeader().setReorderingAllowed(false);
+		
+		listControlBoardSelectionModel = tableControlBoardsResult.getSelectionModel();
+		listControlBoardSelectionModel.addListSelectionListener(new SharedListSelectionListener());
+		tableControlBoardsResult.setSelectionModel(listControlBoardSelectionModel);
+		tableControlBoardsResult.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		
+//		TableColumn buttonColumn = tableBoxesResult.getColumnModel().getColumn(boxesColumnNames.length-1);
+//		TableButton buttons = new TableButton();
+//		buttons.addHandler(new TableButtonPressedHandler() {
+//			
+//			@Override
+//			public void onButtonPress(int row, int column) {
+//				int viewRow = tableBoxesResult.getSelectedRow();
+//				Object tableId = tableBoxesResult.getValueAt(viewRow, 0);
+//				JOptionPane.showMessageDialog(null, "Row:" + row + "-Column:" + column + "-ViewRow:" + viewRow + "-TableId:" + tableId);
+//			}
+//		});
+//		
+//		buttonColumn.setHeaderValue("Botones");
+//		buttonColumn.setCellRenderer(buttons);
+//		buttonColumn.setCellEditor(buttons);
+		
+		JPanel tablePanel = new JPanel(new BorderLayout());
+		tablePanel.add(tableControlBoardsResult.getTableHeader(), BorderLayout.PAGE_START);
+		tablePanel.add(tableControlBoardsResult, BorderLayout.CENTER);
+		
+		return tablePanel;
+	}
+	
+	private JPanel createControlBoardSwitchesTablePanel() {
+		tableControlBoardSwitchesResult = new JTable();
+		tableControlBoardSwitchesResult.setModel(new DefaultTableModel());
+		tableControlBoardSwitchesResult.setAutoCreateRowSorter(true);
+		tableControlBoardSwitchesResult.getTableHeader().setReorderingAllowed(false);
+		
+		listControlBoardSwitchesSelectionModel = tableControlBoardSwitchesResult.getSelectionModel();
+		listControlBoardSwitchesSelectionModel.addListSelectionListener(new SharedListSelectionListener());
+		tableControlBoardSwitchesResult.setSelectionModel(listControlBoardSwitchesSelectionModel);
+		tableControlBoardSwitchesResult.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		
+		JPanel tablePanel = new JPanel(new BorderLayout());
+		tablePanel.add(tableControlBoardSwitchesResult.getTableHeader(), BorderLayout.PAGE_START);
+		tablePanel.add(tableControlBoardSwitchesResult, BorderLayout.CENTER);
+		
+		Font fa = null;
+		
+		try {
+			URL url = getClass().getResource("fontawesome-webfont.ttf");
+			InputStream is;
+			is = url.openStream();
+			fa = Font.createFont(Font.TRUETYPE_FONT, is);
+			fa = fa.deriveFont(Font.PLAIN, 36f);
+		} catch (IOException | FontFormatException e) {
+			e.printStackTrace();
+		}
+		
+		ControlBoardButtonListener lForControlBoardButton = new ControlBoardButtonListener();
+		
+		JPanel panelButtons = new JPanel(new FlowLayout(FlowLayout.TRAILING));
+		// Add the add & remove buttons here for the Control Board Switches
+		buttonAddControlBoardSwitch = new JButton(Fa.fa_plus);
+		buttonAddControlBoardSwitch.setFont(fa);
+		buttonAddControlBoardSwitch.setForeground(Color.GREEN);
+		buttonAddControlBoardSwitch.setActionCommand("control.switch.add");
+		buttonAddControlBoardSwitch.addActionListener(lForControlBoardButton);
+		buttonAddControlBoardSwitch.setEnabled(false);
+		panelButtons.add(buttonAddControlBoardSwitch);
+		
+		buttonRemoveControlBoardSwitch = new JButton(Fa.fa_remove);
+		buttonRemoveControlBoardSwitch.setFont(fa);
+		buttonRemoveControlBoardSwitch.setForeground(Color.RED);
+		buttonRemoveControlBoardSwitch.setActionCommand("control.switch.remove");
+		buttonRemoveControlBoardSwitch.addActionListener(lForControlBoardButton);
+		buttonRemoveControlBoardSwitch.setEnabled(false);
+		panelButtons.add(buttonRemoveControlBoardSwitch);
+		
+		tablePanel.add(panelButtons, BorderLayout.PAGE_END);
+		
+		return tablePanel;
+	}
+	
+	private JPanel createControlBoardDescriptionPanel() {
+		JPanel descriptionPanel = new JPanel(new GridBagLayout());
+		
+		GridBagConstraints cs = new GridBagConstraints();
+		
+		cs.fill = GridBagConstraints.HORIZONTAL;
+		cs.insets = new Insets(0, 0, 5, 5);
+		
+		JLabel labelName = new JLabel("Nombre:");
+		cs.gridx = 0;
+		cs.gridy = 0;
+		cs.gridwidth = 1;
+		descriptionPanel.add(labelName, cs);
+		
+		textControlBoardDescriptionName = new JTextField("", 10);
+		textControlBoardDescriptionName.setEditable(false);
+		cs.gridx = 1;
+		cs.gridy = 0;
+		cs.gridwidth = 10;
+		descriptionPanel.add(textControlBoardDescriptionName, cs);
+		
+		JLabel labelType = new JLabel("Tipo:");
+		cs.gridx = 11;
+		cs.gridy = 0;
+		cs.gridwidth = 1;
+		descriptionPanel.add(labelType, cs);
+		
+		textControlBoardDescriptionType = new JTextField("", 10);
+		textControlBoardDescriptionType.setEditable(false);
+		cs.gridx = 12;
+		cs.gridy = 0;
+		cs.gridwidth = 10;
+		descriptionPanel.add(textControlBoardDescriptionType, cs);
+		
+		JLabel labelInstallation = new JLabel("Instalacion:");
+		cs.gridx = 22;
+		cs.gridy = 0;
+		cs.gridwidth = 1;
+		descriptionPanel.add(labelInstallation, cs);
+		
+		textControlBoardDescriptionInstallation = new JTextField("", 8);
+		textControlBoardDescriptionInstallation.setEditable(false);
+		cs.gridx = 23;
+		cs.gridy = 0;
+		cs.gridwidth = 8;
+		descriptionPanel.add(textControlBoardDescriptionInstallation, cs);
+		
+		JLabel labelNema = new JLabel("Nema:");
+		cs.gridx = 31;
+		cs.gridy = 0;
+		cs.gridwidth = 1;
+		descriptionPanel.add(labelNema, cs);
+		
+		textControlBoardDescriptionNema = new JTextField("", 4);
+		textControlBoardDescriptionNema.setEditable(false);
+		cs.gridx = 32;
+		cs.gridy = 0;
+		cs.gridwidth = 4;
+		descriptionPanel.add(textControlBoardDescriptionNema, cs);
+		
+		JLabel labelBarCapacity = new JLabel("Cap. Barra:");
+		cs.gridx = 36;
+		cs.gridy = 0;
+		cs.gridwidth = 1;
+		descriptionPanel.add(labelBarCapacity, cs);
+		
+		textControlBoardDescriptionBarCapacity = new JTextField("", 4);
+		textControlBoardDescriptionBarCapacity.setEditable(false);
+		cs.gridx = 37;
+		cs.gridy = 0;
+		cs.gridwidth = 4;
+		descriptionPanel.add(textControlBoardDescriptionBarCapacity, cs);
+		
+		JLabel labelBarType = new JLabel("Tipo Barra:");
+		cs.gridx = 41;
+		cs.gridy = 0;
+		cs.gridwidth = 1;
+		descriptionPanel.add(labelBarType, cs);
+		
+		textControlBoardDescriptionBarType = new JTextField("", 8);
+		textControlBoardDescriptionBarType.setEditable(false);
+		cs.gridx = 42;
+		cs.gridy = 0;
+		cs.gridwidth = 8;
+		descriptionPanel.add(textControlBoardDescriptionBarType, cs);
+		
+		JLabel labelCircuits = new JLabel("Circuitos:");
+		cs.gridx = 0;
+		cs.gridy = 1;
+		cs.gridwidth = 1;
+		descriptionPanel.add(labelCircuits, cs);
+		
+		textControlBoardDescriptionCircuits = new JTextField("", 8);
+		textControlBoardDescriptionCircuits.setEditable(false);
+		cs.gridx = 1;
+		cs.gridy = 1;
+		cs.gridwidth = 8;
+		descriptionPanel.add(textControlBoardDescriptionCircuits, cs);
+		
+		JLabel labelVoltage = new JLabel("Voltaje:");
+		cs.gridx = 9;
+		cs.gridy = 1;
+		cs.gridwidth = 1;
+		descriptionPanel.add(labelVoltage, cs);
+		
+		textControlBoardDescriptionVoltage = new JTextField("", 8);
+		textControlBoardDescriptionVoltage.setEditable(false);
+		cs.gridx = 10;
+		cs.gridy = 1;
+		cs.gridwidth = 8;
+		descriptionPanel.add(textControlBoardDescriptionVoltage, cs);
+		
+		JLabel labelPhases = new JLabel("Fases:");
+		cs.gridx = 18;
+		cs.gridy = 1;
+		cs.gridwidth = 1;
+		descriptionPanel.add(labelPhases, cs);
+		
+		textControlBoardDescriptionPhases = new JTextField("", 4);
+		textControlBoardDescriptionPhases.setEditable(false);
+		cs.gridx = 19;
+		cs.gridy = 1;
+		cs.gridwidth = 4;
+		descriptionPanel.add(textControlBoardDescriptionPhases, cs);
+		
+		JLabel labelGround = new JLabel("Tierra:");
+		cs.gridx = 23;
+		cs.gridy = 1;
+		cs.gridwidth = 1;
+		descriptionPanel.add(labelGround, cs);
+		
+		textControlBoardDescriptionGround = new JTextField("", 4);
+		textControlBoardDescriptionGround.setEditable(false);
+		cs.gridx = 24;
+		cs.gridy = 1;
+		cs.gridwidth = 4;
+		descriptionPanel.add(textControlBoardDescriptionGround, cs);
+		
+		JLabel labelInterruption = new JLabel("Interrupcion:");
+		cs.gridx = 28;
+		cs.gridy = 1;
+		cs.gridwidth = 1;
+		descriptionPanel.add(labelInterruption, cs);
+		
+		textControlBoardDescriptionInterruption = new JTextField("", 4);
+		textControlBoardDescriptionInterruption.setEditable(false);
+		cs.gridx = 29;
+		cs.gridy = 1;
+		cs.gridwidth = 4;
+		descriptionPanel.add(textControlBoardDescriptionInterruption, cs);
+		
+		JLabel labelLockType = new JLabel("Cerradura:");
+		cs.gridx = 33;
+		cs.gridy = 1;
+		cs.gridwidth = 1;
+		descriptionPanel.add(labelLockType, cs);
+		
+		textControlBoardDescriptionLockType = new JTextField("", 8);
+		textControlBoardDescriptionLockType.setEditable(false);
+		cs.gridx = 34;
+		cs.gridy = 1;
+		cs.gridwidth = 8;
+		descriptionPanel.add(textControlBoardDescriptionLockType, cs);
+		
+		JLabel labelPrice = new JLabel("Precio:");
+		cs.gridx = 42;
+		cs.gridy = 1;
+		cs.gridwidth = 1;
+		descriptionPanel.add(labelPrice, cs);
+		
+		textControlBoardDescriptionPrice = new JTextField("", 8);
+		textControlBoardDescriptionPrice.setEditable(false);
+		cs.gridx = 43;
+		cs.gridy = 1;
+		cs.gridwidth = 8;
+		descriptionPanel.add(textControlBoardDescriptionPrice, cs);
+		
+		JLabel labelDescription = new JLabel("Descripcion:");
+		cs.gridx = 0;
+		cs.gridy = 2;
+		cs.gridwidth = 1;
+		descriptionPanel.add(labelDescription, cs);
+		
+		textControlBoardDescription = new JTextArea(1, 26);
+		textControlBoardDescription.setEditable(false);
+		textControlBoardDescription.setLineWrap(true);
+		textControlBoardDescription.setWrapStyleWord(true);
+		cs.gridx = 0;
+		cs.gridy = 3;
+		cs.gridwidth = 26;
+		descriptionPanel.add(textControlBoardDescription, cs);
+		
+		SearchButtonListener lForButton = new SearchButtonListener();
+		
+		JButton buttonCopy = new JButton("Copiar");
+		buttonCopy.addActionListener(lForButton);
+		buttonCopy.setActionCommand("control.description.copy");
+		cs.gridx = 0;
+		cs.gridy = 4;
+		cs.gridwidth = 4;
+		descriptionPanel.add(buttonCopy, cs);
+		
+		labelControlBoardCopy = new JLabel("");
+		cs.gridx = 4;
+		cs.gridy = 4;
+		cs.gridwidth = 12;
+		descriptionPanel.add(labelControlBoardCopy, cs);
+		
+		return descriptionPanel;
+	}
+	
+	private JPanel createControlBoardAddPanel() {
+		JPanel addPanel = new JPanel(new GridBagLayout());
+		ComboBoxListener lForCombo = new ComboBoxListener();
+		new TextFieldListener();
+		GridBagConstraints cs = new GridBagConstraints();
+	
+		cs.fill = GridBagConstraints.HORIZONTAL;
+		cs.insets = new Insets(0, 0, 5, 5);
+		
+		String queryTypes = "SELECT control_board_types.type "
+				+ "FROM control_board_types "
+				+ "GROUP BY control_board_types.type "
+				+ "ORDER BY control_board_types.id ASC";
+		
+		String queryInstallations = "SELECT installation "
+				+ "FROM installations "
+				+ "GROUP BY installations.installation";
+		
+		String queryNemas = "SELECT nemas.nema "
+				+ "FROM nemas "
+				+ "GROUP BY nemas.nema";
+		
+		String queryBarCapacities = "SELECT control_board_bar_capacities.bar_capacity "
+				+ "FROM control_board_bar_capacities "
+				+ "GROUP BY control_board_bar_capacities.bar_capacity";
+		
+		String queryBarTypes = "SELECT control_board_bar_types.bar_type "
+				+ "FROM control_board_bar_types "
+				+ "GROUP BY control_board_bar_types.bar_type";
+		
+		String queryCircuits = "SELECT control_board_circuits.circuits "
+				+ "FROM control_board_circuits "
+				+ "GROUP BY control_board_circuits.circuits";
+		
+		String queryVoltages = "SELECT control_board_voltages.voltage "
+				+ "FROM control_board_voltages "
+				+ "GROUP BY control_board_voltages.voltage";
+		
+		String[] phases = {"1", "2", "3"};
+				
+		String queryInterruptions = "SELECT interruptions.interruption "
+				+ "FROM interruptions "
+				+ "GROUP BY interruptions.interruption";
+		
+		String queryLockTypes = "SELECT lock_types.lock_type "
+				+ "FROM lock_types "
+				+ "GROUP BY lock_types.lock_type";
+		
+		JLabel labelName = new JLabel("Nombre:");
+		cs.gridx = 0;
+		cs.gridy = 0;
+		cs.gridwidth = 1;
+		addPanel.add(labelName, cs);
+		
+		textControlBoardAddName = new JTextField(6);
+		cs.gridx = 1;
+		cs.gridy = 0;
+		cs.gridwidth = 6;
+		addPanel.add(textControlBoardAddName, cs);
+		
+		JLabel labelType = new JLabel("Tipo:");
+		cs.gridx = 7;
+		cs.gridy = 0;
+		cs.gridwidth = 1;
+		addPanel.add(labelType, cs);
+		
+		comboControlBoardAddType = new JComboBox<String>(new Vector<String>(loadComboList(queryTypes, "type")));
+		comboControlBoardAddType.removeItem("Todas");
+		comboControlBoardAddType.setActionCommand("control.description.add.type");
+		comboControlBoardAddType.addActionListener(lForCombo);
+		cs.gridx = 8;
+		cs.gridy = 0;
+		cs.gridwidth = 6;
+		addPanel.add(comboControlBoardAddType, cs);
+		
+		JLabel labelInstallation = new JLabel("Instalacion:");
+		cs.gridx = 14;
+		cs.gridy = 0;
+		cs.gridwidth = 1;
+		addPanel.add(labelInstallation, cs);
+		
+		comboControlBoardAddInstallation = new JComboBox<String>(new Vector<String>(loadComboList(queryInstallations, "installation")));
+		comboControlBoardAddInstallation.removeItem("Todas");
+		comboControlBoardAddInstallation.removeItem("Embutido");
+		cs.gridx = 15;
+		cs.gridy = 0;
+		cs.gridwidth = 2;
+		addPanel.add(comboControlBoardAddInstallation, cs);
+		
+		JLabel labelNema = new JLabel("Nema:");
+		cs.gridx = 17;
+		cs.gridy = 0;
+		cs.gridwidth = 1;
+		addPanel.add(labelNema, cs);
+		
+		comboControlBoardAddNema = new JComboBox<String>(new Vector<String>(loadComboList(queryNemas, "nema")));
+		comboControlBoardAddNema.removeItem("Todas");
+		comboControlBoardAddNema.setActionCommand("control.description.add.nema");
+		comboControlBoardAddNema.addActionListener(lForCombo);
+		cs.gridx = 18;
+		cs.gridy = 0;
+		cs.gridwidth = 8;
+		addPanel.add(comboControlBoardAddNema, cs);
+		
+		JLabel labelBarCapacity = new JLabel("Cap. Barra:");
+		cs.gridx = 26;
+		cs.gridy = 0;
+		cs.gridwidth = 1;
+		addPanel.add(labelBarCapacity, cs);
+		
+		comboControlBoardAddBarCapacity = new JComboBox<String>(new Vector<String>(loadComboList(queryBarCapacities, "bar_capacity")));
+		comboControlBoardAddBarCapacity.removeItem("Todas");
+		comboControlBoardAddBarCapacity.addItem("N/A");
+		comboControlBoardAddBarCapacity.setSelectedItem("N/A");
+		cs.gridx = 27;
+		cs.gridy = 0;
+		cs.gridwidth = 2;
+		addPanel.add(comboControlBoardAddBarCapacity, cs);
+		
+		JLabel labelBarType = new JLabel("Tipo Barra:");
+		cs.gridx = 29;
+		cs.gridy = 0;
+		cs.gridwidth = 1;
+		addPanel.add(labelBarType, cs);
+		
+		comboControlBoardAddBarType = new JComboBox<String>(new Vector<String>(loadComboList(queryBarTypes, "bar_type")));
+		comboControlBoardAddBarType.removeItem("Todas");
+		comboControlBoardAddBarType.addItem("N/A");
+		comboControlBoardAddBarType.setSelectedItem("N/A");
+		cs.gridx = 30;
+		cs.gridy = 0;
+		cs.gridwidth = 6;
+		addPanel.add(comboControlBoardAddBarType, cs);
+		
+		JLabel labelCircuits = new JLabel("Circuitos:");
+		cs.gridx = 36;
+		cs.gridy = 0;
+		cs.gridwidth = 1;
+		addPanel.add(labelCircuits, cs);
+		
+		comboControlBoardAddCircuits = new JComboBox<String>(new Vector<String>(loadComboList(queryCircuits, "circuits")));
+		comboControlBoardAddCircuits.removeItem("Todas");
+		comboControlBoardAddCircuits.addItem("N/A");
+		comboControlBoardAddCircuits.setSelectedItem("N/A");
+		comboControlBoardAddCircuits.setActionCommand("control.description.add.circuits");
+		comboControlBoardAddCircuits.addActionListener(lForCombo);
+		cs.gridx = 37;
+		cs.gridy = 0;
+		cs.gridwidth = 6;
+		addPanel.add(comboControlBoardAddCircuits, cs);
+		
+		JLabel labelVoltage = new JLabel("Voltaje:");
+		cs.gridx = 0;
+		cs.gridy = 1;
+		cs.gridwidth = 1;
+		addPanel.add(labelVoltage, cs);
+		
+		comboControlBoardAddVoltage = new JComboBox<String>(new Vector<String>(loadComboList(queryVoltages, "voltage")));
+		comboControlBoardAddVoltage.removeItem("Todas");
+		cs.gridx = 1;
+		cs.gridy = 1;
+		cs.gridwidth = 6;
+		addPanel.add(comboControlBoardAddVoltage, cs);
+		
+		JLabel labelPhases = new JLabel("Fases:");
+		cs.gridx = 7;
+		cs.gridy = 1;
+		cs.gridwidth = 1;
+		addPanel.add(labelPhases, cs);
+		
+		comboControlBoardAddPhases = new JComboBox<String>(new Vector<String>(Arrays.asList(phases)));
+		comboControlBoardAddPhases.setActionCommand("control.description.add.phases");
+		comboControlBoardAddPhases.addActionListener(lForCombo);
+		cs.gridx = 8;
+		cs.gridy = 1;
+		cs.gridwidth = 6;
+		addPanel.add(comboControlBoardAddPhases, cs);
+		
+		checkControlBoardAddGround = new JCheckBox("Tierra");
+		cs.gridx = 14;
+		cs.gridy = 1;
+		cs.gridwidth = 2;
+		addPanel.add(checkControlBoardAddGround, cs);
+		
+		JLabel labelInterruption = new JLabel("Interrupcion:");
+		cs.gridx = 16;
+		cs.gridy = 1;
+		cs.gridwidth = 1;
+		addPanel.add(labelInterruption, cs);
+		
+		comboControlBoardAddInterruption = new JComboBox<String>(new Vector<String>(loadComboList(queryInterruptions, "interruption")));
+		comboControlBoardAddInterruption.removeItem("Todas");
+		comboControlBoardAddInterruption.addItem("N/A");
+		comboControlBoardAddInterruption.setSelectedItem("N/A");
+		cs.gridx = 17;
+		cs.gridy = 1;
+		cs.gridwidth = 6;
+		addPanel.add(comboControlBoardAddInterruption, cs);
+		
+		JLabel labelLockType = new JLabel("Cerradura:");
+		cs.gridx = 23;
+		cs.gridy = 1;
+		cs.gridwidth = 1;
+		addPanel.add(labelLockType, cs);
+		
+		comboControlBoardAddLockType = new JComboBox<String>(new Vector<String>(loadComboList(queryLockTypes, "lock_type")));
+		comboControlBoardAddLockType.removeItem("Todas");
+		comboControlBoardAddLockType.addItem("N/A");
+		comboControlBoardAddLockType.setSelectedItem("N/A");
+		cs.gridx = 24;
+		cs.gridy = 1;
+		cs.gridwidth = 6;
+		addPanel.add(comboControlBoardAddLockType, cs);
+		
+		JLabel labelPrice = new JLabel("Precio:");
+		cs.gridx = 30;
+		cs.gridy = 1;
+		cs.gridwidth = 1;
+		addPanel.add(labelPrice, cs);
+		
+		textControlBoardAddPrice = new JTextField(6);
+		cs.gridx = 31;
+		cs.gridy = 1;
+		cs.gridwidth = 6;
+		addPanel.add(textControlBoardAddPrice, cs);
+		
+		JLabel labelDescription = new JLabel("Descripcion:");
+		cs.gridx = 0;
+		cs.gridy = 2;
+		cs.gridwidth = 1;
+		addPanel.add(labelDescription, cs);
+		
+		textControlBoardAddDescription = new JTextArea(1,16);
+		textControlBoardAddDescription.setEditable(false);
+		textControlBoardAddDescription.setLineWrap(true);
+		textControlBoardAddDescription.setWrapStyleWord(true);
+		cs.gridx = 0;
+		cs.gridy = 3;
+		cs.gridwidth = 16;
+		addPanel.add(textControlBoardAddDescription, cs);
+		
+		ControlBoardButtonListener lForControlBoardButton = new ControlBoardButtonListener();
+		
+		JPanel panelButtons = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		
+		buttonControlBoardAddSave = new JButton("Guardar");
+		buttonControlBoardAddSave.setActionCommand("control.description.add.save");
+		buttonControlBoardAddSave.addActionListener(lForControlBoardButton);
+		panelButtons.add(buttonControlBoardAddSave);
+		
+		buttonControlBoardAddCancel = new JButton("Cancelar");
+		buttonControlBoardAddCancel.setActionCommand("control.description.add.cancel");
+		buttonControlBoardAddCancel.addActionListener(lForControlBoardButton);
+		panelButtons.add(buttonControlBoardAddCancel);
+		
+		cs.gridx = 0;
+		cs.gridy = 4;
+		cs.gridwidth = 43;
+		addPanel.add(panelButtons, cs);
+		
+		updateControlBoardTextAddDescription();
+		
+		return addPanel;
+	}
+	
+	private JPanel createControlBoardEditPanel() {
+		JPanel editPanel = new JPanel(new GridBagLayout());
+		ComboBoxListener lForCombo = new ComboBoxListener();
+		TextFieldListener lForText = new TextFieldListener();
+		GridBagConstraints cs = new GridBagConstraints();
+		
+		cs.fill = GridBagConstraints.HORIZONTAL;
+		cs.insets = new Insets(0, 0, 5, 5);
+		
+		String queryTypes = "SELECT control_board_types.type "
+				+ "FROM control_board_types "
+				+ "GROUP BY control_board_types.type";
+		
+		String queryInstallations = "SELECT installations.installation "
+				+ "FROM installations "
+				+ "GROUP BY installations.installation";
+		
+		String queryNemas = "SELECT nemas.nema "
+				+ "FROM nemas "
+				+ "GROUP BY nemas.nema";
+		
+		String queryBarCapacities = "SELECT control_board_bar_capacities.bar_capacity "
+				+ "FROM control_board_bar_capacities "
+				+ "GROUP BY control_board_bar_capacities.bar_capacity";
+		
+		String queryBarTypes = "SELECT control_board_bar_types.bar_type "
+				+ "FROM control_board_bar_types "
+				+ "GROUP BY control_board_bar_types.bar_type";
+		
+		String queryCircuits = "SELECT control_board_circuits.circuits "
+				+ "FROM control_board_circuits "
+				+ "GROUP BY control_board_circuits.circuits";
+		
+		String queryVoltages = "SELECT control_board_voltages.voltage "
+				+ "FROM control_board_voltages "
+				+ "GROUP BY control_board_voltages.voltage";
+		
+		String[] phases = {"1", "2", "3"};
+		
+		String queryInterruptions = "SELECT interruptions.interruption "
+				+ "FROM interruptions "
+				+ "GROUP BY interruptions.interruption";
+		
+		String queryLockTypes = "SELECT lock_types.lock_type "
+				+ "FROM lock_types "
+				+ "GROUP BY lock_types.lock_type";
+		
+		JLabel labelName = new JLabel("Nombre:");
+		cs.gridx = 0;
+		cs.gridy = 0;
+		cs.gridwidth = 1;
+		editPanel.add(labelName, cs);
+		
+		textControlBoardEditName = new JTextField(4);
+		cs.gridx = 1;
+		cs.gridy = 0;
+		cs.gridwidth = 6;
+		editPanel.add(textControlBoardEditName, cs);
+		
+		JLabel labelType = new JLabel("Tipo:");
+		cs.gridx = 7;
+		cs.gridy = 0;
+		cs.gridwidth = 1;
+		editPanel.add(labelType, cs);
+		
+		comboControlBoardEditType = new JComboBox<String>(new Vector<String>(loadComboList(queryTypes, "type")));
+		comboControlBoardEditType.removeItem("Todas");
+		comboControlBoardEditType.setActionCommand("control.description.edit.type");
+		comboControlBoardEditType.addActionListener(lForCombo);
+		editControlBoardType = comboControlBoardEditType.getSelectedItem().toString();
+		cs.gridx = 8;
+		cs.gridy = 0;
+		cs.gridwidth = 6;
+		editPanel.add(comboControlBoardEditType, cs);
+		
+		JLabel labelInstallation = new JLabel("Instalacion:");
+		cs.gridx = 14;
+		cs.gridy = 0;
+		cs.gridwidth = 1;
+		editPanel.add(labelInstallation, cs);
+		
+		comboControlBoardEditInstallation = new JComboBox<String>(new Vector<String>(loadComboList(queryInstallations, "installation")));
+		comboControlBoardEditInstallation.removeItem("Todas");
+		cs.gridx = 15;
+		cs.gridy = 0;
+		cs.gridwidth = 4;
+		editPanel.add(comboControlBoardEditInstallation, cs);
+		
+		JLabel labelNema = new JLabel("Nema:");
+		cs.gridx = 19;
+		cs.gridy = 0;
+		cs.gridwidth = 1;
+		editPanel.add(labelNema, cs);
+		
+		comboControlBoardEditNema = new JComboBox<String>(new Vector<String>(loadComboList(queryNemas, "nema")));
+		comboControlBoardEditNema.removeItem("Todas");
+		comboControlBoardEditNema.setActionCommand("control.description.edit.nema");
+		comboControlBoardEditNema.addActionListener(lForCombo);
+		cs.gridx = 20;
+		cs.gridy = 0;
+		cs.gridwidth = 2;
+		editPanel.add(comboControlBoardEditNema, cs);
+		
+		JLabel labelBarCapacity = new JLabel("Cap. Barra:");
+		cs.gridx = 22;
+		cs.gridy = 0;
+		cs.gridwidth = 1;
+		editPanel.add(labelBarCapacity, cs);
+		
+		comboControlBoardEditBarCapacity = new JComboBox<String>(new Vector<String>(loadComboList(queryBarCapacities, "bar_capacity")));
+		comboControlBoardEditBarCapacity.removeItem("Todas");
+		cs.gridx = 23;
+		cs.gridy = 0;
+		cs.gridwidth = 2;
+		editPanel.add(comboControlBoardEditBarCapacity, cs);
+		
+		JLabel labelBarType = new JLabel("Tipo Barra:");
+		cs.gridx = 25;
+		cs.gridy = 0;
+		cs.gridwidth = 1;
+		editPanel.add(labelBarType, cs);
+		
+		comboControlBoardEditBarType = new JComboBox<String>(new Vector<String>(loadComboList(queryBarTypes, "bar_type")));
+		comboControlBoardEditBarType.removeItem("Todas");
+		cs.gridx = 26;
+		cs.gridy = 0;
+		cs.gridwidth = 4;
+		editPanel.add(comboControlBoardEditBarType, cs);
+		
+		JLabel labelCircuits = new JLabel("Circuitos:");
+		cs.gridx = 0;
+		cs.gridy = 1;
+		cs.gridwidth = 1;
+		editPanel.add(labelCircuits, cs);
+		
+		comboControlBoardEditCircuits = new JComboBox<String>(new Vector<String>(loadComboList(queryCircuits, "circuits")));
+		comboControlBoardEditCircuits.removeItem("Todas");
+		comboControlBoardEditCircuits.setActionCommand("control.description.edit.circuits");
+		comboControlBoardEditCircuits.addActionListener(lForCombo);
+		cs.gridx = 1;
+		cs.gridy = 1;
+		cs.gridwidth = 2;
+		editPanel.add(comboControlBoardEditCircuits, cs);
+		
+		JLabel labelVoltage = new JLabel("Voltaje:");
+		cs.gridx = 3;
+		cs.gridy = 1;
+		cs.gridwidth = 1;
+		editPanel.add(labelVoltage, cs);
+		
+		comboControlBoardEditVoltage = new JComboBox<String>(new Vector<String>(loadComboList(queryVoltages, "voltage")));
+		comboControlBoardEditVoltage.removeItem("Todas");
+		cs.gridx = 4;
+		cs.gridy = 1;
+		cs.gridwidth = 4;
+		editPanel.add(comboControlBoardEditVoltage, cs);
+		
+		JLabel labelPhases = new JLabel("Fases:");
+		cs.gridx = 8;
+		cs.gridy = 1;
+		cs.gridwidth = 1;
+		editPanel.add(labelPhases, cs);
+		
+		comboControlBoardEditPhases = new JComboBox<String>(new Vector<String>(Arrays.asList(phases)));
+		comboControlBoardEditPhases.addKeyListener(lForText);
+		cs.gridx = 9;
+		cs.gridy = 1;
+		cs.gridwidth = 2;
+		editPanel.add(comboControlBoardEditPhases, cs);
+		
+		checkControlBoardEditGround = new JCheckBox("Tierra");
+		cs.gridx = 11;
+		cs.gridy = 1;
+		cs.gridwidth = 2;
+		editPanel.add(checkControlBoardEditGround, cs);
+		
+		JLabel labelInterruption = new JLabel("Interrupcion:");
+		cs.gridx = 13;
+		cs.gridy = 1;
+		cs.gridwidth = 1;
+		editPanel.add(labelInterruption, cs);
+		
+		comboControlBoardEditInterruption = new JComboBox<String>(new Vector<String>(loadComboList(queryInterruptions, "interruption")));
+		comboControlBoardEditInterruption.removeItem("Todas");
+		cs.gridx = 14;
+		cs.gridy = 1;
+		cs.gridwidth = 2;
+		editPanel.add(comboControlBoardEditInterruption, cs);
+		
+		JLabel labelLockType = new JLabel("Cerradura:");
+		cs.gridx = 16;
+		cs.gridy = 1;
+		cs.gridwidth = 1;
+		editPanel.add(labelLockType, cs);
+		
+		comboControlBoardEditLockType = new JComboBox<String>(new Vector<String>(loadComboList(queryLockTypes, "lock_type")));
+		comboControlBoardEditLockType.removeItem("Todas");
+		cs.gridx = 17;
+		cs.gridy = 1;
+		cs.gridwidth = 6;
+		editPanel.add(comboControlBoardEditLockType, cs);
+		
+		JLabel labelPrice = new JLabel("Precio:");
+		cs.gridx = 23;
+		cs.gridy = 1;
+		cs.gridwidth = 1;
+		editPanel.add(labelPrice, cs);
+		
+		textControlBoardEditPrice = new JTextField(6);
+		cs.gridx = 24;
+		cs.gridy = 1;
+		cs.gridwidth = 6;
+		editPanel.add(textControlBoardEditPrice, cs);
+		
+		JLabel labelDescription = new JLabel("Descripcion:");
+		cs.gridx = 0;
+		cs.gridy = 2;
+		cs.gridwidth = 1;
+		editPanel.add(labelDescription, cs);
+		
+		textControlBoardEditDescription = new JTextArea(1,16);
+		textControlBoardEditDescription.setEditable(false);
+		textControlBoardEditDescription.setLineWrap(true);
+		textControlBoardEditDescription.setWrapStyleWord(true);
+		cs.gridx = 0;
+		cs.gridy = 3;
+		cs.gridwidth = 16;
+		editPanel.add(textControlBoardEditDescription, cs);
+		
+		ControlBoardButtonListener lForControlBoardButton = new ControlBoardButtonListener();
+		
+		JPanel panelButtons = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		
+		buttonControlBoardEditSave = new JButton("Guardar");
+		buttonControlBoardEditSave.setActionCommand("control.description.edit.save");
+		buttonControlBoardEditSave.addActionListener(lForControlBoardButton);
+		panelButtons.add(buttonControlBoardEditSave);
+		
+		buttonControlBoardEditCancel = new JButton("Cancelar");
+		buttonControlBoardEditCancel.setActionCommand("control.description.edit.cancel");
+		buttonControlBoardEditCancel.addActionListener(lForControlBoardButton);
+		panelButtons.add(buttonControlBoardEditCancel);
+		
+		cs.gridx = 0;
+		cs.gridy = 4;
+		cs.gridwidth = 30;
+		editPanel.add(panelButtons, cs);
+		
+		updateControlBoardTextEditDescription();
+		
+		return editPanel;
+	}
+	
+	private JPanel createControlBoardMaterialsPanel() {
+		JPanel panelMaterials = new JPanel();
+		panelMaterials.setLayout(new BorderLayout(20, 20));
+		
+		JPanel panelMaterialsCenter = new JPanel();
+		panelMaterialsCenter.setLayout(new GridBagLayout());
+		
+		GridBagConstraints cs = new GridBagConstraints();
+		
+		cs.fill = GridBagConstraints.HORIZONTAL;
+		cs.insets = new Insets(0, 0, 5, 5);
+		
+		JLabel labelMaterials = new JLabel("Materiales:");
+		cs.gridx = 0;
+		cs.gridy = 0;
+		cs.gridwidth = 1;
+		panelMaterialsCenter.add(labelMaterials, cs);
+		
+		textControlBoardMaterials = new JTextArea(30, 100);
+		cs.gridx = 0;
+		cs.gridy = 1;
+		cs.gridwidth = 50;
+		textControlBoardMaterials.setEditable(false);
+		panelMaterialsCenter.add(textControlBoardMaterials, cs);
+		
+		JLabel labelPrice = new JLabel("Precio:");
+		cs.gridx = 0;
+		cs.gridy = 23;
+		cs.gridwidth = 1;
+		panelMaterialsCenter.add(labelPrice, cs);
+		
+		textControlBoardMaterialsPrice = new JTextField();
+		cs.gridx = 0;
+		cs.gridy = 24;
+		cs.gridwidth = 50;
+		panelMaterialsCenter.add(textControlBoardMaterialsPrice, cs);
+		textControlBoardMaterialsPrice.setHorizontalAlignment(JTextField.TRAILING);
+		textControlBoardMaterialsPrice.setEditable(false);
+		
+		ControlBoardButtonListener lForControlBoardButton = new ControlBoardButtonListener();
+		
+		panelControlBoardMaterialsEditSaveCancel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		
+		buttonControlBoardMaterialsEditSave = new JButton("Guardar");
+		buttonControlBoardMaterialsEditSave.setEnabled(false);
+		buttonControlBoardMaterialsEditSave.setActionCommand("control.materials.edit.save");
+		buttonControlBoardMaterialsEditSave.addActionListener(lForControlBoardButton);
+		buttonControlBoardMaterialsEditCancel = new JButton("Cancelar");
+		buttonControlBoardMaterialsEditCancel.setActionCommand("control.materials.edit.cancel");
+		buttonControlBoardMaterialsEditCancel.addActionListener(lForControlBoardButton);
+		buttonControlBoardMaterialsEditCancel.setEnabled(false);
+		panelControlBoardMaterialsEditSaveCancel.add(buttonControlBoardMaterialsEditSave);
+		panelControlBoardMaterialsEditSaveCancel.add(buttonControlBoardMaterialsEditCancel);
+		
+		cs.gridx = 0;
+		cs.gridy = 45;
+		cs.gridwidth = 50;
+		panelMaterialsCenter.add(panelControlBoardMaterialsEditSaveCancel,cs);
+		panelControlBoardMaterialsEditSaveCancel.setVisible(false);
+		
+		panelMaterials.add(panelMaterialsCenter, BorderLayout.CENTER);
+		
+		buttonControlBoardMaterialsEdit = new JButton("Editar");
+		buttonControlBoardMaterialsEdit.setActionCommand("control.materials.edit");
+		buttonControlBoardMaterialsEdit.addActionListener(lForControlBoardButton);
+		buttonControlBoardMaterialsEdit.setEnabled(false);
+		
+		JPanel panelMaterialsButtons = new JPanel();
+		panelMaterialsButtons.add(buttonControlBoardMaterialsEdit);
+		
+		panelMaterials.add(panelMaterialsButtons, BorderLayout.SOUTH);
+		
+		return panelMaterials;
+	}
+	
+	private JPanel createControlBoardCommentsPanel() {
+		JPanel panelComments = new JPanel();
+		panelComments.setLayout(new BorderLayout(20, 20));
+		
+		JPanel panelCommentsCenter = new JPanel();
+		panelCommentsCenter.setLayout(new GridBagLayout());
+		
+		GridBagConstraints cs = new GridBagConstraints();
+		
+		cs.fill = GridBagConstraints.HORIZONTAL;
+		cs.insets = new Insets(0, 0, 5, 5);
+		
+		JLabel labelComments = new JLabel("Observaciones:");
+		cs.gridx = 0;
+		cs.gridy = 0;
+		cs.gridwidth = 1;
+		panelCommentsCenter.add(labelComments, cs);
+		
+		textControlBoardComments = new JTextArea(30, 100);
+		textControlBoardComments.setEditable(false);
+		JScrollPane scrollPane = new JScrollPane(textControlBoardComments);
+		cs.gridx = 0;
+		cs.gridy = 1;
+		cs.gridwidth = 50;
+		panelCommentsCenter.add(scrollPane, cs);
+		
+		ControlBoardButtonListener lForControlBoardButton = new ControlBoardButtonListener();
+		
+		panelControlBoardCommentsEditSaveCancel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		
+		buttonControlBoardCommentsEditSave = new JButton("Guardar");
+		buttonControlBoardCommentsEditSave.setEnabled(false);
+		buttonControlBoardCommentsEditSave.setActionCommand("control.comments.edit.save");
+		buttonControlBoardCommentsEditSave.addActionListener(lForControlBoardButton);
+		buttonControlBoardCommentsEditCancel = new JButton("Cancelar");
+		buttonControlBoardCommentsEditCancel.setActionCommand("control.comments.edit.cancel");
+		buttonControlBoardCommentsEditCancel.addActionListener(lForControlBoardButton);
+		buttonControlBoardCommentsEditCancel.setEnabled(false);
+		panelControlBoardCommentsEditSaveCancel.add(buttonControlBoardCommentsEditSave);
+		panelControlBoardCommentsEditSaveCancel.add(buttonControlBoardCommentsEditCancel);
+		
+		cs.gridx = 0;
+		cs.gridy = 45;
+		cs.gridwidth = 50;
+		panelCommentsCenter.add(panelControlBoardCommentsEditSaveCancel,cs);
+		panelControlBoardCommentsEditSaveCancel.setVisible(false);
+		
+		panelComments.add(panelCommentsCenter, BorderLayout.CENTER);
+		
+		buttonControlBoardCommentsEdit = new JButton("Editar");
+		buttonControlBoardCommentsEdit.setActionCommand("control.comments.edit");
+		buttonControlBoardCommentsEdit.addActionListener(lForControlBoardButton);
+		buttonControlBoardCommentsEdit.setEnabled(false);
+		
+		JPanel panelCommentsButtons = new JPanel();
+		panelCommentsButtons.add(buttonControlBoardCommentsEdit);
+		
+		panelComments.add(panelCommentsButtons, BorderLayout.SOUTH);
+		
+		return panelComments;
+	}
+	
+	private void setControlBoardsMode(int mode) {
+		
+		if(mode == SalesMainView.VIEW_MODE) {
+			if(panelControlBoardAddNew.isVisible()) {
+				buttonControlBoardAdd.setEnabled(true);
+				textControlBoardAddName.setText("");
+				textControlBoardAddPrice.setText("");
+				textControlBoardAddDescription.setText("");
+				loadControlBoardTable("");
+				SwingUtilities.invokeLater(new Runnable(){
+					@Override
+					public void run() {
+						panelWrapperControlBoardDescription.remove(panelControlBoardAddNew);
+						panelWrapperControlBoardDescription.validate();
+						panelWrapperControlBoardDescription.repaint();
+						panelControlBoardAddNew.setVisible(false);
+						
+						panelControlBoardDescription.setVisible(true);
+						panelWrapperControlBoardDescription.add(panelControlBoardDescription);
+						panelWrapperControlBoardDescription.validate();
+						panelWrapperControlBoardDescription.repaint();
+						
+						controlBoardsFrame.validate();
+						controlBoardsFrame.repaint();
+					}
+				});
+			} else if (panelControlBoardEdit.isVisible()) {
+				buttonControlBoardAdd.setEnabled(true);
+				loadControlBoardTable("");
+				SwingUtilities.invokeLater(new Runnable(){
+					@Override
+					public void run() {
+						panelWrapperControlBoardDescription.remove(panelControlBoardEdit);
+						panelWrapperControlBoardDescription.validate();
+						panelWrapperControlBoardDescription.repaint();
+						panelControlBoardEdit.setVisible(false);
+						
+						panelControlBoardDescription.setVisible(true);
+						panelWrapperControlBoardDescription.add(panelControlBoardDescription);
+						panelWrapperControlBoardDescription.validate();
+						panelWrapperControlBoardDescription.repaint();
+						
+						controlBoardsFrame.validate();
+						controlBoardsFrame.repaint();
+					}
+				});
+			}
+		} else if(mode == SalesMainView.ADD_MODE) {
+			buttonControlBoardAdd.setEnabled(false);
+			buttonControlBoardEdit.setEnabled(false);
+			textControlBoardMaterials.setText("");
+			textControlBoardMaterials.setEditable(false);
+			textControlBoardMaterialsPrice.setText("");
+			textControlBoardMaterialsPrice.setEditable(false);
+			buttonControlBoardMaterialsEdit.setEnabled(false);
+			textControlBoardComments.setText("");
+			textControlBoardComments.setEditable(false);
+			buttonControlBoardCommentsEdit.setEnabled(false);
+			textControlBoardDescriptionName.setText("");
+			textControlBoardDescriptionPrice.setText("");
+			tableControlBoardsResult.clearSelection();
+//			selectedTableControlBoardCircuits = 0;
+			SwingUtilities.invokeLater(new Runnable(){
+				@Override
+				public void run() {
+					panelWrapperControlBoardDescription.remove(panelControlBoardDescription);
+					panelWrapperControlBoardDescription.validate();
+					panelWrapperControlBoardDescription.repaint();
+					panelControlBoardDescription.setVisible(false);
+					
+					panelControlBoardAddNew.setVisible(true);
+					panelWrapperControlBoardDescription.add(panelControlBoardAddNew);
+					panelWrapperControlBoardDescription.validate();
+					panelWrapperControlBoardDescription.repaint();
+					
+					updateControlBoardTextAddDescription();
+					
+					controlBoardsFrame.validate();
+					controlBoardsFrame.repaint();
+				}
+			});
+		} else if(mode == SalesMainView.EDIT_MODE) {
+			buttonControlBoardAdd.setEnabled(false);
+			buttonControlBoardEdit.setEnabled(false);
+			textControlBoardMaterials.setEditable(false);
+			textControlBoardMaterialsPrice.setEditable(false);
+			buttonControlBoardMaterialsEdit.setEnabled(false);
+			textControlBoardComments.setEditable(false);
+			buttonControlBoardCommentsEdit.setEnabled(false);
+			editControlBoardId = Integer.valueOf(String.valueOf(tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, SharedListSelectionListener.CONTROL_BOARD_ID_COLUMN)));
+			editControlBoardName = String.valueOf(tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, SharedListSelectionListener.CONTROL_BOARD_NAME_COLUMN));
+			editControlBoardType = String.valueOf(tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, SharedListSelectionListener.CONTROL_BOARD_TYPE_COLUMN));
+			editControlBoardInstallation = String.valueOf(tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, SharedListSelectionListener.CONTROL_BOARD_INSTALLATION_COLUMN));
+			editControlBoardNema = String.valueOf(tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, SharedListSelectionListener.CONTROL_BOARD_NEMA_COLUMN));
+			editControlBoardBarCapacity = String.valueOf(tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, SharedListSelectionListener.CONTROL_BOARD_BAR_CAPACITY_COLUMN));
+			editControlBoardBarType = String.valueOf(tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, SharedListSelectionListener.BOARD_BAR_TYPE_COLUMN));
+			editControlBoardCircuits = String.valueOf(tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, SharedListSelectionListener.CONTROL_BOARD_CIRCUITS_COLUMN));
+			editControlBoardVoltage = String.valueOf(tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, SharedListSelectionListener.CONTROL_BOARD_VOLTAGE_COLUMN));
+			editControlBoardPhases = Integer.valueOf(String.valueOf(tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, SharedListSelectionListener.CONTROL_BOARD_PHASES_COLUMN)));
+			editControlBoardGround = String.valueOf(tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, SharedListSelectionListener.CONTROL_BOARD_GROUND_COLUMN));
+			editControlBoardInterruption = String.valueOf(tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, SharedListSelectionListener.CONTROL_BOARD_INTERRUPTION_COLUMN));
+			editControlBoardLockType = String.valueOf(tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, SharedListSelectionListener.CONTROL_BOARD_LOCK_TYPE_COLUMN));
+			editControlBoardPrice = Double.valueOf(String.valueOf(tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, SharedListSelectionListener.CONTROL_BOARD_PRICE_COLUMN)));
+			
+			String queryTypes = "SELECT control_board_types.type "
+					+ "FROM control_board_types "
+					+ "GROUP BY control_board_types.type";
+			
+			String queryInstallations = "SELECT installation "
+					+ "FROM installations "
+					+ "GROUP BY installations.installation";
+			
+			String queryNemas = "SELECT nemas.nema "
+					+ "FROM nemas "
+					+ "GROUP BY nemas.nema";
+			
+			String queryBarCapacities = "SELECT control_board_bar_capacities.bar_capacity "
+					+ "FROM control_board_bar_capacities "
+					+ "GROUP BY control_board_bar_capacities.bar_capacity";
+			
+			String queryBarTypes = "SELECT control_board_bar_types.bar_type "
+					+ "FROM control_board_bar_types "
+					+ "GROUP BY control_board_bar_types.bar_type";
+			
+			String queryCircuits = "SELECT control_board_circuits.circuits "
+					+ "FROM control_board_circuits "
+					+ "GROUP BY control_board_circuits.circuits";
+			
+			String queryVoltages = "SELECT control_board_voltages.voltage "
+					+ "FROM control_board_voltages "
+					+ "GROUP BY control_board_voltages.voltage";
+			
+			String[] phases = {"1", "2", "3"};
+					
+			String queryInterruptions = "SELECT interruptions.interruption "
+					+ "FROM interruptions "
+					+ "GROUP BY interruptions.interruption";
+			
+			String queryLockTypes = "SELECT lock_types.lock_type "
+					+ "FROM lock_types "
+					+ "GROUP BY lock_types.lock_type";
+			
+			textControlBoardEditName.setText(editControlBoardName);
+			
+			comboControlBoardEditType.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadComboList(queryTypes, "type"))));
+			comboControlBoardEditType.removeItem("Todas");
+			comboControlBoardEditType.setSelectedItem(editControlBoardType);
+			
+			comboControlBoardEditInstallation.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadComboList(queryInstallations, "installation"))));
+			comboControlBoardEditInstallation.removeItem("Todas");
+			comboControlBoardEditInstallation.removeItem("Embutido");
+			comboControlBoardEditInstallation.setSelectedItem(editControlBoardInstallation);
+			
+			comboControlBoardEditNema.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadComboList(queryNemas, "nema"))));
+			comboControlBoardEditNema.removeItem("Todas");
+			comboControlBoardEditNema.setSelectedItem(editControlBoardNema);
+			
+			comboControlBoardEditBarCapacity.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadComboList(queryBarCapacities, "bar_capacity"))));
+			comboControlBoardEditBarCapacity.removeItem("Todas");
+			comboControlBoardEditBarCapacity.addItem("N/A");
+			comboControlBoardEditBarCapacity.setSelectedItem(editControlBoardBarCapacity);
+			
+			comboControlBoardEditBarType.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadComboList(queryBarTypes, "bar_type"))));
+			comboControlBoardEditBarType.removeItem("Todas");
+			comboControlBoardEditBarType.addItem("N/A");
+			comboControlBoardEditBarType.setSelectedItem(editControlBoardBarType);
+			
+			comboControlBoardEditCircuits.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadComboList(queryCircuits, "circuits"))));
+			comboControlBoardEditCircuits.removeItem("Todas");
+			comboControlBoardEditCircuits.addItem("N/A");
+			comboControlBoardEditCircuits.setSelectedItem(editControlBoardCircuits);
+			
+			comboControlBoardEditVoltage.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadComboList(queryVoltages, "voltage"))));
+			comboControlBoardEditVoltage.removeItem("Todas");
+			comboControlBoardEditVoltage.setSelectedItem(editControlBoardVoltage);
+			
+			comboControlBoardEditPhases.setModel(new DefaultComboBoxModel<String>(new Vector<String>(Arrays.asList(phases))));
+			comboControlBoardEditPhases.setSelectedItem(String.valueOf(editControlBoardPhases));
+			
+			checkControlBoardEditGround.setSelected((editControlBoardGround.equalsIgnoreCase("SI")?true:false));
+			
+			comboControlBoardEditInterruption.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadComboList(queryInterruptions, "interruption"))));
+			comboControlBoardEditInterruption.removeItem("Todas");
+			comboControlBoardEditInterruption.addItem("N/A");
+			comboControlBoardEditInterruption.setSelectedItem(editControlBoardInterruption);
+			
+			comboControlBoardEditLockType.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadComboList(queryLockTypes, "lock_type"))));
+			comboControlBoardEditLockType.removeItem("Todas");
+			comboControlBoardEditLockType.addItem("N/A");
+			comboControlBoardEditLockType.setSelectedItem(editControlBoardLockType);
+
+			textControlBoardEditPrice.setText(String.valueOf(editControlBoardPrice));
+			
+			SwingUtilities.invokeLater(new Runnable(){
+				@Override
+				public void run() {
+					panelWrapperControlBoardDescription.remove(panelControlBoardDescription);
+					panelWrapperControlBoardDescription.validate();
+					panelWrapperControlBoardDescription.repaint();
+					panelControlBoardDescription.setVisible(false);
+					
+					panelControlBoardEdit.setVisible(true);
+					panelWrapperControlBoardDescription.add(panelControlBoardEdit);
+					panelWrapperControlBoardDescription.validate();
+					panelWrapperControlBoardDescription.repaint();
+					
+					controlBoardsFrame.validate();
+					controlBoardsFrame.repaint();
+				}
+			});
+			this.updateControlBoardTextEditDescription();
+			textControlBoardDescriptionName.setText("");
+			textControlBoardDescriptionType.setText("");
+			textControlBoardDescriptionInstallation.setText("");
+			textControlBoardDescriptionNema.setText("");
+			textControlBoardDescriptionBarCapacity.setText("");
+			textControlBoardDescriptionBarType.setText("");
+			textControlBoardDescriptionCircuits.setText("");
+			textControlBoardDescriptionVoltage.setText("");
+			textControlBoardDescriptionPhases.setText("");
+			textControlBoardDescriptionGround.setText("");
+			textControlBoardDescriptionInterruption.setText("");
+			textControlBoardDescriptionLockType.setText("");
+			textControlBoardDescriptionPrice.setText("");
+			textControlBoardDescription.setText("");
+		}
+		
+	}
+	
+	private void loadControlBoardTable(String whereQuery) {
+		
+		String limitQuery = "";
+		
+		searchSelectedControlBoardType = comboControlBoardTypes.getSelectedItem().toString();
+		searchSelectedControlBoardInstallation = comboControlBoardInstallations.getSelectedItem().toString();
+		searchSelectedControlBoardNema = comboControlBoardNemas.getSelectedItem().toString();
+		searchSelectedControlBoardBarCapacity = comboControlBoardBarCapacities.getSelectedItem().toString();
+		searchSelectedControlBoardBarType = comboControlBoardBarTypes.getSelectedItem().toString();
+		searchSelectedControlBoardCircuits = comboControlBoardCircuits.getSelectedItem().toString();
+		searchSelectedControlBoardVoltage = comboControlBoardVoltages.getSelectedItem().toString();
+		searchSelectedControlBoardPhases = comboControlBoardPhases.getSelectedItem().toString();
+		searchSelectedControlBoardGround = comboControlBoardGround.getSelectedItem().toString();
+		searchSelectedControlBoardInterruption = comboControlBoardInterruptions.getSelectedItem().toString();
+		searchSelectedControlBoardLockType = comboControlBoardLockTypes.getSelectedItem().toString();
+		if(null != textControlBoardSearchNames && !textControlBoardSearchNames.getText().isEmpty()) {
+			whereQuery += " AND " + SalesMainView.CONTROL_BOARD_TABLE + ".name LIKE '%" + textControlBoardSearchNames.getText() + "%'";
+		}
+		if(null != searchSelectedControlBoardType  && !searchSelectedControlBoardType.equalsIgnoreCase("Todas") &&
+				!searchSelectedControlBoardType.isEmpty()) {
+			whereQuery += " AND " + SalesMainView.CONTROL_BOARD_TYPES_TABLE + ".type = '" + searchSelectedControlBoardType + "'";
+		}
+		if(searchSelectedControlBoardInstallation != null && !searchSelectedControlBoardInstallation.equalsIgnoreCase("Todas") &&
+				!searchSelectedControlBoardInstallation.isEmpty()) {
+			whereQuery += " AND " + SalesMainView.CONTROL_BOARD_TABLE + ".installation_id = " + SalesMainView.INSTALLATIONS_TABLE + ".id ";
+			whereQuery += " AND " + SalesMainView.INSTALLATIONS_TABLE + ".installation = '" + searchSelectedControlBoardInstallation + "'";
+		}
+		if(searchSelectedControlBoardNema != null && !searchSelectedControlBoardNema.equalsIgnoreCase("Todas") &&
+				!searchSelectedControlBoardNema.isEmpty()) {
+			whereQuery += " AND " + SalesMainView.CONTROL_BOARD_TABLE + ".nema_id = " + SalesMainView.NEMAS_TABLE + ".id ";
+			whereQuery += " AND " + SalesMainView.NEMAS_TABLE + ".nema = '" + searchSelectedControlBoardNema + "'";
+		}
+		if(searchSelectedControlBoardBarCapacity != null && !searchSelectedControlBoardBarCapacity.equalsIgnoreCase("Todas") &&
+				!searchSelectedControlBoardBarCapacity.isEmpty() && !searchSelectedControlBoardBarCapacity.equalsIgnoreCase("N/A")) {
+			whereQuery += " AND " + SalesMainView.CONTROL_BOARD_TABLE + ".bar_capacity_id = " + SalesMainView.CONTROL_BOARD_BAR_CAPACITIES_TABLE + ".id ";
+			whereQuery += " AND " + SalesMainView.CONTROL_BOARD_BAR_CAPACITIES_TABLE + ".bar_capacity = '" + searchSelectedControlBoardBarCapacity + "'";
+		}
+		if(searchSelectedControlBoardBarType != null && !searchSelectedControlBoardBarType.equalsIgnoreCase("Todas") &&
+				!searchSelectedControlBoardBarType.isEmpty() && !searchSelectedControlBoardBarType.equalsIgnoreCase("N/A")) {
+			whereQuery += " AND " + SalesMainView.CONTROL_BOARD_TABLE + ".bar_type_id = " + SalesMainView.CONTROL_BOARD_BAR_TYPES_TABLE + ".id ";
+			whereQuery += " AND " + SalesMainView.CONTROL_BOARD_BAR_TYPES_TABLE + ".bar_type = '" + searchSelectedControlBoardBarType + "'";
+		}
+		if(searchSelectedControlBoardCircuits != null && !searchSelectedControlBoardCircuits.equalsIgnoreCase("Todas") &&
+				!searchSelectedControlBoardCircuits.isEmpty() && !searchSelectedControlBoardCircuits.equalsIgnoreCase("N/A")) {
+			whereQuery += " AND " + SalesMainView.CONTROL_BOARD_TABLE + ".circuits_id = " + SalesMainView.CONTROL_BOARD_CIRCUITS_TABLE + ".id ";
+			whereQuery += " AND " + SalesMainView.CONTROL_BOARD_CIRCUITS_TABLE + ".circuits = '" + searchSelectedControlBoardCircuits + "'";
+		}
+		if(searchSelectedControlBoardVoltage != null && !searchSelectedControlBoardVoltage.equalsIgnoreCase("Todas") &&
+				!searchSelectedControlBoardVoltage.isEmpty()) {
+			whereQuery += " AND " + SalesMainView.CONTROL_BOARD_TABLE + ".voltage_id = " + SalesMainView.CONTROL_BOARD_VOLTAGES_TABLE + ".id ";
+			whereQuery += " AND " + SalesMainView.CONTROL_BOARD_VOLTAGES_TABLE + ".voltage = '" + searchSelectedControlBoardVoltage + "'";
+		}
+		if(searchSelectedControlBoardPhases != null && !searchSelectedControlBoardPhases.equalsIgnoreCase("Todas") &&
+				!searchSelectedControlBoardPhases.isEmpty()) {
+			whereQuery += " AND " + SalesMainView.CONTROL_BOARD_TABLE + ".phases = '" + searchSelectedControlBoardPhases + "'";
+		}
+		if(searchSelectedControlBoardGround != null && !searchSelectedControlBoardGround.equalsIgnoreCase("Todas") &&
+				!searchSelectedControlBoardGround.isEmpty()) {
+			whereQuery += " AND " + SalesMainView.CONTROL_BOARD_TABLE + ".ground = '" + (searchSelectedControlBoardGround.equalsIgnoreCase("SI")?"1":"0") + "'";
+		}
+		if(searchSelectedControlBoardInterruption != null && !searchSelectedControlBoardInterruption.equalsIgnoreCase("Todas") &&
+				!searchSelectedControlBoardInterruption.isEmpty() && !searchSelectedControlBoardInterruption.equalsIgnoreCase("N/A")) {
+			whereQuery += " AND " + SalesMainView.CONTROL_BOARD_TABLE + ".interruption_id = " + SalesMainView.INTERRUPTIONS_TABLE + ".id ";
+			whereQuery += " AND " + SalesMainView.INTERRUPTIONS_TABLE + ".interruption = '" + searchSelectedControlBoardInterruption + "'";
+		}
+		if(searchSelectedControlBoardLockType != null && !searchSelectedControlBoardLockType.equalsIgnoreCase("Todas") &&
+				!searchSelectedControlBoardLockType.isEmpty() && !searchSelectedControlBoardLockType.equalsIgnoreCase("N/A")) {
+			whereQuery += " AND " + SalesMainView.CONTROL_BOARD_TABLE + ".lock_type_id = " + SalesMainView.LOCK_TYPES_TABLE + ".id ";
+			whereQuery += " AND " + SalesMainView.LOCK_TYPES_TABLE + ".lock_type = '" + searchSelectedControlBoardLockType + "'";
+		}
+		
+		if(whereQuery.isEmpty()) {
+			limitQuery = " LIMIT 10";
+		} else {
+			limitQuery = " LIMIT 100";
+		}
+		
+		ArrayList<String> fields = new ArrayList<String>();
+		fields.add(SalesMainView.CONTROL_BOARD_ID_FIELD);
+		fields.add(SalesMainView.CONTROL_BOARD_NAME_FIELD);
+		fields.add(SalesMainView.CONTROL_BOARD_TYPE_FIELD);
+		fields.add(SalesMainView.INSTALLATION_FIELD);
+		fields.add(SalesMainView.NEMA_FIELD);
+		fields.add(SalesMainView.CONTROL_BOARD_BAR_CAPACITY_FIELD);
+		fields.add(SalesMainView.CONTROL_BOARD_BAR_TYPE_FIELD);
+		fields.add(SalesMainView.CONTROL_BOARD_CIRCUITS_FIELD);
+		fields.add(SalesMainView.CONTROL_BOARD_VOLTAGE_FIELD);
+		fields.add(SalesMainView.CONTROL_BOARD_PHASES_FIELD);
+		fields.add(SalesMainView.CONTROL_BOARD_GROUND_FIELD);
+		fields.add(SalesMainView.CONTROL_BOARD_INTERRUPTION_FIELD);
+		fields.add(SalesMainView.CONTROL_BOARD_LOCK_TYPE_FIELD);
+		fields.add(SalesMainView.CONTROL_BOARD_PRICE_FIELD);
+		
+		ArrayList<String> tables = new ArrayList<String>();
+		tables.add(SalesMainView.CONTROL_BOARD_TABLE);
+		tables.add(SalesMainView.CONTROL_BOARD_TYPES_TABLE);
+		tables.add(SalesMainView.INSTALLATIONS_TABLE);
+		tables.add(SalesMainView.NEMAS_TABLE);
+		tables.add(SalesMainView.CONTROL_BOARD_BAR_CAPACITIES_TABLE);
+		tables.add(SalesMainView.CONTROL_BOARD_BAR_TYPES_TABLE);
+		tables.add(SalesMainView.CONTROL_BOARD_CIRCUITS_TABLE);
+		tables.add(SalesMainView.CONTROL_BOARD_VOLTAGES_TABLE);
+		tables.add(SalesMainView.INTERRUPTIONS_TABLE);
+		tables.add(SalesMainView.LOCK_TYPES_TABLE);
+		
+		String fieldsQuery = StringTools.implode(",", fields);
+		String tablesQuery = StringTools.implode(",", tables);
+		String controlBoardsQuery = "SELECT " + fieldsQuery
+						+ " FROM "
+						+ tablesQuery
+						+ " WHERE control_boards.type_id = control_board_types.id "
+						+ "AND control_boards.installation_id = installations.id "
+						+ "AND control_boards.nema_id = nemas.id "
+						+ "AND ( (control_boards.bar_capacity_id > 0 "
+							+ "AND control_boards.bar_capacity_id = control_board_bar_capacities.id) "
+							+ "OR control_boards.bar_capacity_id = 0)"
+						+ "AND ( (control_boards.bar_type_id > 0 "
+							+ "AND control_boards.bar_type_id = control_board_bar_types.id) "
+							+ "OR control_boards.bar_type_id = 0)"
+						+ "AND ( (control_boards.circuits_id > 0 "
+							+ "AND control_boards.circuits_id = control_board_circuits.id) "
+							+ "OR control_boards.circuits_id = 0)"
+						+ "AND control_boards.voltage_id = control_board_voltages.id "
+						+ "AND ( (control_boards.interruption_id > 0 "
+							+ "AND control_boards.interruption_id = interruptions.id) "
+							+ "OR control_boards.interruption_id = 0)"
+						+ "AND ( (control_boards.lock_type_id > 0 "
+							+ "AND control_boards.lock_type_id = lock_types.id) "
+							+ "OR control_boards.lock_type_id = 0)"
+						+ "AND control_boards.active = '1' "
+						+ whereQuery
+						+ " GROUP BY control_boards.id "
+						+ limitQuery;
+
+		controlBoardsData = db.fetchAll(db.select(controlBoardsQuery));
+		
+		String[] controlBoardsColumnNames = { "Id", "Nombre", "Tipo", "Instalacion", "Nema", "Cap. Barra", "Tipo Barra", "Circuitos", "Voltaje", "Fases", "Tierra", "Interrupcion", "Cerradura", "Precio"};
+		
+		if(controlBoardsData.length > 0) {
+			tableControlBoardsResult.setModel(new MyTableModel(controlBoardsData, controlBoardsColumnNames));
+		} else {
+			tableControlBoardsResult.setModel(new DefaultTableModel());
+		}
+//		selectedTableControlBoardCircuits = 0;
+		tableControlBoardSwitchesResult.setModel(new DefaultTableModel());
+		buttonAddControlBoardSwitch.setEnabled(false);
+		buttonRemoveControlBoardSwitch.setEnabled(false);
+	}
+	
+	private void loadControlBoardSwitchTable() {
+		String controlBoardSwitchesQuery = "SELECT control_board_switches.id, "
+				+ " CONCAT('Interruptor ', control_boards.phases, 'X', currents.current, 'A,', switch_models.model, ',', switch_brands.brand) as description, "
+				+ " control_board_switches.quantity, "
+				+ " switches.price, "
+				+ " (control_board_switches.quantity * switches.price) as total, "
+				+ " control_board_switches.main as principal "
+			+ " FROM control_boards, control_board_switches, switches, switch_models, switch_brands, currents "
+			+ " WHERE control_board_switches.control_board_container_id = " + selectedControlBoardId
+			+ " AND control_boards.id = control_board_switches.control_board_container_id"
+			+ " AND switches.id = control_board_switches.switch_id "
+			+ " AND switches.current_id = currents.id"
+			+ " AND switches.model_id = switch_models.id"
+			+ " AND switches.brand_id = switch_brands.id"
+			+ " ORDER BY principal DESC, switches.phases DESC, currents.current DESC ";
+		
+		String[] controlBoardSwitchesColumnNames = { "Id", "Descripcion", "Cantidad", "Precio", "Total", "Principal"};
+		controlBoardSwitchesData = db.fetchAllAddBoolean(db.select(controlBoardSwitchesQuery), controlBoardSwitchesColumnNames.length);
+		
+		HashSet<Integer> editableColumns = new HashSet<Integer>();
+		editableColumns.add(new Integer(5));
+		
+		if(controlBoardSwitchesData.length > 0) {
+			MyTableModel mForTable = new MyTableModel(controlBoardSwitchesData, controlBoardSwitchesColumnNames, "control_board_switches", editableColumns);
+			tableControlBoardSwitchesResult.setModel(mForTable);
+			if(null != tableControlBoardSwitchesResult && tableControlBoardSwitchesResult.getSelectedRow() == -1) {
+				buttonRemoveControlBoardSwitch.setEnabled(false);
+			}
+		} else {
+			tableControlBoardSwitchesResult.setModel(new DefaultTableModel());
+			buttonRemoveControlBoardSwitch.setEnabled(false);
+		}
+		buttonAddControlBoardSwitch.setEnabled(true);
+	}
+	
+	private void loadControlBoardSwitchSearchTable(String whereQuery) {
+		String switchesQuery = "SELECT switches.id, "
+				+ "switches.reference, "
+				+ "switch_brands.brand, "
+				+ "switch_models.model, "
+				+ "switches.phases, "
+				+ "currents.current, "
+				+ "interruptions.interruption, "
+				+ "switch_voltages.voltage, "
+				+ "switches.price "
+			+ "FROM switches, "
+				+ "switch_brands, "
+				+ "switch_models, "
+				+ "currents, "
+				+ "interruptions, "
+				+ "switch_voltages "
+			+ "WHERE switches.brand_id = switch_brands.id "
+			+ "AND switches.model_id = switch_models.id "
+			+ "AND switches.current_id = currents.id "
+			+ "AND switches.interruption_id = interruptions.id "
+			+ "AND switches.voltage_id = switch_voltages.id "
+			+ "AND switches.active = '1' "
+			+ whereQuery;
+
+		controlBoardSwitchesSearchData = db.fetchAll(db.select(switchesQuery));
+		
+		String[] switchesColumnNames = { "Id", "Referencia", "Marca", "Modelo", "Fases", "Amperaje", "Interrupcion", "Voltaje", "Precio"};
+		
+		if(controlBoardSwitchesSearchData.length > 0) {
+			tableControlBoardSwitchesSearchResult.setModel(new MyTableModel(controlBoardSwitchesSearchData, switchesColumnNames));
+		} else {
+			tableControlBoardSwitchesSearchResult.setModel(new DefaultTableModel());
+		}
+	}
+	
+	private void updateControlBoardTextAddDescription() {
+		String controlBoardType = (null != comboControlBoardAddType.getSelectedItem().toString())?comboControlBoardAddType.getSelectedItem().toString():"";
+		String controlBoardPhases =(null != comboControlBoardAddPhases.getSelectedItem().toString())?comboControlBoardAddPhases.getSelectedItem().toString():"";
+		String controlBoardCircuits =(null != comboControlBoardAddCircuits.getSelectedItem().toString())?comboControlBoardAddCircuits.getSelectedItem().toString():"";
+		String controlBoardNema =(null != comboControlBoardAddNema.getSelectedItem().toString())?comboControlBoardAddNema.getSelectedItem().toString():"";
+		if(null != textControlBoardAddDescription) {
+			textControlBoardAddDescription.setText("Caja para Tablero, " +
+					controlBoardType +
+					", " +
+					controlBoardPhases +
+					", de " +
+					controlBoardCircuits +
+					" circuitos, " +
+					controlBoardNema);
+		}
+	}
+	
+	private void updateControlBoardTextEditDescription() {
+		String controlBoardType = (null != comboControlBoardEditType.getSelectedItem().toString())?comboControlBoardEditType.getSelectedItem().toString():"";
+		String controlBoardPhases =(null != comboControlBoardEditPhases.getSelectedItem().toString())?comboControlBoardEditPhases.getSelectedItem().toString():"";
+		String controlBoardCircuits =(null != comboControlBoardEditCircuits.getSelectedItem().toString())?comboControlBoardEditCircuits.getSelectedItem().toString():"";
+		String controlBoardNema =(null != comboControlBoardEditNema.getSelectedItem().toString())?comboControlBoardEditNema.getSelectedItem().toString():"";
+		if(null != textControlBoardEditDescription) {
+			textControlBoardEditDescription.setText("Caja para Tablero, " +
+					controlBoardType +
+					", " +
+					controlBoardPhases +
+					", de " +
+					controlBoardCircuits +
+					" circuitos, " +
+					controlBoardNema);
 		}
 	}
 	
@@ -5205,9 +7156,10 @@ public class SalesMainView extends JFrame{
 		budgetViewTabbedPane.addTab("Notas", null, budgetNotesPanel, "Notas");
 		budgetViewTabbedPane.setFont(new Font(null, Font.BOLD, 16));
 		
-		for(Integer i = 1; i < budgetViewTabbedPane.getTabCount(); i++) {
-			budgetViewTabbedPane.setEnabledAt(i, false);
-		}
+		setTabsEnabled(budgetViewTabbedPane, false);
+//		for(Integer i = 1; i < budgetViewTabbedPane.getTabCount(); i++) {
+//			budgetViewTabbedPane.setEnabledAt(i, false);
+//		}
 		
 		return budgetViewTabbedPane;
 	}
@@ -5870,94 +7822,94 @@ public class SalesMainView extends JFrame{
 		cs.gridwidth = 1;
 		panelBudgetDescription.add(labelClient, cs);
 		
-		textBudgetDescriptionClient = new JTextField("", 10);
+		textBudgetDescriptionClient = new JTextField("", 12);
 		textBudgetDescriptionClient.setEditable(false);
 		cs.gridx = 1;
 		cs.gridy = 1;
-		cs.gridwidth = 10;
+		cs.gridwidth = 12;
 		panelBudgetDescription.add(textBudgetDescriptionClient, cs);
 		
 		JLabel labelClientRepresentative = new JLabel("Representante de la Empresa:");
-		cs.gridx = 11;
+		cs.gridx = 13;
 		cs.gridy = 1;
 		cs.gridwidth = 1;
 		panelBudgetDescription.add(labelClientRepresentative, cs);
 		
-		textBudgetDescriptionClientRepresentative = new JTextField("", 10);
+		textBudgetDescriptionClientRepresentative = new JTextField("", 12);
 		textBudgetDescriptionClientRepresentative.setEditable(false);
-		cs.gridx = 12;
+		cs.gridx = 14;
 		cs.gridy = 1;
-		cs.gridwidth = 10;
+		cs.gridwidth = 12;
 		panelBudgetDescription.add(textBudgetDescriptionClientRepresentative, cs);
 		
 		JLabel labelWorkName = new JLabel("Nombre de la Obra:");
-		cs.gridx = 22;
+		cs.gridx = 26;
 		cs.gridy = 1;
 		cs.gridwidth = 1;
 		panelBudgetDescription.add(labelWorkName, cs);
 		
 		textBudgetDescriptionWorkName = new JTextField("", 10);
 		textBudgetDescriptionWorkName.setEditable(false);
-		cs.gridx = 23;
+		cs.gridx = 27;
 		cs.gridy = 1;
 		cs.gridwidth = 10;
 		panelBudgetDescription.add(textBudgetDescriptionWorkName, cs);
 		
 		JLabel labelPaymentMethod = new JLabel("Forma de Pago:");
-		cs.gridx = 33;
+		cs.gridx = 37;
 		cs.gridy = 1;
 		cs.gridwidth = 1;
 		panelBudgetDescription.add(labelPaymentMethod, cs);
 		
-		textBudgetDescriptionPaymentMethod = new JTextField("", 8);
+		textBudgetDescriptionPaymentMethod = new JTextField("", 14);
 		textBudgetDescriptionPaymentMethod.setEditable(false);
-		cs.gridx = 34;
+		cs.gridx = 38;
 		cs.gridy = 1;
-		cs.gridwidth = 8;
+		cs.gridwidth = 14;
 		panelBudgetDescription.add(textBudgetDescriptionPaymentMethod, cs);
 		
 		JLabel labelSeller = new JLabel("Vendedor:");
-		cs.gridx = 42;
-		cs.gridy = 1;
+		cs.gridx = 0;
+		cs.gridy = 2;
 		cs.gridwidth = 1;
 		panelBudgetDescription.add(labelSeller, cs);
 		
-		textBudgetDescriptionSeller = new JTextField("", 10);
+		textBudgetDescriptionSeller = new JTextField("", 12);
 		textBudgetDescriptionSeller.setEditable(false);
-		cs.gridx = 43;
-		cs.gridy = 1;
-		cs.gridwidth = 10;
+		cs.gridx = 1;
+		cs.gridy = 2;
+		cs.gridwidth = 12;
 		panelBudgetDescription.add(textBudgetDescriptionSeller, cs);
 		
 		JLabel labelDispatchPlace = new JLabel("Sitio de entrega:");
-		cs.gridx = 0;
+		cs.gridx = 13;
 		cs.gridy = 2;
 		cs.gridwidth = 1;
 		panelBudgetDescription.add(labelDispatchPlace, cs);
 		
-		textBudgetDescriptionDispatchPlace = new JTextField("", 10);
+		textBudgetDescriptionDispatchPlace = new JTextField("", 12);
 		textBudgetDescriptionDispatchPlace.setEditable(false);
-		cs.gridx = 1;
+		cs.gridx = 14;
 		cs.gridy = 2;
-		cs.gridwidth = 10;
+		cs.gridwidth = 12;
 		panelBudgetDescription.add(textBudgetDescriptionDispatchPlace, cs);
 		
 		JLabel labelDeliveryTime = new JLabel("Tiempo de entrega:");
-		cs.gridx = 11;
+		cs.gridx = 26;
 		cs.gridy = 2;
 		cs.gridwidth = 1;
 		panelBudgetDescription.add(labelDeliveryTime, cs);
 		
 		textBudgetDescriptionDeliveryTime = new JTextField("", 8);
 		textBudgetDescriptionDeliveryTime.setEditable(false);
-		cs.gridx = 12;
+		cs.gridx = 27;
 		cs.gridy = 2;
 		cs.gridwidth = 8;
 		panelBudgetDescription.add(textBudgetDescriptionDeliveryTime, cs);
 		
 		textBudgetDescriptionDeliveryPeriod = new JTextField("", 4);
 		textBudgetDescriptionDeliveryPeriod.setEditable(false);
-		cs.gridx = 20;
+		cs.gridx = 35;
 		cs.gridy = 2;
 		cs.gridwidth = 4;
 		panelBudgetDescription.add(textBudgetDescriptionDeliveryPeriod, cs);
@@ -6214,12 +8166,13 @@ public class SalesMainView extends JFrame{
 		cs.gridwidth = 1;
 		panelNotesCenter.add(labelNotes, cs);
 		
-		textBudgetNotes = new JTextArea(20, 50);
+		textBudgetNotes = new JTextArea(30, 100);
+		textBudgetNotes.setEditable(false);
+		JScrollPane scrollPane = new JScrollPane(textBudgetNotes);
 		cs.gridx = 0;
 		cs.gridy = 1;
 		cs.gridwidth = 50;
-		textBudgetNotes.setEditable(false);
-		panelNotesCenter.add(textBudgetNotes, cs);
+		panelNotesCenter.add(scrollPane, cs);
 		
 		BudgetButtonListener lForBudgetButton = new BudgetButtonListener();
 		
@@ -6323,7 +8276,7 @@ public class SalesMainView extends JFrame{
 		String budgetSwitchesQuery = "SELECT budget_switches.id, "
 				+ " CONCAT('Interruptor ', switches.phases, 'X', currents.current, 'A,', switch_models.model, ',', switch_brands.brand) as description, "
 				+ " budget_switches.quantity, "
-				+ " switches.price, "
+				+ " budget_switches.price, "
 				+ " budget_switches.factor, "
 				+ " TRUNCATE((budget_switches.price * ((100 + budget_switches.factor) / 100)), 2) as sell_price, "
 				+ " TRUNCATE((budget_switches.quantity * (budget_switches.price * ((100 + budget_switches.factor) / 100))), 2) as total "
@@ -6360,8 +8313,13 @@ public class SalesMainView extends JFrame{
 		String[] budgetSwitchesColumnNames = { "Id", "Descripcion", "Cantidad", "Precio Costo", "Factor", "Precio Venta", "Total"};
 		budgetSwitchesSearchData = db.fetchAll(db.select(unionQuery));
 		
+		HashSet<Integer> editableColumns = new HashSet<Integer>();
+		editableColumns.add(new Integer(2));
+		editableColumns.add(new Integer(3));
+		editableColumns.add(new Integer(4));
+		
 		if(budgetSwitchesSearchData.length > 0) {
-			MyTableModel mForTable = new MyTableModel(budgetSwitchesSearchData, budgetSwitchesColumnNames);
+			MyTableModel mForTable = new MyTableModel(budgetSwitchesQuery, budgetSwitchesColumnNames, "budget_switches", editableColumns);
 			tableBudgetSwitchesResult.setModel(mForTable);
 //			if(null != tableBudgetSwitchesResult && tableBudgetSwitchesResult.getSelectedRow() == -1) {
 //				buttonRemoveBudgetSwitch.setEnabled(false);
@@ -6425,22 +8383,45 @@ public class SalesMainView extends JFrame{
 		String fieldsQuery = StringTools.implode(",", fields);
 		String tablesQuery = StringTools.implode(",", tables);
 		String budgetBoxesQuery = "SELECT " + fieldsQuery
-						+ " FROM "
-						+ tablesQuery
+						+ " FROM boxes "
+//						+ tablesQuery
+						+ " INNER JOIN budget_boxes ON boxes.id = budget_boxes.box_id "
+						+ " INNER JOIN box_types ON boxes.type_id = box_types.id "
+						+ " INNER JOIN installations ON boxes.installation_id = installations.id "
+						+ " INNER JOIN nemas ON boxes.nema_id = nemas.id "
+						+ " INNER JOIN box_sheets ON ( (boxes.sheet_id > 0 "
+						+ " AND boxes.sheet_id = " + SalesMainView.BOX_SHEETS_TABLE + ".id) "
+						+ " OR boxes.sheet_id = 0) "
+						+ " INNER JOIN box_finishes ON ( (boxes.finish_id > 0 "
+						+ " AND boxes.finish_id = " + SalesMainView.BOX_FINISHES_TABLE + ".id) "
+						+ " OR boxes.finish_id = 0) "
+						+ " INNER JOIN box_colors ON ( (boxes.color_id > 0 "
+						+ " AND boxes.color_id = " + SalesMainView.BOX_COLORS_TABLE + ".id) "
+						+ " OR boxes.color_id = 0) "
+						+ " INNER JOIN box_measure_units ON ( (boxes.units_id > 0 "
+						+ " AND boxes.units_id = " + SalesMainView.BOX_UNITS_TABLE + ".id) "
+						+ " OR boxes.units_id = 0) "
+						+ " INNER JOIN box_calibers ON ( (boxes.caliber_id > 0 "
+						+ " AND boxes.caliber_id = " + SalesMainView.BOX_CALIBERS_TABLE + ".id) "
+						+ " OR boxes.caliber_id = 0) "
+						+ " INNER JOIN lock_types ON ( (boxes.lock_type_id > 0 "
+						+ " AND boxes.lock_type_id = " + SalesMainView.LOCK_TYPES_TABLE + ".id) "
+						+ " OR boxes.lock_type_id = 0) "
 						+ " WHERE budget_boxes.budget_container_id = " + selectedBudgetId
-						+ " AND boxes.id = budget_boxes.box_id "
-						+ " AND boxes.type_id = box_types.id "
-						+ " AND boxes.installation_id = installations.id "
-						+ " AND boxes.nema_id = nemas.id "
 						+ " AND boxes.active = '1' "
-						+ whereQuery
+//						+ whereQuery;
 						+ " GROUP BY boxes.id";
 		
 		String[] budgetBoxesColumnNames = { "Id", "Descripcion", "Instalacion", "Pares Tel.", "Acabado", "Color", "Calibre", "Cerradura", "Cantidad", "Precio Costo", "Factor", "Precio Venta", "Total"};
 		budgetBoxesData = db.fetchAll(db.select(budgetBoxesQuery));
 		
+		HashSet<Integer> editableColumns = new HashSet<Integer>();
+		editableColumns.add(new Integer(8));
+		editableColumns.add(new Integer(9));
+		editableColumns.add(new Integer(10));
+		
 		if(budgetBoxesData.length > 0) {
-			MyTableModel mForTable = new MyTableModel(budgetBoxesData, budgetBoxesColumnNames);
+			MyTableModel mForTable = new MyTableModel(budgetBoxesQuery, budgetBoxesColumnNames, "budget_boxes", editableColumns);
 			tableBudgetBoxesResult.setModel(mForTable);
 			if(null != tableBudgetBoxesResult && tableBudgetBoxesResult.getSelectedRow() == -1) {
 				buttonRemoveBudgetBox.setEnabled(false);
@@ -6466,11 +8447,11 @@ public class SalesMainView extends JFrame{
 		fields.add(SalesMainView.BOARD_LOCK_TYPE_FIELD);
 		fields.add("budget_boards.quantity");
 		fields.add("budget_boards.price");
-		fields.add("(budget_boards.price * (budget_boards.mo / 100)) as mo");
-		fields.add("(budget_boards.price * (budget_boards.gi / 100)) as gi");
-		fields.add("(budget_boards.price * (budget_boards.ga / 100)) as ga");
+		fields.add("TRUNCATE((budget_boards.price * (budget_boards.mo / 100)),2) as mo");
+		fields.add("TRUNCATE((budget_boards.price * (budget_boards.gi / 100)),2) as gi");
+		fields.add("TRUNCATE((budget_boards.price * (budget_boards.ga / 100)),2) as ga");
 		fields.add("budget_boards.factor");
-		fields.add("TRUNCATE((budget_boards.price * ((100 + budget_boards.factor) / 100)), 2) as sell_price");
+		fields.add("TRUNCATE(((budget_boards.price + (budget_boards.price * (budget_boards.mo / 100)) + (budget_boards.price * (budget_boards.gi / 100)) + (budget_boards.price * (budget_boards.ga / 100))) * ((100 + budget_boards.factor) / 100)), 2) as sell_price");
 		fields.add("TRUNCATE((budget_boards.quantity * ((budget_boards.price + (budget_boards.price * (budget_boards.mo / 100)) + (budget_boards.price * (budget_boards.gi / 100)) + (budget_boards.price * (budget_boards.ga / 100))) * ((100 + budget_boards.factor) / 100))), 2) as total");
 		
 		ArrayList<String> tables = new ArrayList<String>();
@@ -6508,8 +8489,16 @@ public class SalesMainView extends JFrame{
 		String[] budgetBoardsColumnNames = { "Id", "Descripcion", "Nombre", "Instalacion", "Cap. Barra", "Tipo Barra", "Voltaje", "Tierra", "Interrupcion", "Cerradura", "Cantidad", "Precio Costo", "MO", "GI", "GA", "Factor", "Precio Venta", "Total"};
 		budgetBoardsData = db.fetchAll(db.select(budgetBoardsQuery));
 		
+		HashSet<Integer> editableColumns = new HashSet<Integer>();
+		editableColumns.add(new Integer(10));
+		editableColumns.add(new Integer(11));
+		editableColumns.add(new Integer(12));
+		editableColumns.add(new Integer(13));
+		editableColumns.add(new Integer(14));
+		editableColumns.add(new Integer(15));
+		
 		if(budgetBoardsData.length > 0) {
-			MyTableModel mForTable = new MyTableModel(budgetBoardsData, budgetBoardsColumnNames);
+			MyTableModel mForTable = new MyTableModel(budgetBoardsQuery, budgetBoardsColumnNames, "budget_boards", editableColumns);
 			tableBudgetBoardsResult.setModel(mForTable);
 			if(null != tableBudgetBoardsResult && tableBudgetBoardsResult.getSelectedRow() == -1) {
 				buttonRemoveBudgetBoard.setEnabled(false);
@@ -6602,7 +8591,7 @@ public class SalesMainView extends JFrame{
 			editBudgetDate = String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_DATE_COLUMN));
 			editBudgetExpiryDays = Integer.valueOf(String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_EXPIRY_DAYS_COLUMN)));
 			editBudgetClientId = db.getBudgetClientId(editBudgetId);
-			editBudgetClientCode = Integer.valueOf(String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_CLIENT_CODE_COLUMN)));
+			editBudgetClientCode = String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_CLIENT_CODE_COLUMN));
 			editBudgetClient = String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_COMPANY_COLUMN));
 			editBudgetClientRepresentative = String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_COMPANY_REPRESENTATIVE_COLUMN));
 			editBudgetWorkName = String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, SharedListSelectionListener.BUDGET_WORK_NAME_COLUMN));
@@ -6694,8 +8683,8 @@ public class SalesMainView extends JFrame{
 		
 	}
 	
-	private void setTabsEnabled(JTabbedPane budgetTabbedPane, Boolean state) {
-		for(Integer i = 0; i < budgetTabbedPane.getTabCount(); i++) {
+	private void setTabsEnabled(JTabbedPane budgetTabbedPane, boolean state) {
+		for(int i = 0; i < budgetTabbedPane.getTabCount(); i++) {
 			if (budgetTabbedPane.getSelectedIndex() != i) {
 				budgetTabbedPane.setEnabledAt(i, state);
 			}
@@ -6730,9 +8719,13 @@ public class SalesMainView extends JFrame{
 				if(boxesFrame.isClosed()){
 					createBoxesFrame();
 				}
-			}else if(e.getActionCommand().equalsIgnoreCase("bar.button.panels")) {
+			}else if(e.getActionCommand().equalsIgnoreCase("bar.button.boards")) {
 				if(boardsFrame.isClosed()){
 					createBoardsFrame();
+				}
+			} else if(e.getActionCommand().equalsIgnoreCase("bar.button.control")) {
+				if(controlBoardsFrame.isClosed()){
+					createControlBoardsFrame();
 				}
 			}else if(e.getActionCommand().equalsIgnoreCase("bar.button.budgets")) {
 				if(budgetsFrame.isClosed()){
@@ -6863,8 +8856,7 @@ public class SalesMainView extends JFrame{
 					textBoxDepth.setEditable(true);
 					comboBoxCalibers.setEnabled(true);
 				} else if (searchSelectedBoxType.equalsIgnoreCase("industrial") 
-						|| searchSelectedBoxType.equalsIgnoreCase("de Rack") 
-						|| searchSelectedBoxType.equalsIgnoreCase("para Transformadores")) {
+						|| searchSelectedBoxType.equalsIgnoreCase("de Rack")) {
 					comboBoxPairs.setEnabled(false);
 					comboBoxSheets.setEnabled(true);
 					comboBoxFinishes.setEnabled(true);
@@ -6877,6 +8869,19 @@ public class SalesMainView extends JFrame{
 					textBoxDepth.setEditable(true);
 					comboBoxCalibers.setEnabled(true);
 					comboBoxLockTypes.setEnabled(true);
+				} else if (searchSelectedBoxType.equalsIgnoreCase("para Transformadores")) {
+					comboBoxPairs.setEnabled(false);
+					comboBoxSheets.setEnabled(true);
+					comboBoxFinishes.setEnabled(true);
+					comboBoxColors.setEnabled(true);
+					textBoxHeight.setEnabled(true);
+					textBoxHeight.setEditable(true);
+					textBoxWidth.setEnabled(true);
+					textBoxWidth.setEditable(true);
+					textBoxDepth.setEnabled(true);
+					textBoxDepth.setEditable(true);
+					comboBoxCalibers.setEnabled(true);
+					comboBoxLockTypes.setEnabled(false);
 				} else if (searchSelectedBoxType.equalsIgnoreCase("para Pares Telefonicos")) {
 					comboBoxPairs.setEnabled(true);
 					comboBoxSheets.setEnabled(true);
@@ -6941,6 +8946,8 @@ public class SalesMainView extends JFrame{
 				searchSelectedBoxSheet = comboBoxSheets.getSelectedItem().toString();
 				this.clearSelectedBoxOptions("sheet");
 				if (searchSelectedBoxSheet.equalsIgnoreCase("HNP")) {
+					comboBoxFinishes.setSelectedIndex(-1);
+					comboBoxColors.setSelectedIndex(-1);
 					comboBoxFinishes.setEnabled(false);
 					comboBoxColors.setEnabled(false);
 				} else {
@@ -6956,6 +8963,12 @@ public class SalesMainView extends JFrame{
 			} else if (actionCommand.equalsIgnoreCase("box.search.finish")) {
 				searchSelectedBoxFinish = comboBoxFinishes.getSelectedItem().toString();
 				this.clearSelectedBoxOptions("finish");
+				if (searchSelectedBoxFinish.equalsIgnoreCase("Sin Pintar")) {
+					comboBoxColors.setSelectedIndex(-1);
+					comboBoxColors.setEnabled(false);
+				} else {
+					comboBoxColors.setEnabled(true);
+				}
 				fromQuery = SalesMainView.BOXES_TABLE + "," + SalesMainView.BOX_FINISHES_TABLE;
 				if(!searchSelectedBoxFinish.equalsIgnoreCase("Todas")) {
 					this.selectWhereQuery();
@@ -6966,7 +8979,7 @@ public class SalesMainView extends JFrame{
 				searchSelectedBoxColor = comboBoxColors.getSelectedItem().toString();
 				this.clearSelectedBoxOptions("color");
 				fromQuery = SalesMainView.BOXES_TABLE + "," + SalesMainView.BOX_COLORS_TABLE;
-				if(!searchSelectedBoxColor.equalsIgnoreCase("Todas")) {
+				if(!searchSelectedBoxColor.equalsIgnoreCase("Todas") && comboBoxColors.getSelectedIndex() > -1) {
 					this.selectWhereQuery();
 					whereQuery += SalesMainView.BOX_COLORS_TABLE + ".color = '"+searchSelectedBoxColor+"' ";
 				}
@@ -6996,7 +9009,7 @@ public class SalesMainView extends JFrame{
 				} else {
 					textBoxAddPairs.setEnabled(true);
 				}
-				if(!addSelectedBoxType.equalsIgnoreCase("de paso")) {
+				if(!addSelectedBoxType.equalsIgnoreCase("de paso") && !addSelectedBoxType.equalsIgnoreCase("para Transformadores")) {
 					comboBoxAddLockTypes.setEnabled(true);
 				} else {
 					comboBoxAddLockTypes.setEnabled(false);
@@ -7011,6 +9024,13 @@ public class SalesMainView extends JFrame{
 					comboBoxAddFinishes.setEnabled(true);
 					comboBoxAddColors.setEnabled(true);
 				}
+			} else if (actionCommand.equalsIgnoreCase("box.description.add.finish")) {
+				addSelectedBoxFinish = comboBoxAddFinishes.getSelectedItem().toString();
+				if(addSelectedBoxFinish.equalsIgnoreCase("Sin Pintar")) {
+					comboBoxAddColors.setEnabled(false);
+				} else {
+					comboBoxAddColors.setEnabled(true);
+				}
 			} else if (actionCommand.equalsIgnoreCase("box.description.add.nema")) {
 				updateBoxTextAddDescription();
 			} else if (actionCommand.equalsIgnoreCase("box.description.edit.type")) {
@@ -7021,7 +9041,7 @@ public class SalesMainView extends JFrame{
 				} else {
 					textBoxEditPairs.setEnabled(true);
 				}
-				if(!editSelectedBoxType.equalsIgnoreCase("de paso")) {
+				if(!editSelectedBoxType.equalsIgnoreCase("de paso") && !editSelectedBoxType.equalsIgnoreCase("para Transformadores")) {
 					comboBoxEditLockTypes.setEnabled(true);
 				} else {
 					comboBoxEditLockTypes.setSelectedIndex(-1);
@@ -7031,18 +9051,27 @@ public class SalesMainView extends JFrame{
 				editSelectedBoxSheet = comboBoxEditSheets.getSelectedItem().toString();
 				if(editSelectedBoxSheet.equalsIgnoreCase("Acero Inoxidable")) {
 					comboBoxEditFinishes.setSelectedItem("Acero Inoxidable");
+					comboBoxEditFinishes.setEnabled(false);
 				} else if (editSelectedBoxSheet.equalsIgnoreCase("Galvanizada")) {
 					comboBoxEditFinishes.setSelectedItem("Galvanizado");
+					comboBoxEditFinishes.setEnabled(false);
 				} else if (editSelectedBoxSheet.equalsIgnoreCase("Aluminizada")) {
 					comboBoxEditFinishes.setSelectedItem("Aluminizado");
+					comboBoxEditFinishes.setEnabled(false);
 				}
 				if(!editSelectedBoxSheet.equalsIgnoreCase("HNP")) {
 					comboBoxEditFinishes.setEnabled(false);
 					comboBoxEditColors.setEnabled(false);
-					comboBoxEditColors.setSelectedIndex(-1);
 				} else {
 					comboBoxEditFinishes.setSelectedItem("Pintado");
 					comboBoxEditFinishes.setEnabled(true);
+					comboBoxEditColors.setEnabled(true);
+				}
+			} else if (actionCommand.equalsIgnoreCase("box.description.edit.finish")) {
+				editSelectedBoxFinish = comboBoxEditFinishes.getSelectedItem().toString();
+				if (editSelectedBoxFinish.equalsIgnoreCase("Sin Pintar")) {
+					comboBoxEditColors.setEnabled(false);
+				} else {
 					comboBoxEditColors.setEnabled(true);
 				}
 			} else if (actionCommand.equalsIgnoreCase("board.search.type")) {
@@ -7943,10 +9972,10 @@ public class SalesMainView extends JFrame{
 				textBoardDescription.setText("");
 				buttonBoardAdd.setEnabled(true);
 				buttonBoardEdit.setEnabled(false);
-				textMaterials.setText("");
-				textMaterials.setEditable(false);
-				textMaterialsPrice.setText("");
-				textMaterialsPrice.setEditable(false);
+				textBoardMaterials.setText("");
+				textBoardMaterials.setEditable(false);
+				textBoardMaterialsPrice.setText("");
+				textBoardMaterialsPrice.setEditable(false);
 				buttonBoardMaterialsEdit.setEnabled(false);
 				textBoardComments.setText("");
 				textBoardComments.setEditable(false);
@@ -8023,6 +10052,21 @@ public class SalesMainView extends JFrame{
 		public static final int BOARD_INTERRUPTION_COLUMN = 11;
 		public static final int BOARD_LOCK_TYPE_COLUMN = 12;
 		public static final int BOARD_PRICE_COLUMN = 13;
+		
+		public static final int CONTROL_BOARD_ID_COLUMN = 0;
+		public static final int CONTROL_BOARD_NAME_COLUMN = 1;
+		public static final int CONTROL_BOARD_TYPE_COLUMN = 2;
+		public static final int CONTROL_BOARD_INSTALLATION_COLUMN = 3;
+		public static final int CONTROL_BOARD_NEMA_COLUMN = 4;
+		public static final int CONTROL_BOARD_BAR_CAPACITY_COLUMN = 5;
+		public static final int CONTROL_BOARD_BAR_TYPE_COLUMN = 6;
+		public static final int CONTROL_BOARD_CIRCUITS_COLUMN = 7;
+		public static final int CONTROL_BOARD_VOLTAGE_COLUMN = 8;
+		public static final int CONTROL_BOARD_PHASES_COLUMN = 9;
+		public static final int CONTROL_BOARD_GROUND_COLUMN = 10;
+		public static final int CONTROL_BOARD_INTERRUPTION_COLUMN = 11;
+		public static final int CONTROL_BOARD_LOCK_TYPE_COLUMN = 12;
+		public static final int CONTROL_BOARD_PRICE_COLUMN = 13;
 		
 		public static final int BUDGET_ID_COLUMN = 0;
 		public static final int BUDGET_CODE_COLUMN = 1;
@@ -8123,7 +10167,7 @@ public class SalesMainView extends JFrame{
 							tableBoxesResult.getValueAt(boxTableSelectedIndex, BOX_WIDTH_COLUMN) +
 							" x " +
 							tableBoxesResult.getValueAt(boxTableSelectedIndex, BOX_DEPTH_COLUMN) +
-							", " +
+							", Nema " +
 							tableBoxesResult.getValueAt(boxTableSelectedIndex, BOX_NEMA_COLUMN));
 					textBoxComments.setText(db.getBoxComments(boxId));
 				}
@@ -8140,10 +10184,10 @@ public class SalesMainView extends JFrame{
 					
 					if(lsm.isSelectionEmpty()) {
 						buttonBoardEdit.setEnabled(false);
-						textMaterials.setText("");
-						textMaterials.setEditable(false);
-						textMaterialsPrice.setText("");
-						textMaterialsPrice.setEditable(false);
+						textBoardMaterials.setText("");
+						textBoardMaterials.setEditable(false);
+						textBoardMaterialsPrice.setText("");
+						textBoardMaterialsPrice.setEditable(false);
 						buttonBoardMaterialsEdit.setEnabled(false);
 						textBoardDescriptionName.setText("");
 						textBoardDescriptionType.setText("");
@@ -8162,8 +10206,8 @@ public class SalesMainView extends JFrame{
 					} else {
 						if(panelBoardDescription.isShowing()) {
 							buttonBoardEdit.setEnabled(true);
-							textMaterials.setEditable(false);
-							textMaterialsPrice.setEditable(false);
+							textBoardMaterials.setEditable(false);
+							textBoardMaterialsPrice.setEditable(false);
 							buttonBoardMaterialsEdit.setEnabled(true);
 							textBoardComments.setEditable(false);
 							buttonBoardCommentsEdit.setEnabled(true);
@@ -8187,8 +10231,8 @@ public class SalesMainView extends JFrame{
 						textBoardDescriptionPrice.setText("BsF " + tableBoardsResult.getValueAt(boardsTableSelectedIndex, BOARD_PRICE_COLUMN));
 						
 						// TODO Fix materials tab and place a table to show the materials
-//						textMaterials.setText(db.getBoardMaterials(selectedBoardId));
-						textMaterialsPrice.setText(String.valueOf(db.getBoardMaterialsPrice(selectedBoardId)));
+//						textBoardMaterials.setText(db.getBoardMaterials(selectedBoardId));
+						textBoardMaterialsPrice.setText(String.valueOf(db.getBoardMaterialsPrice(selectedBoardId)));
 						
 						textBoardComments.setText(db.getBoardComments(selectedBoardId));
 						
@@ -8206,6 +10250,91 @@ public class SalesMainView extends JFrame{
 				boardSwitchesTableSelectedIndex = lsm.getMinSelectionIndex();
 				selectedBoardSwitchId = Integer.valueOf((String) tableBoardSwitchesResult.getValueAt(boardSwitchesTableSelectedIndex, BOARD_ID_COLUMN));
 				buttonRemoveBoardSwitch.setEnabled(true);
+			} else if (null != tableControlBoardsResult && tableControlBoardsResult.isFocusOwner() && lsm.getMinSelectionIndex() > -1) {
+				controlBoardsTableSelectedIndex = lsm.getMinSelectionIndex();
+				
+				if(lsm.isSelectionEmpty()) {
+					buttonAddControlBoardSwitch.setEnabled(false);
+					tableControlBoardSwitchesResult.setModel(new DefaultTableModel());
+				} else {
+					selectedControlBoardId = Integer.valueOf((String) tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, 0));
+					
+					loadControlBoardSwitchTable();
+					
+					if(lsm.isSelectionEmpty()) {
+						buttonControlBoardEdit.setEnabled(false);
+						textControlBoardMaterials.setText("");
+						textControlBoardMaterials.setEditable(false);
+						textControlBoardMaterialsPrice.setText("");
+						textControlBoardMaterialsPrice.setEditable(false);
+						buttonControlBoardMaterialsEdit.setEnabled(false);
+						textControlBoardDescriptionName.setText("");
+						textControlBoardDescriptionType.setText("");
+						textControlBoardDescriptionInstallation.setText("");
+						textControlBoardDescriptionNema.setText("");
+						textControlBoardDescriptionBarCapacity.setText("");
+						textControlBoardDescriptionBarType.setText("");
+						textControlBoardDescriptionCircuits.setText("");
+						textControlBoardDescriptionVoltage.setText("");
+						textControlBoardDescriptionPhases.setText("");
+						textControlBoardDescriptionGround.setText("");
+						textControlBoardDescriptionInterruption.setText("");
+						textControlBoardDescriptionLockType.setText("");
+						textControlBoardDescriptionPrice.setText("");
+						textControlBoardDescription.setText("");
+					} else {
+						if(panelControlBoardDescription.isShowing()) {
+							buttonControlBoardEdit.setEnabled(true);
+							textControlBoardMaterials.setEditable(false);
+							textControlBoardMaterialsPrice.setEditable(false);
+							buttonControlBoardMaterialsEdit.setEnabled(true);
+							textControlBoardComments.setEditable(false);
+							buttonControlBoardCommentsEdit.setEnabled(true);
+						}
+						
+						JTabbedPane controlBoardTabbedPane = (JTabbedPane) controlBoardSwitchesPanel.getParent();
+						setTabsEnabled(controlBoardTabbedPane, true);
+						loadControlBoardSwitchTable();
+						buttonAddControlBoardSwitch.setEnabled(true);
+						buttonControlBoardCommentsEdit.setEnabled(true);
+						
+						textControlBoardDescriptionName.setText((String) tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, CONTROL_BOARD_NAME_COLUMN));
+						textControlBoardDescriptionType.setText((String) tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, CONTROL_BOARD_TYPE_COLUMN));
+						textControlBoardDescriptionInstallation.setText((String) tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, CONTROL_BOARD_INSTALLATION_COLUMN));
+						textControlBoardDescriptionNema.setText((String) tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, CONTROL_BOARD_NEMA_COLUMN));
+						textControlBoardDescriptionBarCapacity.setText((String) tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, CONTROL_BOARD_BAR_CAPACITY_COLUMN));
+						textControlBoardDescriptionBarType.setText((String) tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, CONTROL_BOARD_BAR_TYPE_COLUMN));
+						textControlBoardDescriptionCircuits.setText((String) tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, CONTROL_BOARD_CIRCUITS_COLUMN));
+						
+						selectedTableControlBoardCircuits = (String) tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, CONTROL_BOARD_CIRCUITS_COLUMN);
+						
+						textControlBoardDescriptionVoltage.setText((String) tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, CONTROL_BOARD_VOLTAGE_COLUMN));
+						textControlBoardDescriptionPhases.setText((String) tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, CONTROL_BOARD_PHASES_COLUMN));
+						textControlBoardDescriptionGround.setText((String) tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, CONTROL_BOARD_GROUND_COLUMN));
+						textControlBoardDescriptionInterruption.setText((String) tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, CONTROL_BOARD_INTERRUPTION_COLUMN));
+						textControlBoardDescriptionLockType.setText((String) tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, CONTROL_BOARD_LOCK_TYPE_COLUMN));
+						textControlBoardDescriptionPrice.setText("BsF " + tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, CONTROL_BOARD_PRICE_COLUMN));
+						
+						// TODO Fix materials tab and place a table to show the materials
+//						textBoardMaterials.setText(db.getBoardMaterials(selectedBoardId));
+//						textControlBoardMaterialsPrice.setText(String.valueOf(db.getControlBoardMaterialsPrice(selectedControlBoardId)));
+						
+						textControlBoardComments.setText(db.getControlBoardComments(selectedControlBoardId));
+						
+						textControlBoardDescription.setText("Caja para Tablero de Control, " +
+								tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, CONTROL_BOARD_TYPE_COLUMN) +
+								", " +
+								tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, CONTROL_BOARD_PHASES_COLUMN) +
+								", de " +
+								tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, CONTROL_BOARD_CIRCUITS_COLUMN) +
+								" circuitos, " +
+								tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, CONTROL_BOARD_NEMA_COLUMN));
+					}
+				}
+			} else if (null != tableControlBoardSwitchesResult && tableControlBoardSwitchesResult.isFocusOwner() && lsm.getMinSelectionIndex() > -1) {
+				controlBoardSwitchesTableSelectedIndex = lsm.getMinSelectionIndex();
+				selectedControlBoardSwitchId = Integer.valueOf((String) tableControlBoardSwitchesResult.getValueAt(controlBoardSwitchesTableSelectedIndex, CONTROL_BOARD_ID_COLUMN));
+				buttonRemoveControlBoardSwitch.setEnabled(true);
 			} else if (null != tableBudgetsResult && tableBudgetsResult.isFocusOwner() && lsm.getMinSelectionIndex() > -1) {
 				budgetsTableSelectedIndex = lsm.getMinSelectionIndex();				
 				if(lsm.isSelectionEmpty()) {
@@ -8295,6 +10424,8 @@ public class SalesMainView extends JFrame{
 				buttonRemoveBudgetBoard.setEnabled(true);
 			}
 			
+			
+			
 			if(lsm.isSelectionEmpty() && null != panelSwitchDescription && tableSwitchesResult.getSelectedRow() == -1) {
 				buttonSwitchEdit.setEnabled(false);
 				textSwitchPrice.setText("");
@@ -8323,10 +10454,10 @@ public class SalesMainView extends JFrame{
 				textBoxComments.setText("");
 			} else if(lsm.isSelectionEmpty() && null != panelBoardDescription && tableBoardsResult.getSelectedRow() == -1) {
 				buttonBoardEdit.setEnabled(false);
-				textMaterials.setText("");
-				textMaterials.setEditable(false);
-				textMaterialsPrice.setText("");
-				textMaterialsPrice.setEditable(false);
+				textBoardMaterials.setText("");
+				textBoardMaterials.setEditable(false);
+				textBoardMaterialsPrice.setText("");
+				textBoardMaterialsPrice.setEditable(false);
 				buttonBoardMaterialsEdit.setEnabled(false);
 				textBoardDescriptionName.setText("");
 				textBoardDescriptionType.setText("");
@@ -8342,6 +10473,33 @@ public class SalesMainView extends JFrame{
 				textBoardDescriptionLockType.setText("");
 				textBoardDescriptionPrice.setText("");
 				textBoardDescription.setText("");
+			} else if(lsm.isSelectionEmpty() && null != panelControlBoardDescription && tableControlBoardsResult.getSelectedRow() == -1) {
+				buttonControlBoardEdit.setEnabled(false);
+				textControlBoardMaterials.setText("");
+				textControlBoardMaterials.setEditable(false);
+				textControlBoardMaterialsPrice.setText("");
+				textControlBoardMaterialsPrice.setEditable(false);
+				buttonControlBoardMaterialsEdit.setEnabled(false);
+				textControlBoardDescriptionName.setText("");
+				textControlBoardDescriptionType.setText("");
+				textControlBoardDescriptionInstallation.setText("");
+				textControlBoardDescriptionNema.setText("");
+				textControlBoardDescriptionBarCapacity.setText("");
+				textControlBoardDescriptionBarType.setText("");
+				textControlBoardDescriptionCircuits.setText("");
+				textControlBoardDescriptionVoltage.setText("");
+				textControlBoardDescriptionPhases.setText("");
+				textControlBoardDescriptionGround.setText("");
+				textControlBoardDescriptionInterruption.setText("");
+				textControlBoardDescriptionLockType.setText("");
+				textControlBoardDescriptionPrice.setText("");
+				textControlBoardDescription.setText("");
+				
+				JTabbedPane controlBoardTabbedPane = (JTabbedPane) controlBoardSwitchesPanel.getParent();
+				setTabsEnabled(controlBoardTabbedPane, false);
+//				for(Integer i = 1; i < controlBoardTabbedPane.getTabCount(); i++) {
+//					controlBoardTabbedPane.setEnabledAt(i, false);
+//				}
 			} else if (lsm.isSelectionEmpty() && null != panelBudgetDescription && tableBudgetsResult.getSelectedRow() == -1) {
 				selectedBudgetId = 0;
 				buttonBudgetEdit.setEnabled(false);
@@ -8370,9 +10528,13 @@ public class SalesMainView extends JFrame{
 				textBudgetNotes.setText("");
 				
 				JTabbedPane budgetTabbedPane = (JTabbedPane) budgetSwitchesPanel.getParent();
-				for(Integer i = 1; i < budgetTabbedPane.getTabCount(); i++) {
-					budgetTabbedPane.setEnabledAt(i, false);
-				}
+				setTabsEnabled(budgetTabbedPane, false);
+//				for(Integer i = 1; i < budgetTabbedPane.getTabCount(); i++) {
+//					budgetTabbedPane.setEnabledAt(i, false);
+//				}
+			} else if (lsm.isSelectionEmpty() && null != panelControlBoardDescription && tableControlBoardSwitchesResult.getSelectedRow() == -1) {
+				buttonRemoveControlBoardSwitch.setEnabled(false);
+				selectedControlBoardSwitchId = -1;
 			} else if (lsm.isSelectionEmpty() && null != panelBudgetDescription && tableBudgetSwitchesResult.getSelectedRow() == -1) {
 				buttonRemoveBudgetSwitch.setEnabled(false);
 				selectedBudgetSwitchId = -1;
@@ -8536,13 +10698,16 @@ public class SalesMainView extends JFrame{
 				}
 				if(boxSheet.equalsIgnoreCase("HNP")) {
 					boxFinish = comboBoxAddFinishes.getSelectedItem().toString();
-					boxColor = comboBoxAddColors.getSelectedItem().toString();
+//					boxColor = comboBoxAddColors.getSelectedItem().toString();
 				} else if(boxSheet.equalsIgnoreCase("Acero Inoxidable")) {
 					boxFinish = "Acero Inoxidable";
 				} else if(boxSheet.equalsIgnoreCase("Galvanizada")) {
 					boxFinish = "Galvanizado";
 				}
-				if(!boxType.equalsIgnoreCase("de paso")) {
+				if(boxFinish.equalsIgnoreCase("Pintado")) {
+					boxColor = comboBoxAddColors.getSelectedItem().toString();
+				}
+				if(!boxType.equalsIgnoreCase("de paso") && !boxType.equalsIgnoreCase("para Transformadores")) {
 					boxLockType = comboBoxAddLockTypes.getSelectedItem().toString();
 				}
 				if(boxHeight.isEmpty() || !Numbers.isNumeric(boxHeight)) {
@@ -8653,7 +10818,7 @@ public class SalesMainView extends JFrame{
 						err.add("No hay ningun acabado de caja registrado, debe registrar uno primero");
 					}
 				}
-				if(comboBoxEditSheets.getSelectedItem().toString().equalsIgnoreCase("HNP")) {
+				if(comboBoxEditSheets.getSelectedItem().toString().equalsIgnoreCase("HNP") && comboBoxEditFinishes.getSelectedItem().toString().equalsIgnoreCase("Pintado")) {
 					if(comboBoxEditColors.getItemCount() > 0) {
 						if (comboBoxEditColors.getSelectedIndex() > -1) {
 							if (!editBoxColor.equals(comboBoxEditColors.getSelectedItem().toString())) {
@@ -8718,7 +10883,7 @@ public class SalesMainView extends JFrame{
 					listFields.add("caliber_comments");
 					listValues.add("'" + textBoxEditCaliberComments.getText() + "'");
 				}
-				if(!comboBoxEditTypes.getSelectedItem().toString().equalsIgnoreCase("de Paso")) {
+				if(!comboBoxEditTypes.getSelectedItem().toString().equalsIgnoreCase("de Paso") && !comboBoxEditTypes.getSelectedItem().toString().equalsIgnoreCase("para Transformadores")) {
 					if (comboBoxEditLockTypes.getItemCount() > 0) {
 						if (comboBoxEditLockTypes.getSelectedIndex() > -1) {
 							if(!editBoxLockType.equals(comboBoxEditLockTypes.getSelectedItem().toString())) {
@@ -9015,8 +11180,8 @@ public class SalesMainView extends JFrame{
 			} else if(actionCommand.equalsIgnoreCase("board.materials.edit")) {
 				boardViewTabbedPane.setEnabled(false);
 				buttonBoardMaterialsEdit.setEnabled(false);
-				textMaterials.setEditable(true);
-				textMaterialsPrice.setEditable(true);
+				textBoardMaterials.setEditable(true);
+				textBoardMaterialsPrice.setEditable(true);
 				panelBoardMaterialsEditSaveCancel.setVisible(true);
 				buttonBoardMaterialsEditSave.setEnabled(true);
 				buttonBoardMaterialsEditCancel.setEnabled(true);
@@ -9025,14 +11190,14 @@ public class SalesMainView extends JFrame{
 					ArrayList<Object> listFields = new ArrayList<Object>();
 					ArrayList<Object> listValues = new ArrayList<Object>();
 					listFields.add("materials");
-					listValues.add("'" + textMaterials.getText() + "'");
+					listValues.add("'" + textBoardMaterials.getText() + "'");
 					listFields.add("materials_price");
-					listValues.add(textMaterialsPrice.getText());
+					listValues.add(textBoardMaterialsPrice.getText());
 					db.editBoard(selectedBoardId, listFields, listValues);
 					boardViewTabbedPane.setEnabled(true);
 					buttonBoardMaterialsEdit.setEnabled(true);
-					textMaterials.setEditable(false);
-					textMaterialsPrice.setEditable(false);
+					textBoardMaterials.setEditable(false);
+					textBoardMaterialsPrice.setEditable(false);
 					buttonBoardMaterialsEditSave.setEnabled(false);
 					buttonBoardMaterialsEditCancel.setEnabled(false);
 					panelBoardMaterialsEditSaveCancel.setVisible(false);
@@ -9042,8 +11207,8 @@ public class SalesMainView extends JFrame{
 			} else if (actionCommand.equalsIgnoreCase("board.materials.edit.cancel")) {
 				boardViewTabbedPane.setEnabled(true);
 				buttonBoardMaterialsEdit.setEnabled(true);
-				textMaterials.setEditable(false);
-				textMaterialsPrice.setEditable(false);
+				textBoardMaterials.setEditable(false);
+				textBoardMaterialsPrice.setEditable(false);
 				buttonBoardMaterialsEditSave.setEnabled(false);
 				buttonBoardMaterialsEditCancel.setEnabled(false);
 				panelBoardMaterialsEditSaveCancel.setVisible(false);
@@ -9051,6 +11216,7 @@ public class SalesMainView extends JFrame{
 				boardViewTabbedPane.setEnabled(false);
 				buttonBoardCommentsEdit.setEnabled(false);
 				textBoardComments.setEditable(true);
+				strBoardComments = textBoardComments.getText();
 				panelBoardCommentsEditSaveCancel.setVisible(true);
 				buttonBoardCommentsEditSave.setEnabled(true);
 				buttonBoardCommentsEditCancel.setEnabled(true);
@@ -9073,10 +11239,359 @@ public class SalesMainView extends JFrame{
 			} else if (actionCommand.equalsIgnoreCase("board.comments.edit.cancel")) {
 				boardViewTabbedPane.setEnabled(true);
 				buttonBoardCommentsEdit.setEnabled(true);
+				textBoardComments.setText(strBoardComments);
+				strBoardComments = "";
 				textBoardComments.setEditable(false);
 				buttonBoardCommentsEditSave.setEnabled(false);
 				buttonBoardCommentsEditCancel.setEnabled(false);
 				panelBoardCommentsEditSaveCancel.setVisible(false);
+			}
+		}
+		
+	}
+	
+	private class ControlBoardButtonListener implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			String actionCommand = e.getActionCommand();
+			if (actionCommand.equalsIgnoreCase("control.description.buttons.add")) {
+				setControlBoardsMode(SalesMainView.ADD_MODE);
+			} else if (actionCommand.equalsIgnoreCase("control.description.buttons.edit")) {
+				setControlBoardsMode(SalesMainView.EDIT_MODE);
+			} else if (actionCommand.equalsIgnoreCase("control.description.add.save")) {
+				String controlBoardName = textControlBoardAddName.getText();
+				String controlBoardType = comboControlBoardAddType.getSelectedItem().toString();
+				String controlBoardInstallation = comboControlBoardAddInstallation.getSelectedItem().toString();
+				String controlBoardNema = comboControlBoardAddNema.getSelectedItem().toString();
+				String controlBoardBarCapacity = comboControlBoardAddBarCapacity.getSelectedItem().toString();
+				String controlBoardBarType = comboControlBoardAddBarType.getSelectedItem().toString();
+				String controlBoardCircuits = comboControlBoardAddCircuits.getSelectedItem().toString();
+				String controlBoardVoltage = comboControlBoardAddVoltage.getSelectedItem().toString();
+				String controlBoardPhases = comboControlBoardAddPhases.getSelectedItem().toString();
+				String controlBoardGround = (checkControlBoardAddGround.isSelected())?"1":"0";
+				String controlBoardInterruption = comboControlBoardAddInterruption.getSelectedItem().toString();
+				String controlBoardLockType = comboControlBoardAddLockType.getSelectedItem().toString();
+				String controlBoardPrice = textControlBoardAddPrice.getText();
+				Errors err = new Errors();
+				
+				if(controlBoardBarCapacity.equalsIgnoreCase("N/A")) {
+					controlBoardBarCapacity = "0";
+				}
+				if(controlBoardCircuits.equalsIgnoreCase("N/A")) {
+					controlBoardCircuits = "0";
+				}
+				if(controlBoardInterruption.equalsIgnoreCase("N/A")) {
+					controlBoardInterruption = "0";
+				}
+				
+				if(controlBoardName.isEmpty()) {
+					err.add("Debe escribir un nombre para el tablero de control");
+				}
+				if(controlBoardPrice.isEmpty() || !Numbers.isNumeric(controlBoardPrice)) {
+					err.add("El precio no puede estar vacio y solo debe contener digitos numericos");
+				}
+				if(err.isEmpty()) {
+					boolean saved = db.addControlBoard(controlBoardName, controlBoardType, controlBoardInstallation, controlBoardNema, Integer.valueOf(controlBoardBarCapacity), controlBoardBarType, Integer.valueOf(controlBoardCircuits), controlBoardVoltage, Integer.valueOf(controlBoardPhases), controlBoardGround, Integer.valueOf(controlBoardInterruption), controlBoardLockType, Double.valueOf(controlBoardPrice));
+					if(saved) {
+						JOptionPane.showMessageDialog(null, "Tablero de control creado exitosamente");
+						setControlBoardsMode(SalesMainView.VIEW_MODE);
+					}
+				} else {
+					err.dump();
+				}
+			} else if (actionCommand.equalsIgnoreCase("control.description.add.cancel")) {
+				setControlBoardsMode(SalesMainView.VIEW_MODE);
+			} else if (actionCommand.equalsIgnoreCase("control.description.edit.save")) {
+				ArrayList<Object> listFields = new ArrayList<Object>();
+				ArrayList<Object> listValues = new ArrayList<Object>();
+				Errors err = new Errors();
+				
+				if(!textControlBoardEditName.getText().isEmpty()) {
+					if (!String.valueOf(editControlBoardName).equals(textControlBoardEditName.getText())) {
+						listFields.add("`name`");
+						listValues.add("'" + textControlBoardEditName.getText() + "'");
+					}
+				} else {
+					err.add("Debe introducir un nombre para el tablero");
+				}
+				if(comboControlBoardEditType.getItemCount() > 0) {
+					if (comboControlBoardEditType.getSelectedIndex() > -1) {
+						if (!editControlBoardType.equals(comboControlBoardEditType.getSelectedItem().toString())) {
+							listFields.add("type_id");
+							listValues.add("'" + db.getControlBoardTypeId(comboControlBoardEditType.getSelectedItem().toString()) + "'");
+						}
+					} else {
+						err.add("Debe seleccionar un tipo de tablero");
+					}
+				} else {
+					err.add("No hay ningun tipo de tablero registrado, debe registrar uno primero");
+				}
+				if(comboControlBoardEditInstallation.getItemCount() > 0) {
+					if (comboControlBoardEditInstallation.getSelectedIndex() > -1) {
+						if (!editControlBoardInstallation.equals(comboControlBoardEditInstallation.getSelectedItem().toString())) {
+							listFields.add("installation_id");
+							listValues.add("'" + db.getInstallationId(comboControlBoardEditInstallation.getSelectedItem().toString()) + "'");
+						}
+					} else {
+						err.add("Debe seleccionar un tipo de instalacion de tablero");
+					}
+				} else {
+					err.add("No hay ninguna instalacion de tablero registrada, debe registrar una primero");
+				}
+				if(comboControlBoardEditNema.getItemCount() > 0) {
+					if (comboControlBoardEditNema.getSelectedIndex() > -1) {
+						if (!editControlBoardNema.equals(comboControlBoardEditNema.getSelectedItem().toString())) {
+							listFields.add("nema_id");
+							listValues.add("'" + db.getNemaId(comboControlBoardEditNema.getSelectedItem().toString()) + "'");
+						}
+					} else {
+						err.add("Debe seleccionar una nema para el tablero");
+					}
+				} else {
+					err.add("No hay ninguna nema registrada, debe registrar una primero");
+				}
+				if(comboControlBoardEditBarCapacity.getItemCount() > 0) {
+					if(comboControlBoardEditBarCapacity.getSelectedIndex() > -1) {
+						if(!Numbers.isNumeric(comboControlBoardEditBarCapacity.getSelectedItem().toString()) && !comboControlBoardEditBarCapacity.getSelectedItem().toString().equalsIgnoreCase("N/A")) {
+							err.add("La capacidad de barra debe ser numerica");
+						} else {
+							if (!String.valueOf(editControlBoardBarCapacity).equals(comboControlBoardEditBarCapacity.getSelectedItem().toString())) {
+								if(comboControlBoardEditBarCapacity.getSelectedItem().toString().equalsIgnoreCase("N/A")) {
+									listFields.add("bar_capacity_id");
+									listValues.add(0);
+								} else {
+									listFields.add("bar_capacity_id");
+									listValues.add(db.getControlBoardBarCapacityId(Integer.valueOf(comboControlBoardEditBarCapacity.getSelectedItem().toString())));
+								}
+							}
+						}
+					} else {
+						err.add("Debe seleccionar una capacidad de barra para el tablero");
+					}
+				} else {
+					err.add("No hay ninguna capacidad de barra registrada, debe registrar una primero");
+				}
+				if(comboControlBoardEditBarType.getItemCount() > 0) {
+					if (comboControlBoardEditBarType.getSelectedIndex() > -1) {
+						if (!editControlBoardBarType.equals(comboControlBoardEditBarType.getSelectedItem().toString())) {
+							if(comboControlBoardEditBarType.getSelectedItem().toString().equalsIgnoreCase("N/A")) {
+								listFields.add("bar_type_id");
+								listValues.add(0);
+							} else {
+								listFields.add("bar_type_id");
+								listValues.add("'" + db.getControlBoardBarTypeId(comboControlBoardEditBarType.getSelectedItem().toString()) + "'");
+							}
+						}
+					} else {
+						err.add("Debe seleccionar un tipo de barra para el tablero");
+					}
+				} else {
+					err.add("No hay ningun tipo de barra registrada, debe registrar una primero");
+				}
+				if(comboControlBoardEditCircuits.getItemCount() > 0) {
+					if(comboControlBoardEditCircuits.getSelectedIndex() > -1) {
+						if(!Numbers.isNumeric(comboControlBoardEditCircuits.getSelectedItem().toString()) && !comboControlBoardEditCircuits.getSelectedItem().toString().equalsIgnoreCase("N/A")) {
+							err.add("Los circuitos deben ser numericos");
+						} else {
+							if (!String.valueOf(editControlBoardCircuits).equals(comboControlBoardEditCircuits.getSelectedItem().toString())) {
+								if (comboControlBoardEditCircuits.getSelectedItem().toString().equalsIgnoreCase("N/A")) {
+									listFields.add("circuits_id");
+									listValues.add(0);
+								} else {
+									listFields.add("circuits_id");
+									listValues.add(db.getControlBoardCircuitsId(Integer.valueOf(comboControlBoardEditCircuits.getSelectedItem().toString())));
+								}
+							}
+						}
+					} else {
+						err.add("Debe seleccionar la cantidad de circuitos para el tablero");
+					}
+				} else {
+					err.add("No hay ninguna cantidad de circuitos registrados, debe registrar alguno primero");
+				}
+				if(comboControlBoardEditVoltage.getItemCount() > 0) {
+					if (comboControlBoardEditVoltage.getSelectedIndex() > -1) {
+						if (!editControlBoardVoltage.equals(comboControlBoardEditVoltage.getSelectedItem().toString())) {
+							listFields.add("voltage_id");
+							listValues.add("'" + db.getControlBoardVoltageId(comboControlBoardEditVoltage.getSelectedItem().toString()) + "'");
+						}
+					} else {
+						err.add("Debe seleccionar un voltaje para el tablero");
+					}
+				} else {
+					err.add("No hay ningun voltaje registrado, debe registrar uno primero");
+				}
+				if(comboControlBoardEditPhases.getItemCount() > 0) {
+					if(comboControlBoardEditPhases.getSelectedIndex() > -1) {
+						if(!Numbers.isNumeric(comboControlBoardEditPhases.getSelectedItem().toString())) {
+							err.add("La cantidad de fases debe ser numerica");
+						} else {
+							if (!String.valueOf(editControlBoardPhases).equals(comboControlBoardEditPhases.getSelectedItem().toString())) {
+								listFields.add("phases");
+								listValues.add(Integer.valueOf(comboControlBoardEditPhases.getSelectedItem().toString()));
+							}
+						}
+					} else {
+						err.add("Debe seleccionar la cantidad de fases para el tablero");
+					}
+				} else {
+					err.add("No hay ninguna cantidad de fases registrada, debe registrar una primero");
+				}
+				if(!editControlBoardGround.equals(checkControlBoardEditGround.isSelected()?"SI":"NO")) {
+					listFields.add("ground");
+					listValues.add(checkControlBoardEditGround.isSelected()?"1":"0");
+				}
+				if(comboControlBoardEditInterruption.getItemCount() > 0) {
+					if(comboControlBoardEditInterruption.getSelectedIndex() > -1) {
+						if(!Numbers.isNumeric(comboControlBoardEditInterruption.getSelectedItem().toString()) && !comboControlBoardEditInterruption.getSelectedItem().toString().equalsIgnoreCase("N/A")) {
+							err.add("La interrupcion debe ser numerica");
+						} else {
+							if (!String.valueOf(editControlBoardInterruption).equals(comboControlBoardEditInterruption.getSelectedItem().toString())) {
+								if (comboControlBoardEditInterruption.getSelectedItem().toString().equalsIgnoreCase("N/A")) {
+									listFields.add("interruption_id");
+									listValues.add(0);
+								} else {
+									listFields.add("interruption_id");
+									listValues.add(db.getInterruptionId(Integer.valueOf(comboControlBoardEditInterruption.getSelectedItem().toString())));
+								}
+							}
+						}
+					} else {
+						err.add("Debe seleccionar la interrupcion para el tablero");
+					}
+				} else {
+					err.add("No hay ninguna interrupcion registrada, debe registrar una primero");
+				}
+				if (comboControlBoardEditLockType.getItemCount() > 0) {
+					if (comboControlBoardEditLockType.getSelectedIndex() > -1) {
+						if(!editControlBoardLockType.equals(comboControlBoardEditLockType.getSelectedItem().toString())) {
+							if (comboControlBoardEditLockType.getSelectedItem().toString().equalsIgnoreCase("N/A")) {
+								listFields.add("lock_type_id");
+								listValues.add(0);
+							} else {
+								listFields.add("lock_type_id");
+								listValues.add("'" + db.getLockTypeId(comboControlBoardEditLockType.getSelectedItem().toString()) + "'");
+							}
+						}
+					} else {
+						err.add("Debe seleccionar un tipo de cerradura");
+					}
+				} else {
+					err.add("No hay ninguna cerradura registrada, debe registrar una primero");
+				}
+				if(!textControlBoardEditPrice.getText().isEmpty() && Numbers.isNumeric(textControlBoardEditPrice.getText())) {
+					if (!String.valueOf(editControlBoardPrice).equals(textControlBoardEditPrice.getText())) {
+						listFields.add("price");
+						listValues.add(Double.valueOf(textControlBoardEditPrice.getText()));
+					}
+				} else {
+					err.add("El precio debe ser un valor numerico");
+				}
+				if(err.isEmpty()) {
+					if(listFields.size() > 0 && listValues.size() > 0) {
+						boolean controlBoardEdited = db.editControlBoard(editControlBoardId, listFields, listValues);
+						if (controlBoardEdited) {
+							setControlBoardsMode(SalesMainView.VIEW_MODE);
+						} else {
+							JOptionPane.showMessageDialog(null, "No se pudo actualizar el tablero debido a un error");
+						}
+					} else {
+						setControlBoardsMode(SalesMainView.VIEW_MODE);
+					}
+				} else {
+					err.dump();
+				}
+			} else if (actionCommand.equalsIgnoreCase("control.description.edit.cancel")) {
+				setControlBoardsMode(SalesMainView.VIEW_MODE);
+			} else if (actionCommand.equalsIgnoreCase("control.switch.add")) {
+				dialogControlBoardSwitchAdd = new SwitchDialog(null, "Agregar Interruptor");
+				WindowsListener lForWindow = new WindowsListener();
+				dialogControlBoardSwitchAdd.addWindowListener(lForWindow);
+			} else if (actionCommand.equalsIgnoreCase("control.switch.remove")) {
+				int response = JOptionPane.showConfirmDialog(null, "Esta seguro que desea remover este interruptor del tablero?", "Remover interruptor del tablero", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+				if(response == JOptionPane.YES_OPTION) {
+//					int controlBoardContainerId = db.getSwitchControlBoardId(selectedControlBoardSwitchId);
+					if(db.removeControlBoardSwitch(selectedControlBoardSwitchId)) {
+						if(tableControlBoardsResult.getSelectedRow() > -1) {
+							selectedControlBoardId = Integer.valueOf( (String) tableControlBoardsResult.getValueAt(tableControlBoardsResult.getSelectedRow(), SharedListSelectionListener.CONTROL_BOARD_ID_COLUMN));
+							loadControlBoardSwitchTable();
+						}
+					} else {
+						JOptionPane.showMessageDialog(null, "Error al remover interruptor del tablero");
+					}
+				}
+			} else if(actionCommand.equalsIgnoreCase("control.materials.edit")) {
+				JTabbedPane controlBoardViewTabbedPane = (JTabbedPane) controlBoardSwitchesPanel.getParent();
+				controlBoardViewTabbedPane.setEnabled(false);
+				buttonControlBoardMaterialsEdit.setEnabled(false);
+//				textBoardMaterials.setEditable(true);
+//				textBoardMaterialsPrice.setEditable(true);
+				panelControlBoardMaterialsEditSaveCancel.setVisible(true);
+				buttonControlBoardMaterialsEditSave.setEnabled(true);
+				buttonControlBoardMaterialsEditCancel.setEnabled(true);
+			} else if (actionCommand.equalsIgnoreCase("control.materials.edit.save")) {
+				if(selectedControlBoardId > 0) {
+					ArrayList<Object> listFields = new ArrayList<Object>();
+					ArrayList<Object> listValues = new ArrayList<Object>();
+					listFields.add("materials");
+					listValues.add("'" + textBoardMaterials.getText() + "'");
+					listFields.add("materials_price");
+					listValues.add(textBoardMaterialsPrice.getText());
+					db.editControlBoard(selectedControlBoardId, listFields, listValues);
+					JTabbedPane controlBoardViewTabbedPane = (JTabbedPane) controlBoardSwitchesPanel.getParent();
+					controlBoardViewTabbedPane.setEnabled(true);
+					buttonControlBoardMaterialsEdit.setEnabled(true);
+					textBoardMaterials.setEditable(false);
+					textBoardMaterialsPrice.setEditable(false);
+					buttonControlBoardMaterialsEditSave.setEnabled(false);
+					buttonControlBoardMaterialsEditCancel.setEnabled(false);
+					panelControlBoardMaterialsEditSaveCancel.setVisible(false);
+				} else {
+					JOptionPane.showMessageDialog(null, "No hay ningun tablero seleccionado");
+				}
+			} else if (actionCommand.equalsIgnoreCase("control.materials.edit.cancel")) {
+				JTabbedPane controlBoardViewTabbedPane = (JTabbedPane) controlBoardSwitchesPanel.getParent();
+				controlBoardViewTabbedPane.setEnabled(true);
+				buttonControlBoardMaterialsEdit.setEnabled(true);
+				textBoardMaterials.setEditable(false);
+				textBoardMaterialsPrice.setEditable(false);
+				buttonControlBoardMaterialsEditSave.setEnabled(false);
+				buttonControlBoardMaterialsEditCancel.setEnabled(false);
+				panelControlBoardMaterialsEditSaveCancel.setVisible(false);
+			} else if(actionCommand.equalsIgnoreCase("control.comments.edit")) {
+				JTabbedPane controlBoardViewTabbedPane = (JTabbedPane) controlBoardSwitchesPanel.getParent();
+				controlBoardViewTabbedPane.setEnabled(false);
+				buttonControlBoardCommentsEdit.setEnabled(false);
+				textControlBoardComments.setEditable(true);
+				panelControlBoardCommentsEditSaveCancel.setVisible(true);
+				buttonControlBoardCommentsEditSave.setEnabled(true);
+				buttonControlBoardCommentsEditCancel.setEnabled(true);
+			} else if (actionCommand.equalsIgnoreCase("control.comments.edit.save")) {
+				if(selectedControlBoardId > 0) {
+					ArrayList<Object> listFields = new ArrayList<Object>();
+					ArrayList<Object> listValues = new ArrayList<Object>();
+					listFields.add("comments");
+					listValues.add("'" + textControlBoardComments.getText() + "'");
+					db.editControlBoard(selectedControlBoardId, listFields, listValues);
+					JTabbedPane controlBoardViewTabbedPane = (JTabbedPane) controlBoardSwitchesPanel.getParent();
+					controlBoardViewTabbedPane.setEnabled(true);
+					buttonControlBoardCommentsEdit.setEnabled(true);
+					textControlBoardComments.setEditable(false);
+					buttonControlBoardCommentsEditSave.setEnabled(false);
+					buttonControlBoardCommentsEditCancel.setEnabled(false);
+					panelControlBoardCommentsEditSaveCancel.setVisible(false);
+				} else {
+					JOptionPane.showMessageDialog(null, "No hay ningun tablero seleccionado");
+				}
+			} else if (actionCommand.equalsIgnoreCase("control.comments.edit.cancel")) {
+				JTabbedPane controlBoardViewTabbedPane = (JTabbedPane) controlBoardSwitchesPanel.getParent();
+				controlBoardViewTabbedPane.setEnabled(true);
+				buttonControlBoardCommentsEdit.setEnabled(true);
+				textControlBoardComments.setEditable(false);
+				buttonControlBoardCommentsEditSave.setEnabled(false);
+				buttonControlBoardCommentsEditCancel.setEnabled(false);
+				panelControlBoardCommentsEditSaveCancel.setVisible(false);
 			}
 		}
 		
@@ -9330,6 +11845,7 @@ public class SalesMainView extends JFrame{
 			} else if (actionCommand.equalsIgnoreCase("budget.notes.edit")) {
 				panelBudgetNotesEditSaveCancel.setVisible(true);
 				textBudgetNotes.setEditable(true);
+				strBudgetNotes = textBudgetNotes.getText();
 				buttonBudgetNotesEditSave.setEnabled(true);
 				buttonBudgetNotesEditCancel.setEnabled(true);
 				buttonBudgetNotesEdit.setEnabled(false);
@@ -9359,6 +11875,8 @@ public class SalesMainView extends JFrame{
 				buttonBudgetNotesEdit.setEnabled(true);
 				buttonBudgetNotesEditSave.setEnabled(false);
 				buttonBudgetNotesEditCancel.setEnabled(false);
+				textBudgetNotes.setText(strBudgetNotes);
+				strBudgetNotes = "";
 				textBudgetNotes.setEditable(false);
 				panelBudgetNotesEditSaveCancel.setVisible(false);
 			} else if (actionCommand.equalsIgnoreCase("budget.clone")) {
@@ -9397,6 +11915,23 @@ public class SalesMainView extends JFrame{
 						JOptionPane.showMessageDialog(null, "No puede agregar mas de " + selectedTableBoardCircuits + " circuitos");
 					}
 				}
+			} else if (window.equals(dialogControlBoardSwitchAdd)) {
+				Integer switchSearchId = dialogControlBoardSwitchAdd.getSwitchSearchId();
+				Integer switchQuantity = dialogControlBoardSwitchAdd.getSwitchAddQuantity();
+				Double switchPrice = dialogControlBoardSwitchAdd.getSwitchAddPrice();
+				if(switchSearchId > 0) {
+					if (!selectedTableControlBoardCircuits.equalsIgnoreCase("N/A")) {
+						if ((switchQuantity * db.getSwitchPhases(switchSearchId)) + db.getControlBoardSwitchesQuantity(selectedControlBoardId) <= Integer.valueOf(selectedTableControlBoardCircuits)) {
+							if(db.addControlBoardSwitch(selectedControlBoardId, switchSearchId, switchQuantity, switchPrice)) {
+								loadControlBoardSwitchTable();
+							}
+						} else {
+							JOptionPane.showMessageDialog(null, "No puede agregar mas de " + selectedTableBoardCircuits + " circuitos");
+						}
+					} else {
+						JOptionPane.showMessageDialog(null, "No puede agregar interruptores ya que no tiene circuitos asignados");
+					}
+				}
 			} else if (window.equals(dialogBudgetSwitchAdd)) {
 				Integer switchSearchId = dialogBudgetSwitchAdd.getSwitchSearchId();
 				Integer switchQuantity = dialogBudgetSwitchAdd.getSwitchAddQuantity();
@@ -9409,16 +11944,18 @@ public class SalesMainView extends JFrame{
 			} else if (window.equals(dialogBudgetBoxAdd)) {
 				Integer boxSearchId = dialogBudgetBoxAdd.getBoxSearchId();
 				Integer boxQuantity = dialogBudgetBoxAdd.getBoxAddQuantity();
+				double boxPrice = dialogBudgetBoxAdd.getBoxPrice();
 				if(boxSearchId > 0) {
-					if(db.addBudgetBox(selectedBudgetId, boxSearchId, boxQuantity)) {
+					if(db.addBudgetBox(selectedBudgetId, boxSearchId, boxQuantity, boxPrice)) {
 						loadBudgetBoxTable();
 					}
 				}
 			} else if (window.equals(dialogBudgetBoardAdd)) {
 				Integer boardSearchId = dialogBudgetBoardAdd.getBoardSearchId();
 				Integer boardQuantity = dialogBudgetBoardAdd.getBoardAddQuantity();
+				double boardPrice = dialogBudgetBoardAdd.getBoardPrice();
 				if(boardSearchId > 0) {
-					if(db.addBudgetBoard(selectedBudgetId, boardSearchId, boardQuantity)) {
+					if(db.addBudgetBoard(selectedBudgetId, boardSearchId, boardQuantity, boardPrice)) {
 						loadBudgetBoardTable();
 					}
 				}

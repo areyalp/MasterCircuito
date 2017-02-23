@@ -42,19 +42,19 @@ import javax.swing.event.ListSelectionListener;
 import org.joda.time.DateTime;
 
 import ve.com.mastercircuito.common.LoginDialog;
-import ve.com.mastercircuito.components.Board;
-import ve.com.mastercircuito.components.Box;
-import ve.com.mastercircuito.components.Budget;
 import ve.com.mastercircuito.components.MyInternalFrame;
-import ve.com.mastercircuito.components.PrintDialog;
-import ve.com.mastercircuito.components.Product;
-import ve.com.mastercircuito.components.ProductType;
-import ve.com.mastercircuito.components.ProductionOrder;
-import ve.com.mastercircuito.components.Switch;
-import ve.com.mastercircuito.components.User;
-import ve.com.mastercircuito.components.WorkOrder;
 import ve.com.mastercircuito.db.Db;
+import ve.com.mastercircuito.dialogs.PrintDialog;
 import ve.com.mastercircuito.font.Fa;
+import ve.com.mastercircuito.objects.Board;
+import ve.com.mastercircuito.objects.Box;
+import ve.com.mastercircuito.objects.Budget;
+import ve.com.mastercircuito.objects.Product;
+import ve.com.mastercircuito.objects.ProductType;
+import ve.com.mastercircuito.objects.ProductionOrder;
+import ve.com.mastercircuito.objects.Switch;
+import ve.com.mastercircuito.objects.User;
+import ve.com.mastercircuito.objects.WorkOrder;
 
 public class ProductionMainView extends JFrame{
 

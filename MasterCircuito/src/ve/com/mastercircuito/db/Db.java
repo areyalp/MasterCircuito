@@ -12,36 +12,36 @@ import javax.swing.JOptionPane;
 
 import org.joda.time.DateTime;
 
-import ve.com.mastercircuito.components.BarCapacity;
-import ve.com.mastercircuito.components.BarType;
-import ve.com.mastercircuito.components.Board;
-import ve.com.mastercircuito.components.BoardType;
-import ve.com.mastercircuito.components.BoardVoltage;
-import ve.com.mastercircuito.components.Box;
-import ve.com.mastercircuito.components.BoxType;
-import ve.com.mastercircuito.components.Budget;
-import ve.com.mastercircuito.components.BudgetStage;
-import ve.com.mastercircuito.components.Caliber;
-import ve.com.mastercircuito.components.Circuits;
-import ve.com.mastercircuito.components.Client;
-import ve.com.mastercircuito.components.Color;
-import ve.com.mastercircuito.components.DeliveryPeriod;
-import ve.com.mastercircuito.components.DispatchPlace;
-import ve.com.mastercircuito.components.Finish;
-import ve.com.mastercircuito.components.Installation;
-import ve.com.mastercircuito.components.Interruption;
-import ve.com.mastercircuito.components.LockType;
-import ve.com.mastercircuito.components.Material;
-import ve.com.mastercircuito.components.MeasureUnits;
-import ve.com.mastercircuito.components.Nema;
-import ve.com.mastercircuito.components.PaymentMethod;
-import ve.com.mastercircuito.components.Product;
-import ve.com.mastercircuito.components.ProductionOrder;
-import ve.com.mastercircuito.components.User;
-import ve.com.mastercircuito.components.Sheet;
-import ve.com.mastercircuito.components.Switch;
-import ve.com.mastercircuito.components.UserType;
-import ve.com.mastercircuito.components.WorkOrder;
+import ve.com.mastercircuito.objects.BarCapacity;
+import ve.com.mastercircuito.objects.BarType;
+import ve.com.mastercircuito.objects.Board;
+import ve.com.mastercircuito.objects.BoardType;
+import ve.com.mastercircuito.objects.BoardVoltage;
+import ve.com.mastercircuito.objects.Box;
+import ve.com.mastercircuito.objects.BoxType;
+import ve.com.mastercircuito.objects.Budget;
+import ve.com.mastercircuito.objects.BudgetStage;
+import ve.com.mastercircuito.objects.Caliber;
+import ve.com.mastercircuito.objects.Circuits;
+import ve.com.mastercircuito.objects.Client;
+import ve.com.mastercircuito.objects.Color;
+import ve.com.mastercircuito.objects.DeliveryPeriod;
+import ve.com.mastercircuito.objects.DispatchPlace;
+import ve.com.mastercircuito.objects.Finish;
+import ve.com.mastercircuito.objects.Installation;
+import ve.com.mastercircuito.objects.Interruption;
+import ve.com.mastercircuito.objects.LockType;
+import ve.com.mastercircuito.objects.Material;
+import ve.com.mastercircuito.objects.MeasureUnits;
+import ve.com.mastercircuito.objects.Nema;
+import ve.com.mastercircuito.objects.PaymentMethod;
+import ve.com.mastercircuito.objects.Product;
+import ve.com.mastercircuito.objects.ProductionOrder;
+import ve.com.mastercircuito.objects.Sheet;
+import ve.com.mastercircuito.objects.Switch;
+import ve.com.mastercircuito.objects.User;
+import ve.com.mastercircuito.objects.UserType;
+import ve.com.mastercircuito.objects.WorkOrder;
 import ve.com.mastercircuito.utils.StringTools;
 
 public class Db extends MysqlDriver {
@@ -89,7 +89,7 @@ public class Db extends MysqlDriver {
 			}
 			queryFields = StringTools.removeLastChar(queryFields);
 			String queryString = "UPDATE switches SET " + queryFields + " WHERE id = " + switchId;
-			if (this.update(queryString)) {
+			if (Db.update(queryString)) {
 				return true;
 			}
 		}
@@ -106,7 +106,7 @@ public class Db extends MysqlDriver {
 			}
 			queryFields = StringTools.removeLastChar(queryFields);
 			String queryString = "UPDATE boxes SET " + queryFields + " WHERE id = " + boxId;
-			if (this.update(queryString)) {
+			if (Db.update(queryString)) {
 				return true;
 			}
 		}
@@ -123,7 +123,7 @@ public class Db extends MysqlDriver {
 			}
 			queryFields = StringTools.removeLastChar(queryFields);
 			String queryString = "UPDATE boards SET " + queryFields + " WHERE id = " + boardId;
-			if (this.update(queryString)) {
+			if (Db.update(queryString)) {
 				return true;
 			}
 		}
@@ -327,8 +327,9 @@ public class Db extends MysqlDriver {
 		setInterruption = this.select("SELECT id FROM interruptions WHERE interruption = " + interruption);
 		
 		try {
-			setInterruption.first();
-			interruptionId = setInterruption.getInt("id");
+			if(setInterruption.next()) {
+				interruptionId = setInterruption.getInt("id");
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(null, "Error al obtener el id de la interrupcion");
@@ -354,11 +355,13 @@ public class Db extends MysqlDriver {
 	public int getInstallationId(String installation) {
 		ResultSet setInstallation;
 		int installationId = 0;
-		setInstallation = this.select("SELECT id FROM installations WHERE installation = '" + installation + "'");
+		String query = "SELECT id FROM installations WHERE installation = '" + installation + "'";
+		setInstallation = this.select(query);
 		
 		try {
-			setInstallation.first();
-			installationId = setInstallation.getInt("id");
+			if(setInstallation.next()) {
+				installationId = setInstallation.getInt("id");
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(null, "Error al obtener el id de la instalacion");
@@ -512,8 +515,9 @@ public class Db extends MysqlDriver {
 		setLockType = this.select("SELECT id FROM lock_types WHERE lock_type = '" + lockType + "'");
 		
 		try {
-			setLockType.first();
-			lockTypeId = setLockType.getInt("id");
+			if(setLockType.first()) {
+				lockTypeId = setLockType.getInt("id");
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(null, "Error al obtener el id de la cerradura");
@@ -862,7 +866,7 @@ public class Db extends MysqlDriver {
 				budgetId = this.getInsertId();
 				
 				String queryUpdateBudgetCodeId = "UPDATE budget_code_ids SET budget_code_id = " + budgetId + " WHERE id = " + budgetCodeId;
-				this.update(queryUpdateBudgetCodeId);
+				Db.update(queryUpdateBudgetCodeId);
 			}
 		} catch(Exception e) {
 			JOptionPane.showMessageDialog(null, "Ha ocurrido un error al agregar el presupuesto, por favor contacte al programador");
@@ -894,7 +898,7 @@ public class Db extends MysqlDriver {
 			}
 			queryFields = StringTools.removeLastChar(queryFields);
 			String queryString = "UPDATE budgets SET " + queryFields + " WHERE id = " + budgetId;
-			if (this.update(queryString)) {
+			if (Db.update(queryString)) {
 				return true;
 			}
 		}
@@ -995,14 +999,16 @@ public class Db extends MysqlDriver {
 	}
 	
 	public boolean addBoardSwitch(int containerId, int switchId, int quantity, double switchPrice) {
-		int boardSwitchId = 0;
+//		int boardSwitchId = 0;
 		if(this.boardSwitchExists(containerId, switchId)) {
-			boardSwitchId = this.getBoardSwitchId(containerId, switchId);
-			if(boardSwitchId > 0) {
-				return this.increaseBoardSwitch(boardSwitchId, quantity);
-			} else {
-				return false;
-			}
+			JOptionPane.showMessageDialog(null, "Este Interruptor ya existe dentro del tablero");
+			return false;
+//			boardSwitchId = this.getBoardSwitchId(containerId, switchId);
+//			if(boardSwitchId > 0) {
+//				return this.increaseBoardSwitch(boardSwitchId, quantity);
+//			} else {
+//				return false;
+//			}
 		} else {
 			String queryString = "INSERT INTO board_switches (board_container_id, switch_id, quantity, price) "
 								+ "VALUES (" + containerId + ", " + switchId + ", " + quantity + ", " + switchPrice + ")";
@@ -1015,7 +1021,7 @@ public class Db extends MysqlDriver {
 		String queryString = "UPDATE board_switches SET quantity = quantity + " + quantity 
 							+ " WHERE id = " + boardSwitchId;
 		
-		return this.update(queryString);
+		return Db.update(queryString);
 	}
 	
 	public ArrayList<Material> getBoardMaterials(int boardId) {
@@ -1186,18 +1192,20 @@ public class Db extends MysqlDriver {
 		return deliveryPeriod;
 	}
 	
-	public boolean addBudgetBox(int selectedBudgetId, int boxSearchId, int boxQuantity) {
-		int budgetBoxId = 0;
+	public boolean addBudgetBox(int selectedBudgetId, int boxSearchId, int boxQuantity, double boxPrice) {
+//		int budgetBoxId = 0;
 		if(this.budgetBoxExists(selectedBudgetId, boxSearchId)) {
-			budgetBoxId = this.getBudgetBoxId(selectedBudgetId, boxSearchId);
-			if(budgetBoxId > 0) {
-				return this.increaseBudgetBox(budgetBoxId, boxQuantity);
-			} else {
-				return false;
-			}
+			JOptionPane.showMessageDialog(null, "Esta caja ya existe en el presupuesto");
+			return false;
+//			budgetBoxId = this.getBudgetBoxId(selectedBudgetId, boxSearchId);
+//			if(budgetBoxId > 0) {
+//				return this.increaseBudgetBox(budgetBoxId, boxQuantity);
+//			} else {
+//				return false;
+//			}
 		} else {
-			String queryString = "INSERT INTO budget_boxes (budget_container_id, box_id, quantity) "
-								+ "VALUES (" + selectedBudgetId + ", " + boxSearchId + ", " + boxQuantity + ")";
+			String queryString = "INSERT INTO budget_boxes (budget_container_id, box_id, quantity, price) "
+								+ "VALUES (" + selectedBudgetId + ", " + boxSearchId + ", " + boxQuantity + ", " + boxPrice + ")";
 			this.insert(queryString);
 			return (this.getInsertId() > 0)? true:false;
 		}
@@ -1207,7 +1215,7 @@ public class Db extends MysqlDriver {
 		String queryString = "UPDATE budget_boxes SET quantity = quantity + " + boxQuantity 
 				+ " WHERE id = " + budgetBoxId;
 
-		return this.update(queryString);
+		return Db.update(queryString);
 	}
 	
 	private int getBudgetBoxId(int selectedBudgetId, int boxSearchId) {
@@ -1244,14 +1252,16 @@ public class Db extends MysqlDriver {
 	}
 	
 	public boolean addBudgetSwitch(int selectedBudgetId, int switchSearchId, int switchQuantity, double switchPrice) {
-		int budgetSwitchId = 0;
+//		int budgetSwitchId = 0;
 		if(this.budgetSwitchExists(selectedBudgetId, switchSearchId)) {
-			budgetSwitchId = this.getBudgetSwitchId(selectedBudgetId, switchSearchId);
-			if(budgetSwitchId > 0) {
-				return this.increaseBudgetSwitch(budgetSwitchId, switchQuantity);
-			} else {
-				return false;
-			}
+			JOptionPane.showMessageDialog(null, "El interruptor ya existe dentro del presupuesto");
+			return false;
+//			budgetSwitchId = this.getBudgetSwitchId(selectedBudgetId, switchSearchId);
+//			if(budgetSwitchId > 0) {
+//				return this.increaseBudgetSwitch(budgetSwitchId, switchQuantity);
+//			} else {
+				
+//			}
 		} else {
 			String queryString = "INSERT INTO budget_switches (budget_container_id, switch_id, quantity, price) "
 								+ "VALUES (" + selectedBudgetId + ", " + switchSearchId + ", " + switchQuantity + ", " + switchPrice + ")";
@@ -1260,33 +1270,33 @@ public class Db extends MysqlDriver {
 		}
 	}
 	
-	private boolean increaseBudgetSwitch(int budgetSwitchId, int switchQuantity) {
-		String queryString = "UPDATE budget_switches SET quantity = quantity + " + switchQuantity 
-				+ " WHERE id = " + budgetSwitchId;
-
-		return this.update(queryString);
-	}
-	
-	private int getBudgetSwitchId(int selectedBudgetId, int switchSearchId) {
-		String queryString;
-		ResultSet setBudgetSwitchId;
-		
-		queryString = "SELECT budget_switches.id FROM budget_boxes "
-					+ "WHERE budget_switches.budget_container_id = '" + selectedBudgetId + "' "
-					+ "AND budget_switches.switch_id = '" + switchSearchId + "' "
-					+ "LIMIT 1";
-		
-		setBudgetSwitchId = this.select(queryString);
-		
-		try {
-			if (setBudgetSwitchId.next()) {
-				return setBudgetSwitchId.getInt("budget_switches.id");
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return 0;
-	}
+//	private boolean increaseBudgetSwitch(int budgetSwitchId, int switchQuantity) {
+//		String queryString = "UPDATE budget_switches SET quantity = quantity + " + switchQuantity 
+//				+ " WHERE id = " + budgetSwitchId;
+//
+//		return Db.update(queryString);
+//	}
+//	
+//	private int getBudgetSwitchId(int selectedBudgetId, int switchSearchId) {
+//		String queryString;
+//		ResultSet setBudgetSwitchId;
+//		
+//		queryString = "SELECT budget_switches.id FROM budget_boxes "
+//					+ "WHERE budget_switches.budget_container_id = '" + selectedBudgetId + "' "
+//					+ "AND budget_switches.switch_id = '" + switchSearchId + "' "
+//					+ "LIMIT 1";
+//		
+//		setBudgetSwitchId = this.select(queryString);
+//		
+//		try {
+//			if (setBudgetSwitchId.next()) {
+//				return setBudgetSwitchId.getInt("budget_switches.id");
+//			}
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//		}
+//		return 0;
+//	}
 	
 	private boolean budgetSwitchExists(int selectedBudgetId, int switchSearchId) {
 		String queryString;
@@ -1318,18 +1328,20 @@ public class Db extends MysqlDriver {
 		return this.delete(queryDelete);
 	}
 	
-	public boolean addBudgetBoard(int selectedBudgetId, int boardSearchId, int boardQuantity) {
-		int budgetBoardId = 0;
+	public boolean addBudgetBoard(int selectedBudgetId, int boardSearchId, int boardQuantity, double boardPrice) {
+//		int budgetBoardId = 0;
 		if(this.budgetBoardExists(selectedBudgetId, boardSearchId)) {
-			budgetBoardId = this.getBudgetBoardId(selectedBudgetId, boardSearchId);
-			if(budgetBoardId > 0) {
-				return this.increaseBudgetBoard(budgetBoardId, boardQuantity);
-			} else {
-				return false;
-			}
+			JOptionPane.showMessageDialog(null, "Este tablero ya existe dentro del presupuesto");
+			return false;
+//			budgetBoardId = this.getBudgetBoardId(selectedBudgetId, boardSearchId);
+//			if(budgetBoardId > 0) {
+//				return this.increaseBudgetBoard(budgetBoardId, boardQuantity);
+//			} else {
+//				return false;
+//			}
 		} else {
-			String queryString = "INSERT INTO budget_boards (budget_container_id, board_id, quantity) "
-								+ "VALUES (" + selectedBudgetId + ", " + boardSearchId + ", " + boardQuantity + ")";
+			String queryString = "INSERT INTO budget_boards (budget_container_id, board_id, price, quantity) "
+								+ "VALUES (" + selectedBudgetId + ", " + boardSearchId + ", " + boardPrice + ", " + boardQuantity + ")";
 			this.insert(queryString);
 			return (this.getInsertId() > 0)? true:false;
 		}
@@ -1339,7 +1351,7 @@ public class Db extends MysqlDriver {
 		String queryString = "UPDATE budget_boards SET quantity = quantity + " + boardQuantity 
 				+ " WHERE id = " + budgetBoardId;
 
-		return this.update(queryString);
+		return Db.update(queryString);
 	}
 	
 	private int getBudgetBoardId(int selectedBudgetId, int boardSearchId) {
@@ -2190,15 +2202,15 @@ public class Db extends MysqlDriver {
 	}
 	
 	public boolean setProductionOrderProcessed(int orderId) {
-		return this.update("UPDATE production_orders SET processed = 1 WHERE id = " + orderId);
+		return Db.update("UPDATE production_orders SET processed = 1 WHERE id = " + orderId);
 	}
 	
-	public boolean addBoardMainSwitch(int switchId, int boardContainerId) {
-		return this.update("UPDATE board_switches SET main = 1 WHERE id = " + switchId);
+	public boolean addMainSwitch(String table, int switchId) {
+		return Db.update("UPDATE " + table + " SET main = 1 WHERE id = " + switchId);
 	}
 	
-	public boolean removeBoardMainSwitch(int switchId, int boardContainerId) {
-		return this.update("UPDATE board_switches SET main = 0 WHERE id = " + switchId);
+	public boolean removeMainSwitch(String table, int switchId) {
+		return Db.update("UPDATE " + table + " SET main = 0 WHERE id = " + switchId);
 	}
 
 	public int getWorkOrderBudgetId(int workOrderId) {
@@ -2234,6 +2246,200 @@ public class Db extends MysqlDriver {
 			JOptionPane.showMessageDialog(null, "Error al obtener los comentarios de la caja");
 		}
 		return comments;
+	}
+	
+	public int getControlBoardTypeId(String type) {
+		ResultSet setType;
+		int typeId = 0;
+		setType = this.select("SELECT id FROM control_board_types WHERE type = '" + type + "'");
+		
+		try {
+			if(setType.next()) {
+				typeId = setType.getInt("id");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener el id del tipo");
+		}
+		return typeId;
+	}
+
+	public int getControlBoardBarCapacityId(Integer barCapacity) {
+		ResultSet setBarCapacity;
+		int barCapacityId = 0;
+		setBarCapacity = this.select("SELECT id FROM control_board_bar_capacities WHERE bar_capacity = '" + barCapacity + "'");
+		
+		try {
+			if(setBarCapacity.next()) {
+				barCapacityId = setBarCapacity.getInt("id");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener el id de la capacidad de barra");
+		}
+		return barCapacityId;
+	}
+
+	public int getControlBoardBarTypeId(String barType) {
+		ResultSet setBarType;
+		int barTypeId = 0;
+		setBarType = this.select("SELECT id FROM control_board_bar_types WHERE bar_type = '" + barType + "'");
+		
+		try {
+			if(setBarType.next()) {
+				barTypeId = setBarType.getInt("id");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener el id del tipo de barra");
+		}
+		return barTypeId;
+	}
+
+	public int getControlBoardCircuitsId(Integer circuits) {
+		ResultSet setCircuits;
+		int circuitsId = 0;
+		setCircuits = this.select("SELECT id FROM control_board_circuits WHERE circuits = '" + circuits + "'");
+		
+		try {
+			if(setCircuits.next()) {
+				circuitsId = setCircuits.getInt("id");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener el id de los circuitos");
+		}
+		return circuitsId;
+	}
+
+	public int getControlBoardVoltageId(String voltage) {
+		ResultSet setVoltage;
+		int voltageId = 0;
+		setVoltage = this.select("SELECT id FROM control_board_voltages WHERE voltage = '" + voltage + "'");
+		
+		try {
+			if(setVoltage.next()) {
+				voltageId = setVoltage.getInt("id");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener el id del voltaje");
+		}
+		return voltageId;
+	}
+
+	public boolean editControlBoard(Integer controlBoardId, ArrayList<Object> listFields,
+			ArrayList<Object> listValues) {
+		if (listFields.size() > 0) {
+			String queryFields = "";
+			Iterator<Object> it1 = listFields.iterator();
+			Iterator<Object> it2 = listValues.iterator();
+			while (it1.hasNext() && it2.hasNext()) {
+				queryFields += it1.next().toString() + " = " + it2.next().toString() + ",";
+			}
+			queryFields = StringTools.removeLastChar(queryFields);
+			String queryString = "UPDATE control_boards SET " + queryFields + " WHERE id = " + controlBoardId;
+			if (Db.update(queryString)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public int getSwitchControlBoardId(Integer selectedControlBoardSwitchId) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public ArrayList<Integer> getControlBoardSwitchMainIds(int controlBoardContainerId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public boolean removeControlBoardSwitch(Integer switchId) {
+		String queryDelete;
+		queryDelete = "DELETE FROM control_board_switches WHERE id = '" + switchId + "'";
+		return this.delete(queryDelete);
+	}
+
+	public boolean addControlBoard(String controlBoardName, String controlBoardType, String controlBoardInstallation,
+			String controlBoardNema, Integer controlBoardBarCapacity, String controlBoardBarType, Integer controlBoardCircuits,
+			String controlBoardVoltage, Integer controlBoardPhases, String controlBoardGround, Integer controlBoardInterruption,
+			String controlBoardLockType, Double controlBoardPrice) {
+		int typeId = this.getControlBoardTypeId(controlBoardType);
+		int installationId = this.getInstallationId(controlBoardInstallation);
+		int nemaId = this.getNemaId(controlBoardNema);
+		int barCapacityId = this.getControlBoardBarCapacityId(controlBoardBarCapacity);
+		int barTypeId = this.getControlBoardBarTypeId(controlBoardBarType);
+		int circuitsId = this.getControlBoardCircuitsId(controlBoardCircuits);
+		int voltageId = this.getControlBoardVoltageId(controlBoardVoltage);
+		int interruptionId = this.getInterruptionId(controlBoardInterruption);
+		int lockTypeId = this.getLockTypeId(controlBoardLockType);
+
+		String queryInsert = "INSERT INTO control_boards (name, type_id, installation_id, nema_id, bar_capacity_id, bar_type_id, circuits_id, voltage_id, phases, ground, interruption_id, lock_type_id, price) "
+				+ "VALUES('" + controlBoardName + "', " + typeId + ", " + installationId + ", " + nemaId + ", " + barCapacityId + ", " + barTypeId + ", " + circuitsId + ", " + voltageId + ", '" + controlBoardPhases + "', '" + controlBoardGround + "', " + interruptionId + ", " + lockTypeId + ", " + controlBoardPrice + ")";
+		
+		this.insert(queryInsert);
+		
+		return (this.getInsertId() > 0)? true:false;
+	}
+
+	public String getControlBoardComments(Integer controlBoardId) {
+		ResultSet setBoardCommentsPrice;
+		String comments = "";
+		setBoardCommentsPrice = this.select("SELECT comments FROM control_boards WHERE id = '" + controlBoardId + "'");
+		
+		try {
+			setBoardCommentsPrice.first();
+			comments = setBoardCommentsPrice.getString("comments");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener las observaciones del tablero de control");
+		}
+		return comments;
+	}
+
+	public int getControlBoardSwitchesQuantity(Integer controlBoardId) {
+		ResultSet setControlBoardSwitchesQuantity;
+		int controlBoardSwitchesQuantity = 0;
+		setControlBoardSwitchesQuantity = this.select("SELECT IFNULL(SUM(control_board_switches.quantity * switches.phases),0) as cnt " +
+													"FROM control_board_switches, switches " +
+													"WHERE control_board_switches.control_board_container_id = '" + controlBoardId + "' " +
+													"AND control_board_switches.switch_id = switches.id");
+		
+		try {
+			setControlBoardSwitchesQuantity.first();
+			controlBoardSwitchesQuantity = setControlBoardSwitchesQuantity.getInt("cnt");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener la cantidad de interruptores en este tablero de control");
+		}
+		return controlBoardSwitchesQuantity;
+	}
+
+	public boolean addControlBoardSwitch(Integer containerId, Integer switchId, Integer quantity,
+			Double switchPrice) {
+		if(this.controlBoardSwitchExists(containerId, switchId)) {
+			JOptionPane.showMessageDialog(null, "Este Interruptor ya existe dentro del tablero de control");
+			return false;
+		} else {
+			String queryString = "INSERT INTO control_board_switches (control_board_container_id, switch_id, quantity, price) "
+								+ "VALUES (" + containerId + ", " + switchId + ", " + quantity + ", " + switchPrice + ")";
+			this.insert(queryString);
+			return (this.getInsertId() > 0)? true:false;
+		}
+	}
+
+	private boolean controlBoardSwitchExists(Integer containerId, Integer switchId) {
+		String queryString;
+		
+		queryString = "SELECT * FROM control_board_switches "
+					+ "WHERE control_board_switches.control_board_container_id = '" + containerId + "' "
+					+ "AND control_board_switches.switch_id = '" + switchId + "' ";
+		
+		this.select(queryString);
+		
+		return (this.getNumRows() > 0)? true:false;
 	}
 	
 }

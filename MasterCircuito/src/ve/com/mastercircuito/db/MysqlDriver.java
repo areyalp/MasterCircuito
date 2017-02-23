@@ -116,15 +116,21 @@ public class MysqlDriver {
 		this.setInsertId(insertedId);
 	}
 	
-	public boolean update(String queryString) {
+	public static boolean update(String queryString) {
+		Db db = new Db();
 		PreparedStatement sqlState;
 		try{
-			sqlState = this.conn.prepareStatement(queryString);
+			sqlState = db.conn.prepareStatement(queryString);
 			int count = sqlState.executeUpdate();
 			if(count > 0){
 				return true;
 			}
 		}catch (SQLException e) {
+			e.printStackTrace();
+		}
+		try {
+			db.conn.close();
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return false;
