@@ -2803,5 +2803,29 @@ public class Db extends MysqlDriver {
 		}
 		return user;
 	}
+
+	public boolean addClient(String client, String clientCode, String representative, String rif, String address,
+			String phone, String email, String instagram, String facebook, String twitter) {
+		if(this.clientExists(rif)) {
+			JOptionPane.showMessageDialog(null, "Este cliente ya existe");
+			return false;
+		} else {
+			String queryString = "INSERT INTO clients (client, client_code, representative, rif, address, phone, email, instagram_user, facebook_profile, twitter_user) "
+								+ "VALUES ('" + client + "', '" + clientCode + "', '" + representative + "', '" + rif + "', '" + address + "', '" + phone + "', '" + email + "', '" + instagram + "', '" + facebook + "', '" + twitter + "')";
+			this.insert(queryString);
+			return (this.getInsertId() > 0)? true:false;
+		}
+	}
+
+	private boolean clientExists(String rif) {
+		String queryString;
+		
+		queryString = "SELECT * FROM clients "
+					+ "WHERE clients.rif = '" + rif + "' ";
+		
+		this.select(queryString);
+		
+		return (this.getNumRows() > 0)? true:false;
+	}
 	
 }
