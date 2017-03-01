@@ -44,10 +44,13 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDesktopPane;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JRootPane;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
@@ -75,10 +78,14 @@ import ve.com.mastercircuito.db.Db;
 import ve.com.mastercircuito.dialogs.BoardDialog;
 import ve.com.mastercircuito.dialogs.BoxDialog;
 import ve.com.mastercircuito.dialogs.ClientDialog;
+import ve.com.mastercircuito.dialogs.ControlBoardDialog;
+import ve.com.mastercircuito.dialogs.LoginDialog;
+import ve.com.mastercircuito.dialogs.MaterialDialog;
 import ve.com.mastercircuito.dialogs.PrintDialog;
 import ve.com.mastercircuito.dialogs.SellerDialog;
 import ve.com.mastercircuito.dialogs.SwitchDialog;
 import ve.com.mastercircuito.font.Fa;
+import ve.com.mastercircuito.objects.User;
 import ve.com.mastercircuito.utils.DateLabelFormatter;
 import ve.com.mastercircuito.utils.Errors;
 import ve.com.mastercircuito.utils.Numbers;
@@ -199,11 +206,14 @@ public class SalesMainView extends JFrame{
 //		private static final String SELLER_FIELD = "budget_sellers.seller";
 		
 		private Db db;
+		
+		private int userId;
+		private User userInfo;
 	
 		private JDesktopPane desktop;
 		private JPanel theToolBarPanel;
 		private JToolBar toolBar;
-		private JButton toolBarButtonSwitches, toolBarButtonBoxes, toolBarButtonBoards, toolBarButtonControlBoards, toolBarButtonBudgets, toolBarButtonStarters, toolBarButtonTracing;
+		private JButton toolBarButtonSwitches, toolBarButtonBoxes, toolBarButtonBoards, toolBarButtonControlBoards, toolBarButtonBudgets, toolBarButtonStarters, toolBarButtonTracing, toolBarButtonAddUser;
 	//*** Switch Global Variables and objects ***//
 		private MyInternalFrame switchesFrame = new MyInternalFrame();
 		private Object[][] switchesData = {};
@@ -217,7 +227,7 @@ public class SalesMainView extends JFrame{
 	// Switch Table Objects
 		private JScrollPane tableSwitchScrollPane;
 		private JTable tableSwitchesResult;
-		private Integer switchTableSelectedIndex = -1;
+		private int switchTableSelectedIndex = -1;
 		private ListSelectionModel listSwitchSelectionModel;
 	// Switch Add Objects
 		private JTextField textSwitchAddPrice, textSwitchAddReference;
@@ -227,7 +237,7 @@ public class SalesMainView extends JFrame{
 		private JComboBox<String> comboSwitchAddBrands, comboSwitchAddModels, comboSwitchAddPhases, comboSwitchAddCurrents, comboSwitchAddInterruptions, comboSwitchAddVoltages;
 		private String addSelectedSwitchBrand;
 	// Switch Edit Objects
-		private Integer editSwitchId = 0, editSwitchCurrent = 0, editSwitchInterruption = 0;
+		private int editSwitchId = 0, editSwitchCurrent = 0, editSwitchInterruption = 0;
 		private Double editSwitchPrice = 0.00;
 		private String editSwitchPhases, editSwitchBrand, editSwitchModel, editSwitchReference, editSwitchVoltage;
 		private JTextField textSwitchEditPrice, textSwitchEditReference;
@@ -252,7 +262,7 @@ public class SalesMainView extends JFrame{
 	// Box Table Objects
 		private JScrollPane tableBoxScrollPane;
 		private JTable tableBoxesResult;
-		private Integer boxTableSelectedIndex = -1;
+		private int boxTableSelectedIndex = -1;
 		private ListSelectionModel listBoxSelectionModel;
 	// Box Add Objects
 		private JButton buttonBoxAdd, buttonBoxEdit, buttonBoxAddSave, buttonBoxAddCancel, buttonBoxEditSave, buttonBoxEditCancel;
@@ -262,19 +272,21 @@ public class SalesMainView extends JFrame{
 		private JTextArea textBoxAddDescription, textBoxAddComments;
 	// Box Edit Objects
 		private Double editBoxPrice = 0.00;
-		private Integer editBoxId = 0, editBoxPairs = 0, editBoxHeight = 0, editBoxWidth = 0, editBoxDepth = 0;
+		private int editBoxId = 0, editBoxPairs = 0, editBoxHeight = 0, editBoxWidth = 0, editBoxDepth = 0;
 		private String editSelectedBoxType, editSelectedBoxSheet, editSelectedBoxFinish;
 		private String editBoxType, editBoxInstallation, editBoxNema, editBoxSheet, editBoxFinish, editBoxColor, editBoxUnits, editBoxCaliber, editBoxCaliberComments, editBoxLockType, editBoxComments;
 		private JTextField textBoxEditPairs, textBoxEditHeight, textBoxEditWidth, textBoxEditDepth, textBoxEditCaliberComments, textBoxEditPrice;
 		private JComboBox<String> comboBoxEditTypes, comboBoxEditInstallations, comboBoxEditNemas, comboBoxEditSheets, comboBoxEditFinishes, comboBoxEditColors, comboBoxEditUnits, comboBoxEditCalibers, comboBoxEditLockTypes;
 		private JTextArea textBoxEditDescription, textBoxEditComments;
 	// Box Settings Objects
-		private JComboBox<String> comboBoxSettingsColors, comboBoxSettingsCalibers;
+		private JComboBox<String> comboBoxSettingsColors, comboBoxSettingsCalibers, comboBoxSettingsLockTypes;
 	
 	//*** Board Global Variables and objects ***//
 		private MyInternalFrame boardsFrame = new MyInternalFrame();
 		private Object[][] boardsData = {};
 		private Object[][] boardSwitchesData = {};
+		private Object[][] boardMaterialsData = {};
+		private Object[][] controlBoardMaterialsData = {};
 		private JTabbedPane boardViewTabbedPane;
 	// Board View Objects
 		private JPanel panelBoardDescription, panelWrapperBoardDescription;
@@ -289,22 +301,31 @@ public class SalesMainView extends JFrame{
 		private JScrollPane tableBoardScrollPane;
 		private JTable tableBoardsResult;
 		private ListSelectionModel listBoardSelectionModel;
-		private Integer boardsTableSelectedIndex;
-		private Integer selectedBoardId = 0;
+		private int boardsTableSelectedIndex;
+		private int selectedBoardId = 0;
 	// Board Switches Objects
 		private JPanel boardSwitchesPanel;
 		private JTable tableBoardSwitchesResult;
 		private ListSelectionModel listBoardSwitchesSelectionModel;
-		private Integer boardSwitchesTableSelectedIndex;
+		private int boardSwitchesTableSelectedIndex;
 		private JButton buttonAddBoardSwitch, buttonRemoveBoardSwitch;
-		private Integer selectedBoardSwitchId;
+		private int selectedBoardSwitchId;
 	// Board Switches Add Objects
-		private Integer selectedTableBoardCircuits = 0;
+		private int selectedTableBoardCircuits = 0;
 		private String searchSelectedBoardSwitchBrand, searchSelectedBoardSwitchModel, searchSelectedBoardSwitchPhases, searchSelectedBoardSwitchCurrent, searchSelectedBoardSwitchInterruption;
 		private SwitchDialog dialogBoardSwitchAdd;
 		private Object[][] boardSwitchesSearchData;
 		private JTable tableBoardSwitchesSearchResult;
 		private JComboBox<String> comboBoardSwitchBrands, comboBoardSwitchModels, comboBoardSwitchPhases, comboBoardSwitchCurrents, comboBoardSwitchInterruptions;
+	// Board Materials Objects
+		private JPanel boardMaterialsPanel;
+		private JTable tableBoardMaterialsResult;
+		private ListSelectionModel listBoardMaterialsSelectionModel;
+		private int boardMaterialsTableSelectedIndex;
+		private JButton buttonAddBoardMaterial, buttonRemoveBoardMaterial;
+		private int selectedBoardMaterialId;
+	// Board Materials Add Objects
+		private MaterialDialog dialogBoardMaterialAdd;
 	// Board Add Objects
 		private JPanel panelBoardAddNew;
 		private JButton buttonBoardAddCancel;
@@ -315,7 +336,7 @@ public class SalesMainView extends JFrame{
 	// Board Edit Objects
 		private JPanel panelBoardEdit;
 		private JButton buttonBoardAddSave;
-		private Integer editBoardId, editBoardPhases;
+		private int editBoardId, editBoardPhases;
 		private Double editBoardPrice;
 		private String editBoardType, editBoardName, editBoardInstallation, editBoardNema, editBoardBarCapacity, editBoardBarType, editBoardCircuits, editBoardVoltage, editBoardGround, editBoardInterruption, editBoardLockType;
 		private JTextField textBoardEditName, textBoardEditPrice;
@@ -323,12 +344,8 @@ public class SalesMainView extends JFrame{
 		private JCheckBox checkBoardEditGround;
 		private JTextArea textBoardEditDescription;
 		private JButton buttonBoardEditSave, buttonBoardEditCancel;
-	// Board Materials Objects
-		private JPanel boardMaterialsPanel;
-		private JTextArea textBoardMaterials;
-		private JTextField textBoardMaterialsPrice;
-		private JButton buttonBoardMaterialsEdit, buttonBoardMaterialsEditSave, buttonBoardMaterialsEditCancel;
-		private JPanel panelBoardMaterialsEditSaveCancel;
+	// Board Settings Objects
+		private JComboBox<String> comboBoardSettingsCircuits, comboBoardSettingsVoltages;
 	// Board Comments Objects
 		private JPanel boardCommentsPanel;
 		private JTextArea textBoardComments;
@@ -354,15 +371,15 @@ public class SalesMainView extends JFrame{
 		private JScrollPane tableControlBoardScrollPane;
 		private JTable tableControlBoardsResult;
 		private ListSelectionModel listControlBoardSelectionModel;
-		private Integer controlBoardsTableSelectedIndex;
-		private Integer selectedControlBoardId = 0;
+		private int controlBoardsTableSelectedIndex;
+		private int selectedControlBoardId = 0;
 	// Control Board Switches Objects
 		private JPanel controlBoardSwitchesPanel;
 		private JTable tableControlBoardSwitchesResult;
 		private ListSelectionModel listControlBoardSwitchesSelectionModel;
-		private Integer controlBoardSwitchesTableSelectedIndex;
+		private int controlBoardSwitchesTableSelectedIndex;
 		private JButton buttonAddControlBoardSwitch, buttonRemoveControlBoardSwitch;
-		private Integer selectedControlBoardSwitchId;
+		private int selectedControlBoardSwitchId;
 	// Control Board Switches Add Objects
 		private String selectedTableControlBoardCircuits;
 		private String searchSelectedControlBoardSwitchBrand, searchSelectedControlBoardSwitchModel, searchSelectedControlBoardSwitchPhases, searchSelectedControlBoardSwitchCurrent, searchSelectedControlBoardSwitchInterruption;
@@ -370,6 +387,15 @@ public class SalesMainView extends JFrame{
 		private Object[][] controlBoardSwitchesSearchData;
 		private JTable tableControlBoardSwitchesSearchResult;
 		private JComboBox<String> comboControlBoardSwitchBrands, comboControlBoardSwitchModels, comboControlBoardSwitchPhases, comboControlBoardSwitchCurrents, comboControlBoardSwitchInterruptions;
+	// Board Materials Objects
+		private JPanel controlBoardMaterialsPanel;
+		private JTable tableControlBoardMaterialsResult;
+		private ListSelectionModel listControlBoardMaterialsSelectionModel;
+		private int controlBoardMaterialsTableSelectedIndex;
+		private JButton buttonAddControlBoardMaterial, buttonRemoveControlBoardMaterial;
+		private int selectedControlBoardMaterialId;
+	// Board Materials Add Objects
+		private MaterialDialog dialogControlBoardMaterialAdd;
 	// Control Board Add Objects
 		private JPanel panelControlBoardAddNew;
 		private JButton buttonControlBoardAddCancel;
@@ -380,7 +406,7 @@ public class SalesMainView extends JFrame{
 	// Control Board Edit Objects
 		private JPanel panelControlBoardEdit;
 		private JButton buttonControlBoardAddSave;
-		private Integer editControlBoardId, editControlBoardPhases;
+		private int editControlBoardId, editControlBoardPhases;
 		private Double editControlBoardPrice;
 		private String editControlBoardType, editControlBoardName, editControlBoardInstallation, editControlBoardNema, editControlBoardBarCapacity, editControlBoardBarType, editControlBoardCircuits, editControlBoardVoltage, editControlBoardGround, editControlBoardInterruption, editControlBoardLockType;
 		private JTextField textControlBoardEditName, textControlBoardEditPrice;
@@ -388,12 +414,6 @@ public class SalesMainView extends JFrame{
 		private JCheckBox checkControlBoardEditGround;
 		private JTextArea textControlBoardEditDescription;
 		private JButton buttonControlBoardEditSave, buttonControlBoardEditCancel;
-	// Control Board Materials Objects
-		private JPanel controlBoardMaterialsPanel;
-		private JTextArea textControlBoardMaterials;
-		private JTextField textControlBoardMaterialsPrice;
-		private JButton buttonControlBoardMaterialsEdit, buttonControlBoardMaterialsEditSave, buttonControlBoardMaterialsEditCancel;
-		private JPanel panelControlBoardMaterialsEditSaveCancel;
 	// Control Board Comments Objects
 		private JPanel controlBoardCommentsPanel;
 		private JTextArea textControlBoardComments;
@@ -407,7 +427,7 @@ public class SalesMainView extends JFrame{
 		
 		private PrintDialog budgetPrintDialog;
 	
-	//Budget Objects
+	//	Budget Objects
 		private UtilDateModel addBudgetDateModel;
 		private JButton buttonBudgetAdd;
 		private JButton buttonBudgetEdit;
@@ -422,36 +442,38 @@ public class SalesMainView extends JFrame{
 		private JTextField textBudgetDescriptionClientCode, textBudgetDescriptionClient;
 		private JTextField textBudgetDescriptionClientRepresentative, textBudgetDescriptionWorkName, textBudgetDescriptionPaymentMethod;
 		private JTextField textBudgetDescriptionSeller, textBudgetDescriptionDeliveryTime, textBudgetDescriptionDeliveryPeriod, textBudgetDescriptionDispatchPlace;
-	// Budget Add Objects
+	// 	Budget Add Objects
 		private JButton buttonBudgetAddSave, buttonBudgetAddCancel;
 		private JTextField textBudgetAddClientCode,textBudgetAddExpiryDays;
 		private JTextField textBudgetAddClientRepresentative, textBudgetAddWorkName, textBudgetAddClient;
 		private JTextField textBudgetAddSeller, textBudgetAddDeliveryTime;
-//		private JCheckBox checkBudgetAddTracing;
+	//	Budget Settings Objects
+		private JComboBox<String> comboBudgetSettingsPaymentMethods;
+	//	private JCheckBox checkBudgetAddTracing;
 		private JTextField textBudgetDescriptionExpiryDate;
 		private Object [][] budgetsData={};
 		private JComboBox<String> comboBudgetAddPaymentMethod, comboBudgetAddDispatchPlace,comboBudgetAddDeliveryPeriod;
-		private Integer editBudgetId, editBudgetClientId, editBudgetSellerId, editBudgetExpiryDays,editBudgetDeliveryTime;
+		private int editBudgetId, editBudgetClientId, editBudgetSellerId, editBudgetExpiryDays,editBudgetDeliveryTime;
 		private String editBudgetClientCode, editBudgetDate, editBudgetDeliveryPeriod;
 		private String editBudgetWorkName, editBudgetPaymentMethod, editBudgetSeller, editBudgetDispatchPlace, editBudgetTracing, editBudgetStage;
-		private Integer budgetsTableSelectedIndex;
+		private int budgetsTableSelectedIndex;
 		private JButton buttonBudgetAddClient, buttonBudgetAddSeller, buttonBudgetEditSave, buttonBudgetEditCancel;
-		private Integer selectedBudgetId;
+		private int selectedBudgetId;
 		private String selectedBudgetCode;
 	// Budget Clone
-		private Integer clonedBudgetId;
+		private int clonedBudgetId;
 	// Budget Client Add
 		private ClientDialog dialogBudgetClientAdd;
-		private Integer budgetClientAddId;
+		private int budgetClientAddId;
 	// Budget Client Edit
 		private ClientDialog dialogBudgetClientEdit;
-		private Integer budgetClientEditedId;
+		private int budgetClientEditedId;
 	// Budget Seller Add
 		private SellerDialog dialogBudgetSellerAdd;
-		private Integer budgetSellerAddSearchId;
+		private int budgetSellerAddSearchId;
 	// Budget Seller Edit
 		private SellerDialog dialogBudgetSellerEdit;
-		private Integer budgetSellerEditedId;
+		private int budgetSellerEditedId;
 	// Budget Edit Objects
 		private UtilDateModel editBudgetDateModel;
 		private JButton buttonBudgetEditClient, buttonBudgetEditSeller;
@@ -465,10 +487,10 @@ public class SalesMainView extends JFrame{
 		private JPanel budgetSwitchesPanel;
 		private JTable tableBudgetSwitchesResult;
 		private ListSelectionModel listBudgetSwitchesSelectionModel;
-		private Integer budgetSwitchesTableSelectedIndex;
+		private int budgetSwitchesTableSelectedIndex;
 		private JButton buttonAddBudgetSwitch, buttonRemoveBudgetSwitch;
 		private String stringSelectedBudgetSwitch;
-		private Integer selectedBudgetSwitchId;
+		private int selectedBudgetSwitchId;
 	// Budget Switches Add Objects
 		private SwitchDialog dialogBudgetSwitchAdd;
 		private Object[][] budgetSwitchesSearchData;
@@ -477,8 +499,9 @@ public class SalesMainView extends JFrame{
 		private Object[][] budgetBoxesData;
 		private JTable tableBudgetBoxesResult;
 		private ListSelectionModel listBudgetBoxesSelectionModel;
+		private int budgetBoxesTableSelectedIndex;
 		private JButton buttonAddBudgetBox, buttonRemoveBudgetBox;
-		private Integer selectedBudgetBoxId;
+		private int selectedBudgetBoxId;
 	// Budget Boxes Add Objects
 		private BoxDialog dialogBudgetBoxAdd;
 	// Budget Boards Objects
@@ -486,10 +509,31 @@ public class SalesMainView extends JFrame{
 		private Object[][] budgetBoardsData;
 		private JTable tableBudgetBoardsResult;
 		private ListSelectionModel listBudgetBoardsSelectionModel;
+		private int budgetBoardsTableSelectedIndex;
 		private JButton buttonAddBudgetBoard, buttonRemoveBudgetBoard;
-		private Integer selectedBudgetBoardId;
+		private int selectedBudgetBoardId;
 	// Budget Boards Add Objects
 		private BoardDialog dialogBudgetBoardAdd;
+	// Budget Control Boards Objects
+		private JPanel budgetControlBoardsPanel;
+		private Object[][] budgetControlBoardsData;
+		private JTable tableBudgetControlBoardsResult;
+		private ListSelectionModel listBudgetControlBoardsSelectionModel;
+		private int budgetControlBoardsTableSelectedIndex;
+		private JButton buttonAddBudgetControlBoard, buttonRemoveBudgetControlBoard;
+		private int selectedBudgetControlBoardId;
+	// Budget Control Boards Add Objects
+		private ControlBoardDialog dialogBudgetControlBoardAdd;
+	// Budget Materials Objects
+		private JPanel budgetMaterialsPanel;
+		private Object[][] budgetMaterialsData;
+		private JTable tableBudgetMaterialsResult;
+		private ListSelectionModel listBudgetMaterialsSelectionModel;
+		private int budgetMaterialsTableSelectedIndex;
+		private JButton buttonAddBudgetMaterial, buttonRemoveBudgetMaterial;
+		private int selectedBudgetMaterialId;
+	// Budget Materials Add Objects
+		private MaterialDialog dialogBudgetMaterialAdd;
 	// Budget Notes Edit Objects
 		private JPanel budgetNotesPanel;
 		private JTextArea textBudgetNotes;
@@ -505,17 +549,21 @@ public class SalesMainView extends JFrame{
 		
 		db = new Db();
 		
-		/*LoginDialog lDialog = new LoginDialog(null);
+		LoginDialog lDialog = new LoginDialog(null);
 		
 		lDialog.setVisible(true);
 		
 		if(!lDialog.isSucceeded()) {
 			System.exit(0);
-		}*/
+		}
+		
+		userId = Db.getUserId(lDialog.getUsername());
+		
+		userInfo = db.loadUserInfo(userId);
 		
 		DateTime dt = new DateTime();
 		
-		if(dt.isAfter(new DateTime(2017, 03, 01, 0, 0))) {
+		if(dt.isAfter(new DateTime(2017, 04, 01, 0, 0))) {
 			JOptionPane.showMessageDialog(null, "Error, debe comunicarse con el programador");
 			System.exit(0);
 		}
@@ -532,7 +580,7 @@ public class SalesMainView extends JFrame{
 		
 		this.setPreferredSize(dim);
 		this.setLocation(x, y);
-		this.setTitle("MasterCircuito / Ventas - ( areyalp ) Jesus Flores");
+		this.setTitle("MasterCircuito / Ventas - ( " + userInfo.getUsername() + " ) " + userInfo.getFirstName() + " " + userInfo.getLastName());
 		this.setLayout(new BorderLayout(50,50));
 		
 		JPanel toolBarPanel = new JPanel();
@@ -621,6 +669,14 @@ public class SalesMainView extends JFrame{
 		toolBarButtonTracing.addActionListener(lForToolbarButton);
 		
 		toolBar.add(toolBarButtonTracing);
+		
+		toolBarButtonAddUser = new JButton("Agregar Usuario");
+		
+		toolBarButtonAddUser.setActionCommand("bar.button.user.add");
+		
+		toolBarButtonAddUser.addActionListener(lForToolbarButton);
+		
+		toolBar.add(toolBarButtonAddUser);
 		
 		toolBar.setFloatable(false);
 		
@@ -817,7 +873,25 @@ public class SalesMainView extends JFrame{
 		int y = (desktop.getHeight() / 2) - (budgetsFrame.getHeight() / 2);
 		budgetsFrame.setLocation(new Point(x, y));
 		budgetsFrame.setLayout(new GridLayout(1, 1));
-		budgetsFrame.add(createBudgetMainPanel());
+		
+		Font fa = null;
+		
+		try {
+			URL url = getClass().getResource("fontawesome-webfont.ttf");
+			InputStream is;
+			is = url.openStream();
+			fa = Font.createFont(Font.TRUETYPE_FONT, is);
+			fa = fa.deriveFont(Font.PLAIN, 36f);
+		} catch (IOException | FontFormatException e) {
+			e.printStackTrace();
+		}
+		
+		JTabbedPane budgetsTabbedPane = new JTabbedPane(JTabbedPane.LEFT);
+		budgetsTabbedPane.addTab(Fa.fa_search, null, createBudgetMainPanel(), "Buscar");
+		budgetsTabbedPane.addTab(Fa.fa_pencil_square_o, null, createBudgetSettingsPanel(), "Editar");
+		budgetsTabbedPane.setFont(fa);
+		
+		budgetsFrame.add(budgetsTabbedPane);
 		budgetsFrame.setVisible(true);
 		
 		desktop.add(budgetsFrame);
@@ -2013,6 +2087,7 @@ public class SalesMainView extends JFrame{
 		
 		String queryColors = "SELECT color FROM box_colors";
 		String queryCalibers = "SELECT caliber FROM box_calibers";
+		String queryLockTypes = "SELECT lock_type FROM lock_types";
 		
 		JLabel labelColor = new JLabel("Color");
 		cs.gridx = 0;
@@ -2049,6 +2124,24 @@ public class SalesMainView extends JFrame{
 		cs.gridy = 1;
 		cs.gridwidth = 1;
 		subPanelBoxSettings.add(createSettingsPanelAddRemove("box", "calibers"), cs);
+		
+		JLabel labelLockType = new JLabel("Cerradura");
+		cs.gridx = 6;
+		cs.gridy = 0;
+		cs.gridwidth = 1;
+		subPanelBoxSettings.add(labelLockType, cs);
+		
+		comboBoxSettingsLockTypes = new JComboBox<String>(new Vector<String>(loadComboList(queryLockTypes, "lock_type")));
+		comboBoxSettingsLockTypes.removeItem("Todas");
+		cs.gridx = 6;
+		cs.gridy = 1;
+		cs.gridwidth = 2;
+		subPanelBoxSettings.add(comboBoxSettingsLockTypes, cs);
+		
+		cs.gridx = 8;
+		cs.gridy = 1;
+		cs.gridwidth = 1;
+		subPanelBoxSettings.add(createSettingsPanelAddRemove("box", "lock_types"), cs);
 		
 		panelBoxSettings.add(subPanelBoxSettings, BorderLayout.NORTH);
 		
@@ -3552,11 +3645,14 @@ public class SalesMainView extends JFrame{
 	private void updateBoxComboSettings() {
 		String queryColors = "SELECT color FROM box_colors";
 		String queryCalibers = "SELECT caliber FROM box_calibers";
+		String queryLockTypes = "SELECT lock_type FROM lock_types";
 		
 		comboBoxSettingsColors.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadComboList(queryColors, "color"))));
 		comboBoxSettingsColors.removeItem("Todas");
 		comboBoxSettingsCalibers.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadComboList(queryCalibers, "caliber"))));
 		comboBoxSettingsCalibers.removeItem("Todas");
+		comboBoxSettingsLockTypes.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadComboList(queryLockTypes, "lock_type"))));
+		comboBoxSettingsLockTypes.removeItem("Todas");
 	}
 	
 	private JTabbedPane createBoardMainPanel() {
@@ -3616,6 +3712,8 @@ public class SalesMainView extends JFrame{
 		boardCommentsPanel = createBoardCommentsPanel();
 		
 		boardViewTabbedPane.addTab("Observaciones", null, boardCommentsPanel, "Observaciones");
+		
+		this.setTabsEnabled(boardViewTabbedPane, false);
 		
 		return boardViewTabbedPane;
 	}
@@ -3724,11 +3822,6 @@ public class SalesMainView extends JFrame{
 				textBoardDescription.setText("");
 				buttonBoardAdd.setEnabled(true);
 				buttonBoardEdit.setEnabled(false);
-				textBoardMaterials.setText("");
-				textBoardMaterials.setEditable(false);
-				textBoardMaterialsPrice.setText("");
-				textBoardMaterialsPrice.setEditable(false);
-				buttonBoardMaterialsEdit.setEnabled(false);
 				textBoardComments.setEditable(false);
 				buttonBoardCommentsEdit.setEnabled(false);
 			}
@@ -3827,10 +3920,67 @@ public class SalesMainView extends JFrame{
 		return boardSwitchesPanel;
 	}
 	
+	private JPanel createBoardMaterialsPanel() {
+		JPanel boardMaterialsPanel = new JPanel();
+		boardMaterialsPanel.setLayout(new BorderLayout(20, 20));
+		
+		boardMaterialsPanel.add(createBoardMaterialsTablePanel(), BorderLayout.CENTER);
+		return boardMaterialsPanel;
+	}
+	
 	private JPanel createBoardSettingsPanel() {
 		JPanel panelSettings = new JPanel();
 		
+		panelSettings.setLayout(new BorderLayout(20, 20));
 		
+		JPanel subPanelBoardSettings = new JPanel();
+		subPanelBoardSettings.setLayout(new GridBagLayout());
+		
+		GridBagConstraints cs = new GridBagConstraints();
+		
+		cs.fill = GridBagConstraints.HORIZONTAL;
+		cs.insets = new Insets(0,0,5,5);
+		
+		String queryCircuits = "SELECT circuits FROM board_circuits";
+		String queryVoltages = "SELECT voltage FROM board_voltages";
+		
+		JLabel labelCircuits = new JLabel("Circuitos");
+		cs.gridx = 0;
+		cs.gridy = 0;
+		cs.gridwidth = 1;
+		subPanelBoardSettings.add(labelCircuits, cs);
+		
+		comboBoardSettingsCircuits = new JComboBox<String>(new Vector<String>(loadComboList(queryCircuits, "circuits")));
+		comboBoardSettingsCircuits.removeItem("Todas");
+		cs.gridx = 0;
+		cs.gridy = 1;
+		cs.gridwidth = 2;
+		subPanelBoardSettings.add(comboBoardSettingsCircuits, cs);
+		
+		cs.gridx = 2;
+		cs.gridy = 1;
+		cs.gridwidth = 1;
+		subPanelBoardSettings.add(createSettingsPanelAddRemove("board", "circuits"), cs);
+		
+		JLabel labelVoltage = new JLabel("Voltaje");
+		cs.gridx = 3;
+		cs.gridy = 0;
+		cs.gridwidth = 1;
+		subPanelBoardSettings.add(labelVoltage, cs);
+		
+		comboBoardSettingsVoltages = new JComboBox<String>(new Vector<String>(loadComboList(queryVoltages, "voltage")));
+		comboBoardSettingsVoltages.removeItem("Todas");
+		cs.gridx = 3;
+		cs.gridy = 1;
+		cs.gridwidth = 2;
+		subPanelBoardSettings.add(comboBoardSettingsVoltages, cs);
+		
+		cs.gridx = 5;
+		cs.gridy = 1;
+		cs.gridwidth = 1;
+		subPanelBoardSettings.add(createSettingsPanelAddRemove("board", "voltages"), cs);
+		
+		panelSettings.add(subPanelBoardSettings, BorderLayout.NORTH);
 		
 		return panelSettings;
 	}
@@ -3969,6 +4119,57 @@ public class SalesMainView extends JFrame{
 		buttonRemoveBoardSwitch.addActionListener(lForBoardButton);
 		buttonRemoveBoardSwitch.setEnabled(false);
 		panelButtons.add(buttonRemoveBoardSwitch);
+		
+		tablePanel.add(panelButtons, BorderLayout.PAGE_END);
+		
+		return tablePanel;
+	}
+	
+	private JPanel createBoardMaterialsTablePanel() {
+		tableBoardMaterialsResult = new JTable();
+		tableBoardMaterialsResult.setModel(new DefaultTableModel());
+		tableBoardMaterialsResult.setAutoCreateRowSorter(true);
+		tableBoardMaterialsResult.getTableHeader().setReorderingAllowed(false);
+		
+		listBoardMaterialsSelectionModel = tableBoardMaterialsResult.getSelectionModel();
+		listBoardMaterialsSelectionModel.addListSelectionListener(new SharedListSelectionListener());
+		tableBoardMaterialsResult.setSelectionModel(listBoardMaterialsSelectionModel);
+		tableBoardMaterialsResult.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		
+		JPanel tablePanel = new JPanel(new BorderLayout());
+		tablePanel.add(tableBoardMaterialsResult.getTableHeader(), BorderLayout.PAGE_START);
+		tablePanel.add(tableBoardMaterialsResult, BorderLayout.CENTER);
+		
+		Font fa = null;
+		
+		try {
+			URL url = getClass().getResource("fontawesome-webfont.ttf");
+			InputStream is;
+			is = url.openStream();
+			fa = Font.createFont(Font.TRUETYPE_FONT, is);
+			fa = fa.deriveFont(Font.PLAIN, 36f);
+		} catch (IOException | FontFormatException e) {
+			e.printStackTrace();
+		}
+		
+		BoardButtonListener lForBoardButton = new BoardButtonListener();
+		
+		JPanel panelButtons = new JPanel(new FlowLayout(FlowLayout.TRAILING));
+		buttonAddBoardMaterial = new JButton(Fa.fa_plus);
+		buttonAddBoardMaterial.setFont(fa);
+		buttonAddBoardMaterial.setForeground(Color.GREEN);
+		buttonAddBoardMaterial.setActionCommand("board.material.add");
+		buttonAddBoardMaterial.addActionListener(lForBoardButton);
+		buttonAddBoardMaterial.setEnabled(false);
+		panelButtons.add(buttonAddBoardMaterial);
+		
+		buttonRemoveBoardMaterial = new JButton(Fa.fa_remove);
+		buttonRemoveBoardMaterial.setFont(fa);
+		buttonRemoveBoardMaterial.setForeground(Color.RED);
+		buttonRemoveBoardMaterial.setActionCommand("board.material.remove");
+		buttonRemoveBoardMaterial.addActionListener(lForBoardButton);
+		buttonRemoveBoardMaterial.setEnabled(false);
+		panelButtons.add(buttonRemoveBoardMaterial);
 		
 		tablePanel.add(panelButtons, BorderLayout.PAGE_END);
 		
@@ -4692,81 +4893,6 @@ public class SalesMainView extends JFrame{
 		return editPanel;
 	}
 	
-	private JPanel createBoardMaterialsPanel() {
-		JPanel panelMaterials = new JPanel();
-		panelMaterials.setLayout(new BorderLayout(20, 20));
-		
-		JPanel panelMaterialsCenter = new JPanel();
-		panelMaterialsCenter.setLayout(new GridBagLayout());
-		
-		GridBagConstraints cs = new GridBagConstraints();
-		
-		cs.fill = GridBagConstraints.HORIZONTAL;
-		cs.insets = new Insets(0, 0, 5, 5);
-		
-		JLabel labelMaterials = new JLabel("Materiales:");
-		cs.gridx = 0;
-		cs.gridy = 0;
-		cs.gridwidth = 1;
-		panelMaterialsCenter.add(labelMaterials, cs);
-		
-		textBoardMaterials = new JTextArea(20, 50);
-		cs.gridx = 0;
-		cs.gridy = 1;
-		cs.gridwidth = 50;
-		textBoardMaterials.setEditable(false);
-		panelMaterialsCenter.add(textBoardMaterials, cs);
-		
-		JLabel labelPrice = new JLabel("Precio:");
-		cs.gridx = 0;
-		cs.gridy = 23;
-		cs.gridwidth = 1;
-		panelMaterialsCenter.add(labelPrice, cs);
-		
-		textBoardMaterialsPrice = new JTextField();
-		cs.gridx = 0;
-		cs.gridy = 24;
-		cs.gridwidth = 50;
-		panelMaterialsCenter.add(textBoardMaterialsPrice, cs);
-		textBoardMaterialsPrice.setHorizontalAlignment(JTextField.TRAILING);
-		textBoardMaterialsPrice.setEditable(false);
-		
-		BoardButtonListener lForBoardButton = new BoardButtonListener();
-		
-		panelBoardMaterialsEditSaveCancel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		
-		buttonBoardMaterialsEditSave = new JButton("Guardar");
-		buttonBoardMaterialsEditSave.setEnabled(false);
-		buttonBoardMaterialsEditSave.setActionCommand("board.materials.edit.save");
-		buttonBoardMaterialsEditSave.addActionListener(lForBoardButton);
-		buttonBoardMaterialsEditCancel = new JButton("Cancelar");
-		buttonBoardMaterialsEditCancel.setActionCommand("board.materials.edit.cancel");
-		buttonBoardMaterialsEditCancel.addActionListener(lForBoardButton);
-		buttonBoardMaterialsEditCancel.setEnabled(false);
-		panelBoardMaterialsEditSaveCancel.add(buttonBoardMaterialsEditSave);
-		panelBoardMaterialsEditSaveCancel.add(buttonBoardMaterialsEditCancel);
-		
-		cs.gridx = 0;
-		cs.gridy = 45;
-		cs.gridwidth = 50;
-		panelMaterialsCenter.add(panelBoardMaterialsEditSaveCancel,cs);
-		panelBoardMaterialsEditSaveCancel.setVisible(false);
-		
-		panelMaterials.add(panelMaterialsCenter, BorderLayout.CENTER);
-		
-		buttonBoardMaterialsEdit = new JButton("Editar");
-		buttonBoardMaterialsEdit.setActionCommand("board.materials.edit");
-		buttonBoardMaterialsEdit.addActionListener(lForBoardButton);
-		buttonBoardMaterialsEdit.setEnabled(false);
-		
-		JPanel panelMaterialsButtons = new JPanel();
-		panelMaterialsButtons.add(buttonBoardMaterialsEdit);
-		
-		panelMaterials.add(panelMaterialsButtons, BorderLayout.SOUTH);
-		
-		return panelMaterials;
-	}
-	
 	private JPanel createBoardCommentsPanel() {
 		JPanel panelComments = new JPanel();
 		panelComments.setLayout(new BorderLayout(20, 20));
@@ -4879,11 +5005,6 @@ public class SalesMainView extends JFrame{
 		} else if(mode == SalesMainView.ADD_MODE) {
 			buttonBoardAdd.setEnabled(false);
 			buttonBoardEdit.setEnabled(false);
-			textBoardMaterials.setText("");
-			textBoardMaterials.setEditable(false);
-			textBoardMaterialsPrice.setText("");
-			textBoardMaterialsPrice.setEditable(false);
-			buttonBoardMaterialsEdit.setEnabled(false);
 			textBoardComments.setText("");
 			textBoardComments.setEditable(false);
 			buttonBoardCommentsEdit.setEnabled(false);
@@ -4913,9 +5034,6 @@ public class SalesMainView extends JFrame{
 		} else if(mode == SalesMainView.EDIT_MODE) {
 			buttonBoardAdd.setEnabled(false);
 			buttonBoardEdit.setEnabled(false);
-			textBoardMaterials.setEditable(false);
-			textBoardMaterialsPrice.setEditable(false);
-			buttonBoardMaterialsEdit.setEnabled(false);
 			textBoardComments.setEditable(false);
 			buttonBoardCommentsEdit.setEnabled(false);
 			editBoardId = Integer.valueOf(String.valueOf(tableBoardsResult.getValueAt(boardsTableSelectedIndex, SharedListSelectionListener.BOARD_ID_COLUMN)));
@@ -5189,14 +5307,16 @@ public class SalesMainView extends JFrame{
 		tableBoardSwitchesResult.setModel(new DefaultTableModel());
 		buttonAddBoardSwitch.setEnabled(false);
 		buttonRemoveBoardSwitch.setEnabled(false);
+		buttonAddBoardMaterial.setEnabled(false);
+		buttonRemoveBoardMaterial.setEnabled(false);
 	}
 	
 	private void loadBoardSwitchTable() {
 		String boardSwitchesQuery = "SELECT board_switches.id, "
 				+ " CONCAT('Interruptor ', boards.phases, 'X', currents.current, 'A,', switch_models.model, ',', switch_brands.brand) as description, "
 				+ " board_switches.quantity, "
-				+ " switches.price, "
-				+ " (board_switches.quantity * switches.price) as total, "
+				+ " board_switches.price, "
+				+ " (board_switches.quantity * board_switches.price) as total, "
 				+ " board_switches.main as principal "
 			+ " FROM boards, board_switches, switches, switch_models, switch_brands, currents "
 			+ " WHERE board_switches.board_container_id = " + selectedBoardId
@@ -5261,6 +5381,40 @@ public class SalesMainView extends JFrame{
 		}
 	}
 	
+	private void loadBoardMaterialTable() {
+		String boardMaterialsQuery = "SELECT board_materials.id, "
+				+ " materials.reference, "
+				+ " materials.material, "
+				+ " board_materials.quantity, "
+				+ " board_materials.price, "
+				+ " board_materials.factor, "
+				+ " TRUNCATE((board_materials.quantity * ((board_materials.price * board_materials.factor / 100) + board_materials.price)),2) as total "
+			+ " FROM boards "
+			+ " INNER JOIN board_materials ON board_materials.board_container_id = boards.id"
+			+ " INNER JOIN materials ON materials.id = board_materials.material_id"
+			+ " WHERE board_materials.board_container_id = " + selectedBoardId;
+		
+		String[] boardMaterialsColumnNames = { "Id", "Referencia", "Descripcion", "Cantidad", "Precio", "Factor", "Total"};
+		boardMaterialsData = db.fetchAll(db.select(boardMaterialsQuery));
+		
+		HashSet<Integer> editableColumns = new HashSet<Integer>();
+		editableColumns.add(new Integer(3));
+		editableColumns.add(new Integer(4));
+		editableColumns.add(new Integer(5));
+		
+		if(boardMaterialsData.length > 0) {
+			MyTableModel mForTable = new MyTableModel(boardMaterialsQuery, boardMaterialsColumnNames, "board_materials", editableColumns);
+			tableBoardMaterialsResult.setModel(mForTable);
+			if(null != tableBoardMaterialsResult && tableBoardMaterialsResult.getSelectedRow() == -1) {
+				buttonRemoveBoardMaterial.setEnabled(false);
+			}
+		} else {
+			tableBoardMaterialsResult.setModel(new DefaultTableModel());
+			buttonRemoveBoardMaterial.setEnabled(false);
+		}
+		buttonAddBoardMaterial.setEnabled(true);
+	}
+	
 	private void updateBoardTextAddDescription() {
 		String boardType = (null != comboBoardAddType.getSelectedItem().toString())?comboBoardAddType.getSelectedItem().toString():"";
 		String boardPhases =(null != comboBoardAddPhases.getSelectedItem().toString())?comboBoardAddPhases.getSelectedItem().toString():"";
@@ -5293,6 +5447,16 @@ public class SalesMainView extends JFrame{
 					" circuitos, " +
 					boardNema);
 		}
+	}
+	
+	private void updateBoardComboSettings() {
+		String queryCircuits = "SELECT circuits FROM board_circuits";
+		String queryVoltages = "SELECT voltage FROM board_voltages";
+		
+		comboBoardSettingsCircuits.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadComboList(queryCircuits, "circuits"))));
+		comboBoardSettingsCircuits.removeItem("Todas");
+		comboBoardSettingsVoltages.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadComboList(queryVoltages, "voltage"))));
+		comboBoardSettingsVoltages.removeItem("Todas");
 	}
 	
 	private JTabbedPane createControlBoardMainPanel() {
@@ -5465,11 +5629,6 @@ public class SalesMainView extends JFrame{
 				textControlBoardDescription.setText("");
 				buttonControlBoardAdd.setEnabled(true);
 				buttonControlBoardEdit.setEnabled(false);
-				textControlBoardMaterials.setText("");
-				textControlBoardMaterials.setEditable(false);
-				textControlBoardMaterialsPrice.setText("");
-				textControlBoardMaterialsPrice.setEditable(false);
-				buttonControlBoardMaterialsEdit.setEnabled(false);
 				textControlBoardComments.setEditable(false);
 				buttonControlBoardCommentsEdit.setEnabled(false);
 			}
@@ -5566,6 +5725,14 @@ public class SalesMainView extends JFrame{
 		
 		controlBoardSwitchesPanel.add(createControlBoardSwitchesTablePanel(), BorderLayout.CENTER);
 		return controlBoardSwitchesPanel;
+	}
+	
+	private JPanel createControlBoardMaterialsPanel() {
+		JPanel controlBoardMaterialsPanel = new JPanel();
+		controlBoardMaterialsPanel.setLayout(new BorderLayout(20, 20));
+		
+		controlBoardMaterialsPanel.add(createControlBoardMaterialsTablePanel(), BorderLayout.CENTER);
+		return controlBoardMaterialsPanel;
 	}
 	
 	private JPanel createControlBoardSettingsPanel() {
@@ -5724,6 +5891,57 @@ public class SalesMainView extends JFrame{
 		buttonRemoveControlBoardSwitch.addActionListener(lForControlBoardButton);
 		buttonRemoveControlBoardSwitch.setEnabled(false);
 		panelButtons.add(buttonRemoveControlBoardSwitch);
+		
+		tablePanel.add(panelButtons, BorderLayout.PAGE_END);
+		
+		return tablePanel;
+	}
+	
+	private JPanel createControlBoardMaterialsTablePanel() {
+		tableControlBoardMaterialsResult = new JTable();
+		tableControlBoardMaterialsResult.setModel(new DefaultTableModel());
+		tableControlBoardMaterialsResult.setAutoCreateRowSorter(true);
+		tableControlBoardMaterialsResult.getTableHeader().setReorderingAllowed(false);
+		
+		listControlBoardMaterialsSelectionModel = tableControlBoardMaterialsResult.getSelectionModel();
+		listControlBoardMaterialsSelectionModel.addListSelectionListener(new SharedListSelectionListener());
+		tableControlBoardMaterialsResult.setSelectionModel(listControlBoardMaterialsSelectionModel);
+		tableControlBoardMaterialsResult.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		
+		JPanel tablePanel = new JPanel(new BorderLayout());
+		tablePanel.add(tableControlBoardMaterialsResult.getTableHeader(), BorderLayout.PAGE_START);
+		tablePanel.add(tableControlBoardMaterialsResult, BorderLayout.CENTER);
+		
+		Font fa = null;
+		
+		try {
+			URL url = getClass().getResource("fontawesome-webfont.ttf");
+			InputStream is;
+			is = url.openStream();
+			fa = Font.createFont(Font.TRUETYPE_FONT, is);
+			fa = fa.deriveFont(Font.PLAIN, 36f);
+		} catch (IOException | FontFormatException e) {
+			e.printStackTrace();
+		}
+		
+		ControlBoardButtonListener lForBoardButton = new ControlBoardButtonListener();
+		
+		JPanel panelButtons = new JPanel(new FlowLayout(FlowLayout.TRAILING));
+		buttonAddControlBoardMaterial = new JButton(Fa.fa_plus);
+		buttonAddControlBoardMaterial.setFont(fa);
+		buttonAddControlBoardMaterial.setForeground(Color.GREEN);
+		buttonAddControlBoardMaterial.setActionCommand("control.material.add");
+		buttonAddControlBoardMaterial.addActionListener(lForBoardButton);
+		buttonAddControlBoardMaterial.setEnabled(false);
+		panelButtons.add(buttonAddControlBoardMaterial);
+		
+		buttonRemoveControlBoardMaterial = new JButton(Fa.fa_remove);
+		buttonRemoveControlBoardMaterial.setFont(fa);
+		buttonRemoveControlBoardMaterial.setForeground(Color.RED);
+		buttonRemoveControlBoardMaterial.setActionCommand("control.material.remove");
+		buttonRemoveControlBoardMaterial.addActionListener(lForBoardButton);
+		buttonRemoveControlBoardMaterial.setEnabled(false);
+		panelButtons.add(buttonRemoveControlBoardMaterial);
 		
 		tablePanel.add(panelButtons, BorderLayout.PAGE_END);
 		
@@ -6459,81 +6677,6 @@ public class SalesMainView extends JFrame{
 		return editPanel;
 	}
 	
-	private JPanel createControlBoardMaterialsPanel() {
-		JPanel panelMaterials = new JPanel();
-		panelMaterials.setLayout(new BorderLayout(20, 20));
-		
-		JPanel panelMaterialsCenter = new JPanel();
-		panelMaterialsCenter.setLayout(new GridBagLayout());
-		
-		GridBagConstraints cs = new GridBagConstraints();
-		
-		cs.fill = GridBagConstraints.HORIZONTAL;
-		cs.insets = new Insets(0, 0, 5, 5);
-		
-		JLabel labelMaterials = new JLabel("Materiales:");
-		cs.gridx = 0;
-		cs.gridy = 0;
-		cs.gridwidth = 1;
-		panelMaterialsCenter.add(labelMaterials, cs);
-		
-		textControlBoardMaterials = new JTextArea(30, 100);
-		cs.gridx = 0;
-		cs.gridy = 1;
-		cs.gridwidth = 50;
-		textControlBoardMaterials.setEditable(false);
-		panelMaterialsCenter.add(textControlBoardMaterials, cs);
-		
-		JLabel labelPrice = new JLabel("Precio:");
-		cs.gridx = 0;
-		cs.gridy = 23;
-		cs.gridwidth = 1;
-		panelMaterialsCenter.add(labelPrice, cs);
-		
-		textControlBoardMaterialsPrice = new JTextField();
-		cs.gridx = 0;
-		cs.gridy = 24;
-		cs.gridwidth = 50;
-		panelMaterialsCenter.add(textControlBoardMaterialsPrice, cs);
-		textControlBoardMaterialsPrice.setHorizontalAlignment(JTextField.TRAILING);
-		textControlBoardMaterialsPrice.setEditable(false);
-		
-		ControlBoardButtonListener lForControlBoardButton = new ControlBoardButtonListener();
-		
-		panelControlBoardMaterialsEditSaveCancel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		
-		buttonControlBoardMaterialsEditSave = new JButton("Guardar");
-		buttonControlBoardMaterialsEditSave.setEnabled(false);
-		buttonControlBoardMaterialsEditSave.setActionCommand("control.materials.edit.save");
-		buttonControlBoardMaterialsEditSave.addActionListener(lForControlBoardButton);
-		buttonControlBoardMaterialsEditCancel = new JButton("Cancelar");
-		buttonControlBoardMaterialsEditCancel.setActionCommand("control.materials.edit.cancel");
-		buttonControlBoardMaterialsEditCancel.addActionListener(lForControlBoardButton);
-		buttonControlBoardMaterialsEditCancel.setEnabled(false);
-		panelControlBoardMaterialsEditSaveCancel.add(buttonControlBoardMaterialsEditSave);
-		panelControlBoardMaterialsEditSaveCancel.add(buttonControlBoardMaterialsEditCancel);
-		
-		cs.gridx = 0;
-		cs.gridy = 45;
-		cs.gridwidth = 50;
-		panelMaterialsCenter.add(panelControlBoardMaterialsEditSaveCancel,cs);
-		panelControlBoardMaterialsEditSaveCancel.setVisible(false);
-		
-		panelMaterials.add(panelMaterialsCenter, BorderLayout.CENTER);
-		
-		buttonControlBoardMaterialsEdit = new JButton("Editar");
-		buttonControlBoardMaterialsEdit.setActionCommand("control.materials.edit");
-		buttonControlBoardMaterialsEdit.addActionListener(lForControlBoardButton);
-		buttonControlBoardMaterialsEdit.setEnabled(false);
-		
-		JPanel panelMaterialsButtons = new JPanel();
-		panelMaterialsButtons.add(buttonControlBoardMaterialsEdit);
-		
-		panelMaterials.add(panelMaterialsButtons, BorderLayout.SOUTH);
-		
-		return panelMaterials;
-	}
-	
 	private JPanel createControlBoardCommentsPanel() {
 		JPanel panelComments = new JPanel();
 		panelComments.setLayout(new BorderLayout(20, 20));
@@ -6646,11 +6789,6 @@ public class SalesMainView extends JFrame{
 		} else if(mode == SalesMainView.ADD_MODE) {
 			buttonControlBoardAdd.setEnabled(false);
 			buttonControlBoardEdit.setEnabled(false);
-			textControlBoardMaterials.setText("");
-			textControlBoardMaterials.setEditable(false);
-			textControlBoardMaterialsPrice.setText("");
-			textControlBoardMaterialsPrice.setEditable(false);
-			buttonControlBoardMaterialsEdit.setEnabled(false);
 			textControlBoardComments.setText("");
 			textControlBoardComments.setEditable(false);
 			buttonControlBoardCommentsEdit.setEnabled(false);
@@ -6680,9 +6818,6 @@ public class SalesMainView extends JFrame{
 		} else if(mode == SalesMainView.EDIT_MODE) {
 			buttonControlBoardAdd.setEnabled(false);
 			buttonControlBoardEdit.setEnabled(false);
-			textControlBoardMaterials.setEditable(false);
-			textControlBoardMaterialsPrice.setEditable(false);
-			buttonControlBoardMaterialsEdit.setEnabled(false);
 			textControlBoardComments.setEditable(false);
 			buttonControlBoardCommentsEdit.setEnabled(false);
 			editControlBoardId = Integer.valueOf(String.valueOf(tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, SharedListSelectionListener.CONTROL_BOARD_ID_COLUMN)));
@@ -6978,8 +7113,8 @@ public class SalesMainView extends JFrame{
 		String controlBoardSwitchesQuery = "SELECT control_board_switches.id, "
 				+ " CONCAT('Interruptor ', control_boards.phases, 'X', currents.current, 'A,', switch_models.model, ',', switch_brands.brand) as description, "
 				+ " control_board_switches.quantity, "
-				+ " switches.price, "
-				+ " (control_board_switches.quantity * switches.price) as total, "
+				+ " control_board_switches.price, "
+				+ " (control_board_switches.quantity * control_board_switches.price) as total, "
 				+ " control_board_switches.main as principal "
 			+ " FROM control_boards, control_board_switches, switches, switch_models, switch_brands, currents "
 			+ " WHERE control_board_switches.control_board_container_id = " + selectedControlBoardId
@@ -7042,6 +7177,40 @@ public class SalesMainView extends JFrame{
 		} else {
 			tableControlBoardSwitchesSearchResult.setModel(new DefaultTableModel());
 		}
+	}
+	
+	private void loadControlBoardMaterialTable() {
+		String controlBoardMaterialsQuery = "SELECT control_board_materials.id, "
+				+ " materials.reference, "
+				+ " materials.material, "
+				+ " control_board_materials.quantity, "
+				+ " control_board_materials.price, "
+				+ " control_board_materials.factor, "
+				+ " TRUNCATE((control_board_materials.quantity * ((control_board_materials.price * control_board_materials.factor / 100) + control_board_materials.price)),2) as total "
+			+ " FROM control_boards "
+			+ " INNER JOIN control_board_materials ON control_board_materials.board_container_id = control_boards.id"
+			+ " INNER JOIN materials ON materials.id = control_board_materials.material_id"
+			+ " WHERE control_board_materials.board_container_id = " + selectedControlBoardId;
+		
+		String[] controlBoardMaterialsColumnNames = { "Id", "Referencia", "Descripcion", "Cantidad", "Precio", "Factor", "Total"};
+		controlBoardMaterialsData = db.fetchAll(db.select(controlBoardMaterialsQuery));
+		
+		HashSet<Integer> editableColumns = new HashSet<Integer>();
+		editableColumns.add(new Integer(3));
+		editableColumns.add(new Integer(4));
+		editableColumns.add(new Integer(5));
+		
+		if(controlBoardMaterialsData.length > 0) {
+			MyTableModel mForTable = new MyTableModel(controlBoardMaterialsQuery, controlBoardMaterialsColumnNames, "control_board_materials", editableColumns);
+			tableControlBoardMaterialsResult.setModel(mForTable);
+			if(null != tableControlBoardMaterialsResult && tableControlBoardMaterialsResult.getSelectedRow() == -1) {
+				buttonRemoveControlBoardMaterial.setEnabled(false);
+			}
+		} else {
+			tableControlBoardMaterialsResult.setModel(new DefaultTableModel());
+			buttonRemoveControlBoardMaterial.setEnabled(false);
+		}
+		buttonAddControlBoardMaterial.setEnabled(true);
 	}
 	
 	private void updateControlBoardTextAddDescription() {
@@ -7140,26 +7309,23 @@ public class SalesMainView extends JFrame{
 		
 		budgetViewTabbedPane.addTab("Tableros", null, budgetBoardsPanel, "Tableros");
 		budgetViewTabbedPane.setFont(new Font(null, Font.BOLD, 16));
-		// TODO (Jesus) Pending tabs for budget
-//		budgetMaterialsPanel = createBudgetMaterialsTablePanel();
-//		
-//		budgetViewTabbedPane.addTab("Materiales", null, budgetMaterialsPanel, "Materiales");
-//		budgetViewTabbedPane.setFont(new Font(null, Font.BOLD, 16));
-//		
-//		budgetSpecialsPanel = createBudgetSpecialsTablePanel();
-//		
-//		budgetViewTabbedPane.addTab("Especiales", null, budgetSpecialsPanel, "Especiales");
-//		budgetViewTabbedPane.setFont(new Font(null, Font.BOLD, 16));
-//		
+		
+		budgetControlBoardsPanel = createBudgetControlBoardsTablePanel();
+		
+		budgetViewTabbedPane.addTab("Control", null, budgetControlBoardsPanel, "Control");
+		budgetViewTabbedPane.setFont(new Font(null, Font.BOLD, 16));
+		
+		budgetMaterialsPanel = createBudgetMaterialsTablePanel();
+		
+		budgetViewTabbedPane.addTab("Materiales", null, budgetMaterialsPanel, "Materiales");
+		budgetViewTabbedPane.setFont(new Font(null, Font.BOLD, 16));
+		
 		budgetNotesPanel = createBudgetNotesTablePanel();
 		
 		budgetViewTabbedPane.addTab("Notas", null, budgetNotesPanel, "Notas");
 		budgetViewTabbedPane.setFont(new Font(null, Font.BOLD, 16));
 		
 		setTabsEnabled(budgetViewTabbedPane, false);
-//		for(Integer i = 1; i < budgetViewTabbedPane.getTabCount(); i++) {
-//			budgetViewTabbedPane.setEnabledAt(i, false);
-//		}
 		
 		return budgetViewTabbedPane;
 	}
@@ -7982,6 +8148,44 @@ public class SalesMainView extends JFrame{
 		return panelBudgetTable;
 	}
 	
+	private JPanel createBudgetSettingsPanel() {
+		JPanel panelSettings = new JPanel();
+		
+		panelSettings.setLayout(new BorderLayout(20, 20));
+		
+		JPanel subPanelBudgetSettings = new JPanel();
+		subPanelBudgetSettings.setLayout(new GridBagLayout());
+		
+		GridBagConstraints cs = new GridBagConstraints();
+		
+		cs.fill = GridBagConstraints.HORIZONTAL;
+		cs.insets = new Insets(0,0,5,5);
+		
+		String queryPaymentMethods = "SELECT method FROM budget_payment_methods";
+		
+		JLabel labelPaymentMethods = new JLabel("Metodos de Pago");
+		cs.gridx = 0;
+		cs.gridy = 0;
+		cs.gridwidth = 1;
+		subPanelBudgetSettings.add(labelPaymentMethods, cs);
+		
+		comboBudgetSettingsPaymentMethods = new JComboBox<String>(new Vector<String>(loadComboList(queryPaymentMethods, "method")));
+		comboBudgetSettingsPaymentMethods.removeItem("Todas");
+		cs.gridx = 0;
+		cs.gridy = 1;
+		cs.gridwidth = 2;
+		subPanelBudgetSettings.add(comboBudgetSettingsPaymentMethods, cs);
+		
+		cs.gridx = 2;
+		cs.gridy = 1;
+		cs.gridwidth = 1;
+		subPanelBudgetSettings.add(createSettingsPanelAddRemove("budget", "payment_methods"), cs);
+		
+		panelSettings.add(subPanelBudgetSettings, BorderLayout.NORTH);
+		
+		return panelSettings;
+	}
+	
 	private JPanel createBudgetSwitchesTablePanel() {
 		tableBudgetSwitchesResult = new JTable();
 		tableBudgetSwitchesResult.setModel(new DefaultTableModel());
@@ -8139,13 +8343,106 @@ public class SalesMainView extends JFrame{
 	}
 	
 	private JPanel createBudgetMaterialsTablePanel() {
-		JPanel createBudgetMaterialsPanel = new JPanel();
-		return createBudgetMaterialsPanel;
+		tableBudgetMaterialsResult = new JTable();
+		tableBudgetMaterialsResult.setModel(new DefaultTableModel());
+		tableBudgetMaterialsResult.setAutoCreateRowSorter(true);
+		tableBudgetMaterialsResult.getTableHeader().setReorderingAllowed(false);
+		
+		listBudgetMaterialsSelectionModel = tableBudgetMaterialsResult.getSelectionModel();
+		listBudgetMaterialsSelectionModel.addListSelectionListener(new SharedListSelectionListener());
+		tableBudgetMaterialsResult.setSelectionModel(listBudgetMaterialsSelectionModel);
+		tableBudgetMaterialsResult.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		
+		JPanel tablePanel = new JPanel(new BorderLayout());
+		tablePanel.add(tableBudgetMaterialsResult.getTableHeader(), BorderLayout.PAGE_START);
+		tablePanel.add(tableBudgetMaterialsResult, BorderLayout.CENTER);
+		
+		Font fa = null;
+		
+		try {
+			URL url = getClass().getResource("fontawesome-webfont.ttf");
+			InputStream is;
+			is = url.openStream();
+			fa = Font.createFont(Font.TRUETYPE_FONT, is);
+			fa = fa.deriveFont(Font.PLAIN, 36f);
+		} catch (IOException | FontFormatException e) {
+			e.printStackTrace();
+		}
+		
+		BudgetButtonListener lForBoardButton = new BudgetButtonListener();
+		
+		JPanel panelButtons = new JPanel(new FlowLayout(FlowLayout.TRAILING));
+		buttonAddBudgetMaterial = new JButton(Fa.fa_plus);
+		buttonAddBudgetMaterial.setFont(fa);
+		buttonAddBudgetMaterial.setForeground(Color.GREEN);
+		buttonAddBudgetMaterial.setActionCommand("budget.material.add");
+		buttonAddBudgetMaterial.addActionListener(lForBoardButton);
+		buttonAddBudgetMaterial.setEnabled(false);
+		panelButtons.add(buttonAddBudgetMaterial);
+		
+		buttonRemoveBudgetMaterial = new JButton(Fa.fa_remove);
+		buttonRemoveBudgetMaterial.setFont(fa);
+		buttonRemoveBudgetMaterial.setForeground(Color.RED);
+		buttonRemoveBudgetMaterial.setActionCommand("budget.material.remove");
+		buttonRemoveBudgetMaterial.addActionListener(lForBoardButton);
+		buttonRemoveBudgetMaterial.setEnabled(false);
+		panelButtons.add(buttonRemoveBudgetMaterial);
+		
+		tablePanel.add(panelButtons, BorderLayout.PAGE_END);
+		
+		return tablePanel;
 	}
 	
-	private JPanel createBudgetSpecialsTablePanel() {
-		JPanel createBudgetSpecialsPanel = new JPanel();
-		return createBudgetSpecialsPanel;
+	private JPanel createBudgetControlBoardsTablePanel() {
+		tableBudgetControlBoardsResult = new JTable();
+		tableBudgetControlBoardsResult.setModel(new DefaultTableModel());
+		tableBudgetControlBoardsResult.setAutoCreateRowSorter(true);
+		tableBudgetControlBoardsResult.getTableHeader().setReorderingAllowed(false);
+		
+		listBudgetControlBoardsSelectionModel = tableBudgetControlBoardsResult.getSelectionModel();
+		listBudgetControlBoardsSelectionModel.addListSelectionListener(new SharedListSelectionListener());
+		tableBudgetControlBoardsResult.setSelectionModel(listBudgetControlBoardsSelectionModel);
+		tableBudgetControlBoardsResult.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		
+		JPanel tablePanel = new JPanel(new BorderLayout());
+		tablePanel.add(tableBudgetControlBoardsResult.getTableHeader(), BorderLayout.PAGE_START);
+		tablePanel.add(tableBudgetControlBoardsResult, BorderLayout.CENTER);
+		
+		Font fa = null;
+		
+		try {
+			URL url = getClass().getResource("fontawesome-webfont.ttf");
+			InputStream is;
+			is = url.openStream();
+			fa = Font.createFont(Font.TRUETYPE_FONT, is);
+			fa = fa.deriveFont(Font.PLAIN, 36f);
+		} catch (IOException | FontFormatException e) {
+			e.printStackTrace();
+		}
+		
+		BudgetButtonListener lForBudgetButton = new BudgetButtonListener();
+		
+		JPanel panelButtons = new JPanel(new FlowLayout(FlowLayout.TRAILING));
+		// Add the add & remove buttons here for the Board Switches
+		buttonAddBudgetControlBoard = new JButton(Fa.fa_plus);
+		buttonAddBudgetControlBoard.setFont(fa);
+		buttonAddBudgetControlBoard.setForeground(Color.GREEN);
+		buttonAddBudgetControlBoard.setActionCommand("budget.control_board.add");
+		buttonAddBudgetControlBoard.addActionListener(lForBudgetButton);
+		buttonAddBudgetControlBoard.setEnabled(false);
+		panelButtons.add(buttonAddBudgetControlBoard);
+		
+		buttonRemoveBudgetControlBoard = new JButton(Fa.fa_remove);
+		buttonRemoveBudgetControlBoard.setFont(fa);
+		buttonRemoveBudgetControlBoard.setForeground(Color.RED);
+		buttonRemoveBudgetControlBoard.setActionCommand("budget.control_board.remove");
+		buttonRemoveBudgetControlBoard.addActionListener(lForBudgetButton);
+		buttonRemoveBudgetControlBoard.setEnabled(false);
+		panelButtons.add(buttonRemoveBudgetControlBoard);
+		
+		tablePanel.add(panelButtons, BorderLayout.PAGE_END);
+		
+		return tablePanel;
 	}
 	
 	private JPanel createBudgetNotesTablePanel() {
@@ -8510,6 +8807,134 @@ public class SalesMainView extends JFrame{
 		buttonAddBudgetBoard.setEnabled(true);
 	}
 	
+	private void loadBudgetControlBoardTable() {
+		ArrayList<String> fields = new ArrayList<String>();
+		fields.add("budget_control_boards.id");
+		fields.add("CONCAT('Caja para Tablero, ', control_board_types.type, ', ', control_boards.phases, ', de ', control_board_circuits.circuits, ' circuitos, ', nemas.nema) as description");
+		fields.add(SalesMainView.CONTROL_BOARD_NAME_FIELD);
+		fields.add(SalesMainView.INSTALLATION_FIELD);
+		fields.add(SalesMainView.CONTROL_BOARD_BAR_CAPACITY_FIELD);
+		fields.add(SalesMainView.CONTROL_BOARD_BAR_TYPE_FIELD);
+		fields.add(SalesMainView.CONTROL_BOARD_VOLTAGE_FIELD);
+		fields.add(SalesMainView.CONTROL_BOARD_GROUND_FIELD);
+		fields.add(SalesMainView.INTERRUPTION_FIELD);
+		fields.add(SalesMainView.CONTROL_BOARD_LOCK_TYPE_FIELD);
+		fields.add("budget_control_boards.quantity");
+		fields.add("budget_control_boards.price");
+		fields.add("TRUNCATE((budget_control_boards.price * (budget_control_boards.mo / 100)),2) as mo");
+		fields.add("TRUNCATE((budget_control_boards.price * (budget_control_boards.gi / 100)),2) as gi");
+		fields.add("TRUNCATE((budget_control_boards.price * (budget_control_boards.ga / 100)),2) as ga");
+		fields.add("budget_control_boards.factor");
+		fields.add("TRUNCATE(((budget_control_boards.price + (budget_control_boards.price * (budget_control_boards.mo / 100)) + (budget_control_boards.price * (budget_control_boards.gi / 100)) + (budget_control_boards.price * (budget_control_boards.ga / 100))) * ((100 + budget_control_boards.factor) / 100)), 2) as sell_price");
+		fields.add("TRUNCATE((budget_control_boards.quantity * ((budget_control_boards.price + (budget_control_boards.price * (budget_control_boards.mo / 100)) + (budget_control_boards.price * (budget_control_boards.gi / 100)) + (budget_control_boards.price * (budget_control_boards.ga / 100))) * ((100 + budget_control_boards.factor) / 100))), 2) as total");
+		
+		ArrayList<String> tables = new ArrayList<String>();
+		tables.add(SalesMainView.CONTROL_BOARD_TABLE);
+		tables.add(SalesMainView.CONTROL_BOARD_TYPES_TABLE);
+		tables.add(SalesMainView.INSTALLATIONS_TABLE);
+		tables.add(SalesMainView.NEMAS_TABLE);
+		tables.add(SalesMainView.CONTROL_BOARD_BAR_CAPACITIES_TABLE);
+		tables.add(SalesMainView.CONTROL_BOARD_BAR_TYPES_TABLE);
+		tables.add(SalesMainView.CONTROL_BOARD_CIRCUITS_TABLE);
+		tables.add(SalesMainView.CONTROL_BOARD_VOLTAGES_TABLE);
+		tables.add(SalesMainView.INTERRUPTIONS_TABLE);
+		tables.add(SalesMainView.LOCK_TYPES_TABLE);
+		tables.add("budget_control_boards");
+		
+		String fieldsQuery = StringTools.implode(",", fields);
+		String tablesQuery = StringTools.implode(",", tables);
+		String budgetControlBoardsQuery = "SELECT " + fieldsQuery
+						+ " FROM "
+						+ tablesQuery
+						+ " WHERE budget_control_boards.budget_container_id = " + selectedBudgetId
+						+ " AND control_boards.id = budget_control_boards.control_board_id "
+						+ "AND control_boards.type_id = control_board_types.id "
+						+ "AND control_boards.installation_id = installations.id "
+						+ "AND control_boards.nema_id = nemas.id "
+						+ "AND ( (control_boards.bar_capacity_id > 0 "
+							+ "AND control_boards.bar_capacity_id = control_board_bar_capacities.id) "
+							+ "OR control_boards.bar_capacity_id = 0)"
+						+ "AND ( (control_boards.bar_type_id > 0 "
+							+ "AND control_boards.bar_type_id = control_board_bar_types.id) "
+							+ "OR control_boards.bar_type_id = 0)"
+						+ "AND ( (control_boards.circuits_id > 0 "
+							+ "AND control_boards.circuits_id = control_board_circuits.id) "
+							+ "OR control_boards.circuits_id = 0)"
+						+ "AND control_boards.voltage_id = control_board_voltages.id "
+						+ "AND ( (control_boards.interruption_id > 0 "
+							+ "AND control_boards.interruption_id = interruptions.id) "
+							+ "OR control_boards.interruption_id = 0)"
+						+ "AND ( (control_boards.lock_type_id > 0 "
+							+ "AND control_boards.lock_type_id = lock_types.id) "
+							+ "OR control_boards.lock_type_id = 0)"
+						+ "AND control_boards.active = '1' "
+						+ " GROUP BY control_boards.id";
+		
+		String[] budgetControlBoardsColumnNames = { "Id", "Descripcion", "Nombre", "Instalacion", "Cap. Barra", "Tipo Barra", "Voltaje", "Tierra", "Interrupcion", "Cerradura", "Cantidad", "Precio Costo", "MO", "GI", "GA", "Factor", "Precio Venta", "Total"};
+		budgetBoardsData = db.fetchAll(db.select(budgetControlBoardsQuery));
+		
+		HashSet<Integer> editableColumns = new HashSet<Integer>();
+		editableColumns.add(new Integer(10));
+		editableColumns.add(new Integer(11));
+		editableColumns.add(new Integer(12));
+		editableColumns.add(new Integer(13));
+		editableColumns.add(new Integer(14));
+		editableColumns.add(new Integer(15));
+		
+		if(budgetBoardsData.length > 0) {
+			MyTableModel mForTable = new MyTableModel(budgetControlBoardsQuery, budgetControlBoardsColumnNames, "budget_control_boards", editableColumns);
+			tableBudgetControlBoardsResult.setModel(mForTable);
+			if(null != tableBudgetControlBoardsResult && tableBudgetControlBoardsResult.getSelectedRow() == -1) {
+				buttonRemoveBudgetControlBoard.setEnabled(false);
+			}
+		} else {
+			tableBudgetControlBoardsResult.setModel(new DefaultTableModel());
+			buttonRemoveBudgetControlBoard.setEnabled(false);
+		}
+		buttonAddBudgetControlBoard.setEnabled(true);
+	}
+	
+	private void loadBudgetMaterialTable() {
+		String budgetMaterialsQuery = "SELECT budget_materials.id, "
+				+ " materials.reference, "
+				+ " materials.material, "
+				+ " budget_materials.quantity, "
+				+ " budget_materials.price, "
+				+ " budget_materials.factor, "
+				+ " TRUNCATE((budget_materials.quantity * ((budget_materials.price * budget_materials.factor / 100) + budget_materials.price)),2) as total "
+			+ " FROM budgets "
+			+ " INNER JOIN budget_materials ON budget_materials.budget_container_id = budgets.id"
+			+ " INNER JOIN materials ON materials.id = budget_materials.material_id"
+			+ " WHERE budget_materials.budget_container_id = " + selectedBudgetId;
+		
+		String[] budgetMaterialsColumnNames = { "Id", "Referencia", "Descripcion", "Cantidad", "Precio", "Factor", "Total"};
+		budgetMaterialsData = db.fetchAll(db.select(budgetMaterialsQuery));
+		
+		HashSet<Integer> editableColumns = new HashSet<Integer>();
+		editableColumns.add(new Integer(3));
+		editableColumns.add(new Integer(4));
+		editableColumns.add(new Integer(5));
+		
+		if(budgetMaterialsData.length > 0) {
+			MyTableModel mForTable = new MyTableModel(budgetMaterialsQuery, budgetMaterialsColumnNames, "budget_materials", editableColumns);
+			tableBudgetMaterialsResult.setModel(mForTable);
+			if(null != tableBudgetMaterialsResult && tableBudgetMaterialsResult.getSelectedRow() == -1) {
+				buttonRemoveBudgetMaterial.setEnabled(false);
+			}
+		} else {
+			tableBudgetMaterialsResult.setModel(new DefaultTableModel());
+			buttonRemoveBudgetMaterial.setEnabled(false);
+		}
+		buttonAddBudgetMaterial.setEnabled(true);
+	}
+	
+	private void updateBudgetComboSettings() {
+		String queryPaymentMethods = "SELECT method FROM budget_payment_methods";
+		
+		comboBudgetSettingsPaymentMethods.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadComboList(queryPaymentMethods, "method"))));
+		comboBudgetSettingsPaymentMethods.removeItem("Todas");
+	}
+	
 	private void setBudgetsMode(int mode){
 		
 		if(mode == SalesMainView.VIEW_MODE) {
@@ -8739,6 +9164,203 @@ public class SalesMainView extends JFrame{
 				if(tracingFrame.isClosed()){
 					createTracingFrame();
 				}
+			}else if(e.getActionCommand().equalsIgnoreCase("bar.button.user.add")) {
+				JDialog dialog = new JDialog();
+				dialog.setTitle("Crear Usuario");
+				dialog.setModalityType(JDialog.DEFAULT_MODALITY_TYPE);
+				dialog.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+				dialog.setSize(new Dimension(300,600));
+				dialog.setLocationRelativeTo(null);
+				dialog.setLayout(new GridBagLayout());
+				GridBagConstraints cs = new GridBagConstraints();
+				
+				cs.fill = GridBagConstraints.HORIZONTAL;
+				cs.insets = new Insets(0, 0, 5, 5);
+				
+				String queryString = "SELECT type FROM user_types ORDER BY id ASC";
+				
+				JLabel labelUsername = new JLabel("Usuario");
+				cs.gridx = 0;
+				cs.gridy = 0;
+				cs.gridwidth = 2;
+				dialog.add(labelUsername, cs);
+				
+				JTextField textUsername = new JTextField(10);
+				cs.gridx = 2;
+				cs.gridy = 0;
+				cs.gridwidth = 10;
+				dialog.add(textUsername, cs);
+				
+				JLabel labelPassword = new JLabel("Password");
+				cs.gridx = 0;
+				cs.gridy = 1;
+				cs.gridwidth = 2;
+				dialog.add(labelPassword, cs);
+				
+				JPasswordField textPassword = new JPasswordField(20);
+				cs.gridx = 2;
+				cs.gridy = 1;
+				cs.gridwidth = 10;
+				dialog.add(textPassword, cs);
+				
+				JLabel labelPassport = new JLabel("Cedula");
+				cs.gridx = 0;
+				cs.gridy = 2;
+				cs.gridwidth = 2;
+				dialog.add(labelPassport, cs);
+				
+				JTextField textPassport = new JTextField(10);
+				cs.gridx = 2;
+				cs.gridy = 2;
+				cs.gridwidth = 10;
+				dialog.add(textPassport, cs);
+				
+				JLabel labelUserType = new JLabel("Tipo de Usuario");
+				cs.gridx = 0;
+				cs.gridy = 3;
+				cs.gridwidth = 2;
+				dialog.add(labelUserType, cs);
+				
+				JComboBox<String> comboUserType = new JComboBox<String>(new Vector<String>(loadComboList(queryString, "type")));
+				comboUserType.removeItem("Todas");
+				cs.gridx = 2;
+				cs.gridy = 3;
+				cs.gridwidth = 10;
+				dialog.add(comboUserType, cs);
+				
+				JLabel labelName = new JLabel("Nombre");
+				cs.gridx = 0;
+				cs.gridy = 4;
+				cs.gridwidth = 2;
+				dialog.add(labelName, cs);
+				
+				JTextField textName = new JTextField(10);
+				cs.gridx = 2;
+				cs.gridy = 4;
+				cs.gridwidth = 10;
+				dialog.add(textName, cs);
+				
+				JLabel labelLastName = new JLabel("Apellido");
+				cs.gridx = 0;
+				cs.gridy = 5;
+				cs.gridwidth = 2;
+				dialog.add(labelLastName, cs);
+				
+				JTextField textLastName = new JTextField(10);
+				cs.gridx = 2;
+				cs.gridy = 5;
+				cs.gridwidth = 10;
+				dialog.add(textLastName, cs);
+				
+				JLabel labelEmail = new JLabel("Email");
+				cs.gridx = 0;
+				cs.gridy = 6;
+				cs.gridwidth = 2;
+				dialog.add(labelEmail, cs);
+				
+				JTextField textEmail = new JTextField(10);
+				cs.gridx = 2;
+				cs.gridy = 6;
+				cs.gridwidth = 10;
+				dialog.add(textEmail, cs);
+				
+				JLabel labelPhone = new JLabel("Telefono");
+				cs.gridx = 0;
+				cs.gridy = 7;
+				cs.gridwidth = 2;
+				dialog.add(labelPhone, cs);
+				
+				JTextField textPhone = new JTextField(10);
+				cs.gridx = 2;
+				cs.gridy = 7;
+				cs.gridwidth = 10;
+				dialog.add(textPhone, cs);
+				
+				JCheckBox checkStatus = new JCheckBox("Estatus");
+				checkStatus.setSelected(true);
+				cs.gridx = 0;
+				cs.gridy = 8;
+				cs.gridwidth = 12;
+				dialog.add(checkStatus, cs);
+				
+				JButton buttonCreate = new JButton("Crear");
+				buttonCreate.addActionListener(new ActionListener() {
+					
+					@Override
+					public void actionPerformed(ActionEvent paramActionEvent) {
+						String username = textUsername.getText();
+						String password = String.valueOf(textPassword.getPassword());
+						String passport = textPassport.getText();
+						String userType = comboUserType.getSelectedItem().toString();
+						String firstName = textName.getText();
+						String lastName = textLastName.getText();
+						String email = textEmail.getText();
+						String phone = textPhone.getText();
+						int status = (checkStatus.isSelected())?1:0;
+						
+						int userTypeId = db.getUserTypeId(userType);
+						
+						Errors err = new Errors();
+						
+						if (username.isEmpty()) {
+							err.add("El nombre de usuario no puede estar vacio");
+						}
+						if (password.isEmpty()) {
+							err.add("El password no puede estar vacio");
+						}
+						if (password.length() < 4) {
+							err.add("El password es muy corto, debe tener como minimo 4 caracteres");
+						}
+						if (passport.isEmpty()) {
+							err.add("La cedula no puede estar vacia");
+						}
+						if (userTypeId < 1) {
+							err.add("Tipo de usuario invalido");
+						}
+						if (firstName.isEmpty() || firstName.length() < 2) {
+							err.add("Nombre invalido");
+						}
+						if (lastName.isEmpty() || lastName.length() < 2) {
+							err.add("Apellido invalido");
+						}
+						if (email.isEmpty()) {
+							err.add("Email invalido");
+						}
+						if (phone.isEmpty()) {
+							err.add("Telefono invalido");
+						}
+						if(err.isEmpty()) {
+							if (db.addUser(username, password, passport, userTypeId, firstName, lastName, email, phone, status)) {
+								JOptionPane.showMessageDialog(null, "Usuario creado exitosamente");
+								dialog.dispose();
+							}
+						} else {
+							err.dump();
+						}
+					}
+				});
+				cs.gridx = 0;
+				cs.gridy = 9;
+				cs.gridwidth = 6;
+				dialog.add(buttonCreate, cs);
+				
+				JRootPane rootPane = SwingUtilities.getRootPane(buttonCreate);
+				rootPane.setDefaultButton(buttonCreate);
+				
+				JButton buttonCancel = new JButton("Cancelar");
+				buttonCancel.addActionListener(new ActionListener() {
+					
+					@Override
+					public void actionPerformed(ActionEvent paramActionEvent) {
+						dialog.dispose();
+					}
+				});
+				cs.gridx = 6;
+				cs.gridy = 9;
+				cs.gridwidth = 6;
+				dialog.add(buttonCancel, cs);
+				
+				dialog.setVisible(true);
 			}
 		}
 		
@@ -9972,11 +10594,6 @@ public class SalesMainView extends JFrame{
 				textBoardDescription.setText("");
 				buttonBoardAdd.setEnabled(true);
 				buttonBoardEdit.setEnabled(false);
-				textBoardMaterials.setText("");
-				textBoardMaterials.setEditable(false);
-				textBoardMaterialsPrice.setText("");
-				textBoardMaterialsPrice.setEditable(false);
-				buttonBoardMaterialsEdit.setEnabled(false);
 				textBoardComments.setText("");
 				textBoardComments.setEditable(false);
 				buttonBoardCommentsEdit.setEnabled(false);
@@ -10176,19 +10793,20 @@ public class SalesMainView extends JFrame{
 				
 				if(lsm.isSelectionEmpty()) {
 					buttonAddBoardSwitch.setEnabled(false);
+					buttonAddBoardMaterial.setEnabled(false);
 					tableBoardSwitchesResult.setModel(new DefaultTableModel());
+					tableBoardMaterialsResult.setModel(new DefaultTableModel());
 				} else {
 					selectedBoardId = Integer.valueOf((String) tableBoardsResult.getValueAt(boardsTableSelectedIndex, 0));
 					
+					JTabbedPane boardTabbedPane = (JTabbedPane) boardSwitchesPanel.getParent();
+					setTabsEnabled(boardTabbedPane, true);
+					
 					loadBoardSwitchTable();
+					loadBoardMaterialTable();
 					
 					if(lsm.isSelectionEmpty()) {
 						buttonBoardEdit.setEnabled(false);
-						textBoardMaterials.setText("");
-						textBoardMaterials.setEditable(false);
-						textBoardMaterialsPrice.setText("");
-						textBoardMaterialsPrice.setEditable(false);
-						buttonBoardMaterialsEdit.setEnabled(false);
 						textBoardDescriptionName.setText("");
 						textBoardDescriptionType.setText("");
 						textBoardDescriptionInstallation.setText("");
@@ -10206,9 +10824,6 @@ public class SalesMainView extends JFrame{
 					} else {
 						if(panelBoardDescription.isShowing()) {
 							buttonBoardEdit.setEnabled(true);
-							textBoardMaterials.setEditable(false);
-							textBoardMaterialsPrice.setEditable(false);
-							buttonBoardMaterialsEdit.setEnabled(true);
 							textBoardComments.setEditable(false);
 							buttonBoardCommentsEdit.setEnabled(true);
 						}
@@ -10229,11 +10844,6 @@ public class SalesMainView extends JFrame{
 						textBoardDescriptionInterruption.setText((String) tableBoardsResult.getValueAt(boardsTableSelectedIndex, BOARD_INTERRUPTION_COLUMN));
 						textBoardDescriptionLockType.setText((String) tableBoardsResult.getValueAt(boardsTableSelectedIndex, BOARD_LOCK_TYPE_COLUMN));
 						textBoardDescriptionPrice.setText("BsF " + tableBoardsResult.getValueAt(boardsTableSelectedIndex, BOARD_PRICE_COLUMN));
-						
-						// TODO Fix materials tab and place a table to show the materials
-//						textBoardMaterials.setText(db.getBoardMaterials(selectedBoardId));
-						textBoardMaterialsPrice.setText(String.valueOf(db.getBoardMaterialsPrice(selectedBoardId)));
-						
 						textBoardComments.setText(db.getBoardComments(selectedBoardId));
 						
 						textBoardDescription.setText("Caja para Tablero, " +
@@ -10250,24 +10860,25 @@ public class SalesMainView extends JFrame{
 				boardSwitchesTableSelectedIndex = lsm.getMinSelectionIndex();
 				selectedBoardSwitchId = Integer.valueOf((String) tableBoardSwitchesResult.getValueAt(boardSwitchesTableSelectedIndex, BOARD_ID_COLUMN));
 				buttonRemoveBoardSwitch.setEnabled(true);
+			} else if (null != tableBoardMaterialsResult && tableBoardMaterialsResult.isFocusOwner() && lsm.getMinSelectionIndex() > -1) {
+				boardMaterialsTableSelectedIndex = lsm.getMinSelectionIndex();
+				selectedBoardMaterialId = Integer.valueOf((String) tableBoardMaterialsResult.getValueAt(boardMaterialsTableSelectedIndex, BOARD_ID_COLUMN));
+				buttonRemoveBoardMaterial.setEnabled(true);
 			} else if (null != tableControlBoardsResult && tableControlBoardsResult.isFocusOwner() && lsm.getMinSelectionIndex() > -1) {
 				controlBoardsTableSelectedIndex = lsm.getMinSelectionIndex();
 				
 				if(lsm.isSelectionEmpty()) {
 					buttonAddControlBoardSwitch.setEnabled(false);
 					tableControlBoardSwitchesResult.setModel(new DefaultTableModel());
+					tableControlBoardMaterialsResult.setModel(new DefaultTableModel());
 				} else {
 					selectedControlBoardId = Integer.valueOf((String) tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, 0));
 					
 					loadControlBoardSwitchTable();
+					loadControlBoardMaterialTable();
 					
 					if(lsm.isSelectionEmpty()) {
 						buttonControlBoardEdit.setEnabled(false);
-						textControlBoardMaterials.setText("");
-						textControlBoardMaterials.setEditable(false);
-						textControlBoardMaterialsPrice.setText("");
-						textControlBoardMaterialsPrice.setEditable(false);
-						buttonControlBoardMaterialsEdit.setEnabled(false);
 						textControlBoardDescriptionName.setText("");
 						textControlBoardDescriptionType.setText("");
 						textControlBoardDescriptionInstallation.setText("");
@@ -10285,9 +10896,6 @@ public class SalesMainView extends JFrame{
 					} else {
 						if(panelControlBoardDescription.isShowing()) {
 							buttonControlBoardEdit.setEnabled(true);
-							textControlBoardMaterials.setEditable(false);
-							textControlBoardMaterialsPrice.setEditable(false);
-							buttonControlBoardMaterialsEdit.setEnabled(true);
 							textControlBoardComments.setEditable(false);
 							buttonControlBoardCommentsEdit.setEnabled(true);
 						}
@@ -10295,7 +10903,9 @@ public class SalesMainView extends JFrame{
 						JTabbedPane controlBoardTabbedPane = (JTabbedPane) controlBoardSwitchesPanel.getParent();
 						setTabsEnabled(controlBoardTabbedPane, true);
 						loadControlBoardSwitchTable();
+						loadControlBoardMaterialTable();
 						buttonAddControlBoardSwitch.setEnabled(true);
+						buttonAddControlBoardMaterial.setEnabled(true);
 						buttonControlBoardCommentsEdit.setEnabled(true);
 						
 						textControlBoardDescriptionName.setText((String) tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, CONTROL_BOARD_NAME_COLUMN));
@@ -10314,11 +10924,6 @@ public class SalesMainView extends JFrame{
 						textControlBoardDescriptionInterruption.setText((String) tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, CONTROL_BOARD_INTERRUPTION_COLUMN));
 						textControlBoardDescriptionLockType.setText((String) tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, CONTROL_BOARD_LOCK_TYPE_COLUMN));
 						textControlBoardDescriptionPrice.setText("BsF " + tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, CONTROL_BOARD_PRICE_COLUMN));
-						
-						// TODO Fix materials tab and place a table to show the materials
-//						textBoardMaterials.setText(db.getBoardMaterials(selectedBoardId));
-//						textControlBoardMaterialsPrice.setText(String.valueOf(db.getControlBoardMaterialsPrice(selectedControlBoardId)));
-						
 						textControlBoardComments.setText(db.getControlBoardComments(selectedControlBoardId));
 						
 						textControlBoardDescription.setText("Caja para Tablero de Control, " +
@@ -10335,6 +10940,10 @@ public class SalesMainView extends JFrame{
 				controlBoardSwitchesTableSelectedIndex = lsm.getMinSelectionIndex();
 				selectedControlBoardSwitchId = Integer.valueOf((String) tableControlBoardSwitchesResult.getValueAt(controlBoardSwitchesTableSelectedIndex, CONTROL_BOARD_ID_COLUMN));
 				buttonRemoveControlBoardSwitch.setEnabled(true);
+			} else if (null != tableControlBoardMaterialsResult && tableControlBoardMaterialsResult.isFocusOwner() && lsm.getMinSelectionIndex() > -1) {
+				controlBoardMaterialsTableSelectedIndex = lsm.getMinSelectionIndex();
+				selectedControlBoardMaterialId = Integer.valueOf((String) tableControlBoardMaterialsResult.getValueAt(controlBoardMaterialsTableSelectedIndex, CONTROL_BOARD_ID_COLUMN));
+				buttonRemoveControlBoardMaterial.setEnabled(true);
 			} else if (null != tableBudgetsResult && tableBudgetsResult.isFocusOwner() && lsm.getMinSelectionIndex() > -1) {
 				budgetsTableSelectedIndex = lsm.getMinSelectionIndex();				
 				if(lsm.isSelectionEmpty()) {
@@ -10345,6 +10954,7 @@ public class SalesMainView extends JFrame{
 					buttonAddBudgetSwitch.setEnabled(false);
 					buttonAddBudgetBox.setEnabled(false);
 					buttonAddBudgetBoard.setEnabled(false);
+					buttonAddBudgetControlBoard.setEnabled(false);
 					buttonBudgetNotesEdit.setEnabled(false);
 					tableBudgetSwitchesResult.setModel(new DefaultTableModel());
 					tableBudgetBoxesResult.setModel(new DefaultTableModel());
@@ -10372,9 +10982,13 @@ public class SalesMainView extends JFrame{
 					loadBudgetSwitchTable();
 					loadBudgetBoxTable();
 					loadBudgetBoardTable();
+					loadBudgetControlBoardTable();
+					loadBudgetMaterialTable();
 					buttonAddBudgetSwitch.setEnabled(true);
 					buttonAddBudgetBox.setEnabled(true);
 					buttonAddBudgetBoard.setEnabled(true);
+					buttonAddBudgetControlBoard.setEnabled(true);
+					buttonAddBudgetMaterial.setEnabled(true);
 					buttonBudgetNotesEdit.setEnabled(true);
 					
 					
@@ -10415,13 +11029,21 @@ public class SalesMainView extends JFrame{
 				
 				buttonRemoveBudgetSwitch.setEnabled(true);
 			} else if (null != tableBudgetBoxesResult && tableBudgetBoxesResult.isFocusOwner() && lsm.getMinSelectionIndex() > -1) {
-				budgetSwitchesTableSelectedIndex = lsm.getMinSelectionIndex();
-				selectedBudgetBoxId = Integer.valueOf((String) tableBudgetBoxesResult.getValueAt(budgetSwitchesTableSelectedIndex, BUDGET_ID_COLUMN));
+				budgetBoxesTableSelectedIndex = lsm.getMinSelectionIndex();
+				selectedBudgetBoxId = Integer.valueOf((String) tableBudgetBoxesResult.getValueAt(budgetBoxesTableSelectedIndex, BUDGET_ID_COLUMN));
 				buttonRemoveBudgetBox.setEnabled(true);
 			} else if (null != tableBudgetBoardsResult && tableBudgetBoardsResult.isFocusOwner() && lsm.getMinSelectionIndex() > -1) {
-				budgetSwitchesTableSelectedIndex = lsm.getMinSelectionIndex();
-				selectedBudgetBoardId = Integer.valueOf((String) tableBudgetBoardsResult.getValueAt(budgetSwitchesTableSelectedIndex, BUDGET_ID_COLUMN));
+				budgetBoardsTableSelectedIndex = lsm.getMinSelectionIndex();
+				selectedBudgetBoardId = Integer.valueOf((String) tableBudgetBoardsResult.getValueAt(budgetBoardsTableSelectedIndex, BUDGET_ID_COLUMN));
 				buttonRemoveBudgetBoard.setEnabled(true);
+			} else if (null != tableBudgetControlBoardsResult && tableBudgetControlBoardsResult.isFocusOwner() && lsm.getMinSelectionIndex() > -1) {
+				budgetControlBoardsTableSelectedIndex = lsm.getMinSelectionIndex();
+				selectedBudgetControlBoardId = Integer.valueOf((String) tableBudgetControlBoardsResult.getValueAt(budgetControlBoardsTableSelectedIndex, BUDGET_ID_COLUMN));
+				buttonRemoveBudgetControlBoard.setEnabled(true);
+			} else if (null != tableBudgetMaterialsResult && tableBudgetMaterialsResult.isFocusOwner() && lsm.getMinSelectionIndex() > -1) {
+				budgetMaterialsTableSelectedIndex = lsm.getMinSelectionIndex();
+				selectedBudgetMaterialId = Integer.valueOf((String) tableBudgetMaterialsResult.getValueAt(budgetMaterialsTableSelectedIndex, BUDGET_ID_COLUMN));
+				buttonRemoveBudgetMaterial.setEnabled(true);
 			}
 			
 			
@@ -10454,11 +11076,6 @@ public class SalesMainView extends JFrame{
 				textBoxComments.setText("");
 			} else if(lsm.isSelectionEmpty() && null != panelBoardDescription && tableBoardsResult.getSelectedRow() == -1) {
 				buttonBoardEdit.setEnabled(false);
-				textBoardMaterials.setText("");
-				textBoardMaterials.setEditable(false);
-				textBoardMaterialsPrice.setText("");
-				textBoardMaterialsPrice.setEditable(false);
-				buttonBoardMaterialsEdit.setEnabled(false);
 				textBoardDescriptionName.setText("");
 				textBoardDescriptionType.setText("");
 				textBoardDescriptionInstallation.setText("");
@@ -10473,13 +11090,13 @@ public class SalesMainView extends JFrame{
 				textBoardDescriptionLockType.setText("");
 				textBoardDescriptionPrice.setText("");
 				textBoardDescription.setText("");
+				tableBoardSwitchesResult.setModel(new DefaultTableModel());
+				tableBoardMaterialsResult.setModel(new DefaultTableModel());
+				
+				JTabbedPane boardTabbedPane = (JTabbedPane) boardSwitchesPanel.getParent();
+				setTabsEnabled(boardTabbedPane, false);
 			} else if(lsm.isSelectionEmpty() && null != panelControlBoardDescription && tableControlBoardsResult.getSelectedRow() == -1) {
 				buttonControlBoardEdit.setEnabled(false);
-				textControlBoardMaterials.setText("");
-				textControlBoardMaterials.setEditable(false);
-				textControlBoardMaterialsPrice.setText("");
-				textControlBoardMaterialsPrice.setEditable(false);
-				buttonControlBoardMaterialsEdit.setEnabled(false);
 				textControlBoardDescriptionName.setText("");
 				textControlBoardDescriptionType.setText("");
 				textControlBoardDescriptionInstallation.setText("");
@@ -10494,12 +11111,11 @@ public class SalesMainView extends JFrame{
 				textControlBoardDescriptionLockType.setText("");
 				textControlBoardDescriptionPrice.setText("");
 				textControlBoardDescription.setText("");
+				tableControlBoardSwitchesResult.setModel(new DefaultTableModel());
+				tableControlBoardMaterialsResult.setModel(new DefaultTableModel());
 				
 				JTabbedPane controlBoardTabbedPane = (JTabbedPane) controlBoardSwitchesPanel.getParent();
 				setTabsEnabled(controlBoardTabbedPane, false);
-//				for(Integer i = 1; i < controlBoardTabbedPane.getTabCount(); i++) {
-//					controlBoardTabbedPane.setEnabledAt(i, false);
-//				}
 			} else if (lsm.isSelectionEmpty() && null != panelBudgetDescription && tableBudgetsResult.getSelectedRow() == -1) {
 				selectedBudgetId = 0;
 				buttonBudgetEdit.setEnabled(false);
@@ -10507,10 +11123,8 @@ public class SalesMainView extends JFrame{
 				buttonAddBudgetSwitch.setEnabled(false);
 				buttonAddBudgetBox.setEnabled(false);
 				buttonAddBudgetBoard.setEnabled(false);
+				buttonAddBudgetControlBoard.setEnabled(false);
 				buttonBudgetNotesEdit.setEnabled(false);
-				tableBudgetSwitchesResult.setModel(new DefaultTableModel());
-				tableBudgetBoxesResult.setModel(new DefaultTableModel());
-				tableBudgetBoardsResult.setModel(new DefaultTableModel());
 				textBudgetDescriptionId.setText("");
 				textBudgetDescriptionCode.setText("");
 				textBudgetDescriptionDate.setText("");
@@ -10526,15 +11140,25 @@ public class SalesMainView extends JFrame{
 				textBudgetDescriptionDeliveryTime.setText("");
 				textBudgetDescriptionDeliveryPeriod.setText("");
 				textBudgetNotes.setText("");
+				tableBudgetSwitchesResult.setModel(new DefaultTableModel());
+				tableBudgetBoxesResult.setModel(new DefaultTableModel());
+				tableBudgetBoardsResult.setModel(new DefaultTableModel());
+				tableBudgetMaterialsResult.setModel(new DefaultTableModel());
 				
 				JTabbedPane budgetTabbedPane = (JTabbedPane) budgetSwitchesPanel.getParent();
 				setTabsEnabled(budgetTabbedPane, false);
-//				for(Integer i = 1; i < budgetTabbedPane.getTabCount(); i++) {
-//					budgetTabbedPane.setEnabledAt(i, false);
-//				}
+			} else if (lsm.isSelectionEmpty() && null != panelBoardDescription && tableBoardSwitchesResult.getSelectedRow() == -1) {
+				buttonRemoveBoardSwitch.setEnabled(false);
+				selectedBoardSwitchId = -1;
+			} else if (lsm.isSelectionEmpty() && null != panelBoardDescription && tableBoardMaterialsResult.getSelectedRow() == -1) {
+				buttonRemoveBoardMaterial.setEnabled(false);
+				selectedBoardMaterialId = -1;
 			} else if (lsm.isSelectionEmpty() && null != panelControlBoardDescription && tableControlBoardSwitchesResult.getSelectedRow() == -1) {
 				buttonRemoveControlBoardSwitch.setEnabled(false);
 				selectedControlBoardSwitchId = -1;
+			} else if (lsm.isSelectionEmpty() && null != panelControlBoardDescription && tableControlBoardMaterialsResult.getSelectedRow() == -1) {
+				buttonRemoveControlBoardMaterial.setEnabled(false);
+				selectedControlBoardMaterialId = -1;
 			} else if (lsm.isSelectionEmpty() && null != panelBudgetDescription && tableBudgetSwitchesResult.getSelectedRow() == -1) {
 				buttonRemoveBudgetSwitch.setEnabled(false);
 				selectedBudgetSwitchId = -1;
@@ -10544,6 +11168,12 @@ public class SalesMainView extends JFrame{
 			} else if (lsm.isSelectionEmpty() && null != panelBudgetDescription && tableBudgetBoardsResult.getSelectedRow() == -1) {
 				buttonRemoveBudgetBoard.setEnabled(false);
 				selectedBudgetBoardId = -1;
+			} else if (lsm.isSelectionEmpty() && null != panelBudgetDescription && tableBudgetControlBoardsResult.getSelectedRow() == -1) {
+				buttonRemoveBudgetControlBoard.setEnabled(false);
+				selectedBudgetControlBoardId = -1;
+			} else if (lsm.isSelectionEmpty() && null != panelBudgetDescription && tableBudgetMaterialsResult.getSelectedRow() == -1) {
+				buttonRemoveBudgetMaterial.setEnabled(false);
+				selectedBudgetMaterialId = -1;
 			}
 			
 		}
@@ -11177,41 +11807,22 @@ public class SalesMainView extends JFrame{
 						JOptionPane.showMessageDialog(null, "Error al remover interruptor del tablero");
 					}
 				}
-			} else if(actionCommand.equalsIgnoreCase("board.materials.edit")) {
-				boardViewTabbedPane.setEnabled(false);
-				buttonBoardMaterialsEdit.setEnabled(false);
-				textBoardMaterials.setEditable(true);
-				textBoardMaterialsPrice.setEditable(true);
-				panelBoardMaterialsEditSaveCancel.setVisible(true);
-				buttonBoardMaterialsEditSave.setEnabled(true);
-				buttonBoardMaterialsEditCancel.setEnabled(true);
-			} else if (actionCommand.equalsIgnoreCase("board.materials.edit.save")) {
-				if(selectedBoardId > 0) {
-					ArrayList<Object> listFields = new ArrayList<Object>();
-					ArrayList<Object> listValues = new ArrayList<Object>();
-					listFields.add("materials");
-					listValues.add("'" + textBoardMaterials.getText() + "'");
-					listFields.add("materials_price");
-					listValues.add(textBoardMaterialsPrice.getText());
-					db.editBoard(selectedBoardId, listFields, listValues);
-					boardViewTabbedPane.setEnabled(true);
-					buttonBoardMaterialsEdit.setEnabled(true);
-					textBoardMaterials.setEditable(false);
-					textBoardMaterialsPrice.setEditable(false);
-					buttonBoardMaterialsEditSave.setEnabled(false);
-					buttonBoardMaterialsEditCancel.setEnabled(false);
-					panelBoardMaterialsEditSaveCancel.setVisible(false);
-				} else {
-					JOptionPane.showMessageDialog(null, "No hay ningun tablero seleccionado");
+			} else if(actionCommand.equalsIgnoreCase("board.material.add")) {
+				dialogBoardMaterialAdd = new MaterialDialog(null, "Agregar Material");
+				WindowsListener lForWindow = new WindowsListener();
+				dialogBoardMaterialAdd.addWindowListener(lForWindow);
+			} else if (actionCommand.equalsIgnoreCase("board.material.remove")) {
+				int response = JOptionPane.showConfirmDialog(null, "Esta seguro que desea remover este material del tablero?", "Remover material del tablero", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+				if(response == JOptionPane.YES_OPTION) {
+					if(db.removeBoardMaterial(selectedBoardMaterialId)) {
+						if(tableBoardsResult.getSelectedRow() > -1) {
+							selectedBoardId = Integer.valueOf( (String) tableBoardsResult.getValueAt(tableBoardsResult.getSelectedRow(), SharedListSelectionListener.BOARD_ID_COLUMN));
+							loadBoardMaterialTable();
+						}
+					} else {
+						JOptionPane.showMessageDialog(null, "Error al remover material del tablero");
+					}
 				}
-			} else if (actionCommand.equalsIgnoreCase("board.materials.edit.cancel")) {
-				boardViewTabbedPane.setEnabled(true);
-				buttonBoardMaterialsEdit.setEnabled(true);
-				textBoardMaterials.setEditable(false);
-				textBoardMaterialsPrice.setEditable(false);
-				buttonBoardMaterialsEditSave.setEnabled(false);
-				buttonBoardMaterialsEditCancel.setEnabled(false);
-				panelBoardMaterialsEditSaveCancel.setVisible(false);
 			} else if(actionCommand.equalsIgnoreCase("board.comments.edit")) {
 				boardViewTabbedPane.setEnabled(false);
 				buttonBoardCommentsEdit.setEnabled(false);
@@ -11524,41 +12135,24 @@ public class SalesMainView extends JFrame{
 			} else if(actionCommand.equalsIgnoreCase("control.materials.edit")) {
 				JTabbedPane controlBoardViewTabbedPane = (JTabbedPane) controlBoardSwitchesPanel.getParent();
 				controlBoardViewTabbedPane.setEnabled(false);
-				buttonControlBoardMaterialsEdit.setEnabled(false);
 //				textBoardMaterials.setEditable(true);
 //				textBoardMaterialsPrice.setEditable(true);
-				panelControlBoardMaterialsEditSaveCancel.setVisible(true);
-				buttonControlBoardMaterialsEditSave.setEnabled(true);
-				buttonControlBoardMaterialsEditCancel.setEnabled(true);
-			} else if (actionCommand.equalsIgnoreCase("control.materials.edit.save")) {
-				if(selectedControlBoardId > 0) {
-					ArrayList<Object> listFields = new ArrayList<Object>();
-					ArrayList<Object> listValues = new ArrayList<Object>();
-					listFields.add("materials");
-					listValues.add("'" + textBoardMaterials.getText() + "'");
-					listFields.add("materials_price");
-					listValues.add(textBoardMaterialsPrice.getText());
-					db.editControlBoard(selectedControlBoardId, listFields, listValues);
-					JTabbedPane controlBoardViewTabbedPane = (JTabbedPane) controlBoardSwitchesPanel.getParent();
-					controlBoardViewTabbedPane.setEnabled(true);
-					buttonControlBoardMaterialsEdit.setEnabled(true);
-					textBoardMaterials.setEditable(false);
-					textBoardMaterialsPrice.setEditable(false);
-					buttonControlBoardMaterialsEditSave.setEnabled(false);
-					buttonControlBoardMaterialsEditCancel.setEnabled(false);
-					panelControlBoardMaterialsEditSaveCancel.setVisible(false);
-				} else {
-					JOptionPane.showMessageDialog(null, "No hay ningun tablero seleccionado");
+			} else if (actionCommand.equalsIgnoreCase("control.material.add")) {
+				dialogControlBoardMaterialAdd = new MaterialDialog(null, "Agregar Material");
+				WindowsListener lForWindow = new WindowsListener();
+				dialogControlBoardMaterialAdd.addWindowListener(lForWindow);
+			} else if (actionCommand.equalsIgnoreCase("control.material.remove")) {
+				int response = JOptionPane.showConfirmDialog(null, "Esta seguro que desea remover este material del tablero de control?", "Remover material del tablero de control", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+				if(response == JOptionPane.YES_OPTION) {
+					if(db.removeControlBoardMaterial(selectedControlBoardMaterialId)) {
+						if(tableControlBoardsResult.getSelectedRow() > -1) {
+							selectedControlBoardId = Integer.valueOf( (String) tableControlBoardsResult.getValueAt(tableControlBoardsResult.getSelectedRow(), SharedListSelectionListener.BOARD_ID_COLUMN));
+							loadControlBoardMaterialTable();
+						}
+					} else {
+						JOptionPane.showMessageDialog(null, "Error al remover material del tablero de control");
+					}
 				}
-			} else if (actionCommand.equalsIgnoreCase("control.materials.edit.cancel")) {
-				JTabbedPane controlBoardViewTabbedPane = (JTabbedPane) controlBoardSwitchesPanel.getParent();
-				controlBoardViewTabbedPane.setEnabled(true);
-				buttonControlBoardMaterialsEdit.setEnabled(true);
-				textBoardMaterials.setEditable(false);
-				textBoardMaterialsPrice.setEditable(false);
-				buttonControlBoardMaterialsEditSave.setEnabled(false);
-				buttonControlBoardMaterialsEditCancel.setEnabled(false);
-				panelControlBoardMaterialsEditSaveCancel.setVisible(false);
 			} else if(actionCommand.equalsIgnoreCase("control.comments.edit")) {
 				JTabbedPane controlBoardViewTabbedPane = (JTabbedPane) controlBoardSwitchesPanel.getParent();
 				controlBoardViewTabbedPane.setEnabled(false);
@@ -11659,7 +12253,7 @@ public class SalesMainView extends JFrame{
 				}
 				
 				if(err.isEmpty()) {
-					boolean saved = db.addBudget(budgetDate, Integer.valueOf(budgetExpiryDays), budgetClientId, budgetWorkName, budgetPaymentMethod, budgetSellerId, budgetDispatchPlace, Integer.valueOf(budgetDeliveryTime), budgetDeliveryPeriod);
+					boolean saved = db.addBudget(budgetDate, Integer.valueOf(budgetExpiryDays), budgetClientId, budgetWorkName, budgetPaymentMethod, budgetSellerId, budgetDispatchPlace, Integer.valueOf(budgetDeliveryTime), budgetDeliveryPeriod, userInfo.getId());
 					if(saved) {
 						JOptionPane.showMessageDialog(null, "Presupuesto creado exitosamente");
 						setBudgetsMode(SalesMainView.VIEW_MODE);
@@ -11695,6 +12289,7 @@ public class SalesMainView extends JFrame{
 				Integer editedBudgetDeliveryTime = Integer.valueOf(textBudgetEditDeliveryTime.getText());
 				String editedBudgetDeliveryPeriod = comboBudgetEditDeliveryPeriod.getSelectedItem().toString();
 				
+				// TODO Ask them if the budget date could be changed after it was created
 				if (!editBudgetDate.equals(editedBudgetDate)) {
 					DateTimeFormatter dtf = DateTimeFormat.forPattern("dd-MM-yyyy");
 					DateTimeFormatter dtf2 = DateTimeFormat.forPattern("yyyy-MM-dd");
@@ -11842,6 +12437,38 @@ public class SalesMainView extends JFrame{
 						JOptionPane.showMessageDialog(null, "Error al remover tablero del presupuesto");
 					}
 				}
+			} else if (actionCommand.equalsIgnoreCase("budget.control_board.add")) {
+				dialogBudgetControlBoardAdd = new ControlBoardDialog(null, "Agregar Tablero de Control");
+				WindowsListener lForWindow = new WindowsListener();
+				dialogBudgetControlBoardAdd.addWindowListener(lForWindow);
+			} else if (actionCommand.equalsIgnoreCase("budget.control_board.remove")) {
+				int response = JOptionPane.showConfirmDialog(null, "Esta seguro que desea remover este tablero de control del presupuesto?", "Remover tablero de control del presupuesto", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+				if(response == JOptionPane.YES_OPTION) {
+					if(db.removeBudgetControlBoard(selectedBudgetControlBoardId)) {
+						if(tableBudgetsResult.getSelectedRow() > -1) {
+							selectedBudgetId = Integer.valueOf( (String) tableBudgetsResult.getValueAt(tableBudgetsResult.getSelectedRow(), SharedListSelectionListener.BUDGET_ID_COLUMN));
+							loadBudgetControlBoardTable();
+						}
+					} else {
+						JOptionPane.showMessageDialog(null, "Error al remover tablero de control del presupuesto");
+					}
+				}
+			} else if(actionCommand.equalsIgnoreCase("budget.material.add")) {
+				dialogBudgetMaterialAdd = new MaterialDialog(null, "Agregar Material");
+				WindowsListener lForWindow = new WindowsListener();
+				dialogBudgetMaterialAdd.addWindowListener(lForWindow);
+			} else if (actionCommand.equalsIgnoreCase("budget.material.remove")) {
+				int response = JOptionPane.showConfirmDialog(null, "Esta seguro que desea remover este material del presupuesto?", "Remover material del presupuesto", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+				if(response == JOptionPane.YES_OPTION) {
+					if(db.removeBudgetMaterial(selectedBudgetMaterialId)) {
+						if(tableBudgetsResult.getSelectedRow() > -1) {
+							selectedBudgetId = Integer.valueOf( (String) tableBudgetsResult.getValueAt(tableBudgetsResult.getSelectedRow(), SharedListSelectionListener.BUDGET_ID_COLUMN));
+							loadBudgetMaterialTable();
+						}
+					} else {
+						JOptionPane.showMessageDialog(null, "Error al remover material del presupuesto");
+					}
+				}
 			} else if (actionCommand.equalsIgnoreCase("budget.notes.edit")) {
 				panelBudgetNotesEditSaveCancel.setVisible(true);
 				textBudgetNotes.setEditable(true);
@@ -11903,9 +12530,9 @@ public class SalesMainView extends JFrame{
 		public void windowClosed(WindowEvent e) {
 			Window window = (Window)e.getSource();
 			if (window.equals(dialogBoardSwitchAdd)) {
-				Integer switchSearchId = dialogBoardSwitchAdd.getSwitchSearchId();
-				Integer switchQuantity = dialogBoardSwitchAdd.getSwitchAddQuantity();
-				Double switchPrice = dialogBoardSwitchAdd.getSwitchAddPrice();
+				int switchSearchId = dialogBoardSwitchAdd.getSwitchSearchId();
+				int switchQuantity = dialogBoardSwitchAdd.getSwitchAddQuantity();
+				double switchPrice = dialogBoardSwitchAdd.getSwitchAddPrice();
 				if(switchSearchId > 0) {
 					if ((switchQuantity * db.getSwitchPhases(switchSearchId)) + db.getBoardSwitchesQuantity(selectedBoardId) <= selectedTableBoardCircuits) {
 						if(db.addBoardSwitch(selectedBoardId, switchSearchId, switchQuantity, switchPrice)) {
@@ -11915,10 +12542,19 @@ public class SalesMainView extends JFrame{
 						JOptionPane.showMessageDialog(null, "No puede agregar mas de " + selectedTableBoardCircuits + " circuitos");
 					}
 				}
+			} else if (window.equals(dialogBoardMaterialAdd)) {
+				int materialSearchId = dialogBoardMaterialAdd.getMaterialSearchId();
+				int materialQuantity = dialogBoardMaterialAdd.getMaterialAddQuantity();
+				double materialPrice = dialogBoardMaterialAdd.getMaterialAddPrice();
+				if(materialSearchId > 0) {
+					if(db.addBoardMaterial(selectedBoardId, materialSearchId, materialQuantity, materialPrice)) {
+						loadBoardMaterialTable();
+					}
+				}
 			} else if (window.equals(dialogControlBoardSwitchAdd)) {
-				Integer switchSearchId = dialogControlBoardSwitchAdd.getSwitchSearchId();
-				Integer switchQuantity = dialogControlBoardSwitchAdd.getSwitchAddQuantity();
-				Double switchPrice = dialogControlBoardSwitchAdd.getSwitchAddPrice();
+				int switchSearchId = dialogControlBoardSwitchAdd.getSwitchSearchId();
+				int switchQuantity = dialogControlBoardSwitchAdd.getSwitchAddQuantity();
+				double switchPrice = dialogControlBoardSwitchAdd.getSwitchAddPrice();
 				if(switchSearchId > 0) {
 					if (!selectedTableControlBoardCircuits.equalsIgnoreCase("N/A")) {
 						if ((switchQuantity * db.getSwitchPhases(switchSearchId)) + db.getControlBoardSwitchesQuantity(selectedControlBoardId) <= Integer.valueOf(selectedTableControlBoardCircuits)) {
@@ -11932,18 +12568,27 @@ public class SalesMainView extends JFrame{
 						JOptionPane.showMessageDialog(null, "No puede agregar interruptores ya que no tiene circuitos asignados");
 					}
 				}
+			} else if (window.equals(dialogControlBoardMaterialAdd)) {
+				int materialSearchId = dialogControlBoardMaterialAdd.getMaterialSearchId();
+				int materialQuantity = dialogControlBoardMaterialAdd.getMaterialAddQuantity();
+				double materialPrice = dialogControlBoardMaterialAdd.getMaterialAddPrice();
+				if(materialSearchId > 0) {
+					if(db.addControlBoardMaterial(selectedControlBoardId, materialSearchId, materialQuantity, materialPrice)) {
+						loadControlBoardMaterialTable();
+					}
+				}
 			} else if (window.equals(dialogBudgetSwitchAdd)) {
-				Integer switchSearchId = dialogBudgetSwitchAdd.getSwitchSearchId();
-				Integer switchQuantity = dialogBudgetSwitchAdd.getSwitchAddQuantity();
-				Double switchPrice = dialogBudgetSwitchAdd.getSwitchAddPrice();
+				int switchSearchId = dialogBudgetSwitchAdd.getSwitchSearchId();
+				int switchQuantity = dialogBudgetSwitchAdd.getSwitchAddQuantity();
+				double switchPrice = dialogBudgetSwitchAdd.getSwitchAddPrice();
 				if(switchSearchId > 0) {
 					if(db.addBudgetSwitch(selectedBudgetId, switchSearchId, switchQuantity, switchPrice)) {
 						loadBudgetSwitchTable();
 					}
 				}
 			} else if (window.equals(dialogBudgetBoxAdd)) {
-				Integer boxSearchId = dialogBudgetBoxAdd.getBoxSearchId();
-				Integer boxQuantity = dialogBudgetBoxAdd.getBoxAddQuantity();
+				int boxSearchId = dialogBudgetBoxAdd.getBoxSearchId();
+				int boxQuantity = dialogBudgetBoxAdd.getBoxAddQuantity();
 				double boxPrice = dialogBudgetBoxAdd.getBoxPrice();
 				if(boxSearchId > 0) {
 					if(db.addBudgetBox(selectedBudgetId, boxSearchId, boxQuantity, boxPrice)) {
@@ -11951,16 +12596,34 @@ public class SalesMainView extends JFrame{
 					}
 				}
 			} else if (window.equals(dialogBudgetBoardAdd)) {
-				Integer boardSearchId = dialogBudgetBoardAdd.getBoardSearchId();
-				Integer boardQuantity = dialogBudgetBoardAdd.getBoardAddQuantity();
+				int boardSearchId = dialogBudgetBoardAdd.getBoardSearchId();
+				int boardQuantity = dialogBudgetBoardAdd.getBoardAddQuantity();
 				double boardPrice = dialogBudgetBoardAdd.getBoardPrice();
 				if(boardSearchId > 0) {
 					if(db.addBudgetBoard(selectedBudgetId, boardSearchId, boardQuantity, boardPrice)) {
 						loadBudgetBoardTable();
 					}
 				}
+			} else if (window.equals(dialogBudgetControlBoardAdd)) {
+				int controlBoardSearchId = dialogBudgetControlBoardAdd.getBoardSearchId();
+				int controlBoardQuantity = dialogBudgetControlBoardAdd.getBoardAddQuantity();
+				double controlBoardPrice = dialogBudgetControlBoardAdd.getBoardPrice();
+				if(controlBoardSearchId > 0) {
+					if(db.addBudgetControlBoard(selectedBudgetId, controlBoardSearchId, controlBoardQuantity, controlBoardPrice)) {
+						loadBudgetControlBoardTable();
+					}
+				}
+			} else if (window.equals(dialogBudgetMaterialAdd)) {
+				int materialSearchId = dialogBudgetMaterialAdd.getMaterialSearchId();
+				int materialQuantity = dialogBudgetMaterialAdd.getMaterialAddQuantity();
+				double materialPrice = dialogBudgetMaterialAdd.getMaterialAddPrice();
+				if(materialSearchId > 0) {
+					if(db.addBudgetMaterial(selectedBudgetId, materialSearchId, materialQuantity, materialPrice)) {
+						loadBudgetMaterialTable();
+					}
+				}
 			} else if (window.equals(dialogBudgetClientAdd)) {
-				Integer searchClientId = dialogBudgetClientAdd.getSearchId();
+				int searchClientId = dialogBudgetClientAdd.getSearchId();
 				budgetClientAddId = searchClientId;
 				if (budgetClientAddId > 0) {
 					String searchClient = dialogBudgetClientAdd.getSearchClient();
@@ -11971,7 +12634,7 @@ public class SalesMainView extends JFrame{
 					textBudgetAddClientRepresentative.setText(searchClientRepresentative);
 				}
 			} else if (window.equals(dialogBudgetClientEdit)) {
-				Integer searchClientId = dialogBudgetClientEdit.getSearchId();
+				int searchClientId = dialogBudgetClientEdit.getSearchId();
 				budgetClientEditedId = searchClientId;
 				if (budgetClientEditedId > 0) {
 					String searchClient = dialogBudgetClientEdit.getSearchClient();
@@ -11982,13 +12645,13 @@ public class SalesMainView extends JFrame{
 					textBudgetEditClientRepresentative.setText(searchClientRepresentative);
 				}
 			} else if (window.equals(dialogBudgetSellerAdd)) {
-				Integer searchSellerId = dialogBudgetSellerAdd.getSearchId();
+				int searchSellerId = dialogBudgetSellerAdd.getSearchId();
 				if (searchSellerId > 0) {
 					String searchSellerUser = dialogBudgetSellerAdd.getSellerUser();
 					textBudgetAddSeller.setText(searchSellerUser);
 				}
 			} else if (window.equals(dialogBudgetSellerEdit)) {
-				Integer searchSellerId = dialogBudgetSellerEdit.getSearchId();
+				int searchSellerId = dialogBudgetSellerEdit.getSearchId();
 				budgetSellerEditedId = searchSellerId;
 				if (searchSellerId > 0) {
 					String searchSellerUser = dialogBudgetSellerEdit.getSellerUser();
@@ -12288,6 +12951,135 @@ public class SalesMainView extends JFrame{
 						}
 					} else {
 						JOptionPane.showMessageDialog(null, "Este calibre no existe, asi que no puede ser eliminado", "Calibre no existe", JOptionPane.ERROR_MESSAGE);
+					}
+				}
+			} else if (actionCommand.equalsIgnoreCase("box.settings.lock_types.add")) {
+				String lockTypeAdd = JOptionPane.showInputDialog("Introduzca la cerradura que desea agregar");
+				if(null != lockTypeAdd && !lockTypeAdd.isEmpty()) {
+					if(!db.lockTypeExists(lockTypeAdd)) {
+						if(db.addLockType(lockTypeAdd)) {
+							JOptionPane.showMessageDialog(null, "Cerradura agregada exitosamente");
+							updateBoxComboSettings();
+						} else {
+							JOptionPane.showMessageDialog(null, "Ocurrio un error al agregar la cerradura", "Error", JOptionPane.ERROR_MESSAGE);
+						}
+					} else {
+						JOptionPane.showMessageDialog(null, "Esta cerradura ya existe, no puede registrarla de nuevo", "Cerradura ya existe!", JOptionPane.ERROR_MESSAGE);
+					}
+				} else {
+					JOptionPane.showMessageDialog(null, "Debe introducir el nombre de la cerradura que desea agregar, de lo contrario no se guardara", "Cerradura invalida!", JOptionPane.ERROR_MESSAGE);
+				}
+			} else if (actionCommand.equalsIgnoreCase("box.settings.lock_types.remove")) {
+				String lockTypeRemove = comboBoxSettingsLockTypes.getSelectedItem().toString();
+				int answer = JOptionPane.showConfirmDialog(null, "Esta seguro que desea eliminar la cerradura " + lockTypeRemove + "? Puede perder datos importantes", "Confirmar eliminacion", JOptionPane.YES_NO_OPTION);
+				
+				if(answer == JOptionPane.YES_OPTION) {
+					if(db.lockTypeExists(lockTypeRemove)) {
+						if(db.removeLockType(lockTypeRemove)) {
+							JOptionPane.showMessageDialog(null, "Cerradura eliminada exitosamente");
+							updateBoxComboSettings();
+						} else {
+							JOptionPane.showMessageDialog(null, "Ocurrio un error al eliminar la cerradura", "Error", JOptionPane.ERROR_MESSAGE);
+						}
+					} else {
+						JOptionPane.showMessageDialog(null, "Esta cerradura no existe, asi que no puede ser eliminada", "Cerradura no existe", JOptionPane.ERROR_MESSAGE);
+					}
+				}
+			} else if (actionCommand.equalsIgnoreCase("board.settings.circuits.add")) {
+				String circuitsAdd = JOptionPane.showInputDialog("Introduzca los circuitos que desea agregar");
+				if(null != circuitsAdd && !circuitsAdd.isEmpty() && Numbers.isNumeric(circuitsAdd)) {
+					if(!db.boardCircuitsExists(circuitsAdd)) {
+						if(db.addBoardCircuits(circuitsAdd)) {
+							JOptionPane.showMessageDialog(null, "Circuitos agregados exitosamente");
+							updateBoardComboSettings();
+						} else {
+							JOptionPane.showMessageDialog(null, "Ocurrio un error al agregar los circuitos", "Error", JOptionPane.ERROR_MESSAGE);
+						}
+					} else {
+						JOptionPane.showMessageDialog(null, "Estos circuitos ya existen, no puede registrarlos de nuevo", "Circuitos ya existen!", JOptionPane.ERROR_MESSAGE);
+					}
+				} else {
+					JOptionPane.showMessageDialog(null, "Debe introducir el numero de circuitos que desea agregar y debe ser numerico, de lo contrario no se guardara", "Circuitos invalidos!", JOptionPane.ERROR_MESSAGE);
+				}
+			} else if (actionCommand.equalsIgnoreCase("board.settings.circuits.remove")) {
+				String circuitsRemove = comboBoardSettingsCircuits.getSelectedItem().toString();
+				int answer = JOptionPane.showConfirmDialog(null, "Esta seguro que desea eliminar los circuitos de " + circuitsRemove + "? Puede perder datos importantes", "Confirmar eliminacion", JOptionPane.YES_NO_OPTION);
+				
+				if(answer == JOptionPane.YES_OPTION) {
+					if(db.boardCircuitsExists(circuitsRemove)) {
+						if(db.removeBoardCircuits(circuitsRemove)) {
+							JOptionPane.showMessageDialog(null, "Circuitos eliminados exitosamente");
+							updateBoardComboSettings();
+						} else {
+							JOptionPane.showMessageDialog(null, "Ocurrio un error al eliminar los circuitos", "Error", JOptionPane.ERROR_MESSAGE);
+						}
+					} else {
+						JOptionPane.showMessageDialog(null, "Estos circuitos no existen, asi que no pueden ser eliminados", "Circuitos no existen", JOptionPane.ERROR_MESSAGE);
+					}
+				}
+			} else if (actionCommand.equalsIgnoreCase("board.settings.voltages.add")) {
+				String voltageAdd = JOptionPane.showInputDialog(null, "Ingrese el voltaje de tablero que desea agregar");
+				
+				if(null != voltageAdd && !voltageAdd.isEmpty()) {
+					if(!db.boardVoltageExists(voltageAdd)) {
+						if(db.addBoardVoltage(voltageAdd)) {
+							JOptionPane.showMessageDialog(null, "Voltaje de tablero agregado exitosamente");
+							updateBoardComboSettings();
+						} else {
+							JOptionPane.showMessageDialog(null, "Ocurrio un error al agregar el voltaje de tablero", "Error", JOptionPane.ERROR_MESSAGE);
+						}
+					} else {
+						JOptionPane.showMessageDialog(null, "Este voltaje de tablero ya existe, no puede registrarlo de nuevo", "Voltaje de tablero ya existe!", JOptionPane.ERROR_MESSAGE);
+					}
+				} else {
+					JOptionPane.showMessageDialog(null, "Debe introducir el voltaje de tablero que desea agregar, de lo contrario no se guardara", "Voltaje de tablero invalido!", JOptionPane.ERROR_MESSAGE);
+				}
+			} else if (actionCommand.equalsIgnoreCase("board.settings.voltages.remove")) {
+				String voltageRemove = comboBoardSettingsVoltages.getSelectedItem().toString();
+				Integer answer = JOptionPane.showConfirmDialog(null, "Esta seguro que desea eliminar el voltaje de tablero " + voltageRemove + "? Puede perder datos importantes", "Confirmar eliminacion", JOptionPane.YES_NO_OPTION);
+				
+				if(answer == JOptionPane.YES_OPTION) {
+					if(db.boardVoltageExists(voltageRemove)) {
+						if(db.removeBoardVoltage(voltageRemove)) {
+							JOptionPane.showMessageDialog(null, "Voltaje de tablero eliminado exitosamente");
+							updateBoardComboSettings();
+						} else {
+							JOptionPane.showMessageDialog(null, "Ocurrio un error al eliminar el voltaje de tablero", "Error", JOptionPane.ERROR_MESSAGE);
+						}
+					} else {
+						JOptionPane.showMessageDialog(null, "Este voltaje de tablero no existe, asi que no puede ser eliminado", "Voltaje de tablero no existe!", JOptionPane.ERROR_MESSAGE);
+					}
+				}
+			} else if (actionCommand.equalsIgnoreCase("budget.settings.payment_methods.add")) {
+				String paymentMethodAdd = JOptionPane.showInputDialog("Introduzca el metodo de pago que desea agregar");
+				if(null != paymentMethodAdd && !paymentMethodAdd.isEmpty()) {
+					if(!db.budgetPaymentMethodExists(paymentMethodAdd)) {
+						if(db.addBudgetPaymentMethod(paymentMethodAdd)) {
+							JOptionPane.showMessageDialog(null, "Metodo de pago agregado exitosamente");
+							updateBudgetComboSettings();
+						} else {
+							JOptionPane.showMessageDialog(null, "Ocurrio un error al agregar el metodo de pago", "Error", JOptionPane.ERROR_MESSAGE);
+						}
+					} else {
+						JOptionPane.showMessageDialog(null, "Este metodo de pago ya existe, no puede registrarlo de nuevo", "Metodo de pago ya existe!", JOptionPane.ERROR_MESSAGE);
+					}
+				} else {
+					JOptionPane.showMessageDialog(null, "Debe introducir el nombre del metodo de pago que desea agregar, de lo contrario no se guardara", "Metodo de pago invalido!", JOptionPane.ERROR_MESSAGE);
+				}
+			} else if (actionCommand.equalsIgnoreCase("budget.settings.payment_methods.remove")) {
+				String paymentMethodRemove = comboBudgetSettingsPaymentMethods.getSelectedItem().toString();
+				int answer = JOptionPane.showConfirmDialog(null, "Esta seguro que desea eliminar el metodo de pago \"" + paymentMethodRemove + "\"? Puede perder datos importantes", "Confirmar eliminacion", JOptionPane.YES_NO_OPTION);
+				
+				if(answer == JOptionPane.YES_OPTION) {
+					if(db.budgetPaymentMethodExists(paymentMethodRemove)) {
+						if(db.removeBudgetPaymentMethod(paymentMethodRemove)) {
+							JOptionPane.showMessageDialog(null, "Metodo de pago eliminado exitosamente");
+							updateBudgetComboSettings();
+						} else {
+							JOptionPane.showMessageDialog(null, "Ocurrio un error al eliminar el metodo de pago", "Error", JOptionPane.ERROR_MESSAGE);
+						}
+					} else {
+						JOptionPane.showMessageDialog(null, "Este metodo de pago no existe, asi que no puede ser eliminado", "Metodo de pago no existe", JOptionPane.ERROR_MESSAGE);
 					}
 				}
 			}

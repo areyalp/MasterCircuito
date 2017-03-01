@@ -41,9 +41,9 @@ import javax.swing.event.ListSelectionListener;
 
 import org.joda.time.DateTime;
 
-import ve.com.mastercircuito.common.LoginDialog;
 import ve.com.mastercircuito.components.MyInternalFrame;
 import ve.com.mastercircuito.db.Db;
+import ve.com.mastercircuito.dialogs.LoginDialog;
 import ve.com.mastercircuito.dialogs.PrintDialog;
 import ve.com.mastercircuito.font.Fa;
 import ve.com.mastercircuito.objects.Board;
@@ -521,7 +521,7 @@ public class ProductionMainView extends JFrame{
 
 		@Override
 		public void windowActivated(WindowEvent e) {
-			// TODO Auto-generated method stub
+			
 			
 		}
 
@@ -535,31 +535,31 @@ public class ProductionMainView extends JFrame{
 
 		@Override
 		public void windowClosing(WindowEvent e) {
-			// TODO Auto-generated method stub
+			
 			
 		}
 
 		@Override
 		public void windowDeactivated(WindowEvent e) {
-			// TODO Auto-generated method stub
+			
 			
 		}
 
 		@Override
 		public void windowDeiconified(WindowEvent e) {
-			// TODO Auto-generated method stub
+			
 			
 		}
 
 		@Override
 		public void windowIconified(WindowEvent e) {
-			// TODO Auto-generated method stub
+			
 			
 		}
 
 		@Override
 		public void windowOpened(WindowEvent e) {
-			// TODO Auto-generated method stub
+			
 			
 		}
 		

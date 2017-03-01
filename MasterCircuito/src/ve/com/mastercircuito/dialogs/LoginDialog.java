@@ -1,4 +1,4 @@
-package ve.com.mastercircuito.common;
+package ve.com.mastercircuito.dialogs;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -19,6 +19,8 @@ import javax.swing.JPasswordField;
 import javax.swing.JRootPane;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
+
+import ve.com.mastercircuito.utils.Login;
 
 @SuppressWarnings("serial")
 public class LoginDialog extends JDialog{

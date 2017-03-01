@@ -1,13 +1,12 @@
-package ve.com.mastercircuito.common;
+package ve.com.mastercircuito.utils;
 
 import java.sql.ResultSet;
 
 import ve.com.mastercircuito.db.MysqlDriver;
-import ve.com.mastercircuito.utils.PasswordEncryptor;
 
 public class Login {
 
-	protected static Boolean authenticate(String username, String plainPassword){
+	public static Boolean authenticate(String username, String plainPassword){
 		Boolean isPasswordOk = false;
 		Boolean authenticated = false;
 		ResultSet rows;

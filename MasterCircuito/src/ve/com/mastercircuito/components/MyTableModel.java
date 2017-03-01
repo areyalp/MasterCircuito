@@ -100,11 +100,6 @@ public class MyTableModel extends AbstractTableModel {
 		} else {
 			return false;
 		}
-//		if (col == this.getColumnCount() - 1) {
-//			return true;
-//		} else {
-//			return false;
-//		}
 	}
 	
 	@Override
@@ -155,18 +150,28 @@ public class MyTableModel extends AbstractTableModel {
 				case "ga":
 					field = "ga";
 					break;
+				case "referencia":
+					field = "reference";
+					break;
+				case "descripcion":
+					field = "material";
+					break;
 			}
 			
 			if(cellChanged && !field.isEmpty()) {
 				String sql = "";
 				switch(table) {
 					case "board_switches":
+					case "board_materials":
+					case "control_board_switches":
+					case "control_board_materials":
 					case "budget_switches":
 					case "budget_boxes":
 					case "budget_boards":
 					case "budget_control_boards":
 					case "budget_materials":
-						sql = "UPDATE " + table + " SET " + field + " = " + value + " WHERE id = " + this.data[row][0];
+					case "materials":
+						sql = "UPDATE " + table + " SET " + field + " = '" + value + "' WHERE id = " + this.data[row][0];
 						Db.update(sql);
 						break;
 				}

@@ -42,6 +42,7 @@ import ve.com.mastercircuito.objects.Switch;
 import ve.com.mastercircuito.objects.User;
 import ve.com.mastercircuito.objects.UserType;
 import ve.com.mastercircuito.objects.WorkOrder;
+import ve.com.mastercircuito.utils.PasswordEncryptor;
 import ve.com.mastercircuito.utils.StringTools;
 
 public class Db extends MysqlDriver {
@@ -835,7 +836,7 @@ public class Db extends MysqlDriver {
 	
 	public boolean addBudget(String date, int expiryDays, String clientId, 
 			String workName, String method, int sellerId,
-			String place, int deliveryTime, String deliveryPeriod) {
+			String place, int deliveryTime, String deliveryPeriod, Integer creatorId) {
 		
 		int paymentMethodId = this.getPaymentMethodId(method);
 		int dispatchPlaceId = this.getDispachPlaceId(place);
@@ -860,8 +861,8 @@ public class Db extends MysqlDriver {
 				budgetCodeId = this.getInsertId();
 				String stringBudgetCodeId = this.prepareBudgetCode(serverDateTime, budgetCodeId);
 				
-				String queryInsertBudget = "INSERT INTO budgets (code, `date`, expiry_days, client_id, work_name, payment_method_id, seller_id, dispatch_place_id, delivery_time, delivery_period_id) "
-						+ "VALUES('" + stringBudgetCodeId + "', '" + date + "', " + expiryDays + ", " + clientId + ", '" + workName + "', " + paymentMethodId + ", " + sellerId + ", '" + dispatchPlaceId + "', '" + deliveryTime + "', " + deliveryPeriodId + ")";
+				String queryInsertBudget = "INSERT INTO budgets (code, `date`, expiry_days, client_id, work_name, payment_method_id, seller_id, dispatch_place_id, delivery_time, delivery_period_id, creator_id) "
+						+ "VALUES('" + stringBudgetCodeId + "', '" + date + "', " + expiryDays + ", " + clientId + ", '" + workName + "', " + paymentMethodId + ", " + sellerId + ", '" + dispatchPlaceId + "', '" + deliveryTime + "', " + deliveryPeriodId + ", " + creatorId + ")";
 				this.insert(queryInsertBudget);
 				budgetId = this.getInsertId();
 				
@@ -999,16 +1000,9 @@ public class Db extends MysqlDriver {
 	}
 	
 	public boolean addBoardSwitch(int containerId, int switchId, int quantity, double switchPrice) {
-//		int boardSwitchId = 0;
 		if(this.boardSwitchExists(containerId, switchId)) {
 			JOptionPane.showMessageDialog(null, "Este Interruptor ya existe dentro del tablero");
 			return false;
-//			boardSwitchId = this.getBoardSwitchId(containerId, switchId);
-//			if(boardSwitchId > 0) {
-//				return this.increaseBoardSwitch(boardSwitchId, quantity);
-//			} else {
-//				return false;
-//			}
 		} else {
 			String queryString = "INSERT INTO board_switches (board_container_id, switch_id, quantity, price) "
 								+ "VALUES (" + containerId + ", " + switchId + ", " + quantity + ", " + switchPrice + ")";
@@ -1192,6 +1186,22 @@ public class Db extends MysqlDriver {
 		return deliveryPeriod;
 	}
 	
+	public int getBudgetCreatorId(int budgetId) {
+		ResultSet setBudgetCreator;
+		int creatorId = 0;
+		setBudgetCreator = this.select("SELECT creator_id FROM budgets WHERE id = '" + budgetId + "'");
+		
+		try {
+			if (setBudgetCreator.next()) {
+				creatorId = setBudgetCreator.getInt("creator_id");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener el id del creador del presupuesto");
+		}
+		return creatorId;
+	}
+	
 	public boolean addBudgetBox(int selectedBudgetId, int boxSearchId, int boxQuantity, double boxPrice) {
 //		int budgetBoxId = 0;
 		if(this.budgetBoxExists(selectedBudgetId, boxSearchId)) {
@@ -1329,16 +1339,9 @@ public class Db extends MysqlDriver {
 	}
 	
 	public boolean addBudgetBoard(int selectedBudgetId, int boardSearchId, int boardQuantity, double boardPrice) {
-//		int budgetBoardId = 0;
 		if(this.budgetBoardExists(selectedBudgetId, boardSearchId)) {
 			JOptionPane.showMessageDialog(null, "Este tablero ya existe dentro del presupuesto");
 			return false;
-//			budgetBoardId = this.getBudgetBoardId(selectedBudgetId, boardSearchId);
-//			if(budgetBoardId > 0) {
-//				return this.increaseBudgetBoard(budgetBoardId, boardQuantity);
-//			} else {
-//				return false;
-//			}
 		} else {
 			String queryString = "INSERT INTO budget_boards (budget_container_id, board_id, price, quantity) "
 								+ "VALUES (" + selectedBudgetId + ", " + boardSearchId + ", " + boardPrice + ", " + boardQuantity + ")";
@@ -1671,8 +1674,9 @@ public class Db extends MysqlDriver {
 		String place = this.getBudgetDispatchPlace(selectedBudgetId);
 		int deliveryTime = this.getBudgetDeliveryTime(selectedBudgetId);
 		String deliveryPeriod = this.getBudgetDeliveryPeriod(selectedBudgetId);
+		int creatorId = this.getBudgetCreatorId(selectedBudgetId);
 		
-		boolean added = this.addBudget(date, expiryDays, clientId, workName, method, sellerId, place, deliveryTime, deliveryPeriod);
+		boolean added = this.addBudget(date, expiryDays, clientId, workName, method, sellerId, place, deliveryTime, deliveryPeriod, creatorId);
 		
 		if(added) {
 			clonedBudgetId = this.getInsertId();
@@ -1680,7 +1684,7 @@ public class Db extends MysqlDriver {
 			this.cloneBudgetSwitches(selectedBudgetId, clonedBudgetId);
 			this.cloneBudgetBoxes(selectedBudgetId, clonedBudgetId);
 			this.cloneBudgetBoards(selectedBudgetId, clonedBudgetId);
-			// TODO Clone budget materials and specials here
+			// TODO Clone budget materials and control boards here
 //			this.cloneBudgetMaterials(selectedBudgetId, clonedBudgetId);
 //			this.cloneBudgetSpecials(selectedBudgetId, clonedBudgetId);
 		}
@@ -1699,12 +1703,12 @@ public class Db extends MysqlDriver {
 	}
 
 	private void cloneBudgetBoxes(int selectedBudgetId, int clonedBudgetId) {
-		// TODO Auto-generated method stub
+		// TODO Clone Budget Boxes
 		
 	}
 	
 	private void cloneBudgetBoards(int selectedBudgetId, int clonedBudgetId) {
-		// TODO Auto-generated method stub
+		// TODO Clone Budget Boards
 		
 	}
 
@@ -2346,16 +2350,6 @@ public class Db extends MysqlDriver {
 		return false;
 	}
 
-	public int getSwitchControlBoardId(Integer selectedControlBoardSwitchId) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	public ArrayList<Integer> getControlBoardSwitchMainIds(int controlBoardContainerId) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	public boolean removeControlBoardSwitch(Integer switchId) {
 		String queryDelete;
 		queryDelete = "DELETE FROM control_board_switches WHERE id = '" + switchId + "'";
@@ -2440,6 +2434,374 @@ public class Db extends MysqlDriver {
 		this.select(queryString);
 		
 		return (this.getNumRows() > 0)? true:false;
+	}
+
+	public boolean lockTypeExists(String lockType) {
+		String queryString;
+		
+		queryString = "SELECT id FROM lock_types WHERE lock_type = '" + lockType + "'";
+		this.select(queryString);
+		
+		return (this.getNumRows() > 0)? true:false;
+	}
+
+	public boolean addLockType(String lockType) {
+		String queryInsert;
+		
+		queryInsert = "INSERT INTO lock_types (lock_type) VALUES ('" + lockType + "')";
+		this.insert(queryInsert);
+		
+		return (this.getInsertId() > 0)? true:false;
+	}
+
+	public boolean removeLockType(String lockType) {
+		String queryDelete;
+		
+		queryDelete = "DELETE FROM lock_types WHERE lock_type = '" + lockType + "'";
+		return this.delete(queryDelete);
+	}
+
+	public boolean boardCircuitsExists(String boardCircuits) {
+		String queryString;
+		
+		queryString = "SELECT circuits FROM board_circuits WHERE circuits = " + boardCircuits;
+		this.select(queryString);
+		
+		return (this.getNumRows() > 0)? true:false;
+	}
+
+	public boolean addBoardCircuits(String boardCircuits) {
+		String queryInsert;
+		
+		queryInsert = "INSERT INTO board_circuits (circuits) VALUES (" + boardCircuits + ")";
+		this.insert(queryInsert);
+		
+		return (this.getInsertId() > 0)? true:false;
+	}
+
+	public boolean removeBoardCircuits(String boardCircuits) {
+		String queryDelete;
+		
+		queryDelete = "DELETE FROM board_circuits WHERE circuits = '" + boardCircuits + "'";
+		return this.delete(queryDelete);
+	}
+
+	public boolean boardVoltageExists(String boardVoltage) {
+		String queryString;
+		
+		queryString = "SELECT voltage FROM board_voltages WHERE voltage = '" + boardVoltage + "'";
+		this.select(queryString);
+		
+		return (this.getNumRows() > 0)? true:false;
+	}
+
+	public boolean addBoardVoltage(String boardVoltage) {
+		String queryInsert;
+		
+		queryInsert = "INSERT INTO board_voltages (voltage) VALUES ('" + boardVoltage + "')";
+		this.insert(queryInsert);
+		
+		return (this.getInsertId() > 0)? true:false;
+	}
+
+	public boolean removeBoardVoltage(String boardVoltage) {
+		String queryDelete;
+		
+		queryDelete = "DELETE FROM board_voltages WHERE voltage = '" + boardVoltage + "'";
+		return this.delete(queryDelete);
+	}
+
+	public boolean budgetPaymentMethodExists(String paymentMethod) {
+		String queryString;
+		
+		queryString = "SELECT method FROM budget_payment_methods WHERE method = '" + paymentMethod + "'";
+		this.select(queryString);
+		
+		return (this.getNumRows() > 0)? true:false;
+	}
+
+	public boolean addBudgetPaymentMethod(String paymentMethod) {
+		String queryInsert;
+		
+		queryInsert = "INSERT INTO budget_payment_methods (method) VALUES ('" + paymentMethod + "')";
+		this.insert(queryInsert);
+		
+		return (this.getInsertId() > 0)? true:false;
+	}
+
+	public boolean removeBudgetPaymentMethod(String paymentMethod) {
+		String queryDelete;
+		
+		queryDelete = "DELETE FROM budget_payment_methods WHERE method = '" + paymentMethod + "'";
+		return this.delete(queryDelete);
+	}
+
+	public boolean addBudgetControlBoard(int selectedBudgetId, int controlBoardSearchId,
+			int controlBoardQuantity, double controlBoardPrice) {
+		if(this.budgetControlBoardExists(selectedBudgetId, controlBoardSearchId)) {
+			JOptionPane.showMessageDialog(null, "Este tablero de control ya existe dentro del presupuesto");
+			return false;
+		} else {
+			String queryString = "INSERT INTO budget_control_boards (budget_container_id, control_board_id, price, quantity) "
+								+ "VALUES (" + selectedBudgetId + ", " + controlBoardSearchId + ", " + controlBoardPrice + ", " + controlBoardQuantity + ")";
+			this.insert(queryString);
+			return (this.getInsertId() > 0)? true:false;
+		}
+	}
+
+	private boolean budgetControlBoardExists(int selectedBudgetId, int controlBoardSearchId) {
+		String queryString;
+		
+		queryString = "SELECT * FROM budget_control_boards "
+					+ "WHERE budget_control_boards.budget_container_id = '" + selectedBudgetId + "' "
+					+ "AND budget_control_boards.control_board_id = '" + controlBoardSearchId + "' ";
+		
+		this.select(queryString);
+		
+		return (this.getNumRows() > 0)? true:false;
+	}
+
+	public boolean removeBudgetControlBoard(int selectedBudgetControlBoardId) {
+		String queryDelete;
+		queryDelete = "DELETE FROM budget_control_boards WHERE id = '" + selectedBudgetControlBoardId + "'";
+		return this.delete(queryDelete);
+	}
+
+	public int getMaterialBoardId(int boardMaterialId) {
+		ResultSet setBoardMaterial;
+		int boardId = 0;
+		setBoardMaterial = this.select("SELECT board_container_id FROM board_materials WHERE id = '" + boardMaterialId + "'");
+		
+		try {
+			setBoardMaterial.first();
+			boardId = setBoardMaterial.getInt("board_container_id");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener el id del tablero");
+		}
+		return boardId;
+	}
+
+	public boolean removeBoardMaterial(int boardMaterialId) {
+		String queryDelete;
+		queryDelete = "DELETE FROM board_materials WHERE id = '" + boardMaterialId + "'";
+		return this.delete(queryDelete);
+	}
+
+	public boolean addBoardMaterial(int containerId, int materialId, int quantity,
+			double materialPrice) {
+		if(this.boardMaterialExists(containerId, materialId)) {
+			JOptionPane.showMessageDialog(null, "Este material ya existe dentro del tablero");
+			return false;
+		} else {
+			String queryString = "INSERT INTO board_materials (board_container_id, material_id, quantity, price) "
+								+ "VALUES (" + containerId + ", " + materialId + ", " + quantity + ", " + materialPrice + ")";
+			this.insert(queryString);
+			return (this.getInsertId() > 0)? true:false;
+		}
+	}
+
+	private boolean boardMaterialExists(int containerId, int materialId) {
+		String queryString;
+		
+		queryString = "SELECT * FROM board_materials "
+					+ "WHERE board_materials.board_container_id = '" + containerId + "' "
+					+ "AND board_materials.material_id = '" + materialId + "' ";
+		
+		this.select(queryString);
+		
+		return (this.getNumRows() > 0)? true:false;
+	}
+
+	public boolean addMaterial(String reference, String description, double price) {
+		if(this.materialExists(reference, description)) {
+			JOptionPane.showMessageDialog(null, "Este material ya existe");
+			return false;
+		} else {
+			String queryString = "INSERT INTO materials (reference, material, price) "
+								+ "VALUES ('" + reference + "', '" + description + "', " + price + ")";
+			this.insert(queryString);
+			return (this.getInsertId() > 0)? true:false;
+		}
+	}
+
+	private boolean materialExists(String reference, String description) {
+		String queryString;
+		
+		queryString = "SELECT * FROM materials "
+					+ "WHERE materials.reference = '" + reference + "' "
+					+ "AND materials.material = '" + description + "' ";
+		
+		this.select(queryString);
+		
+		return (this.getNumRows() > 0)? true:false;
+	}
+
+	public boolean removeControlBoardMaterial(int controlBoardMaterialId) {
+		String queryDelete;
+		queryDelete = "DELETE FROM control_board_materials WHERE id = '" + controlBoardMaterialId + "'";
+		return this.delete(queryDelete);
+	}
+
+	public boolean addControlBoardMaterial(int containerId, int materialId, int quantity,
+			double materialPrice) {
+		if(this.controlBoardMaterialExists(containerId, materialId)) {
+			JOptionPane.showMessageDialog(null, "Este material ya existe dentro del tablero de control");
+			return false;
+		} else {
+			String queryString = "INSERT INTO control_board_materials (board_container_id, material_id, quantity, price) "
+								+ "VALUES (" + containerId + ", " + materialId + ", " + quantity + ", " + materialPrice + ")";
+			this.insert(queryString);
+			return (this.getInsertId() > 0)? true:false;
+		}
+	}
+
+	private boolean controlBoardMaterialExists(int containerId, int materialId) {
+		String queryString;
+		
+		queryString = "SELECT * FROM control_board_materials "
+					+ "WHERE control_board_materials.board_container_id = '" + containerId + "' "
+					+ "AND control_board_materials.material_id = '" + materialId + "' ";
+		
+		this.select(queryString);
+		
+		return (this.getNumRows() > 0)? true:false;
+	}
+
+	public boolean removeBudgetMaterial(int budgetMaterialId) {
+		String queryDelete;
+		queryDelete = "DELETE FROM budget_materials WHERE id = '" + budgetMaterialId + "'";
+		return this.delete(queryDelete);
+	}
+
+	public boolean addBudgetMaterial(int containerId, int materialId, int quantity,
+			double materialPrice) {
+		if(this.budgetMaterialExists(containerId, materialId)) {
+			JOptionPane.showMessageDialog(null, "Este material ya existe dentro del presupuesto");
+			return false;
+		} else {
+			String queryString = "INSERT INTO budget_materials (budget_container_id, material_id, quantity, price) "
+								+ "VALUES (" + containerId + ", " + materialId + ", " + quantity + ", " + materialPrice + ")";
+			this.insert(queryString);
+			return (this.getInsertId() > 0)? true:false;
+		}
+	}
+
+	private boolean budgetMaterialExists(int containerId, int materialId) {
+		String queryString;
+		
+		queryString = "SELECT * FROM budget_materials "
+					+ "WHERE budget_materials.budget_container_id = '" + containerId + "' "
+					+ "AND budget_materials.material_id = '" + materialId + "' ";
+		
+		this.select(queryString);
+		
+		return (this.getNumRows() > 0)? true:false;
+	}
+
+	public int getUserTypeId(String userType) {
+		int userTypeId = 0;
+		String queryString;
+		
+		queryString = "SELECT id FROM user_types "
+					+ "WHERE user_types.type = '" + userType + "'";
+		
+		ResultSet setUserType = this.select(queryString);
+		
+		try {
+			if (setUserType.next()) {
+				userTypeId = setUserType.getInt("id");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener id de tipo de usuario");
+		}
+		
+		return userTypeId;
+	}
+
+	public boolean addUser(String username, String password, String passport, int userTypeId, String firstName,
+			String lastName, String email, String phone, int status) {
+		String encryptedPassword = PasswordEncryptor.encryptPassword(password);
+		if(this.userExists(username)) {
+			JOptionPane.showMessageDialog(null, "Este usuario ya existe");
+			return false;
+		} else {
+			String queryString = "INSERT INTO users (username, password, passport, user_type_id, first_name, last_name, email, phone, status) "
+								+ "VALUES ('" + username + "', '" + encryptedPassword + "', '" + passport + "', " + userTypeId + ", '" + firstName + "', '" + lastName + "', '" + email + "', '" + phone + "', " + status + ")";
+			this.insert(queryString);
+			return (this.getInsertId() > 0)? true:false;
+		}
+	}
+
+	private boolean userExists(String username) {
+		String queryString;
+		
+		queryString = "SELECT * FROM users "
+					+ "WHERE users.username = '" + username + "' ";
+		
+		this.select(queryString);
+		
+		return (this.getNumRows() > 0)? true:false;
+	}
+
+	public static int getUserId(String username) {
+		Db db = new Db();
+		int userId = 0;
+		ResultSet rowUser = db.select("SELECT id FROM users WHERE username = '" + username + "'");
+		
+		try {
+			if(rowUser.next()) {
+				userId = rowUser.getInt("id");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		try {
+			db.conn.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return userId;
+	}
+
+	public User loadUserInfo(int userId) {
+		User user = null;
+		ResultSet rowsUser = this.select(
+				"SELECT u.id, "
+					+ "u.username, "
+					+ "u.password, "
+					+ "u.passport, "
+					+ "u.user_type_id, "
+					+ "t.type, "
+					+ "u.first_name, "
+					+ "u.last_name, "
+					+ "u.email, "
+					+ "u.phone, "
+					+ "u.date_created, "
+					+ "u.status "
+				+ "FROM users u, user_types t "
+				+ "WHERE u.id = " + userId + " AND u.user_type_id = t.id");
+		try {
+			while(rowsUser.next()){
+				user = new User(rowsUser.getInt("id"),
+						rowsUser.getString("username"),
+						rowsUser.getString("password"),
+						rowsUser.getString("passport"),
+						new UserType(rowsUser.getInt("user_type_id"), rowsUser.getString("type")),
+						rowsUser.getString("first_name"),
+						rowsUser.getString("last_name"),
+						rowsUser.getString("email"),
+						rowsUser.getString("phone"),
+						rowsUser.getTimestamp("date_created"),
+						(rowsUser.getInt("status")==0)?false:true);
+			}
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+		return user;
 	}
 	
 }
