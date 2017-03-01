@@ -676,6 +676,12 @@ public class SalesMainView extends JFrame{
 		
 		toolBarButtonAddUser.addActionListener(lForToolbarButton);
 		
+		String userType = userInfo.getUserType().getType();
+		
+		if(!userType.equalsIgnoreCase("Administrador")) {
+			toolBarButtonAddUser.setVisible(false);
+		}
+		
 		toolBar.add(toolBarButtonAddUser);
 		
 		toolBar.setFloatable(false);
