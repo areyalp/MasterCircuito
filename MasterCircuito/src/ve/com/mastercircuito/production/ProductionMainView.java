@@ -11,11 +11,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Toolkit;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -72,9 +69,6 @@ public class ProductionMainView extends JFrame{
 	private JPanel theToolBarPanel;
 	private JToolBar toolBar;
 	private JButton toolBarButtonProduction;
-	private PrintDialog workOrderPrintDialog;
-	private PrintDialog productionOrderPrintDialog;
-	
 	private MyInternalFrame productionFrame;
 	
 	private Integer selectedList = -1;
@@ -491,9 +485,7 @@ public class ProductionMainView extends JFrame{
 					parametersMap.put("action_command", "production_order");
 					parametersMap.put("production_order_id", selectedProductionOrderId);
 					
-					productionOrderPrintDialog = new PrintDialog(null, "Imprimir Orden de Produccion", parametersMap);
-//					WindowsListener lForWindow = new WindowsListener();
-//					productionOrderPrintDialog.addWindowListener(lForWindow);
+					new PrintDialog(null, "Imprimir Orden de Produccion", parametersMap);
 				} else if(selectedList == ProductionMainView.LIST_WORK) {
 					String product = "";
 					if (selectedWorkOrderProductId == 1) {
@@ -509,60 +501,10 @@ public class ProductionMainView extends JFrame{
 					parametersMap.put("work_order_id", selectedWorkOrderId);
 					parametersMap.put("work_order_product", product);
 					
-					workOrderPrintDialog = new PrintDialog(null, "Imprimir Orden de Trabajo", parametersMap);
-//					WindowsListener lForWindow = new WindowsListener();
-//					workOrderPrintDialog.addWindowListener(lForWindow);
+					new PrintDialog(null, "Imprimir Orden de Trabajo", parametersMap);
 				}
 			}
 		}
-	}
-	
-	private class WindowsListener implements WindowListener {
-
-		@Override
-		public void windowActivated(WindowEvent e) {
-			
-			
-		}
-
-		@Override
-		public void windowClosed(WindowEvent e) {
-			Window window = (Window)e.getSource();
-			if (window.equals(workOrderPrintDialog)) {
-				
-			}
-		}
-
-		@Override
-		public void windowClosing(WindowEvent e) {
-			
-			
-		}
-
-		@Override
-		public void windowDeactivated(WindowEvent e) {
-			
-			
-		}
-
-		@Override
-		public void windowDeiconified(WindowEvent e) {
-			
-			
-		}
-
-		@Override
-		public void windowIconified(WindowEvent e) {
-			
-			
-		}
-
-		@Override
-		public void windowOpened(WindowEvent e) {
-			
-			
-		}
-		
 	}
 	
 }

@@ -1011,13 +1011,6 @@ public class Db extends MysqlDriver {
 		}
 	}
 	
-	private boolean increaseBoardSwitch(int boardSwitchId, int quantity) {
-		String queryString = "UPDATE board_switches SET quantity = quantity + " + quantity 
-							+ " WHERE id = " + boardSwitchId;
-		
-		return Db.update(queryString);
-	}
-	
 	public ArrayList<Material> getBoardMaterials(int boardId) {
 		ResultSet setBoardMaterials;
 		ArrayList<Material> materials = new ArrayList<Material>();
@@ -1221,34 +1214,6 @@ public class Db extends MysqlDriver {
 		}
 	}
 	
-	private boolean increaseBudgetBox(int budgetBoxId, int boxQuantity) {
-		String queryString = "UPDATE budget_boxes SET quantity = quantity + " + boxQuantity 
-				+ " WHERE id = " + budgetBoxId;
-
-		return Db.update(queryString);
-	}
-	
-	private int getBudgetBoxId(int selectedBudgetId, int boxSearchId) {
-		String queryString;
-		ResultSet setBudgetBoxId;
-		
-		queryString = "SELECT budget_boxes.id FROM budget_boxes "
-					+ "WHERE budget_boxes.budget_container_id = '" + selectedBudgetId + "' "
-					+ "AND budget_boxes.box_id = '" + boxSearchId + "' "
-					+ "LIMIT 1";
-		
-		setBudgetBoxId = this.select(queryString);
-		
-		try {
-			if (setBudgetBoxId.next()) {
-				return setBudgetBoxId.getInt("budget_boxes.id");
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return 0;
-	}
-	
 	private boolean budgetBoxExists(int selectedBudgetId, int boxSearchId) {
 		String queryString;
 		
@@ -1348,34 +1313,6 @@ public class Db extends MysqlDriver {
 			this.insert(queryString);
 			return (this.getInsertId() > 0)? true:false;
 		}
-	}
-	
-	private boolean increaseBudgetBoard(int budgetBoardId, int boardQuantity) {
-		String queryString = "UPDATE budget_boards SET quantity = quantity + " + boardQuantity 
-				+ " WHERE id = " + budgetBoardId;
-
-		return Db.update(queryString);
-	}
-	
-	private int getBudgetBoardId(int selectedBudgetId, int boardSearchId) {
-		String queryString;
-		ResultSet setBudgetBoardId;
-		
-		queryString = "SELECT budget_boards.id FROM budget_boards "
-					+ "WHERE budget_boards.budget_container_id = '" + selectedBudgetId + "' "
-					+ "AND budget_boards.board_id = '" + boardSearchId + "' "
-					+ "LIMIT 1";
-		
-		setBudgetBoardId = this.select(queryString);
-		
-		try {
-			if (setBudgetBoardId.next()) {
-				return setBudgetBoardId.getInt("budget_boards.id");
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return 0;
 	}
 	
 	private boolean budgetBoardExists(int selectedBudgetId, int boardSearchId) {
@@ -1693,7 +1630,7 @@ public class Db extends MysqlDriver {
 	}
 	
 	private void cloneBudgetSwitches(int selectedBudgetId, int clonedBudgetId) {
-		ResultSet setBudgetSwitches;
+//		ResultSet setBudgetSwitches;
 		ArrayList<Switch> switches = this.getBudgetSwitches(selectedBudgetId);
 		ArrayList<Switch> clonedSwitches = (ArrayList<Switch>) switches.subList(0, switches.size() - 1);
 		Iterator<Switch> it = clonedSwitches.iterator();

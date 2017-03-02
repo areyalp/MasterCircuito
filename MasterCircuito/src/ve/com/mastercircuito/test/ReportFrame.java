@@ -14,6 +14,11 @@ import java.sql.Connection;
 public class ReportFrame extends JFrame
 {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4856926867948830529L;
+
 	public ReportFrame( Connection conn )
 	{
 //		AbstractJasperReports.createReport( conn, "C:\\Users\\Daniel y Brenda\\JaspersoftWorkspace\\MyReports\\Presupuesto.jasper" );

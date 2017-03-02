@@ -1,22 +1,5 @@
 package ve.com.mastercircuito.test;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.swing.filechooser.FileSystemView;
-
-import org.joda.time.DateTime;
-
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperExportManager;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.util.JRLoader;
-import net.sf.jasperreports.view.JasperViewer;
-import ve.com.mastercircuito.db.Db;
 import java.awt.EventQueue;
 
 public class Test {
@@ -116,6 +99,7 @@ public class Test {
 
 	}
 	
+	@SuppressWarnings("unused")
 	private static void conectToDatabase()
 	{
 		String	driver = "com.mysql.jdbc.Driver";
@@ -126,6 +110,7 @@ public class Test {
 		con.connect();
 	}
 	
+	@SuppressWarnings("unused")
 	private static void openReportFrame()
 	{
 		EventQueue.invokeLater(new Runnable() {

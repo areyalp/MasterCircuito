@@ -24,10 +24,11 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.net.URL;
-import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -35,7 +36,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.BoxLayout;
@@ -115,11 +115,11 @@ public class SalesMainView extends JFrame{
 		private static final String NEMA_FIELD = "nemas.nema";
 		private static final String INTERRUPTION_FIELD = "interruptions.interruption";
 	// Switch Tables
-		private static final String SWITCHES_TABLES = "switches";
-		private static final String SWITCH_BRAND_TABLE = "switch_brands";
+//		private static final String SWITCHES_TABLES = "switches";
+//		private static final String SWITCH_BRAND_TABLE = "switch_brands";
 	// Switch Fields
-		private static final String SWITCH_ID_FIELD = SWITCHES_TABLES + ".id";
-		private static final String SWITCH_BRAND_FIELD = SWITCH_BRAND_TABLE + ".brand";
+//		private static final String SWITCH_ID_FIELD = SWITCHES_TABLES + ".id";
+//		private static final String SWITCH_BRAND_FIELD = SWITCH_BRAND_TABLE + ".brand";
 		
 	// Box Tables
 		private static final String BOXES_TABLE = "boxes";
@@ -142,7 +142,7 @@ public class SalesMainView extends JFrame{
 		private static final String BOX_UNITS_FIELD = "IF(boxes.units_id=0,'N/A',box_measure_units.units) as units";
 		private static final String BOX_CALIBER_FIELD = "IF(boxes.caliber_id=0,'N/A',box_calibers.caliber) as caliber";
 		private static final String BOX_LOCK_TYPE_FIELD = "IF(boxes.lock_type_id=0,'N/A',lock_types.lock_type) as lock_type";
-		private static final String BOX_FACTOR_FIELD = "boxes.";
+//		private static final String BOX_FACTOR_FIELD = "boxes.";
 		private static final String BOX_PRICE_FIELD = "boxes.price";
 	// Board Tables
 		private static final String BOARD_TABLE = "boards";
@@ -384,11 +384,11 @@ public class SalesMainView extends JFrame{
 		private int selectedControlBoardSwitchId;
 	// Control Board Switches Add Objects
 		private String selectedTableControlBoardCircuits;
-		private String searchSelectedControlBoardSwitchBrand, searchSelectedControlBoardSwitchModel, searchSelectedControlBoardSwitchPhases, searchSelectedControlBoardSwitchCurrent, searchSelectedControlBoardSwitchInterruption;
+//		private String searchSelectedControlBoardSwitchBrand, searchSelectedControlBoardSwitchModel, searchSelectedControlBoardSwitchPhases, searchSelectedControlBoardSwitchCurrent, searchSelectedControlBoardSwitchInterruption;
 		private SwitchDialog dialogControlBoardSwitchAdd;
 		private Object[][] controlBoardSwitchesSearchData;
 		private JTable tableControlBoardSwitchesSearchResult;
-		private JComboBox<String> comboControlBoardSwitchBrands, comboControlBoardSwitchModels, comboControlBoardSwitchPhases, comboControlBoardSwitchCurrents, comboControlBoardSwitchInterruptions;
+//		private JComboBox<String> comboControlBoardSwitchBrands, comboControlBoardSwitchModels, comboControlBoardSwitchPhases, comboControlBoardSwitchCurrents, comboControlBoardSwitchInterruptions;
 	// Board Materials Objects
 		private JPanel controlBoardMaterialsPanel;
 		private JTable tableControlBoardMaterialsResult;
@@ -455,12 +455,14 @@ public class SalesMainView extends JFrame{
 		private JComboBox<String> comboBudgetAddPaymentMethod, comboBudgetAddDispatchPlace,comboBudgetAddDeliveryPeriod;
 		private int editBudgetId, editBudgetClientId, editBudgetSellerId, editBudgetExpiryDays,editBudgetDeliveryTime;
 		private String editBudgetClientCode, editBudgetDate, editBudgetDeliveryPeriod;
+		@SuppressWarnings("unused")
 		private String editBudgetWorkName, editBudgetPaymentMethod, editBudgetSeller, editBudgetDispatchPlace, editBudgetTracing, editBudgetStage;
 		private int budgetsTableSelectedIndex;
 		private JButton buttonBudgetAddClient, buttonBudgetAddSeller, buttonBudgetEditSave, buttonBudgetEditCancel;
 		private int selectedBudgetId;
 		private String selectedBudgetCode;
 	// Budget Clone
+		@SuppressWarnings("unused")
 		private int clonedBudgetId;
 	// Budget Client Add
 		private ClientDialog dialogBudgetClientAdd;
@@ -470,7 +472,7 @@ public class SalesMainView extends JFrame{
 		private int budgetClientEditedId;
 	// Budget Seller Add
 		private SellerDialog dialogBudgetSellerAdd;
-		private int budgetSellerAddSearchId;
+//		private int budgetSellerAddSearchId;
 	// Budget Seller Edit
 		private SellerDialog dialogBudgetSellerEdit;
 		private int budgetSellerEditedId;
@@ -516,7 +518,7 @@ public class SalesMainView extends JFrame{
 		private BoardDialog dialogBudgetBoardAdd;
 	// Budget Control Boards Objects
 		private JPanel budgetControlBoardsPanel;
-		private Object[][] budgetControlBoardsData;
+//		private Object[][] budgetControlBoardsData;
 		private JTable tableBudgetControlBoardsResult;
 		private ListSelectionModel listBudgetControlBoardsSelectionModel;
 		private int budgetControlBoardsTableSelectedIndex;
@@ -542,7 +544,20 @@ public class SalesMainView extends JFrame{
 		private JButton buttonBudgetNotesEdit, buttonBudgetNotesEditSave, buttonBudgetNotesEditCancel;
 		
 	public static void main(String[] args) {
-		new SalesMainView();
+		try {
+			new SalesMainView();
+		} catch (Exception e) {
+			FileWriter fw;
+			PrintWriter pw = null;
+			try {
+				fw = new FileWriter ("exception.txt", true);
+				pw = new PrintWriter (fw);
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+			e.printStackTrace (pw);
+			e.printStackTrace();
+		}
 	}
 	
 	protected SalesMainView() {
@@ -592,7 +607,13 @@ public class SalesMainView extends JFrame{
 		
 		this.setPreferredSize(dim);
 		this.setLocation(x, y);
-		this.setTitle("MasterCircuito / Ventas - ( " + userInfo.getUsername() + " ) " + userInfo.getFirstName() + " " + userInfo.getLastName());
+		String username = userInfo.getUsername();
+		JOptionPane.showMessageDialog(null, "username: " + username);
+		String firstName = userInfo.getFirstName();
+		JOptionPane.showMessageDialog(null, "firstName: " + firstName);
+		String lastName = userInfo.getLastName();
+		JOptionPane.showMessageDialog(null, "lastName: " + lastName);
+		this.setTitle("MasterCircuito / Ventas - ( " + username + " ) " + firstName + " " + lastName);
 		this.setLayout(new BorderLayout(50,50));
 		
 		JPanel toolBarPanel = new JPanel();
@@ -7162,6 +7183,7 @@ public class SalesMainView extends JFrame{
 		buttonAddControlBoardSwitch.setEnabled(true);
 	}
 	
+	@SuppressWarnings("unused")
 	private void loadControlBoardSwitchSearchTable(String whereQuery) {
 		String switchesQuery = "SELECT switches.id, "
 				+ "switches.reference, "
@@ -8695,28 +8717,29 @@ public class SalesMainView extends JFrame{
 		tables.add(SalesMainView.LOCK_TYPES_TABLE);
 		tables.add("budget_boxes");
 		
-		String whereQuery = 
-				" AND ( (boxes.sheet_id > 0 "
-					+ " AND boxes.sheet_id = " + SalesMainView.BOX_SHEETS_TABLE + ".id) "
-					+ " OR boxes.sheet_id = 0) "
-				+ " AND ( (boxes.finish_id > 0 "
-					+ " AND boxes.finish_id = " + SalesMainView.BOX_FINISHES_TABLE + ".id) "
-					+ " OR boxes.finish_id = 0) "
-				+ " AND ( (boxes.color_id > 0 "
-					+ " AND boxes.color_id = " + SalesMainView.BOX_COLORS_TABLE + ".id) "
-					+ " OR boxes.color_id = 0) "
-				+ " AND ( (boxes.units_id > 0 "
-					+ " AND boxes.units_id = " + SalesMainView.BOX_UNITS_TABLE + ".id) "
-					+ " OR boxes.units_id = 0) "
-				+ " AND ( (boxes.caliber_id > 0 "
-					+ " AND boxes.caliber_id = " + SalesMainView.BOX_CALIBERS_TABLE + ".id) "
-					+ " OR boxes.caliber_id = 0) "
-				+ " AND ( (boxes.lock_type_id > 0 "
-					+ " AND boxes.lock_type_id = " + SalesMainView.LOCK_TYPES_TABLE + ".id) "
-					+ " OR boxes.lock_type_id = 0) ";
+		// TODO Check if this comments are not necessary and could be deleted
+//		String whereQuery = 
+//				" AND ( (boxes.sheet_id > 0 "
+//					+ " AND boxes.sheet_id = " + SalesMainView.BOX_SHEETS_TABLE + ".id) "
+//					+ " OR boxes.sheet_id = 0) "
+//				+ " AND ( (boxes.finish_id > 0 "
+//					+ " AND boxes.finish_id = " + SalesMainView.BOX_FINISHES_TABLE + ".id) "
+//					+ " OR boxes.finish_id = 0) "
+//				+ " AND ( (boxes.color_id > 0 "
+//					+ " AND boxes.color_id = " + SalesMainView.BOX_COLORS_TABLE + ".id) "
+//					+ " OR boxes.color_id = 0) "
+//				+ " AND ( (boxes.units_id > 0 "
+//					+ " AND boxes.units_id = " + SalesMainView.BOX_UNITS_TABLE + ".id) "
+//					+ " OR boxes.units_id = 0) "
+//				+ " AND ( (boxes.caliber_id > 0 "
+//					+ " AND boxes.caliber_id = " + SalesMainView.BOX_CALIBERS_TABLE + ".id) "
+//					+ " OR boxes.caliber_id = 0) "
+//				+ " AND ( (boxes.lock_type_id > 0 "
+//					+ " AND boxes.lock_type_id = " + SalesMainView.LOCK_TYPES_TABLE + ".id) "
+//					+ " OR boxes.lock_type_id = 0) ";
 		
 		String fieldsQuery = StringTools.implode(",", fields);
-		String tablesQuery = StringTools.implode(",", tables);
+//		String tablesQuery = StringTools.implode(",", tables);
 		String budgetBoxesQuery = "SELECT " + fieldsQuery
 						+ " FROM boxes "
 //						+ tablesQuery
@@ -10697,7 +10720,7 @@ public class SalesMainView extends JFrame{
 		public static final int BOX_CALIBER_COLUMN = 12;
 		public static final int BOX_LOCK_TYPE_COLUMN = 13;
 		public static final int BOX_PRICE_COLUMN = 14;
-		public static final int BOX_COMMENTS_COLUMN = 15;
+//		public static final int BOX_COMMENTS_COLUMN = 15;
 		
 		public static final int BOARD_ID_COLUMN = 0;
 		public static final int BOARD_NAME_COLUMN = 1;
