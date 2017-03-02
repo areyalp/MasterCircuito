@@ -2722,7 +2722,7 @@ public class Db extends MysqlDriver {
 				+ "FROM users u, user_types t "
 				+ "WHERE u.id = " + userId + " AND u.user_type_id = t.id");
 		try {
-			while(rowsUser.next()){
+			if(rowsUser.next()){
 				user = new User(rowsUser.getInt("id"),
 						rowsUser.getString("username"),
 						rowsUser.getString("password"),

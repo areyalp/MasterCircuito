@@ -598,9 +598,22 @@ public class SalesMainView extends JFrame{
 			System.exit(0);
 		}
 		
+		System.err.println("User " + lDialog.getUsername() + " logged in successfull");
+		
 		userId = Db.getUserId(lDialog.getUsername());
 		
+		if(userId > 0) {
+			System.err.println("userId = " + userId);
+		}
+		
 		userInfo = db.loadUserInfo(userId);
+		if(null == userInfo) {
+			System.err.println("userInfo = null");
+			System.exit(0);
+		}
+		System.err.println("User details: ");
+		System.err.println("Id = " + userInfo);
+		System.err.println("Username = " + userInfo.getUsername());
 		
 		DateTime dt = new DateTime();
 		
@@ -613,6 +626,8 @@ public class SalesMainView extends JFrame{
 			}
 			System.exit(0);
 		}
+		
+		System.err.println("License is active");
 		
 		this.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -627,11 +642,8 @@ public class SalesMainView extends JFrame{
 		this.setPreferredSize(dim);
 		this.setLocation(x, y);
 		String username = userInfo.getUsername();
-		JOptionPane.showMessageDialog(null, "username: " + username);
 		String firstName = userInfo.getFirstName();
-		JOptionPane.showMessageDialog(null, "firstName: " + firstName);
 		String lastName = userInfo.getLastName();
-		JOptionPane.showMessageDialog(null, "lastName: " + lastName);
 		this.setTitle("MasterCircuito / Ventas - ( " + username + " ) " + firstName + " " + lastName);
 		this.setLayout(new BorderLayout(50,50));
 		
@@ -781,7 +793,7 @@ public class SalesMainView extends JFrame{
 		try{
 			switchesFrame.setSelected(true);
 		} catch(java.beans.PropertyVetoException e) {
-			
+			e.printStackTrace();
 		}
 	}
 	
@@ -825,7 +837,7 @@ public class SalesMainView extends JFrame{
 		try{
 			boxesFrame.setSelected(true);
 		} catch(java.beans.PropertyVetoException e) {
-			
+			e.printStackTrace();
 		}
 	}
 	
@@ -869,7 +881,7 @@ public class SalesMainView extends JFrame{
 		try{
 			boardsFrame.setSelected(true);
 		} catch(java.beans.PropertyVetoException e) {
-			
+			e.printStackTrace();
 		}
 	}
 	
@@ -913,7 +925,7 @@ public class SalesMainView extends JFrame{
 		try{
 			controlBoardsFrame.setSelected(true);
 		} catch(java.beans.PropertyVetoException e) {
-			
+			e.printStackTrace();
 		}
 	}
 	
@@ -956,7 +968,7 @@ public class SalesMainView extends JFrame{
 		try{
 			budgetsFrame.setSelected(true);
 		} catch(java.beans.PropertyVetoException e) {
-			
+			e.printStackTrace();
 		}
 
 	}
@@ -980,7 +992,7 @@ public class SalesMainView extends JFrame{
 		try{
 			startersFrame.setSelected(true);
 		} catch(java.beans.PropertyVetoException e) {
-			
+			e.printStackTrace();
 		}
 	}
 	
@@ -1003,7 +1015,7 @@ public class SalesMainView extends JFrame{
 		try{
 			tracingFrame.setSelected(true);
 		} catch(java.beans.PropertyVetoException e) {
-			
+			e.printStackTrace();
 		}
 	}
 	
