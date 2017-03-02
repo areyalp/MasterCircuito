@@ -36,7 +36,7 @@ public class GetNetworkAddress {
 			}
 
 			if (lanIp == null)
-				return null;
+				throw new Exception("No local Ip address found");
 
 			if (addressType.equals("ip")) {
 

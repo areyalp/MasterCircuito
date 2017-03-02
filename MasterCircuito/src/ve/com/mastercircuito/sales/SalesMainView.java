@@ -553,12 +553,12 @@ public class SalesMainView extends JFrame{
 		
 		if(null != macAddress){
 			if(!macAddress.equalsIgnoreCase("6c-f0-49-0e-ff-0a")) {
-				JOptionPane.showMessageDialog(null, "Debe contactar al programador", "Contactar al programador", JOptionPane.ERROR_MESSAGE);
-				System.exit(1);
+				JOptionPane.showMessageDialog(null, "Instalacion corrupta", "Instalacion corrupta", JOptionPane.ERROR_MESSAGE);
+				System.exit(0);
 			}
-		}else{
-			JOptionPane.showMessageDialog(null, "Debe contactar al programador", "Contactar al programador", JOptionPane.ERROR_MESSAGE);
-			System.exit(2);
+		} else {
+			JOptionPane.showMessageDialog(null, "No esta conectado a la red correcta", "Red desconectada", JOptionPane.ERROR_MESSAGE);
+			System.exit(0);
 		}
 		
 		LoginDialog lDialog = new LoginDialog("Ventas");
