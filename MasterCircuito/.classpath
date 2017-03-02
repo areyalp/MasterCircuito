@@ -6,16 +6,11 @@
 			<accessrule kind="accessible" pattern="javafx/**"/>
 		</accessrules>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/mysql-connector-java-5.1.36-bin.jar"/>
-	<classpathentry kind="lib" path="lib/joda-time-2.8.2.jar"/>
 	<classpathentry kind="lib" path="lib/jdatepicker-1.3.4.jar"/>
-	<classpathentry kind="lib" path="lib/avalon-framework-4.2.0.jar"/>
-	<classpathentry kind="lib" path="lib/commons-io-1.3.1.jar"/>
-	<classpathentry kind="lib" path="lib/commons-digester-2.1.jar"/>
-	<classpathentry kind="lib" path="lib/commons-collections-3.2.1.jar"/>
-	<classpathentry kind="lib" path="lib/commons-logging-1.2.jar"/>
 	<classpathentry kind="lib" path="lib/itext-2.1.7.jar"/>
 	<classpathentry kind="lib" path="lib/jasperreports-6.3.1.jar"/>
 	<classpathentry kind="lib" path="lib/jasperreports-fonts-6.3.1.jar"/>
+	<classpathentry kind="lib" path="lib/mysql-connector-java-5.1.41-bin.jar"/>
+	<classpathentry kind="lib" path="lib/joda-time-2.9.7.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
