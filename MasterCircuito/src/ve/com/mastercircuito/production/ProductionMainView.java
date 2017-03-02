@@ -91,7 +91,7 @@ public class ProductionMainView extends JFrame{
 	
 	protected ProductionMainView() {
 		
-		LoginDialog lDialog = new LoginDialog(null);
+		LoginDialog lDialog = new LoginDialog("Produccion");
 		
 		lDialog.setVisible(true);
 		
@@ -105,7 +105,7 @@ public class ProductionMainView extends JFrame{
 		
 		DateTime dt = new DateTime();
 		
-		if(dt.isAfter(new DateTime(2017, 03, 01, 0, 0))) {
+		if(dt.isAfter(new DateTime(2017, 04, 01, 0, 0))) {
 			JOptionPane.showMessageDialog(null, "Error, debe comunicarse con el programador");
 			System.exit(0);
 		}

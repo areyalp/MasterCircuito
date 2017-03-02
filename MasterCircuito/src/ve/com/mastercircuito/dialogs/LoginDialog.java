@@ -30,8 +30,16 @@ public class LoginDialog extends JDialog{
 	private JPasswordField textPassword;
 	private JButton buttonLogin, buttonCancel;
 	private boolean succeeded;
-
+	
 	public LoginDialog(Frame parent) {
+		this(parent, "");
+	}
+	
+	public LoginDialog(String title) {
+		this(null, title);
+	}
+
+	public LoginDialog(Frame parent, String title) {
         super(parent, "Login", true);
         
         JPanel panel = new JPanel(new GridBagLayout());
@@ -87,7 +95,7 @@ public class LoginDialog extends JDialog{
 		this.setLocation(x, y);
         this.setResizable(false);
         this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-        this.setTitle("Master Circuito / Ventas - Login");
+        this.setTitle("Master Circuito / " + title + " - Login");
         JRootPane rootPane = this.getRootPane();
 		rootPane.setDefaultButton(buttonLogin);
         this.setLocationRelativeTo(parent);

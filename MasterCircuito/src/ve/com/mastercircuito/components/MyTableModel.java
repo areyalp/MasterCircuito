@@ -141,13 +141,13 @@ public class MyTableModel extends AbstractTableModel {
 				case "factor":
 					field = "factor";
 					break;
-				case "mo":
+				case "%mo":
 					field = "mo";
 					break;
-				case "gi":
+				case "%gi":
 					field = "gi";
 					break;
-				case "ga":
+				case "%ga":
 					field = "ga";
 					break;
 				case "referencia":

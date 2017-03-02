@@ -27,6 +27,7 @@ import java.awt.event.WindowListener;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -88,6 +89,7 @@ import ve.com.mastercircuito.font.Fa;
 import ve.com.mastercircuito.objects.User;
 import ve.com.mastercircuito.utils.DateLabelFormatter;
 import ve.com.mastercircuito.utils.Errors;
+import ve.com.mastercircuito.utils.GetNetworkAddress;
 import ve.com.mastercircuito.utils.Numbers;
 import ve.com.mastercircuito.utils.StringTools;
 
@@ -424,9 +426,7 @@ public class SalesMainView extends JFrame{
 		private MyInternalFrame budgetsFrame = new MyInternalFrame();
 		private MyInternalFrame startersFrame = new MyInternalFrame();
 		private MyInternalFrame tracingFrame = new MyInternalFrame();
-		
 		private PrintDialog budgetPrintDialog;
-	
 	//	Budget Objects
 		private UtilDateModel addBudgetDateModel;
 		private JButton buttonBudgetAdd;
@@ -549,7 +549,19 @@ public class SalesMainView extends JFrame{
 		
 		db = new Db();
 		
-		LoginDialog lDialog = new LoginDialog(null);
+		String macAddress = GetNetworkAddress.GetAddress("mac");
+		
+		if(null != macAddress){
+			if(!macAddress.equalsIgnoreCase("6c-f0-49-0e-ff-0a")) {
+				JOptionPane.showMessageDialog(null, "Debe contactar al programador", "Contactar al programador", JOptionPane.ERROR_MESSAGE);
+				System.exit(1);
+			}
+		}else{
+			JOptionPane.showMessageDialog(null, "Debe contactar al programador", "Contactar al programador", JOptionPane.ERROR_MESSAGE);
+			System.exit(2);
+		}
+		
+		LoginDialog lDialog = new LoginDialog("Ventas");
 		
 		lDialog.setVisible(true);
 		
@@ -7902,6 +7914,24 @@ public class SalesMainView extends JFrame{
 	
 	private JPanel createBudgetDescriptionPanel() {
 		
+		JPanel panelWrapper = new JPanel(new BorderLayout(20, 20));
+		
+		String queryStages = "SELECT stage FROM budget_stages";
+		
+		comboBudgetEditStage = new JComboBox<String>(new Vector<String>(loadComboList(queryStages, "stage")));
+		comboBudgetEditStage.removeItem("Todas");
+		comboBudgetEditStage.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent evt) {
+				String selectedStage = comboBudgetEditStage.getSelectedItem().toString();
+				int selectedStageId = Db.getBudgetStageId(selectedStage);
+				db.editBudgetStage(selectedBudgetId, selectedStageId);
+			}
+		});
+		comboBudgetEditStage.setEnabled(false);
+		panelWrapper.add(comboBudgetEditStage, BorderLayout.WEST);
+		
 		panelBudgetDescription = new JPanel();
 		panelBudgetDescription.setLayout(new GridBagLayout());
 		
@@ -8085,8 +8115,10 @@ public class SalesMainView extends JFrame{
 		cs.gridy = 2;
 		cs.gridwidth = 4;
 		panelBudgetDescription.add(textBudgetDescriptionDeliveryPeriod, cs);
+		
+		panelWrapper.add(panelBudgetDescription, BorderLayout.CENTER);
 				
-		return panelBudgetDescription;
+		return panelWrapper;
 	}
 
 	private JPanel createBudgetTablePanel() {	
@@ -8750,8 +8782,11 @@ public class SalesMainView extends JFrame{
 		fields.add(SalesMainView.BOARD_LOCK_TYPE_FIELD);
 		fields.add("budget_boards.quantity");
 		fields.add("budget_boards.price");
+		fields.add("budget_boards.mo as p_mo");
 		fields.add("TRUNCATE((budget_boards.price * (budget_boards.mo / 100)),2) as mo");
+		fields.add("budget_boards.gi as p_gi");
 		fields.add("TRUNCATE((budget_boards.price * (budget_boards.gi / 100)),2) as gi");
+		fields.add("budget_boards.ga as p_ga");
 		fields.add("TRUNCATE((budget_boards.price * (budget_boards.ga / 100)),2) as ga");
 		fields.add("budget_boards.factor");
 		fields.add("TRUNCATE(((budget_boards.price + (budget_boards.price * (budget_boards.mo / 100)) + (budget_boards.price * (budget_boards.gi / 100)) + (budget_boards.price * (budget_boards.ga / 100))) * ((100 + budget_boards.factor) / 100)), 2) as sell_price");
@@ -8789,16 +8824,16 @@ public class SalesMainView extends JFrame{
 						+ "AND boards.active = '1' "
 						+ " GROUP BY boards.id";
 		
-		String[] budgetBoardsColumnNames = { "Id", "Descripcion", "Nombre", "Instalacion", "Cap. Barra", "Tipo Barra", "Voltaje", "Tierra", "Interrupcion", "Cerradura", "Cantidad", "Precio Costo", "MO", "GI", "GA", "Factor", "Precio Venta", "Total"};
+		String[] budgetBoardsColumnNames = { "Id", "Descripcion", "Nombre", "Instalacion", "Cap. Barra", "Tipo Barra", "Voltaje", "Tierra", "Interrupcion", "Cerradura", "Cantidad", "Precio Costo", "%MO", "MO", "%GI", "GI", "%GA", "GA", "Factor", "Precio Venta", "Total"};
 		budgetBoardsData = db.fetchAll(db.select(budgetBoardsQuery));
 		
 		HashSet<Integer> editableColumns = new HashSet<Integer>();
 		editableColumns.add(new Integer(10));
 		editableColumns.add(new Integer(11));
 		editableColumns.add(new Integer(12));
-		editableColumns.add(new Integer(13));
 		editableColumns.add(new Integer(14));
-		editableColumns.add(new Integer(15));
+		editableColumns.add(new Integer(16));
+		editableColumns.add(new Integer(18));
 		
 		if(budgetBoardsData.length > 0) {
 			MyTableModel mForTable = new MyTableModel(budgetBoardsQuery, budgetBoardsColumnNames, "budget_boards", editableColumns);
@@ -8827,8 +8862,11 @@ public class SalesMainView extends JFrame{
 		fields.add(SalesMainView.CONTROL_BOARD_LOCK_TYPE_FIELD);
 		fields.add("budget_control_boards.quantity");
 		fields.add("budget_control_boards.price");
+		fields.add("budget_control_boards.mo as p_mo");
 		fields.add("TRUNCATE((budget_control_boards.price * (budget_control_boards.mo / 100)),2) as mo");
+		fields.add("budget_control_boards.gi as p_gi");
 		fields.add("TRUNCATE((budget_control_boards.price * (budget_control_boards.gi / 100)),2) as gi");
+		fields.add("budget_control_boards.ga as p_ga");
 		fields.add("TRUNCATE((budget_control_boards.price * (budget_control_boards.ga / 100)),2) as ga");
 		fields.add("budget_control_boards.factor");
 		fields.add("TRUNCATE(((budget_control_boards.price + (budget_control_boards.price * (budget_control_boards.mo / 100)) + (budget_control_boards.price * (budget_control_boards.gi / 100)) + (budget_control_boards.price * (budget_control_boards.ga / 100))) * ((100 + budget_control_boards.factor) / 100)), 2) as sell_price");
@@ -8876,16 +8914,16 @@ public class SalesMainView extends JFrame{
 						+ "AND control_boards.active = '1' "
 						+ " GROUP BY control_boards.id";
 		
-		String[] budgetControlBoardsColumnNames = { "Id", "Descripcion", "Nombre", "Instalacion", "Cap. Barra", "Tipo Barra", "Voltaje", "Tierra", "Interrupcion", "Cerradura", "Cantidad", "Precio Costo", "MO", "GI", "GA", "Factor", "Precio Venta", "Total"};
+		String[] budgetControlBoardsColumnNames = { "Id", "Descripcion", "Nombre", "Instalacion", "Cap. Barra", "Tipo Barra", "Voltaje", "Tierra", "Interrupcion", "Cerradura", "Cantidad", "Precio Costo", "%MO", "MO", "%GI", "GI", "%GA", "GA", "Factor", "Precio Venta", "Total"};
 		budgetBoardsData = db.fetchAll(db.select(budgetControlBoardsQuery));
 		
 		HashSet<Integer> editableColumns = new HashSet<Integer>();
 		editableColumns.add(new Integer(10));
 		editableColumns.add(new Integer(11));
 		editableColumns.add(new Integer(12));
-		editableColumns.add(new Integer(13));
 		editableColumns.add(new Integer(14));
-		editableColumns.add(new Integer(15));
+		editableColumns.add(new Integer(16));
+		editableColumns.add(new Integer(18));
 		
 		if(budgetBoardsData.length > 0) {
 			MyTableModel mForTable = new MyTableModel(budgetControlBoardsQuery, budgetControlBoardsColumnNames, "budget_control_boards", editableColumns);
@@ -10955,6 +10993,7 @@ public class SalesMainView extends JFrame{
 				if(lsm.isSelectionEmpty()) {
 					tableBudgetsResult.setModel(new DefaultTableModel());
 					selectedBudgetId = 0;
+					comboBudgetEditStage.setEnabled(false);
 					buttonBudgetEdit.setEnabled(false);
 					buttonBudgetNotesEdit.setEnabled(false);
 					buttonAddBudgetSwitch.setEnabled(false);
@@ -10990,6 +11029,7 @@ public class SalesMainView extends JFrame{
 					loadBudgetBoardTable();
 					loadBudgetControlBoardTable();
 					loadBudgetMaterialTable();
+					comboBudgetEditStage.setEnabled(true);
 					buttonAddBudgetSwitch.setEnabled(true);
 					buttonAddBudgetBox.setEnabled(true);
 					buttonAddBudgetBoard.setEnabled(true);
@@ -11001,6 +11041,8 @@ public class SalesMainView extends JFrame{
 					if(panelBudgetDescription.isShowing()) {
 						buttonBudgetEdit.setEnabled(true);
 					}
+					
+					comboBudgetEditStage.setSelectedItem(Db.getBudgetStage(selectedBudgetId));
 					
 					DateTimeFormatter dtf = DateTimeFormat.forPattern("dd-MM-yyyy");
 					
@@ -11124,6 +11166,7 @@ public class SalesMainView extends JFrame{
 				setTabsEnabled(controlBoardTabbedPane, false);
 			} else if (lsm.isSelectionEmpty() && null != panelBudgetDescription && tableBudgetsResult.getSelectedRow() == -1) {
 				selectedBudgetId = 0;
+				comboBudgetEditStage.setEnabled(false);
 				buttonBudgetEdit.setEnabled(false);
 				buttonBudgetNotesEdit.setEnabled(false);
 				buttonAddBudgetSwitch.setEnabled(false);

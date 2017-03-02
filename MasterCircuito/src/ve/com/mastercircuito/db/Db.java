@@ -2827,5 +2827,57 @@ public class Db extends MysqlDriver {
 		
 		return (this.getNumRows() > 0)? true:false;
 	}
+
+	public static int getBudgetStageId(String stage) {
+		Db db = new Db();
+		int stageId = 0;
+		ResultSet rowStage = db.select("SELECT id FROM budget_stages WHERE stage = '" + stage + "'");
+		
+		try {
+			if(rowStage.next()) {
+				stageId = rowStage.getInt("id");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		try {
+			db.conn.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return stageId;
+	}
+
+	public boolean editBudgetStage(int budgetId, int stageId) {
+		String queryString = "UPDATE budgets SET stage_id = " + stageId + " WHERE id = " + budgetId;
+		if (Db.update(queryString)) {
+			return true;
+		}
+		return false;
+	}
+
+	public static String getBudgetStage(int budgetId) {
+		Db db = new Db();
+		String budgetStage = "";
+		ResultSet rowStage = db.select("SELECT budget_stages.stage FROM budget_stages INNER JOIN budgets ON budgets.stage_id = budget_stages.id WHERE budgets.id = " + budgetId);
+		
+		try {
+			if(rowStage.next()) {
+				budgetStage = rowStage.getString("stage");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		try {
+			db.conn.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return budgetStage;
+	}
 	
 }
