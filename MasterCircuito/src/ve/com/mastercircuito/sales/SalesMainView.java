@@ -26,6 +26,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -545,29 +546,20 @@ public class SalesMainView extends JFrame{
 		private JButton buttonBudgetNotesEdit, buttonBudgetNotesEditSave, buttonBudgetNotesEditCancel;
 		
 	public static void main(String[] args) {
-		File file = new File("test.log");
-		PrintStream ps = null;
-		try {
-			ps = new PrintStream(file);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		try {
 			new SalesMainView();
-		} catch (Exception ex) {
-		    ex.printStackTrace(ps);
-		} finally {
-			ps.close();
-		}
-		
-//		try {
-//			new SalesMainView();
-//		} catch (Exception e) {
-//			
-//		}
 	}
 	
 	protected SalesMainView() {
+		
+		File file = new File("err.log");
+		FileOutputStream fos = null;
+		try {
+			fos = new FileOutputStream(file);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		PrintStream ps = new PrintStream(fos);
+		System.setErr(ps);
 		
 		db = new Db();
 		
@@ -576,10 +568,20 @@ public class SalesMainView extends JFrame{
 		if(null != macAddress){
 			if(!macAddress.equalsIgnoreCase("6c-f0-49-0e-ff-0a")) {
 				JOptionPane.showMessageDialog(null, "Instalacion corrupta", "Instalacion corrupta", JOptionPane.ERROR_MESSAGE);
+				try {
+					throw new Exception("Instalacion corrupta");
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 				System.exit(0);
 			}
 		} else {
 			JOptionPane.showMessageDialog(null, "No esta conectado a la red correcta", "Red desconectada", JOptionPane.ERROR_MESSAGE);
+			try {
+				throw new Exception("could not get MAC address");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			System.exit(0);
 		}
 		
@@ -588,6 +590,11 @@ public class SalesMainView extends JFrame{
 		lDialog.setVisible(true);
 		
 		if(!lDialog.isSucceeded()) {
+			try {
+				throw new Exception("Login unsuccessfull");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			System.exit(0);
 		}
 		
@@ -599,6 +606,11 @@ public class SalesMainView extends JFrame{
 		
 		if(dt.isAfter(new DateTime(2017, 04, 01, 0, 0))) {
 			JOptionPane.showMessageDialog(null, "Error, debe comunicarse con el programador");
+			try {
+				throw new Exception("Outdated");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			System.exit(0);
 		}
 		
