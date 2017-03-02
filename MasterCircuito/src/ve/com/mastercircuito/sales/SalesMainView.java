@@ -24,10 +24,11 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.io.FileWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
+import java.io.PrintStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -544,20 +545,26 @@ public class SalesMainView extends JFrame{
 		private JButton buttonBudgetNotesEdit, buttonBudgetNotesEditSave, buttonBudgetNotesEditCancel;
 		
 	public static void main(String[] args) {
+		File file = new File("test.log");
+		PrintStream ps = null;
 		try {
-			new SalesMainView();
-		} catch (Exception e) {
-			FileWriter fw;
-			PrintWriter pw = null;
-			try {
-				fw = new FileWriter ("exception.txt", true);
-				pw = new PrintWriter (fw);
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
-			e.printStackTrace (pw);
+			ps = new PrintStream(file);
+		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
+		try {
+			new SalesMainView();
+		} catch (Exception ex) {
+		    ex.printStackTrace(ps);
+		} finally {
+			ps.close();
+		}
+		
+//		try {
+//			new SalesMainView();
+//		} catch (Exception e) {
+//			
+//		}
 	}
 	
 	protected SalesMainView() {

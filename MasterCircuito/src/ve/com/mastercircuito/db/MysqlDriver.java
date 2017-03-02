@@ -59,7 +59,7 @@ public class MysqlDriver {
 	}
 	
 	public Connection connect() {
-		String url = "jdbc:mysql://" + host + "/" + database;
+		String url = "jdbc:mysql://" + host + "/" + database + "?autoReconnect=true&useSSL=false";
 		
 		try {
 			conn = DriverManager.getConnection(url, dbuser, dbpassword);
