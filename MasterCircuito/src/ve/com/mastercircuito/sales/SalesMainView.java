@@ -566,7 +566,8 @@ public class SalesMainView extends JFrame{
 		String macAddress = GetNetworkAddress.GetAddress("mac");
 		
 		if(null != macAddress){
-			if(!macAddress.equalsIgnoreCase("6c-f0-49-0e-ff-0a")) {
+			if(false) {
+//			if(!macAddress.equalsIgnoreCase("6c-f0-49-0e-ff-0a")) {
 				JOptionPane.showMessageDialog(null, "Instalacion corrupta", "Instalacion corrupta", JOptionPane.ERROR_MESSAGE);
 				try {
 					throw new Exception("Instalacion corrupta");
@@ -1331,10 +1332,15 @@ public class SalesMainView extends JFrame{
 		HashSet<Integer> editableColumns = new HashSet<Integer>();
 		editableColumns.add(new Integer(8));
 		
-		MyTableModel mForTable = new MyTableModel(switchesData, switchesColumnNames, "switches", editableColumns);
-		
 		tableSwitchesResult = new JTable();
-		tableSwitchesResult.setModel(mForTable);
+		
+		if (switchesData.length > 0) {
+			MyTableModel mForTable = new MyTableModel(switchesQuery, switchesColumnNames, "switches", editableColumns);
+			tableSwitchesResult.setModel(mForTable);
+		} else {
+			tableSwitchesResult.setModel(new DefaultTableModel());
+		}
+		
 		tableSwitchesResult.setAutoCreateRowSorter(true);
 		tableSwitchesResult.getTableHeader().setReorderingAllowed(false);
 		
@@ -2042,13 +2048,20 @@ public class SalesMainView extends JFrame{
 			+ "WHERE switches.active = '1' "
 			+ whereQuery
 			+ limitQuery;
-
+		
 		switchesData = db.fetchAll(db.select(switchesQuery));
 		
 		String[] switchesColumnNames = { "Id", "Referencia", "Marca", "Modelo", "Fases", "Amperaje", "Interrupcion", "Voltaje", "Precio"};
 		
-		if(switchesData.length > 0) {
-			tableSwitchesResult.setModel(new MyTableModel(switchesData, switchesColumnNames));
+		HashSet<Integer> editableColumns = new HashSet<Integer>();
+		editableColumns.add(new Integer(8));
+		
+		if (switchesData.length > 0) {
+			if (tableSwitchesResult.getModel() instanceof MyTableModel) {
+				((MyTableModel) tableSwitchesResult.getModel()).setQuery(switchesQuery);
+			} else {
+				tableSwitchesResult.setModel(new MyTableModel(switchesQuery, switchesColumnNames, "switches", editableColumns));
+			}
 		} else {
 			tableSwitchesResult.setModel(new DefaultTableModel());
 		}
@@ -2433,17 +2446,17 @@ public class SalesMainView extends JFrame{
 						+ "LIMIT 10";
 		
 		String[] boxesColumnNames = { "Id", "Tipo", "Instalacion", "Nema", "Pares Tel.", "Lamina", "Acabado", "Color", "Alto", "Ancho", "Profundidad", "Und.", "Calibre", "Cerradura", "Precio"};
-//		ArrayList<String> listBoxesColumnNames = new ArrayList<String>(Arrays.asList(originalColumns));
-//		listBoxesColumnNames.add("Button");
-//		String [] boxesColumnNames = listBoxesColumnNames.toArray(new String[0]);
-		// The line below is when not adding a Button column at the end of the table
+		
 		boxesData = db.fetchAll(db.select(boxesQuery));
 		tableBoxesResult = new JTable();
-//		boxesData = db.fetchAllAddButton(db.select(boxesQuery), boxesColumnNames.length);
 		
-		MyTableModel mForTable = new MyTableModel(boxesData, boxesColumnNames);
+		if (boxesData.length > 0) {
+			MyTableModel mForTable = new MyTableModel(boxesQuery, boxesColumnNames, "boxes", new HashSet<Integer>());
+			tableBoxesResult.setModel(mForTable);
+		} else {
+			tableBoxesResult.setModel(new DefaultTableModel());
+		}
 		
-		tableBoxesResult.setModel(mForTable);
 		tableBoxesResult.setAutoCreateRowSorter(true);
 		tableBoxesResult.getTableHeader().setReorderingAllowed(false);
 		
@@ -2451,22 +2464,6 @@ public class SalesMainView extends JFrame{
 		listBoxSelectionModel.addListSelectionListener(new SharedListSelectionListener());
 		tableBoxesResult.setSelectionModel(listBoxSelectionModel);
 		tableBoxesResult.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		
-//		TableColumn buttonColumn = tableBoxesResult.getColumnModel().getColumn(boxesColumnNames.length-1);
-//		TableButton buttons = new TableButton();
-//		buttons.addHandler(new TableButtonPressedHandler() {
-//			
-//			@Override
-//			public void onButtonPress(int row, int column) {
-//				int viewRow = tableBoxesResult.getSelectedRow();
-//				Object tableId = tableBoxesResult.getValueAt(viewRow, 0);
-//				JOptionPane.showMessageDialog(null, "Row:" + row + "-Column:" + column + "-ViewRow:" + viewRow + "-TableId:" + tableId);
-//			}
-//		});
-//		
-//		buttonColumn.setHeaderValue("Botones");
-//		buttonColumn.setCellRenderer(buttons);
-//		buttonColumn.setCellEditor(buttons);
 		
 		JPanel tablePanel = new JPanel(new BorderLayout());
 		tablePanel.add(tableBoxesResult.getTableHeader(), BorderLayout.PAGE_START);
@@ -3662,13 +3659,17 @@ public class SalesMainView extends JFrame{
 						+ whereQuery
 						+ " GROUP BY boxes.id "
 						+ limitQuery;
-
+		
 		boxesData = db.fetchAll(db.select(boxesQuery));
 		
 		String[] boxesColumnNames = { "Id", "Tipo", "Instalacion", "Nema", "Pares Tel.", "Lamina", "Acabado", "Color", "Alto", "Ancho", "Profundidad", "Und.", "Calibre", "Cerradura", "Precio"};
 		
-		if(boxesData.length > 0) {
-			tableBoxesResult.setModel(new MyTableModel(boxesData, boxesColumnNames));
+		if (boxesData.length > 0) {
+			if (tableBoxesResult.getModel() instanceof MyTableModel) {
+				((MyTableModel) tableBoxesResult.getModel()).setQuery(boxesQuery);
+			} else {
+				tableBoxesResult.setModel(new MyTableModel(boxesQuery, boxesColumnNames, "boxes", new HashSet<Integer>()));
+			}
 		} else {
 			tableBoxesResult.setModel(new DefaultTableModel());
 		}
@@ -4086,7 +4087,7 @@ public class SalesMainView extends JFrame{
 		
 		String fieldsQuery = StringTools.implode(",", fields);
 		String tablesQuery = StringTools.implode(",", tables);
-		String boxesQuery = "SELECT " + fieldsQuery
+		String boardsQuery = "SELECT " + fieldsQuery
 						+ " FROM "
 						+ tablesQuery
 						+ " WHERE boards.type_id = board_types.id "
@@ -4106,12 +4107,17 @@ public class SalesMainView extends JFrame{
 //		ArrayList<String> listBoxesColumnNames = new ArrayList<String>(Arrays.asList(originalColumns));
 //		listBoxesColumnNames.add("Button");
 //		String [] boxesColumnNames = listBoxesColumnNames.toArray(new String[0]);
-		// The line below is when not adding a Button column at the end of the table
-		boardsData = db.fetchAll(db.select(boxesQuery));
-		tableBoardsResult = new JTable();
 //		boxesData = db.fetchAllAddButton(db.select(boxesQuery), boxesColumnNames.length);
+		// The line below is when not adding a Button column at the end of the table
+		boardsData = db.fetchAll(db.select(boardsQuery));
+		tableBoardsResult = new JTable();
 		
-		tableBoardsResult.setModel(new MyTableModel(boardsData, boardsColumnNames));
+		if (boardsData.length > 0) {
+			tableBoardsResult.setModel(new MyTableModel(boardsData, boardsColumnNames, "boards", new HashSet<Integer>()));
+		} else {
+			tableBoardsResult.setModel(new DefaultTableModel());
+		}
+		
 		tableBoardsResult.setAutoCreateRowSorter(true);
 		tableBoardsResult.getTableHeader().setReorderingAllowed(false);
 		
@@ -5363,16 +5369,21 @@ public class SalesMainView extends JFrame{
 						+ whereQuery
 						+ " GROUP BY boards.id "
 						+ limitQuery;
-
+		
 		boardsData = db.fetchAll(db.select(boardsQuery));
 		
 		String[] boardsColumnNames = { "Id", "Nombre", "Tipo", "Instalacion", "Nema", "Cap. Barra", "Tipo Barra", "Circuitos", "Voltaje", "Fases", "Tierra", "Interrupcion", "Cerradura", "Precio"};
 		
-		if(boardsData.length > 0) {
-			tableBoardsResult.setModel(new MyTableModel(boardsData, boardsColumnNames));
+		if (boardsData.length > 0) {
+			if (tableBoardsResult.getModel() instanceof MyTableModel) {
+				((MyTableModel) tableBoardsResult.getModel()).setQuery(boardsQuery);
+			} else {
+				tableBoardsResult.setModel(new MyTableModel(boardsQuery, boardsColumnNames, "boards", new HashSet<Integer>()));
+			}
 		} else {
 			tableBoardsResult.setModel(new DefaultTableModel());
 		}
+		
 		selectedTableBoardCircuits = 0;
 		tableBoardSwitchesResult.setModel(new DefaultTableModel());
 		buttonAddBoardSwitch.setEnabled(false);
@@ -5398,21 +5409,20 @@ public class SalesMainView extends JFrame{
 			+ " ORDER BY principal DESC, switches.phases DESC, currents.current DESC ";
 		
 		String[] boardSwitchesColumnNames = { "Id", "Descripcion", "Cantidad", "Precio", "Total", "Principal"};
-		boardSwitchesData = db.fetchAllAddBoolean(db.select(boardSwitchesQuery), boardSwitchesColumnNames.length);
 		
-		HashSet<Integer> editableColumns = new HashSet<Integer>();
-		editableColumns.add(new Integer(5));
-		
-		if(boardSwitchesData.length > 0) {
+		if(tableBoardSwitchesResult.getModel() instanceof MyTableModel) {
+			((MyTableModel) tableBoardSwitchesResult.getModel()).setQueryAddBoolean(boardSwitchesQuery, boardSwitchesColumnNames.length);
+		} else {
+			boardSwitchesData = db.fetchAllAddBoolean(db.select(boardSwitchesQuery), boardSwitchesColumnNames.length);
+			HashSet<Integer> editableColumns = new HashSet<Integer>();
+			editableColumns.add(new Integer(5));
 			MyTableModel mForTable = new MyTableModel(boardSwitchesData, boardSwitchesColumnNames, "board_switches", editableColumns);
 			tableBoardSwitchesResult.setModel(mForTable);
 			if(null != tableBoardSwitchesResult && tableBoardSwitchesResult.getSelectedRow() == -1) {
 				buttonRemoveBoardSwitch.setEnabled(false);
 			}
-		} else {
-			tableBoardSwitchesResult.setModel(new DefaultTableModel());
-			buttonRemoveBoardSwitch.setEnabled(false);
 		}
+		
 		buttonAddBoardSwitch.setEnabled(true);
 	}
 	
@@ -5465,23 +5475,21 @@ public class SalesMainView extends JFrame{
 			+ " WHERE board_materials.board_container_id = " + selectedBoardId;
 		
 		String[] boardMaterialsColumnNames = { "Id", "Referencia", "Descripcion", "Cantidad", "Precio", "Factor", "Total"};
-		boardMaterialsData = db.fetchAll(db.select(boardMaterialsQuery));
 		
-		HashSet<Integer> editableColumns = new HashSet<Integer>();
-		editableColumns.add(new Integer(3));
-		editableColumns.add(new Integer(4));
-		editableColumns.add(new Integer(5));
-		
-		if(boardMaterialsData.length > 0) {
+		if(tableBoardMaterialsResult.getModel() instanceof MyTableModel) {
+			((MyTableModel) tableBoardMaterialsResult.getModel()).setQuery(boardMaterialsQuery);
+		} else {
+			HashSet<Integer> editableColumns = new HashSet<Integer>();
+			editableColumns.add(new Integer(3));
+			editableColumns.add(new Integer(4));
+			editableColumns.add(new Integer(5));
 			MyTableModel mForTable = new MyTableModel(boardMaterialsQuery, boardMaterialsColumnNames, "board_materials", editableColumns);
 			tableBoardMaterialsResult.setModel(mForTable);
 			if(null != tableBoardMaterialsResult && tableBoardMaterialsResult.getSelectedRow() == -1) {
 				buttonRemoveBoardMaterial.setEnabled(false);
 			}
-		} else {
-			tableBoardMaterialsResult.setModel(new DefaultTableModel());
-			buttonRemoveBoardMaterial.setEnabled(false);
 		}
+		
 		buttonAddBoardMaterial.setEnabled(true);
 	}
 	
@@ -5848,7 +5856,7 @@ public class SalesMainView extends JFrame{
 		
 		String fieldsQuery = StringTools.implode(",", fields);
 		String tablesQuery = StringTools.implode(",", tables);
-		String boxesQuery = "SELECT " + fieldsQuery
+		String controlBoardsQuery = "SELECT " + fieldsQuery
 						+ " FROM "
 						+ tablesQuery
 						+ " WHERE control_boards.type_id = control_board_types.id "
@@ -5875,15 +5883,17 @@ public class SalesMainView extends JFrame{
 						+ limitQuery;
 		
 		String[] controlBoardsColumnNames = { "Id", "Nombre", "Tipo", "Instalacion", "Nema", "Cap. Barra", "Tipo Barra", "Circuitos", "Voltaje", "Fases", "Tierra", "Interrupcion", "Cerradura", "Precio"};
-//		ArrayList<String> listBoxesColumnNames = new ArrayList<String>(Arrays.asList(originalColumns));
-//		listBoxesColumnNames.add("Button");
-//		String [] boxesColumnNames = listBoxesColumnNames.toArray(new String[0]);
-		// The line below is when not adding a Button column at the end of the table
-		controlBoardsData = db.fetchAll(db.select(boxesQuery));
-		tableControlBoardsResult = new JTable();
-//		boxesData = db.fetchAllAddButton(db.select(boxesQuery), boxesColumnNames.length);
 		
-		tableControlBoardsResult.setModel(new MyTableModel(controlBoardsData, controlBoardsColumnNames));
+		controlBoardsData = db.fetchAll(db.select(controlBoardsQuery));
+		tableControlBoardsResult = new JTable();
+		
+		if (controlBoardsData.length > 0) {
+			MyTableModel mForTable = new MyTableModel(controlBoardsQuery, controlBoardsColumnNames, "control_boards", new HashSet<Integer>());
+			tableControlBoardsResult.setModel(mForTable);
+		} else {
+			tableControlBoardsResult.setModel(new DefaultTableModel());
+		}
+		
 		tableControlBoardsResult.setAutoCreateRowSorter(true);
 		tableControlBoardsResult.getTableHeader().setReorderingAllowed(false);
 		
@@ -5891,22 +5901,6 @@ public class SalesMainView extends JFrame{
 		listControlBoardSelectionModel.addListSelectionListener(new SharedListSelectionListener());
 		tableControlBoardsResult.setSelectionModel(listControlBoardSelectionModel);
 		tableControlBoardsResult.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		
-//		TableColumn buttonColumn = tableBoxesResult.getColumnModel().getColumn(boxesColumnNames.length-1);
-//		TableButton buttons = new TableButton();
-//		buttons.addHandler(new TableButtonPressedHandler() {
-//			
-//			@Override
-//			public void onButtonPress(int row, int column) {
-//				int viewRow = tableBoxesResult.getSelectedRow();
-//				Object tableId = tableBoxesResult.getValueAt(viewRow, 0);
-//				JOptionPane.showMessageDialog(null, "Row:" + row + "-Column:" + column + "-ViewRow:" + viewRow + "-TableId:" + tableId);
-//			}
-//		});
-//		
-//		buttonColumn.setHeaderValue("Botones");
-//		buttonColumn.setCellRenderer(buttons);
-//		buttonColumn.setCellEditor(buttons);
 		
 		JPanel tablePanel = new JPanel(new BorderLayout());
 		tablePanel.add(tableControlBoardsResult.getTableHeader(), BorderLayout.PAGE_START);
@@ -6563,7 +6557,9 @@ public class SalesMainView extends JFrame{
 		comboControlBoardEditType.removeItem("Todas");
 		comboControlBoardEditType.setActionCommand("control.description.edit.type");
 		comboControlBoardEditType.addActionListener(lForCombo);
-		editControlBoardType = comboControlBoardEditType.getSelectedItem().toString();
+		if(comboControlBoardEditType.getItemCount() > 0) {
+			editControlBoardType = comboControlBoardEditType.getSelectedItem().toString();
+		}
 		cs.gridx = 8;
 		cs.gridy = 0;
 		cs.gridwidth = 6;
@@ -7045,6 +7041,7 @@ public class SalesMainView extends JFrame{
 		searchSelectedControlBoardGround = comboControlBoardGround.getSelectedItem().toString();
 		searchSelectedControlBoardInterruption = comboControlBoardInterruptions.getSelectedItem().toString();
 		searchSelectedControlBoardLockType = comboControlBoardLockTypes.getSelectedItem().toString();
+		
 		if(null != textControlBoardSearchNames && !textControlBoardSearchNames.getText().isEmpty()) {
 			whereQuery += " AND " + SalesMainView.CONTROL_BOARD_TABLE + ".name LIKE '%" + textControlBoardSearchNames.getText() + "%'";
 		}
@@ -7163,16 +7160,21 @@ public class SalesMainView extends JFrame{
 						+ whereQuery
 						+ " GROUP BY control_boards.id "
 						+ limitQuery;
-
+		
 		controlBoardsData = db.fetchAll(db.select(controlBoardsQuery));
 		
 		String[] controlBoardsColumnNames = { "Id", "Nombre", "Tipo", "Instalacion", "Nema", "Cap. Barra", "Tipo Barra", "Circuitos", "Voltaje", "Fases", "Tierra", "Interrupcion", "Cerradura", "Precio"};
 		
-		if(controlBoardsData.length > 0) {
-			tableControlBoardsResult.setModel(new MyTableModel(controlBoardsData, controlBoardsColumnNames));
+		if (controlBoardsData.length > 0) {
+			if (tableControlBoardsResult.getModel() instanceof MyTableModel) {
+				((MyTableModel) tableControlBoardsResult.getModel()).setQuery(controlBoardsQuery);
+			} else {
+				tableControlBoardsResult.setModel(new MyTableModel(controlBoardsQuery, controlBoardsColumnNames, "control_boards", new HashSet<Integer>()));
+			}
 		} else {
 			tableControlBoardsResult.setModel(new DefaultTableModel());
 		}
+		
 //		selectedTableControlBoardCircuits = 0;
 		tableControlBoardSwitchesResult.setModel(new DefaultTableModel());
 		buttonAddControlBoardSwitch.setEnabled(false);
@@ -7196,22 +7198,19 @@ public class SalesMainView extends JFrame{
 			+ " ORDER BY principal DESC, switches.phases DESC, currents.current DESC ";
 		
 		String[] controlBoardSwitchesColumnNames = { "Id", "Descripcion", "Cantidad", "Precio", "Total", "Principal"};
-		controlBoardSwitchesData = db.fetchAllAddBoolean(db.select(controlBoardSwitchesQuery), controlBoardSwitchesColumnNames.length);
 		
-		HashSet<Integer> editableColumns = new HashSet<Integer>();
-		editableColumns.add(new Integer(5));
-		
-		if(controlBoardSwitchesData.length > 0) {
+		if(tableControlBoardSwitchesResult.getModel() instanceof MyTableModel) {
+			((MyTableModel) tableControlBoardSwitchesResult.getModel()).setQueryAddBoolean(controlBoardSwitchesQuery, controlBoardSwitchesColumnNames.length);
+		} else {
+			controlBoardSwitchesData = db.fetchAllAddBoolean(db.select(controlBoardSwitchesQuery), controlBoardSwitchesColumnNames.length);
+			HashSet<Integer> editableColumns = new HashSet<Integer>();
+			editableColumns.add(new Integer(5));
 			MyTableModel mForTable = new MyTableModel(controlBoardSwitchesData, controlBoardSwitchesColumnNames, "control_board_switches", editableColumns);
 			tableControlBoardSwitchesResult.setModel(mForTable);
-			if(null != tableControlBoardSwitchesResult && tableControlBoardSwitchesResult.getSelectedRow() == -1) {
-				buttonRemoveControlBoardSwitch.setEnabled(false);
-			}
-		} else {
-			tableControlBoardSwitchesResult.setModel(new DefaultTableModel());
-			buttonRemoveControlBoardSwitch.setEnabled(false);
 		}
+		
 		buttonAddControlBoardSwitch.setEnabled(true);
+		buttonRemoveControlBoardSwitch.setEnabled(false);
 	}
 	
 	@SuppressWarnings("unused")
@@ -7264,31 +7263,37 @@ public class SalesMainView extends JFrame{
 			+ " WHERE control_board_materials.board_container_id = " + selectedControlBoardId;
 		
 		String[] controlBoardMaterialsColumnNames = { "Id", "Referencia", "Descripcion", "Cantidad", "Precio", "Factor", "Total"};
-		controlBoardMaterialsData = db.fetchAll(db.select(controlBoardMaterialsQuery));
 		
-		HashSet<Integer> editableColumns = new HashSet<Integer>();
-		editableColumns.add(new Integer(3));
-		editableColumns.add(new Integer(4));
-		editableColumns.add(new Integer(5));
-		
-		if(controlBoardMaterialsData.length > 0) {
+		if(tableControlBoardMaterialsResult.getModel() instanceof MyTableModel) {
+			((MyTableModel) tableControlBoardMaterialsResult.getModel()).setQuery(controlBoardMaterialsQuery);
+		} else {
+			HashSet<Integer> editableColumns = new HashSet<Integer>();
+			editableColumns.add(new Integer(3));
+			editableColumns.add(new Integer(4));
+			editableColumns.add(new Integer(5));
 			MyTableModel mForTable = new MyTableModel(controlBoardMaterialsQuery, controlBoardMaterialsColumnNames, "control_board_materials", editableColumns);
 			tableControlBoardMaterialsResult.setModel(mForTable);
-			if(null != tableControlBoardMaterialsResult && tableControlBoardMaterialsResult.getSelectedRow() == -1) {
-				buttonRemoveControlBoardMaterial.setEnabled(false);
-			}
-		} else {
-			tableControlBoardMaterialsResult.setModel(new DefaultTableModel());
-			buttonRemoveControlBoardMaterial.setEnabled(false);
 		}
+		
 		buttonAddControlBoardMaterial.setEnabled(true);
+		buttonRemoveControlBoardMaterial.setEnabled(false);
 	}
 	
 	private void updateControlBoardTextAddDescription() {
-		String controlBoardType = (null != comboControlBoardAddType.getSelectedItem().toString())?comboControlBoardAddType.getSelectedItem().toString():"";
-		String controlBoardPhases =(null != comboControlBoardAddPhases.getSelectedItem().toString())?comboControlBoardAddPhases.getSelectedItem().toString():"";
-		String controlBoardCircuits =(null != comboControlBoardAddCircuits.getSelectedItem().toString())?comboControlBoardAddCircuits.getSelectedItem().toString():"";
-		String controlBoardNema =(null != comboControlBoardAddNema.getSelectedItem().toString())?comboControlBoardAddNema.getSelectedItem().toString():"";
+		String controlBoardType = "", controlBoardPhases = "", controlBoardCircuits = "", controlBoardNema = "";
+		if (null != comboControlBoardAddType && comboControlBoardAddType.getItemCount() > 0 && !comboControlBoardAddType.getSelectedItem().toString().isEmpty()) {
+			controlBoardType = (null != comboControlBoardAddType.getSelectedItem().toString())?comboControlBoardAddType.getSelectedItem().toString():"";
+		}
+		if (null != comboControlBoardAddPhases && comboControlBoardAddPhases.getItemCount() > 0 && !comboControlBoardAddPhases.getSelectedItem().toString().isEmpty()) {
+			controlBoardPhases =(null != comboControlBoardAddPhases.getSelectedItem().toString())?comboControlBoardAddPhases.getSelectedItem().toString():"";
+		}
+		if (null != comboControlBoardAddCircuits && comboControlBoardAddCircuits.getItemCount() > 0 && !comboControlBoardAddCircuits.getSelectedItem().toString().isEmpty()) {
+			controlBoardCircuits =(null != comboControlBoardAddCircuits.getSelectedItem().toString())?comboControlBoardAddCircuits.getSelectedItem().toString():"";
+		}
+		if (null != comboControlBoardAddNema && comboControlBoardAddNema.getItemCount() > 0 && !comboControlBoardAddNema.getSelectedItem().toString().isEmpty()) {
+			controlBoardNema =(null != comboControlBoardAddNema.getSelectedItem().toString())?comboControlBoardAddNema.getSelectedItem().toString():"";
+		}
+		
 		if(null != textControlBoardAddDescription) {
 			textControlBoardAddDescription.setText("Caja para Tablero, " +
 					controlBoardType +
@@ -7302,10 +7307,20 @@ public class SalesMainView extends JFrame{
 	}
 	
 	private void updateControlBoardTextEditDescription() {
-		String controlBoardType = (null != comboControlBoardEditType.getSelectedItem().toString())?comboControlBoardEditType.getSelectedItem().toString():"";
-		String controlBoardPhases =(null != comboControlBoardEditPhases.getSelectedItem().toString())?comboControlBoardEditPhases.getSelectedItem().toString():"";
-		String controlBoardCircuits =(null != comboControlBoardEditCircuits.getSelectedItem().toString())?comboControlBoardEditCircuits.getSelectedItem().toString():"";
-		String controlBoardNema =(null != comboControlBoardEditNema.getSelectedItem().toString())?comboControlBoardEditNema.getSelectedItem().toString():"";
+		String controlBoardType = "", controlBoardPhases = "", controlBoardCircuits = "", controlBoardNema = "";
+		if (null != comboControlBoardEditType && comboControlBoardEditType.getItemCount() > 0 && !comboControlBoardEditType.getSelectedItem().toString().isEmpty()) {
+			controlBoardType = (null != comboControlBoardEditType.getSelectedItem().toString())?comboControlBoardEditType.getSelectedItem().toString():"";
+		}
+		if (null != comboControlBoardEditPhases && comboControlBoardEditPhases.getItemCount() > 0 && !comboControlBoardEditPhases.getSelectedItem().toString().isEmpty()) {
+			controlBoardPhases =(null != comboControlBoardEditPhases.getSelectedItem().toString())?comboControlBoardEditPhases.getSelectedItem().toString():"";
+		}
+		if (null != comboControlBoardEditCircuits && comboControlBoardEditCircuits.getItemCount() > 0 && !comboControlBoardEditCircuits.getSelectedItem().toString().isEmpty()) {
+			controlBoardCircuits =(null != comboControlBoardEditCircuits.getSelectedItem().toString())?comboControlBoardEditCircuits.getSelectedItem().toString():"";
+		}
+		if (null != comboControlBoardEditNema && comboControlBoardEditNema.getItemCount() > 0 && !comboControlBoardEditNema.getSelectedItem().toString().isEmpty()) {
+			controlBoardNema =(null != comboControlBoardEditNema.getSelectedItem().toString())?comboControlBoardEditNema.getSelectedItem().toString():"";
+		}
+		
 		if(null != textControlBoardEditDescription) {
 			textControlBoardEditDescription.setText("Caja para Tablero, " +
 					controlBoardType +
@@ -8220,10 +8235,15 @@ public class SalesMainView extends JFrame{
 		String[] budgetsColumnNames = {"Id", "Codigo", "Fecha", "Vencimiento", "Codigo Cliente", "Empresa", "Representante", "Nombre Obra", "Forma de Pago", "Vendedor", "Sitio Entrega", "Tiempo Entrega", "Periodo de Entrega"};
 		
 		budgetsData = db.fetchAll(db.select(budgetsQuery));
-		
 		tableBudgetsResult = new JTable();
 		
-		tableBudgetsResult.setModel(new MyTableModel(budgetsData, budgetsColumnNames));
+		if (budgetsData.length > 0) {
+			MyTableModel mForTable = new MyTableModel(budgetsQuery, budgetsColumnNames, "budgets", new HashSet<Integer>());
+			tableBudgetsResult.setModel(mForTable);
+		} else {
+			tableBudgetsResult.setModel(new DefaultTableModel());
+		}
+		
 		tableBudgetsResult.setAutoCreateRowSorter(true);
 		tableBudgetsResult.getTableHeader().setReorderingAllowed(false);
 		
@@ -8623,38 +8643,27 @@ public class SalesMainView extends JFrame{
 		fields.add(SalesMainView.BUDGET_DELIVERY_PERIOD_FIELD);
 		//fields.add(MainView.BUDGET_TRACING_FIELD);
 		
-		ArrayList<String> tables = new ArrayList<String>();
-		tables.add(SalesMainView.BUDGET_TABLE);
-		tables.add(SalesMainView.BUDGET_DISPATCH_PLACES_TABLE);
-		tables.add(SalesMainView.BUDGET_DELIVERY_PERIODS_TABLE);
-		tables.add(SalesMainView.BUDGET_PAYMENT_METHODS_TABLE);
-		tables.add(SalesMainView.BUDGET_STAGES_TABLE);
-		tables.add(SalesMainView.USERS_TABLE);
-		tables.add(SalesMainView.CLIENTS_TABLE);
-		
 		String fieldsQuery = StringTools.implode(",", fields);
-		String tablesQuery = StringTools.implode(",", tables);
 		String budgetsQuery = "SELECT " + fieldsQuery
-						+ " FROM "
-						+ tablesQuery
-						+ " WHERE budgets.client_id = clients.id "
-						// Fix these conditions to make them disappear when filtering
-						
-//						+ "AND budgets.client_id = clients.id "
-						+ "AND budgets.payment_method_id = budget_payment_methods.id "
-						+ "AND budgets.seller_id = users.id "
-						+ "AND budgets.dispatch_place_id = budget_dispatch_places.id "
-						+ "AND budgets.delivery_period_id = budget_delivery_periods.id "
-//						+ "AND budgets.stage_id = budget_stages.id "
+						+ " FROM budgets "
+						+ " INNER JOIN clients ON clients.id = budgets.client_id "
+						+ " INNER JOIN budget_payment_methods ON budget_payment_methods.id = budgets.payment_method_id "
+						+ " INNER JOIN users ON users.id = budgets.seller_id "
+						+ " INNER JOIN budget_dispatch_places ON budget_dispatch_places.id = budgets.dispatch_place_id "
+						+ " INNER JOIN budget_delivery_periods ON budget_delivery_periods.id = budgets.delivery_period_id "
 						+ whereQuery
 						+ " GROUP BY budgets.id ";
-
+		
 		budgetsData = db.fetchAll(db.select(budgetsQuery));
 		
-		String[] budgetsColumnNames = {"Id", "Codigo", "Fecha", "Vencimiento", "Codigo Cliente", "Empresa", "Representante", "Nombre Obra", "Forma de Pago", "Vendedor", "Sitio Entrega",  "Tiempo Entrega", "Periodo de Entrega"};
+		String[] budgetsColumnNames = {"Id", "Codigo", "Fecha", "Vencimiento", "Codigo Cliente", "Empresa", "Representante", "Nombre Obra", "Forma de Pago", "Vendedor", "Sitio Entrega", "Tiempo Entrega", "Periodo de Entrega"};
 		
-		if(budgetsData.length > 0) {
-			tableBudgetsResult.setModel(new MyTableModel(budgetsData, budgetsColumnNames));
+		if (budgetsData.length > 0) {
+			if (tableBudgetsResult.getModel() instanceof MyTableModel) {
+				((MyTableModel) tableBudgetsResult.getModel()).setQuery(budgetsQuery);
+			} else {
+				tableBudgetsResult.setModel(new MyTableModel(budgetsQuery, budgetsColumnNames, "budgets", new HashSet<Integer>()));
+			}
 		} else {
 			tableBudgetsResult.setModel(new DefaultTableModel());
 		}

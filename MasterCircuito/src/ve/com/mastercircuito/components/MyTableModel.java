@@ -1,35 +1,38 @@
 package ve.com.mastercircuito.components;
 
 import java.util.HashSet;
-import javax.swing.table.AbstractTableModel;
+import java.util.Vector;
+
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
 import ve.com.mastercircuito.db.Db;
 
-public class MyTableModel extends AbstractTableModel {
+public class MyTableModel extends DefaultTableModel {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -7291256884024381770L;
+	
+	private Db db;
 	private String[] columnNames;
 	private String query;
-	private Object[][] data;
+//	private Object[][] data;
 	private String table;
 	private HashSet<Integer> editableColumns;
 	
 	public MyTableModel(String query, String[] columnNames, String table, HashSet<Integer> editableColumns) {
-		super();
-		Db db = new Db();
+		this(queryToObject(query), columnNames);
 		this.query = query;
-		this.data = db.fetchAll(db.select(query));
 		this.columnNames = columnNames;
 		this.table = table;
 		this.editableColumns = editableColumns;
 	}
 	
 	public MyTableModel(Object[][] data, String[] columnNames) {
-		super();
-		this.data = data;
+		super(data, columnNames);
+//		db = new Db();
+//		this.data = data;
 		this.columnNames = columnNames;
 	}
 	
@@ -47,23 +50,63 @@ public class MyTableModel extends AbstractTableModel {
 		return this;
 	}
 	
-	@Override
-	public int getRowCount() {
-		return this.data.length;
+	protected static Object[][] queryToObject(String query) {
+		if (query == null) {
+			return null;
+		}
+		Db db = new Db();
+		Object[][] localObject = db.fetchAll(db.select(query));
+		return localObject;
+	}
+	
+	protected static Object[][] queryToObjectBoolean(String query, int booleanColumn) {
+		if (query == null) {
+			return null;
+		}
+		Db db = new Db();
+		Object[][] localObject = db.fetchAllAddBoolean(db.select(query), booleanColumn);
+		return localObject;
+	}
+	
+	public void setQuery(String query) {
+		this.setDataVector(convertToVector(queryToObject(query)), this.columnIdentifiers);
+		if (this.getDataVector().size() > 0) {
+			fireTableDataChanged();
+		} else {
+			this.setRowCount(0);
+		}
+	}
+	
+	public void setQueryAddBoolean(String query, int booleanColumn) {
+		this.setDataVector(convertToVector(queryToObjectBoolean(query, booleanColumn)), this.columnIdentifiers);
+		if (this.getDataVector().size() > 0) {
+			fireTableDataChanged();
+		} else {
+			this.setRowCount(0);
+		}
 	}
 	
 	@Override
-	public int getColumnCount() {
-		return this.columnNames.length;
+	public int getRowCount() {
+		return this.getDataVector().size();
 	}
+	
+//	@Override
+//	public int getColumnCount() {
+//		return this.columnNames.length;
+//	}
 
 	@Override
 	public Object getValueAt(int row, int col) {
-		return this.data[row][col];
+		@SuppressWarnings("unchecked")
+		Vector<Object> localVector = (Vector<Object>) this.getDataVector().elementAt(row);
+		return localVector.elementAt(col);
 	}
 	
 	public Object getValueAt(int row, String colName) {
-		return this.data[row][this.findColumn(colName)];
+		@SuppressWarnings("unchecked")
+		Vector<Object> localVector = (Vector<Object>) this.getDataVector().elementAt(row);
+		return localVector.elementAt(this.findColumn(colName));
 	}
 	
 	@Override
@@ -88,9 +131,9 @@ public class MyTableModel extends AbstractTableModel {
 		this.editableColumns = editableColumns;
 	}
 	
-	public void makeColumnEditable(Integer column) {
-		this.editableColumns.add(column);
-	}
+//	public void makeColumnEditable(Integer column) {
+//		this.editableColumns.add(column);
+//	}
 	
 	@Override
 	public boolean isCellEditable(int row, int col) {
@@ -108,23 +151,29 @@ public class MyTableModel extends AbstractTableModel {
 		if(columnClass.equals(Boolean.class)) {
 			boolean hasMain = false;
 			//Map<Integer,Boolean> mainSwitchesMap = new HashMap<Integer,Boolean>();
-			for(int i = 0; i < data.length; i++) {
-				if(data[i][col].equals(Boolean.TRUE)) {
+			for(int i = 0; i < this.dataVector.size(); i++) {
+				@SuppressWarnings("unchecked")
+				Vector<Object> localVector = (Vector<Object>) this.dataVector.elementAt(i);
+				if(localVector.elementAt(col).equals(Boolean.TRUE)) {
 					hasMain = true;
 				}
 			}
-			if (((!hasMain && value.equals(Boolean.TRUE)) || (hasMain && value.equals(Boolean.FALSE))) && Integer.valueOf((String) this.data[row][2]) == 1) {
-				Integer switchId = Integer.valueOf(String.valueOf(this.data[row][0]));
+			@SuppressWarnings("unchecked")
+			Vector<Object> localVector = (Vector<Object>) this.dataVector.elementAt(row);
+			if (((!hasMain && value.equals(Boolean.TRUE)) || (hasMain && value.equals(Boolean.FALSE))) && Integer.valueOf((String) localVector.elementAt(2)) == 1) {
+				Integer switchId = Integer.valueOf(String.valueOf(localVector.elementAt(0)));
 				updateBoolean(switchId, (Boolean) value);
-				this.data[row][col] = value;
+				localVector.setElementAt((Boolean) value, col);
 				fireTableCellUpdated(row, col);
 			}
 		} else {
 			boolean cellChanged = false;
-			if(this.data[row][col] != value) {
+			@SuppressWarnings("unchecked")
+			Vector<Object> localVector = (Vector<Object>) this.dataVector.elementAt(row);
+			if(localVector.elementAt(col) != value) {
 				cellChanged = true;
 			}
-			this.data[row][col] = value;
+			localVector.setElementAt(value, col);
 			fireTableCellUpdated(row, col);
 			
 			String columnName = this.getColumnName(col);
@@ -171,12 +220,11 @@ public class MyTableModel extends AbstractTableModel {
 					case "budget_control_boards":
 					case "budget_materials":
 					case "materials":
-						sql = "UPDATE " + table + " SET " + field + " = '" + value + "' WHERE id = " + this.data[row][0];
+						sql = "UPDATE " + table + " SET " + field + " = '" + value + "' WHERE id = " + localVector.elementAt(0);
 						Db.update(sql);
 						break;
 				}
-				Db db = new Db();
-				this.data = db.fetchAll(db.select(query));
+				this.setDataVector(convertToVector(db.fetchAll(db.select(query))), localVector);
 				fireTableDataChanged();
 			}
 		}
@@ -196,10 +244,11 @@ public class MyTableModel extends AbstractTableModel {
 		}
 	}
 	
-	public void add(Object[] value) {
-		for(int i = 0; i < value.length; i++) {
-			this.data[getRowCount()][i] = value[i];
-		}
-	}
+//	public void add(Object[] value) {
+//		for(int i = 0; i < value.length; i++) {
+//			this.addRow(value);
+//			this.data[getRowCount()][i] = value[i];
+//		}
+//	}
 	
 }
