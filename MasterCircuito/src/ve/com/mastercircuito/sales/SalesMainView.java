@@ -289,8 +289,8 @@ public class SalesMainView extends JFrame{
 		private MyInternalFrame boardsFrame = new MyInternalFrame();
 		private Object[][] boardsData = {};
 		private Object[][] boardSwitchesData = {};
-		private Object[][] boardMaterialsData = {};
-		private Object[][] controlBoardMaterialsData = {};
+//		private Object[][] boardMaterialsData = {};
+//		private Object[][] controlBoardMaterialsData = {};
 		private JTabbedPane boardViewTabbedPane;
 	// Board View Objects
 		private JPanel panelBoardDescription, panelWrapperBoardDescription;
@@ -566,8 +566,7 @@ public class SalesMainView extends JFrame{
 		String macAddress = GetNetworkAddress.GetAddress("mac");
 		
 		if(null != macAddress){
-			if(false) {
-//			if(!macAddress.equalsIgnoreCase("6c-f0-49-0e-ff-0a")) {
+			if(!macAddress.equalsIgnoreCase("6c-f0-49-0e-ff-0a")) {
 				JOptionPane.showMessageDialog(null, "Instalacion corrupta", "Instalacion corrupta", JOptionPane.ERROR_MESSAGE);
 				try {
 					throw new Exception("Instalacion corrupta");
