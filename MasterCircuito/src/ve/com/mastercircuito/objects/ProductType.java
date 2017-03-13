@@ -5,8 +5,9 @@ public class ProductType {
 	public static final Integer SWITCH_TYPE = 1;
 	public static final Integer BOX_TYPE = 2;
 	public static final Integer BOARD_TYPE = 3;
-	public static final Integer MATERIAL_TYPE = 4;
-	public static final Integer SPECIALS_TYPE = 5;
+	public static final Integer CONTROL_BOARD_TYPE = 4;
+	public static final Integer MATERIAL_TYPE = 5;
+	
 	
 	private Integer id;
 	private String type;

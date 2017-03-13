@@ -912,25 +912,25 @@ public class Db extends MysqlDriver {
 		return this.delete(queryDelete);
 	}
 	
-	public ArrayList<Integer> getBoardSwitchMainIds(int boardId) {
-		ArrayList<Integer> boardSwitchMainIds = new ArrayList<Integer>();
-		ResultSet setBoardSwitchMainIds;
+	public int getBoardSwitchMainId(int boardId) {
+		int boardSwitchMainId = 0;
+		ResultSet setBoardSwitchMainId;
 		CallableStatement statement;
 		
 		try {
 			statement = this.conn.prepareCall("{call SP_GET_BOARD_MAIN_SWITCHES(?)}");
 			statement.setInt(1, boardId);
-			setBoardSwitchMainIds = statement.executeQuery();
+			setBoardSwitchMainId = statement.executeQuery();
 			
-			while(setBoardSwitchMainIds.next()) {
-				boardSwitchMainIds.add(setBoardSwitchMainIds.getInt(1));
+			while(setBoardSwitchMainId.next()) {
+				boardSwitchMainId = setBoardSwitchMainId.getInt(1);
 			}
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		
-		return boardSwitchMainIds;
+		return boardSwitchMainId;
 	}
 	
 	public int getBoardSwitchesQuantity(int boardId) {
@@ -1579,7 +1579,7 @@ public class Db extends MysqlDriver {
 				String strLockType = setBudgetBoards.getString("lock_type");
 				LockType lockType = new LockType(lockTypeId, strLockType);
 				
-				ArrayList<Integer> mainSwitchIds = this.getBoardSwitchMainIds(id);
+				int mainSwitchId = this.getBoardSwitchMainId(id);
 				
 				ArrayList<Material> materials = this.getBoardMaterials(id);
 				
@@ -1589,7 +1589,7 @@ public class Db extends MysqlDriver {
 				
 				ArrayList<Switch> switches = new ArrayList<Switch>();
 				switches = this.getBoardSwitches(id);
-				boards.add(new Board(id, name, boardType, installation, nema, barCapacity, barType, circuits, boardVoltage, phases, ground, interruption, lockType, mainSwitchIds, materials, price, comments, active, switches));
+				boards.add(new Board(id, name, boardType, installation, nema, barCapacity, barType, circuits, boardVoltage, phases, ground, interruption, lockType, mainSwitchId, materials, price, comments, active, switches));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -1649,57 +1649,8 @@ public class Db extends MysqlDriver {
 		
 	}
 
-	public ArrayList<Budget> getBudgets(int stageId) {
-		ArrayList<Budget> budgets = new ArrayList<Budget>();
-		ResultSet setBudgets;
-		
-		setBudgets = this.select("SELECT * FROM budgets WHERE stage_id = " + stageId);
-		
-		try {
-			while(setBudgets.next()) {
-				int id = setBudgets.getInt("id");
-				String code = setBudgets.getString("code");
-				java.sql.Date date = setBudgets.getDate("date");
-				int expiryDays = setBudgets.getInt("expiry_days");
-				
-				int clientId = setBudgets.getInt("client_id");
-				Client client = new Client(this.getClientInfo(clientId));
-				
-				String workName = setBudgets.getString("work_name");
-				
-				int paymentMethodId = setBudgets.getInt("payment_method_id");
-				PaymentMethod paymentMethod = new PaymentMethod(this.getPaymentMethodInfo(paymentMethodId));
-				
-				int sellerId = setBudgets.getInt("seller_id");
-				User seller = new User(this.getSellerInfo(sellerId));
-				
-				int dispatchPlaceId = setBudgets.getInt("dispatch_place_id");
-				DispatchPlace dispatchPlace = new DispatchPlace(this.getDispachPlaceInfo(dispatchPlaceId));
-				
-				int deliveryTime = setBudgets.getInt("delivery_time");
-				
-				int deliveryPeriodId = setBudgets.getInt("delivery_period_id");
-				DeliveryPeriod deliveryPeriod = new DeliveryPeriod(this.getDeliveryPeriodInfo(deliveryPeriodId));
-				
-				boolean tracing = (setBudgets.getInt("tracing")==1)?true:false;
-				
-				BudgetStage stage = new BudgetStage(this.getBudgetStageInfo(stageId)); 
-				
-				String notes = setBudgets.getString("notes");
-				ArrayList<Switch> switches = new ArrayList<Switch>();
-				switches = this.getBudgetSwitches(id);
-				ArrayList<Box> boxes = new ArrayList<Box>();
-				boxes = this.getBudgetBoxes(id);
-				ArrayList<Board> boards = new ArrayList<Board>();
-				boards = this.getBudgetBoards(id);
-				budgets.add(new Budget(id, code, date, expiryDays, client, workName, paymentMethod, seller, dispatchPlace, deliveryTime, deliveryPeriod, tracing, stage, notes, switches, boxes, boards));
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-			JOptionPane.showMessageDialog(null, "Error al obtener los interruptores del presupuesto");
-		}
-		
-		return budgets;
+	public static ArrayList<Budget> getBudgets(int stageId) {
+		return Db.getBudgets(stageId, "");
 	}
 
 	private BudgetStage getBudgetStageInfo(int stageId) {
@@ -1907,22 +1858,50 @@ public class Db extends MysqlDriver {
 		return productionOrder;
 	}
 	
-	public boolean productionOrderExists(int budgetId) {
+	public static boolean productionOrderExists(int orderId) {
+		Db db = new Db();
 		String queryString;
+		int numRows = 0;
 		
-		queryString = "SELECT id FROM production_orders WHERE budget_id = '" + budgetId + "'";
-		this.select(queryString);
+		queryString = "SELECT id FROM production_orders WHERE id = '" + orderId + "'";
+		db.select(queryString);
+		numRows = db.getNumRows();
 		
-		return (this.getNumRows() > 0)? true:false;
+		try {
+			db.conn.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return (numRows > 0)? true:false;
 	}
 	
-	public ProductionOrder pullProductionOrderByBudget(int budgetId) {
+	public static boolean productionOrderExistsByBudgetId(int budgetId) {
+		Db db = new Db();
+		String queryString;
+		int numRows = 0;
+		
+		queryString = "SELECT id FROM production_orders WHERE budget_id = '" + budgetId + "'";
+		db.select(queryString);
+		numRows = db.getNumRows();
+		
+		try {
+			db.conn.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return (numRows > 0)? true:false;
+	}
+	
+	public static ProductionOrder pullProductionOrderByBudgetId(int budgetId) {
+		Db db = new Db();
 		ProductionOrder productionOrder = new ProductionOrder();
 		ResultSet setProductionOrder;
 		CallableStatement statement;
 		
 		try {
-			statement = this.conn.prepareCall("{call SP_GET_PRODUCTION_ORDER_INFO_BY_BUDGET(?)}");
+			statement = db.conn.prepareCall("{call SP_GET_PRODUCTION_ORDER_INFO_BY_BUDGET(?)}");
 			statement.setInt(1, budgetId);
 			setProductionOrder = statement.executeQuery();
 			if (setProductionOrder.next()) {
@@ -1937,16 +1916,22 @@ public class Db extends MysqlDriver {
 		}catch(SQLException e) {
 			e.printStackTrace();
 		}
+		try {
+			db.conn.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		return productionOrder;
 	}
 
-	public ArrayList<Product> getProductionOrderProducts(int productionOrderId) {
+	public static ArrayList<Product> getProductionOrderProducts(int productionOrderId) {
+		Db db = new Db();
 		ArrayList<Product> products = new ArrayList<Product>();
 		ResultSet setProducts;
 		CallableStatement statement;
 		
 		try {
-			statement = this.conn.prepareCall("{call SP_GET_PRODUCTION_ORDER_SWITCHES(?)}");
+			statement = db.conn.prepareCall("{call SP_GET_PRODUCTION_ORDER_SWITCHES(?)}");
 			statement.setInt(1, productionOrderId);
 			setProducts = statement.executeQuery();
 			while (setProducts.next()) {
@@ -1970,7 +1955,7 @@ public class Db extends MysqlDriver {
 				products.add(new Switch(id, brandId, brand, modelId, model, reference, phases, currentId, current, voltageId, voltage, interruptionId, interruption, price, active, containerId, quantity));
 			}
 			
-			statement = this.conn.prepareCall("{call SP_GET_PRODUCTION_ORDER_BOXES(?)}");
+			statement = db.conn.prepareCall("{call SP_GET_PRODUCTION_ORDER_BOXES(?)}");
 			statement.setInt(1, productionOrderId);
 			setProducts = statement.executeQuery();
 			while (setProducts.next()) {
@@ -2026,7 +2011,7 @@ public class Db extends MysqlDriver {
 				products.add(new Box(id, boxType, installation, nema, pairs, sheet, finish, color, height, width, depth, units, caliber, caliberComments, lockType, price, comments, active));
 			}
 			
-			statement = this.conn.prepareCall("{call SP_GET_PRODUCTION_ORDER_BOARDS(?)}");
+			statement = db.conn.prepareCall("{call SP_GET_PRODUCTION_ORDER_BOARDS(?)}");
 			statement.setInt(1, productionOrderId);
 			setProducts = statement.executeQuery();
 			while (setProducts.next()) {
@@ -2071,19 +2056,24 @@ public class Db extends MysqlDriver {
 				String strLockType = setProducts.getString("lock_type");
 				LockType lockType = new LockType(lockTypeId, strLockType);
 				
-				ArrayList<Integer> mainSwitchIds = this.getBoardSwitchMainIds(id);
+				int mainSwitchId = db.getBoardSwitchMainId(id);
 				
-				ArrayList<Material> materials = this.getBoardMaterials(id);
+				ArrayList<Material> materials = db.getBoardMaterials(id);
 				
 				double price = setProducts.getDouble("price");
 				String comments = setProducts.getString("comments");
 				boolean active = (setProducts.getInt("active")==1?true:false);
 				
 				ArrayList<Switch> switches = new ArrayList<Switch>();
-				switches = this.getBoardSwitches(id);
-				products.add(new Board(id, name, boardType, installation, nema, barCapacity, barType, circuits, boardVoltage, phases, ground, interruption, lockType, mainSwitchIds, materials, price, comments, active, switches));
+				switches = db.getBoardSwitches(id);
+				products.add(new Board(id, name, boardType, installation, nema, barCapacity, barType, circuits, boardVoltage, phases, ground, interruption, lockType, mainSwitchId, materials, price, comments, active, switches));
 			}
 		}catch(SQLException e) {
+			e.printStackTrace();
+		}
+		try {
+			db.conn.close();
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return products;
@@ -2142,7 +2132,7 @@ public class Db extends MysqlDriver {
 		return workOrders;
 	}
 	
-	public boolean setProductionOrderProcessed(int orderId) {
+	public static boolean setProductionOrderProcessed(int orderId) {
 		return Db.update("UPDATE production_orders SET processed = 1 WHERE id = " + orderId);
 	}
 	
@@ -2798,7 +2788,7 @@ public class Db extends MysqlDriver {
 	public static String getBudgetStage(int budgetId) {
 		Db db = new Db();
 		String budgetStage = "";
-		ResultSet rowStage = db.select("SELECT budget_stages.stage FROM budget_stages INNER JOIN budgets ON budgets.stage_id = budget_stages.id WHERE budgets.id = " + budgetId);
+		ResultSet rowStage = db.select("SELECT budget_stages.stage FROM budget_stages INNER JOIN budgets ON budgets.stage_id = budget_stages.id WHERE budgets.id = " + budgetId + " LIMIT 20");
 		
 		try {
 			if(rowStage.next()) {
@@ -2815,6 +2805,179 @@ public class Db extends MysqlDriver {
 		}
 		
 		return budgetStage;
+	}
+
+	public static boolean budgetHasProducts(int budgetId) {
+		boolean hasProducts = false;
+		Db db = new Db();
+		
+		db.select("SELECT id FROM budget_switches WHERE budget_container_id = " + budgetId);
+		hasProducts = (db.getNumRows() > 0)?true:hasProducts;
+		if(hasProducts) return true;
+		db.select("SELECT id FROM budget_boxes WHERE budget_container_id = " + budgetId);
+		hasProducts = (db.getNumRows() > 0)?true:hasProducts;
+		if(hasProducts) return true;
+		db.select("SELECT id FROM budget_boards WHERE budget_container_id = " + budgetId);
+		hasProducts = (db.getNumRows() > 0)?true:hasProducts;
+		if(hasProducts) return true;
+		db.select("SELECT id FROM budget_control_boards WHERE budget_container_id = " + budgetId);
+		hasProducts = (db.getNumRows() > 0)?true:hasProducts;
+		if(hasProducts) return true;
+		db.select("SELECT id FROM budget_materials WHERE budget_container_id = " + budgetId);
+		hasProducts = (db.getNumRows() > 0)?true:hasProducts;
+		if(hasProducts) return true;
+		return false;
+	}
+
+	public static ArrayList<Budget> getBudgets(int stageId, String whereQuery) {
+		Db db = new Db();
+		ArrayList<Budget> budgets = new ArrayList<Budget>();
+		ResultSet setBudgets;
+		
+		setBudgets = db.select("SELECT budgets.*, clients.client FROM budgets "
+				+ " INNER JOIN clients ON clients.id = budgets.client_id"
+				+ " WHERE stage_id = " + stageId + " " + whereQuery + " ORDER BY id DESC");
+		
+		try {
+			while(setBudgets.next()) {
+				int id = setBudgets.getInt("id");
+				String code = setBudgets.getString("code");
+				java.sql.Date date = setBudgets.getDate("date");
+				int expiryDays = setBudgets.getInt("expiry_days");
+				
+				int clientId = setBudgets.getInt("client_id");
+				Client client = new Client(db.getClientInfo(clientId));
+				
+				String workName = setBudgets.getString("work_name");
+				
+				int paymentMethodId = setBudgets.getInt("payment_method_id");
+				PaymentMethod paymentMethod = new PaymentMethod(db.getPaymentMethodInfo(paymentMethodId));
+				
+				int sellerId = setBudgets.getInt("seller_id");
+				User seller = new User(db.getSellerInfo(sellerId));
+				
+				int dispatchPlaceId = setBudgets.getInt("dispatch_place_id");
+				DispatchPlace dispatchPlace = new DispatchPlace(db.getDispachPlaceInfo(dispatchPlaceId));
+				
+				int deliveryTime = setBudgets.getInt("delivery_time");
+				
+				int deliveryPeriodId = setBudgets.getInt("delivery_period_id");
+				DeliveryPeriod deliveryPeriod = new DeliveryPeriod(db.getDeliveryPeriodInfo(deliveryPeriodId));
+				
+				boolean tracing = (setBudgets.getInt("tracing")==1)?true:false;
+				
+				BudgetStage stage = new BudgetStage(db.getBudgetStageInfo(stageId)); 
+				
+				String notes = setBudgets.getString("notes");
+				ArrayList<Switch> switches = new ArrayList<Switch>();
+				switches = db.getBudgetSwitches(id);
+				ArrayList<Box> boxes = new ArrayList<Box>();
+				boxes = db.getBudgetBoxes(id);
+				ArrayList<Board> boards = new ArrayList<Board>();
+				boards = db.getBudgetBoards(id);
+				budgets.add(new Budget(id, code, date, expiryDays, client, workName, paymentMethod, seller, dispatchPlace, deliveryTime, deliveryPeriod, tracing, stage, notes, switches, boxes, boards));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener los presupuestos");
+		}
+		
+		try {
+			db.conn.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return budgets;
+	}
+
+	public WorkOrder pullWorkOrder(Integer orderId, Integer budgetId) {
+		WorkOrder workOrder = new WorkOrder();
+		ResultSet setWorkOrder;
+		CallableStatement statement;
+		
+		try {
+			statement = this.conn.prepareCall("{call SP_GET_WORK_ORDER_INFO_BY_BUDGET_ID(?,?)}");
+			statement.setInt(1, orderId);
+			statement.setInt(2, budgetId);
+			setWorkOrder = statement.executeQuery();
+			if (setWorkOrder.next()) {
+				int id = setWorkOrder.getInt("id");
+				int productionOrderId = setWorkOrder.getInt("production_order_id");
+				int productId = setWorkOrder.getInt("product_id");
+				int productTypeId = setWorkOrder.getInt("product_type_id");
+				int creatorId = setWorkOrder.getInt("creator_id");
+				int authorizerId = setWorkOrder.getInt("authorizer_id");
+				Timestamp timestampProcessed = setWorkOrder.getTimestamp("date_processed");
+				Timestamp timestampFinished = setWorkOrder.getTimestamp("date_finished");
+				boolean processed = (setWorkOrder.getInt("processed")==1?true:false);
+				workOrder = new WorkOrder(id, productionOrderId, productId, productTypeId, creatorId, authorizerId, timestampProcessed, timestampFinished, processed);
+			}
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return workOrder;
+	}
+
+	public static Budget pullBudget(int budgetId) {
+		Budget budget = new Budget();
+		Db db = new Db();
+		ResultSet setBudget;
+		CallableStatement statement;
+		
+		try {
+			statement = db.conn.prepareCall("{call SP_GET_BUDGET_INFO_BY_ID(?)}");
+			statement.setInt(1, budgetId);
+			setBudget = statement.executeQuery();
+			if (setBudget.next()) {
+				int id = setBudget.getInt("id");
+				String code = setBudget.getString("code");
+				java.sql.Date date = setBudget.getDate("date");
+				int expiryDays = setBudget.getInt("expiry_days");
+				
+				int clientId = setBudget.getInt("client_id");
+				Client client = new Client(db.getClientInfo(clientId));
+				
+				String workName = setBudget.getString("work_name");
+				
+				int paymentMethodId = setBudget.getInt("payment_method_id");
+				PaymentMethod paymentMethod = new PaymentMethod(db.getPaymentMethodInfo(paymentMethodId));
+				
+				int sellerId = setBudget.getInt("seller_id");
+				User seller = new User(db.getSellerInfo(sellerId));
+				
+				int dispatchPlaceId = setBudget.getInt("dispatch_place_id");
+				DispatchPlace dispatchPlace = new DispatchPlace(db.getDispachPlaceInfo(dispatchPlaceId));
+				
+				int deliveryTime = setBudget.getInt("delivery_time");
+				
+				int deliveryPeriodId = setBudget.getInt("delivery_period_id");
+				DeliveryPeriod deliveryPeriod = new DeliveryPeriod(db.getDeliveryPeriodInfo(deliveryPeriodId));
+				
+				boolean tracing = (setBudget.getInt("tracing")==1)?true:false;
+				
+				BudgetStage stage = new BudgetStage(db.getBudgetStageInfo(setBudget.getInt("stage_id"))); 
+				
+				String notes = setBudget.getString("notes");
+				ArrayList<Switch> switches = new ArrayList<Switch>();
+				switches = db.getBudgetSwitches(id);
+				ArrayList<Box> boxes = new ArrayList<Box>();
+				boxes = db.getBudgetBoxes(id);
+				ArrayList<Board> boards = new ArrayList<Board>();
+				boards = db.getBudgetBoards(id);
+				budget = new Budget(id, code, date, expiryDays, client, workName, paymentMethod, seller, dispatchPlace, deliveryTime, deliveryPeriod, tracing, stage, notes, switches, boxes, boards);
+			}
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
+		
+		try {
+			db.conn.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return budget;
 	}
 	
 }

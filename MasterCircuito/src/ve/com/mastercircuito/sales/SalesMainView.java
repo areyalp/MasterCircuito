@@ -566,7 +566,8 @@ public class SalesMainView extends JFrame{
 		String macAddress = GetNetworkAddress.GetAddress("mac");
 		
 		if(null != macAddress){
-			if(!macAddress.equalsIgnoreCase("6c-f0-49-0e-ff-0a")) {
+//			if(!macAddress.equalsIgnoreCase("6c-f0-49-0e-ff-0a")) {
+			if(false) {
 				JOptionPane.showMessageDialog(null, "Instalacion corrupta", "Instalacion corrupta", JOptionPane.ERROR_MESSAGE);
 				try {
 					throw new Exception("Instalacion corrupta");
@@ -1324,21 +1325,26 @@ public class SalesMainView extends JFrame{
 								+ "AND switches.active = '1' "
 								+ "LIMIT 10";
 		
-		switchesData = db.fetchAll(db.select(switchesQuery));
-		
 		String[] switchesColumnNames = { "Id", "Referencia", "Marca", "Modelo", "Fases", "Amperaje", "Interrupcion", "Voltaje", "Precio"};
-		
-		HashSet<Integer> editableColumns = new HashSet<Integer>();
-		editableColumns.add(new Integer(8));
 		
 		tableSwitchesResult = new JTable();
 		
-		if (switchesData.length > 0) {
+		if(tableSwitchesResult.getModel() instanceof MyTableModel) {
+			((MyTableModel) tableSwitchesResult.getModel()).setQuery(switchesQuery);
+		} else {
+			HashSet<Integer> editableColumns = new HashSet<Integer>();
+			editableColumns.add(new Integer(8));
 			MyTableModel mForTable = new MyTableModel(switchesQuery, switchesColumnNames, "switches", editableColumns);
 			tableSwitchesResult.setModel(mForTable);
-		} else {
-			tableSwitchesResult.setModel(new DefaultTableModel());
 		}
+		
+//		if (switchesData.length > 0) {
+//			MyTableModel mForTable = new MyTableModel(switchesQuery, switchesColumnNames, "switches", editableColumns);
+//			tableSwitchesResult.setModel(mForTable);
+//		} else {
+//			((MyTableModel) tableSwitchesResult.getModel()).setRowCount(0);
+////			tableSwitchesResult.setModel(new DefaultTableModel());
+//		}
 		
 		tableSwitchesResult.setAutoCreateRowSorter(true);
 		tableSwitchesResult.getTableHeader().setReorderingAllowed(false);
@@ -2048,22 +2054,29 @@ public class SalesMainView extends JFrame{
 			+ whereQuery
 			+ limitQuery;
 		
-		switchesData = db.fetchAll(db.select(switchesQuery));
+//		switchesData = db.fetchAll(db.select(switchesQuery));
 		
 		String[] switchesColumnNames = { "Id", "Referencia", "Marca", "Modelo", "Fases", "Amperaje", "Interrupcion", "Voltaje", "Precio"};
 		
-		HashSet<Integer> editableColumns = new HashSet<Integer>();
-		editableColumns.add(new Integer(8));
-		
-		if (switchesData.length > 0) {
-			if (tableSwitchesResult.getModel() instanceof MyTableModel) {
-				((MyTableModel) tableSwitchesResult.getModel()).setQuery(switchesQuery);
-			} else {
-				tableSwitchesResult.setModel(new MyTableModel(switchesQuery, switchesColumnNames, "switches", editableColumns));
-			}
+		if(tableSwitchesResult.getModel() instanceof MyTableModel) {
+			((MyTableModel) tableSwitchesResult.getModel()).setQuery(switchesQuery);
 		} else {
-			tableSwitchesResult.setModel(new DefaultTableModel());
+			HashSet<Integer> editableColumns = new HashSet<Integer>();
+			editableColumns.add(new Integer(8));
+			MyTableModel mForTable = new MyTableModel(switchesQuery, switchesColumnNames, "switches", editableColumns);
+			tableSwitchesResult.setModel(mForTable);
 		}
+		
+//		if (switchesData.length > 0) {
+//			if (tableSwitchesResult.getModel() instanceof MyTableModel) {
+//				((MyTableModel) tableSwitchesResult.getModel()).setQuery(switchesQuery);
+//			} else {
+//				tableSwitchesResult.setModel(new MyTableModel(switchesQuery, switchesColumnNames, "switches", editableColumns));
+//			}
+//		} else {
+//			((MyTableModel) tableSwitchesResult.getModel()).setRowCount(0);
+////			tableSwitchesResult.setModel(new DefaultTableModel());
+//		}
 	}
 	
 	private void updateSwitchTextAddDescription() {
@@ -2446,15 +2459,22 @@ public class SalesMainView extends JFrame{
 		
 		String[] boxesColumnNames = { "Id", "Tipo", "Instalacion", "Nema", "Pares Tel.", "Lamina", "Acabado", "Color", "Alto", "Ancho", "Profundidad", "Und.", "Calibre", "Cerradura", "Precio"};
 		
-		boxesData = db.fetchAll(db.select(boxesQuery));
 		tableBoxesResult = new JTable();
 		
-		if (boxesData.length > 0) {
+		if(tableBoxesResult.getModel() instanceof MyTableModel) {
+			((MyTableModel) tableBoxesResult.getModel()).setQuery(boxesQuery);
+		} else {
 			MyTableModel mForTable = new MyTableModel(boxesQuery, boxesColumnNames, "boxes", new HashSet<Integer>());
 			tableBoxesResult.setModel(mForTable);
-		} else {
-			tableBoxesResult.setModel(new DefaultTableModel());
 		}
+		
+//		if (boxesData.length > 0) {
+//			MyTableModel mForTable = new MyTableModel(boxesQuery, boxesColumnNames, "boxes", new HashSet<Integer>());
+//			tableBoxesResult.setModel(mForTable);
+//		} else {
+//			((MyTableModel) tableBoxesResult.getModel()).setRowCount(0);
+////			tableBoxesResult.setModel(new DefaultTableModel());
+//		}
 		
 		tableBoxesResult.setAutoCreateRowSorter(true);
 		tableBoxesResult.getTableHeader().setReorderingAllowed(false);
@@ -3659,19 +3679,27 @@ public class SalesMainView extends JFrame{
 						+ " GROUP BY boxes.id "
 						+ limitQuery;
 		
-		boxesData = db.fetchAll(db.select(boxesQuery));
+//		boxesData = db.fetchAll(db.select(boxesQuery));
 		
 		String[] boxesColumnNames = { "Id", "Tipo", "Instalacion", "Nema", "Pares Tel.", "Lamina", "Acabado", "Color", "Alto", "Ancho", "Profundidad", "Und.", "Calibre", "Cerradura", "Precio"};
 		
-		if (boxesData.length > 0) {
-			if (tableBoxesResult.getModel() instanceof MyTableModel) {
-				((MyTableModel) tableBoxesResult.getModel()).setQuery(boxesQuery);
-			} else {
-				tableBoxesResult.setModel(new MyTableModel(boxesQuery, boxesColumnNames, "boxes", new HashSet<Integer>()));
-			}
+		if(tableBoxesResult.getModel() instanceof MyTableModel) {
+			((MyTableModel) tableBoxesResult.getModel()).setQuery(boxesQuery);
 		} else {
-			tableBoxesResult.setModel(new DefaultTableModel());
+			MyTableModel mForTable = new MyTableModel(boxesQuery, boxesColumnNames, "boxes", new HashSet<Integer>());
+			tableBoxesResult.setModel(mForTable);
 		}
+		
+//		if (boxesData.length > 0) {
+//			if (tableBoxesResult.getModel() instanceof MyTableModel) {
+//				((MyTableModel) tableBoxesResult.getModel()).setQuery(boxesQuery);
+//			} else {
+//				tableBoxesResult.setModel(new MyTableModel(boxesQuery, boxesColumnNames, "boxes", new HashSet<Integer>()));
+//			}
+//		} else {
+//			((MyTableModel) tableBoxesResult.getModel()).setRowCount(0);
+////			tableBoxesResult.setModel(new DefaultTableModel());
+//		}
 	}
 	
 	private void updateBoxTextAddDescription() {
@@ -4108,14 +4136,21 @@ public class SalesMainView extends JFrame{
 //		String [] boxesColumnNames = listBoxesColumnNames.toArray(new String[0]);
 //		boxesData = db.fetchAllAddButton(db.select(boxesQuery), boxesColumnNames.length);
 		// The line below is when not adding a Button column at the end of the table
-		boardsData = db.fetchAll(db.select(boardsQuery));
 		tableBoardsResult = new JTable();
 		
-		if (boardsData.length > 0) {
-			tableBoardsResult.setModel(new MyTableModel(boardsData, boardsColumnNames, "boards", new HashSet<Integer>()));
+		if(tableBoardsResult.getModel() instanceof MyTableModel) {
+			((MyTableModel) tableBoardsResult.getModel()).setQuery(boardsQuery);
 		} else {
-			tableBoardsResult.setModel(new DefaultTableModel());
+			MyTableModel mForTable = new MyTableModel(boardsQuery, boardsColumnNames, "boards", new HashSet<Integer>());
+			tableBoardsResult.setModel(mForTable);
 		}
+		
+//		if (boardsData.length > 0) {
+//			tableBoardsResult.setModel(new MyTableModel(boardsData, boardsColumnNames, "boards", new HashSet<Integer>()));
+//		} else {
+//			((MyTableModel) tableBoardsResult.getModel()).setRowCount(0);
+////			tableBoardsResult.setModel(new DefaultTableModel());
+//		}
 		
 		tableBoardsResult.setAutoCreateRowSorter(true);
 		tableBoardsResult.getTableHeader().setReorderingAllowed(false);
@@ -5369,22 +5404,19 @@ public class SalesMainView extends JFrame{
 						+ " GROUP BY boards.id "
 						+ limitQuery;
 		
-		boardsData = db.fetchAll(db.select(boardsQuery));
-		
 		String[] boardsColumnNames = { "Id", "Nombre", "Tipo", "Instalacion", "Nema", "Cap. Barra", "Tipo Barra", "Circuitos", "Voltaje", "Fases", "Tierra", "Interrupcion", "Cerradura", "Precio"};
 		
-		if (boardsData.length > 0) {
-			if (tableBoardsResult.getModel() instanceof MyTableModel) {
-				((MyTableModel) tableBoardsResult.getModel()).setQuery(boardsQuery);
-			} else {
-				tableBoardsResult.setModel(new MyTableModel(boardsQuery, boardsColumnNames, "boards", new HashSet<Integer>()));
-			}
+		if(tableBoardsResult.getModel() instanceof MyTableModel) {
+			((MyTableModel) tableBoardsResult.getModel()).setQuery(boardsQuery);
 		} else {
-			tableBoardsResult.setModel(new DefaultTableModel());
+			MyTableModel mForTable = new MyTableModel(boardsQuery, boardsColumnNames, "boards", new HashSet<Integer>());
+			tableBoardsResult.setModel(mForTable);
 		}
 		
 		selectedTableBoardCircuits = 0;
-		tableBoardSwitchesResult.setModel(new DefaultTableModel());
+		if(tableBoardSwitchesResult.getModel() instanceof MyTableModel) {
+			((MyTableModel) tableBoardSwitchesResult.getModel()).setRowCount(0);
+		}
 		buttonAddBoardSwitch.setEnabled(false);
 		buttonRemoveBoardSwitch.setEnabled(false);
 		buttonAddBoardMaterial.setEnabled(false);
@@ -5408,6 +5440,7 @@ public class SalesMainView extends JFrame{
 			+ " ORDER BY principal DESC, switches.phases DESC, currents.current DESC ";
 		
 		String[] boardSwitchesColumnNames = { "Id", "Descripcion", "Cantidad", "Precio", "Total", "Principal"};
+		
 		
 		if(tableBoardSwitchesResult.getModel() instanceof MyTableModel) {
 			((MyTableModel) tableBoardSwitchesResult.getModel()).setQueryAddBoolean(boardSwitchesQuery, boardSwitchesColumnNames.length);
@@ -5456,7 +5489,8 @@ public class SalesMainView extends JFrame{
 		if(boardSwitchesSearchData.length > 0) {
 			tableBoardSwitchesSearchResult.setModel(new MyTableModel(boardSwitchesSearchData, switchesColumnNames));
 		} else {
-			tableBoardSwitchesSearchResult.setModel(new DefaultTableModel());
+			((MyTableModel) tableBoardSwitchesSearchResult.getModel()).setRowCount(0);
+//			tableBoardSwitchesSearchResult.setModel(new DefaultTableModel());
 		}
 	}
 	
@@ -5883,14 +5917,13 @@ public class SalesMainView extends JFrame{
 		
 		String[] controlBoardsColumnNames = { "Id", "Nombre", "Tipo", "Instalacion", "Nema", "Cap. Barra", "Tipo Barra", "Circuitos", "Voltaje", "Fases", "Tierra", "Interrupcion", "Cerradura", "Precio"};
 		
-		controlBoardsData = db.fetchAll(db.select(controlBoardsQuery));
 		tableControlBoardsResult = new JTable();
 		
-		if (controlBoardsData.length > 0) {
+		if(tableControlBoardsResult.getModel() instanceof MyTableModel) {
+			((MyTableModel) tableControlBoardsResult.getModel()).setQuery(controlBoardsQuery);
+		} else {
 			MyTableModel mForTable = new MyTableModel(controlBoardsQuery, controlBoardsColumnNames, "control_boards", new HashSet<Integer>());
 			tableControlBoardsResult.setModel(mForTable);
-		} else {
-			tableControlBoardsResult.setModel(new DefaultTableModel());
 		}
 		
 		tableControlBoardsResult.setAutoCreateRowSorter(true);
@@ -7160,22 +7193,31 @@ public class SalesMainView extends JFrame{
 						+ " GROUP BY control_boards.id "
 						+ limitQuery;
 		
-		controlBoardsData = db.fetchAll(db.select(controlBoardsQuery));
+//		controlBoardsData = db.fetchAll(db.select(controlBoardsQuery));
 		
 		String[] controlBoardsColumnNames = { "Id", "Nombre", "Tipo", "Instalacion", "Nema", "Cap. Barra", "Tipo Barra", "Circuitos", "Voltaje", "Fases", "Tierra", "Interrupcion", "Cerradura", "Precio"};
 		
-		if (controlBoardsData.length > 0) {
-			if (tableControlBoardsResult.getModel() instanceof MyTableModel) {
-				((MyTableModel) tableControlBoardsResult.getModel()).setQuery(controlBoardsQuery);
-			} else {
-				tableControlBoardsResult.setModel(new MyTableModel(controlBoardsQuery, controlBoardsColumnNames, "control_boards", new HashSet<Integer>()));
-			}
+		if(tableControlBoardsResult.getModel() instanceof MyTableModel) {
+			((MyTableModel) tableControlBoardsResult.getModel()).setQuery(controlBoardsQuery);
 		} else {
-			tableControlBoardsResult.setModel(new DefaultTableModel());
+			MyTableModel mForTable = new MyTableModel(controlBoardsQuery, controlBoardsColumnNames, "control_boards", new HashSet<Integer>());
+			tableControlBoardsResult.setModel(mForTable);
 		}
 		
+//		if (controlBoardsData.length > 0) {
+//			if (tableControlBoardsResult.getModel() instanceof MyTableModel) {
+//				((MyTableModel) tableControlBoardsResult.getModel()).setQuery(controlBoardsQuery);
+//			} else {
+//				tableControlBoardsResult.setModel(new MyTableModel(controlBoardsQuery, controlBoardsColumnNames, "control_boards", new HashSet<Integer>()));
+//			}
+//		} else {
+//			((MyTableModel) tableControlBoardsResult.getModel()).setRowCount(0);
+////			tableControlBoardsResult.setModel(new DefaultTableModel());
+//		}
+		
 //		selectedTableControlBoardCircuits = 0;
-		tableControlBoardSwitchesResult.setModel(new DefaultTableModel());
+		((MyTableModel) tableControlBoardSwitchesResult.getModel()).setRowCount(0);
+//		tableControlBoardSwitchesResult.setModel(new DefaultTableModel());
 		buttonAddControlBoardSwitch.setEnabled(false);
 		buttonRemoveControlBoardSwitch.setEnabled(false);
 	}
@@ -7244,7 +7286,8 @@ public class SalesMainView extends JFrame{
 		if(controlBoardSwitchesSearchData.length > 0) {
 			tableControlBoardSwitchesSearchResult.setModel(new MyTableModel(controlBoardSwitchesSearchData, switchesColumnNames));
 		} else {
-			tableControlBoardSwitchesSearchResult.setModel(new DefaultTableModel());
+			((MyTableModel) tableControlBoardSwitchesSearchResult.getModel()).setRowCount(0);
+//			tableControlBoardSwitchesSearchResult.setModel(new DefaultTableModel());
 		}
 	}
 	
@@ -8233,15 +8276,22 @@ public class SalesMainView extends JFrame{
 		
 		String[] budgetsColumnNames = {"Id", "Codigo", "Fecha", "Vencimiento", "Codigo Cliente", "Empresa", "Representante", "Nombre Obra", "Forma de Pago", "Vendedor", "Sitio Entrega", "Tiempo Entrega", "Periodo de Entrega"};
 		
-		budgetsData = db.fetchAll(db.select(budgetsQuery));
 		tableBudgetsResult = new JTable();
 		
-		if (budgetsData.length > 0) {
+		if(tableBudgetsResult.getModel() instanceof MyTableModel) {
+			((MyTableModel) tableBudgetsResult.getModel()).setQuery(budgetsQuery);
+		} else {
 			MyTableModel mForTable = new MyTableModel(budgetsQuery, budgetsColumnNames, "budgets", new HashSet<Integer>());
 			tableBudgetsResult.setModel(mForTable);
-		} else {
-			tableBudgetsResult.setModel(new DefaultTableModel());
 		}
+		
+//		if (budgetsData.length > 0) {
+//			MyTableModel mForTable = new MyTableModel(budgetsQuery, budgetsColumnNames, "budgets", new HashSet<Integer>());
+//			tableBudgetsResult.setModel(mForTable);
+//		} else {
+//			((MyTableModel) tableBudgetsResult.getModel()).setRowCount(0);
+////			tableBudgetsResult.setModel(new DefaultTableModel());
+//		}
 		
 		tableBudgetsResult.setAutoCreateRowSorter(true);
 		tableBudgetsResult.getTableHeader().setReorderingAllowed(false);
@@ -8653,19 +8703,27 @@ public class SalesMainView extends JFrame{
 						+ whereQuery
 						+ " GROUP BY budgets.id ";
 		
-		budgetsData = db.fetchAll(db.select(budgetsQuery));
+//		budgetsData = db.fetchAll(db.select(budgetsQuery));
 		
 		String[] budgetsColumnNames = {"Id", "Codigo", "Fecha", "Vencimiento", "Codigo Cliente", "Empresa", "Representante", "Nombre Obra", "Forma de Pago", "Vendedor", "Sitio Entrega", "Tiempo Entrega", "Periodo de Entrega"};
 		
-		if (budgetsData.length > 0) {
-			if (tableBudgetsResult.getModel() instanceof MyTableModel) {
-				((MyTableModel) tableBudgetsResult.getModel()).setQuery(budgetsQuery);
-			} else {
-				tableBudgetsResult.setModel(new MyTableModel(budgetsQuery, budgetsColumnNames, "budgets", new HashSet<Integer>()));
-			}
+		if(tableBudgetsResult.getModel() instanceof MyTableModel) {
+			((MyTableModel) tableBudgetsResult.getModel()).setQuery(budgetsQuery);
 		} else {
-			tableBudgetsResult.setModel(new DefaultTableModel());
+			MyTableModel mForTable = new MyTableModel(budgetsQuery, budgetsColumnNames, "budgets", new HashSet<Integer>());
+			tableBudgetsResult.setModel(mForTable);
 		}
+		
+//		if (budgetsData.length > 0) {
+//			if (tableBudgetsResult.getModel() instanceof MyTableModel) {
+//				((MyTableModel) tableBudgetsResult.getModel()).setQuery(budgetsQuery);
+//			} else {
+//				tableBudgetsResult.setModel(new MyTableModel(budgetsQuery, budgetsColumnNames, "budgets", new HashSet<Integer>()));
+//			}
+//		} else {
+//			((MyTableModel) tableBudgetsResult.getModel()).setRowCount(0);
+////			tableBudgetsResult.setModel(new DefaultTableModel());
+//		}
 	}
 	
 	private void loadBudgetSwitchTable() {
@@ -8704,26 +8762,32 @@ public class SalesMainView extends JFrame{
 		
 //		String unionQuery = "(" + budgetSwitchesQuery + ") UNION (" + budgetBoardSwitchesQuery + ")";
 		
-		String unionQuery = budgetSwitchesQuery;
+//		String unionQuery = budgetSwitchesQuery;
 		
 		String[] budgetSwitchesColumnNames = { "Id", "Descripcion", "Cantidad", "Precio Costo", "Factor", "Precio Venta", "Total"};
-		budgetSwitchesSearchData = db.fetchAll(db.select(unionQuery));
 		
-		HashSet<Integer> editableColumns = new HashSet<Integer>();
-		editableColumns.add(new Integer(2));
-		editableColumns.add(new Integer(3));
-		editableColumns.add(new Integer(4));
-		
-		if(budgetSwitchesSearchData.length > 0) {
+		if(tableBudgetSwitchesResult.getModel() instanceof MyTableModel) {
+			((MyTableModel) tableBudgetSwitchesResult.getModel()).setQuery(budgetSwitchesQuery);
+		} else {
+			HashSet<Integer> editableColumns = new HashSet<Integer>();
+			editableColumns.add(new Integer(2));
+			editableColumns.add(new Integer(3));
+			editableColumns.add(new Integer(4));
 			MyTableModel mForTable = new MyTableModel(budgetSwitchesQuery, budgetSwitchesColumnNames, "budget_switches", editableColumns);
 			tableBudgetSwitchesResult.setModel(mForTable);
-//			if(null != tableBudgetSwitchesResult && tableBudgetSwitchesResult.getSelectedRow() == -1) {
-//				buttonRemoveBudgetSwitch.setEnabled(false);
-//			}
-		} else {
-			tableBudgetSwitchesResult.setModel(new DefaultTableModel());
-//			buttonRemoveBudgetSwitch.setEnabled(false);
 		}
+		
+//		if(budgetSwitchesSearchData.length > 0) {
+//			MyTableModel mForTable = new MyTableModel(budgetSwitchesQuery, budgetSwitchesColumnNames, "budget_switches", editableColumns);
+//			tableBudgetSwitchesResult.setModel(mForTable);
+////			if(null != tableBudgetSwitchesResult && tableBudgetSwitchesResult.getSelectedRow() == -1) {
+////				buttonRemoveBudgetSwitch.setEnabled(false);
+////			}
+//		} else {
+//			((MyTableModel) tableBudgetSwitchesResult.getModel()).setRowCount(0);
+////			tableBudgetSwitchesResult.setModel(new DefaultTableModel());
+////			buttonRemoveBudgetSwitch.setEnabled(false);
+//		}
 //		buttonAddBudgetSwitch.setEnabled(true);
 	}
 	
@@ -8804,29 +8868,35 @@ public class SalesMainView extends JFrame{
 						+ " INNER JOIN lock_types ON ( (boxes.lock_type_id > 0 "
 						+ " AND boxes.lock_type_id = " + SalesMainView.LOCK_TYPES_TABLE + ".id) "
 						+ " OR boxes.lock_type_id = 0) "
-						+ " WHERE budget_boxes.budget_container_id = " + selectedBudgetId
+						+ " WHERE budget_boxes.budget_container_id = " + tableBudgetsResult.getValueAt(tableBudgetsResult.getSelectedRow(), 0)
 						+ " AND boxes.active = '1' "
 //						+ whereQuery;
 						+ " GROUP BY boxes.id";
 		
 		String[] budgetBoxesColumnNames = { "Id", "Descripcion", "Instalacion", "Pares Tel.", "Acabado", "Color", "Calibre", "Cerradura", "Cantidad", "Precio Costo", "Factor", "Precio Venta", "Total"};
-		budgetBoxesData = db.fetchAll(db.select(budgetBoxesQuery));
 		
-		HashSet<Integer> editableColumns = new HashSet<Integer>();
-		editableColumns.add(new Integer(8));
-		editableColumns.add(new Integer(9));
-		editableColumns.add(new Integer(10));
-		
-		if(budgetBoxesData.length > 0) {
+		if(tableBudgetBoxesResult.getModel() instanceof MyTableModel) {
+			((MyTableModel) tableBudgetBoxesResult.getModel()).setQuery(budgetBoxesQuery);
+		} else {
+			HashSet<Integer> editableColumns = new HashSet<Integer>();
+			editableColumns.add(new Integer(8));
+			editableColumns.add(new Integer(9));
+			editableColumns.add(new Integer(10));
 			MyTableModel mForTable = new MyTableModel(budgetBoxesQuery, budgetBoxesColumnNames, "budget_boxes", editableColumns);
 			tableBudgetBoxesResult.setModel(mForTable);
-			if(null != tableBudgetBoxesResult && tableBudgetBoxesResult.getSelectedRow() == -1) {
-				buttonRemoveBudgetBox.setEnabled(false);
-			}
-		} else {
-			tableBudgetBoxesResult.setModel(new DefaultTableModel());
-			buttonRemoveBudgetBox.setEnabled(false);
 		}
+		
+//		if(budgetBoxesData.length > 0) {
+//			MyTableModel mForTable = new MyTableModel(budgetBoxesQuery, budgetBoxesColumnNames, "budget_boxes", editableColumns);
+//			tableBudgetBoxesResult.setModel(mForTable);
+//			if(null != tableBudgetBoxesResult && tableBudgetBoxesResult.getSelectedRow() == -1) {
+//				buttonRemoveBudgetBox.setEnabled(false);
+//			}
+//		} else {
+//			((MyTableModel) tableBudgetBoxesResult.getModel()).setRowCount(0);
+////			tableBudgetBoxesResult.setModel(new DefaultTableModel());
+//			buttonRemoveBudgetBox.setEnabled(false);
+//		}
 		buttonAddBudgetBox.setEnabled(true);
 	}
 	
@@ -8887,26 +8957,32 @@ public class SalesMainView extends JFrame{
 						+ " GROUP BY boards.id";
 		
 		String[] budgetBoardsColumnNames = { "Id", "Descripcion", "Nombre", "Instalacion", "Cap. Barra", "Tipo Barra", "Voltaje", "Tierra", "Interrupcion", "Cerradura", "Cantidad", "Precio Costo", "%MO", "MO", "%GI", "GI", "%GA", "GA", "Factor", "Precio Venta", "Total"};
-		budgetBoardsData = db.fetchAll(db.select(budgetBoardsQuery));
 		
-		HashSet<Integer> editableColumns = new HashSet<Integer>();
-		editableColumns.add(new Integer(10));
-		editableColumns.add(new Integer(11));
-		editableColumns.add(new Integer(12));
-		editableColumns.add(new Integer(14));
-		editableColumns.add(new Integer(16));
-		editableColumns.add(new Integer(18));
-		
-		if(budgetBoardsData.length > 0) {
+		if(tableBudgetBoardsResult.getModel() instanceof MyTableModel) {
+			((MyTableModel) tableBudgetBoardsResult.getModel()).setQuery(budgetBoardsQuery);
+		} else {
+			HashSet<Integer> editableColumns = new HashSet<Integer>();
+			editableColumns.add(new Integer(10));
+			editableColumns.add(new Integer(11));
+			editableColumns.add(new Integer(12));
+			editableColumns.add(new Integer(14));
+			editableColumns.add(new Integer(16));
+			editableColumns.add(new Integer(18));
 			MyTableModel mForTable = new MyTableModel(budgetBoardsQuery, budgetBoardsColumnNames, "budget_boards", editableColumns);
 			tableBudgetBoardsResult.setModel(mForTable);
-			if(null != tableBudgetBoardsResult && tableBudgetBoardsResult.getSelectedRow() == -1) {
-				buttonRemoveBudgetBoard.setEnabled(false);
-			}
-		} else {
-			tableBudgetBoardsResult.setModel(new DefaultTableModel());
-			buttonRemoveBudgetBoard.setEnabled(false);
 		}
+		
+//		if(budgetBoardsData.length > 0) {
+//			MyTableModel mForTable = new MyTableModel(budgetBoardsQuery, budgetBoardsColumnNames, "budget_boards", editableColumns);
+//			tableBudgetBoardsResult.setModel(mForTable);
+//			if(null != tableBudgetBoardsResult && tableBudgetBoardsResult.getSelectedRow() == -1) {
+//				buttonRemoveBudgetBoard.setEnabled(false);
+//			}
+//		} else {
+//			((MyTableModel) tableBudgetBoardsResult.getModel()).setRowCount(0);
+////			tableBudgetBoardsResult.setModel(new DefaultTableModel());
+//			buttonRemoveBudgetBoard.setEnabled(false);
+//		}
 		buttonAddBudgetBoard.setEnabled(true);
 	}
 	
@@ -8977,26 +9053,37 @@ public class SalesMainView extends JFrame{
 						+ " GROUP BY control_boards.id";
 		
 		String[] budgetControlBoardsColumnNames = { "Id", "Descripcion", "Nombre", "Instalacion", "Cap. Barra", "Tipo Barra", "Voltaje", "Tierra", "Interrupcion", "Cerradura", "Cantidad", "Precio Costo", "%MO", "MO", "%GI", "GI", "%GA", "GA", "Factor", "Precio Venta", "Total"};
-		budgetBoardsData = db.fetchAll(db.select(budgetControlBoardsQuery));
 		
-		HashSet<Integer> editableColumns = new HashSet<Integer>();
-		editableColumns.add(new Integer(10));
-		editableColumns.add(new Integer(11));
-		editableColumns.add(new Integer(12));
-		editableColumns.add(new Integer(14));
-		editableColumns.add(new Integer(16));
-		editableColumns.add(new Integer(18));
-		
-		if(budgetBoardsData.length > 0) {
+		if(tableBudgetControlBoardsResult.getModel() instanceof MyTableModel) {
+			((MyTableModel) tableBudgetControlBoardsResult.getModel()).setQuery(budgetControlBoardsQuery);
+		} else {
+			HashSet<Integer> editableColumns = new HashSet<Integer>();
+			editableColumns.add(new Integer(10));
+			editableColumns.add(new Integer(11));
+			editableColumns.add(new Integer(12));
+			editableColumns.add(new Integer(14));
+			editableColumns.add(new Integer(16));
+			editableColumns.add(new Integer(18));
 			MyTableModel mForTable = new MyTableModel(budgetControlBoardsQuery, budgetControlBoardsColumnNames, "budget_control_boards", editableColumns);
 			tableBudgetControlBoardsResult.setModel(mForTable);
-			if(null != tableBudgetControlBoardsResult && tableBudgetControlBoardsResult.getSelectedRow() == -1) {
-				buttonRemoveBudgetControlBoard.setEnabled(false);
-			}
-		} else {
-			tableBudgetControlBoardsResult.setModel(new DefaultTableModel());
-			buttonRemoveBudgetControlBoard.setEnabled(false);
 		}
+		
+//		if(budgetBoardsData.length > 0) {
+//			MyTableModel mForTable = new MyTableModel(budgetControlBoardsQuery, budgetControlBoardsColumnNames, "budget_control_boards", editableColumns);
+//			tableBudgetControlBoardsResult.setModel(mForTable);
+//			if(null != tableBudgetControlBoardsResult && tableBudgetControlBoardsResult.getSelectedRow() == -1) {
+//				buttonRemoveBudgetControlBoard.setEnabled(false);
+//			}
+//		} else {
+//			if(tableBudgetControlBoardsResult.getModel() instanceof MyTableModel) {
+//				((MyTableModel) tableBudgetControlBoardsResult.getModel()).setRowCount(0);
+//			} else {
+//				
+//			}
+//			
+////			tableBudgetControlBoardsResult.setModel(new DefaultTableModel());
+//			buttonRemoveBudgetControlBoard.setEnabled(false);
+//		}
 		buttonAddBudgetControlBoard.setEnabled(true);
 	}
 	
@@ -9014,23 +9101,29 @@ public class SalesMainView extends JFrame{
 			+ " WHERE budget_materials.budget_container_id = " + selectedBudgetId;
 		
 		String[] budgetMaterialsColumnNames = { "Id", "Referencia", "Descripcion", "Cantidad", "Precio", "Factor", "Total"};
-		budgetMaterialsData = db.fetchAll(db.select(budgetMaterialsQuery));
 		
-		HashSet<Integer> editableColumns = new HashSet<Integer>();
-		editableColumns.add(new Integer(3));
-		editableColumns.add(new Integer(4));
-		editableColumns.add(new Integer(5));
-		
-		if(budgetMaterialsData.length > 0) {
+		if(tableBudgetMaterialsResult.getModel() instanceof MyTableModel) {
+			((MyTableModel) tableBudgetMaterialsResult.getModel()).setQuery(budgetMaterialsQuery);
+		} else {
+			HashSet<Integer> editableColumns = new HashSet<Integer>();
+			editableColumns.add(new Integer(3));
+			editableColumns.add(new Integer(4));
+			editableColumns.add(new Integer(5));
 			MyTableModel mForTable = new MyTableModel(budgetMaterialsQuery, budgetMaterialsColumnNames, "budget_materials", editableColumns);
 			tableBudgetMaterialsResult.setModel(mForTable);
-			if(null != tableBudgetMaterialsResult && tableBudgetMaterialsResult.getSelectedRow() == -1) {
-				buttonRemoveBudgetMaterial.setEnabled(false);
-			}
-		} else {
-			tableBudgetMaterialsResult.setModel(new DefaultTableModel());
-			buttonRemoveBudgetMaterial.setEnabled(false);
 		}
+		
+//		if(budgetMaterialsData.length > 0) {
+//			MyTableModel mForTable = new MyTableModel(budgetMaterialsQuery, budgetMaterialsColumnNames, "budget_materials", editableColumns);
+//			tableBudgetMaterialsResult.setModel(mForTable);
+//			if(null != tableBudgetMaterialsResult && tableBudgetMaterialsResult.getSelectedRow() == -1) {
+//				buttonRemoveBudgetMaterial.setEnabled(false);
+//			}
+//		} else {
+//			((MyTableModel) tableBudgetMaterialsResult.getModel()).setRowCount(0);
+////			tableBudgetMaterialsResult.setModel(new DefaultTableModel());
+//			buttonRemoveBudgetMaterial.setEnabled(false);
+//		}
 		buttonAddBudgetMaterial.setEnabled(true);
 	}
 	
@@ -10900,8 +10993,10 @@ public class SalesMainView extends JFrame{
 				if(lsm.isSelectionEmpty()) {
 					buttonAddBoardSwitch.setEnabled(false);
 					buttonAddBoardMaterial.setEnabled(false);
-					tableBoardSwitchesResult.setModel(new DefaultTableModel());
-					tableBoardMaterialsResult.setModel(new DefaultTableModel());
+					((MyTableModel) tableBoardSwitchesResult.getModel()).setRowCount(0);
+//					tableBoardSwitchesResult.setModel(new DefaultTableModel());
+					((MyTableModel) tableBoardMaterialsResult.getModel()).setRowCount(0);
+//					tableBoardMaterialsResult.setModel(new DefaultTableModel());
 				} else {
 					selectedBoardId = Integer.valueOf((String) tableBoardsResult.getValueAt(boardsTableSelectedIndex, 0));
 					
@@ -10975,8 +11070,10 @@ public class SalesMainView extends JFrame{
 				
 				if(lsm.isSelectionEmpty()) {
 					buttonAddControlBoardSwitch.setEnabled(false);
-					tableControlBoardSwitchesResult.setModel(new DefaultTableModel());
-					tableControlBoardMaterialsResult.setModel(new DefaultTableModel());
+					((MyTableModel) tableControlBoardSwitchesResult.getModel()).setRowCount(0);
+//					tableControlBoardSwitchesResult.setModel(new DefaultTableModel());
+					((MyTableModel) tableControlBoardMaterialsResult.getModel()).setRowCount(0);
+//					tableControlBoardMaterialsResult.setModel(new DefaultTableModel());
 				} else {
 					selectedControlBoardId = Integer.valueOf((String) tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, 0));
 					
@@ -11053,7 +11150,8 @@ public class SalesMainView extends JFrame{
 			} else if (null != tableBudgetsResult && tableBudgetsResult.isFocusOwner() && lsm.getMinSelectionIndex() > -1) {
 				budgetsTableSelectedIndex = lsm.getMinSelectionIndex();				
 				if(lsm.isSelectionEmpty()) {
-					tableBudgetsResult.setModel(new DefaultTableModel());
+					((MyTableModel) tableBudgetsResult.getModel()).setRowCount(0);
+//					tableBudgetsResult.setModel(new DefaultTableModel());
 					selectedBudgetId = 0;
 					comboBudgetEditStage.setEnabled(false);
 					buttonBudgetEdit.setEnabled(false);
@@ -11063,9 +11161,12 @@ public class SalesMainView extends JFrame{
 					buttonAddBudgetBoard.setEnabled(false);
 					buttonAddBudgetControlBoard.setEnabled(false);
 					buttonBudgetNotesEdit.setEnabled(false);
-					tableBudgetSwitchesResult.setModel(new DefaultTableModel());
-					tableBudgetBoxesResult.setModel(new DefaultTableModel());
-					tableBudgetBoardsResult.setModel(new DefaultTableModel());
+					((MyTableModel) tableBudgetSwitchesResult.getModel()).setRowCount(0);
+//					tableBudgetSwitchesResult.setModel(new DefaultTableModel());
+					((MyTableModel) tableBudgetBoxesResult.getModel()).setRowCount(0);
+//					tableBudgetBoxesResult.setModel(new DefaultTableModel());
+					((MyTableModel) tableBudgetBoardsResult.getModel()).setRowCount(0);
+//					tableBudgetBoardsResult.setModel(new DefaultTableModel());
 					textBudgetDescriptionId.setText("");
 					textBudgetDescriptionCode.setText("");
 					textBudgetDescriptionDate.setText("");
@@ -11200,8 +11301,10 @@ public class SalesMainView extends JFrame{
 				textBoardDescriptionLockType.setText("");
 				textBoardDescriptionPrice.setText("");
 				textBoardDescription.setText("");
-				tableBoardSwitchesResult.setModel(new DefaultTableModel());
-				tableBoardMaterialsResult.setModel(new DefaultTableModel());
+				((MyTableModel)tableBoardSwitchesResult.getModel()).setRowCount(0);
+//				tableBoardSwitchesResult.setModel(new DefaultTableModel());
+				((MyTableModel)tableBoardMaterialsResult.getModel()).setRowCount(0);
+//				tableBoardMaterialsResult.setModel(new DefaultTableModel());
 				
 				JTabbedPane boardTabbedPane = (JTabbedPane) boardSwitchesPanel.getParent();
 				setTabsEnabled(boardTabbedPane, false);
@@ -11221,8 +11324,10 @@ public class SalesMainView extends JFrame{
 				textControlBoardDescriptionLockType.setText("");
 				textControlBoardDescriptionPrice.setText("");
 				textControlBoardDescription.setText("");
-				tableControlBoardSwitchesResult.setModel(new DefaultTableModel());
-				tableControlBoardMaterialsResult.setModel(new DefaultTableModel());
+				((MyTableModel) tableControlBoardSwitchesResult.getModel()).setRowCount(0);
+//				tableControlBoardSwitchesResult.setModel(new DefaultTableModel());
+				((MyTableModel) tableControlBoardMaterialsResult.getModel()).setRowCount(0);
+//				tableControlBoardMaterialsResult.setModel(new DefaultTableModel());
 				
 				JTabbedPane controlBoardTabbedPane = (JTabbedPane) controlBoardSwitchesPanel.getParent();
 				setTabsEnabled(controlBoardTabbedPane, false);
@@ -11251,10 +11356,14 @@ public class SalesMainView extends JFrame{
 				textBudgetDescriptionDeliveryTime.setText("");
 				textBudgetDescriptionDeliveryPeriod.setText("");
 				textBudgetNotes.setText("");
-				tableBudgetSwitchesResult.setModel(new DefaultTableModel());
-				tableBudgetBoxesResult.setModel(new DefaultTableModel());
-				tableBudgetBoardsResult.setModel(new DefaultTableModel());
-				tableBudgetMaterialsResult.setModel(new DefaultTableModel());
+				((MyTableModel) tableBudgetSwitchesResult.getModel()).setRowCount(0);
+//				tableBudgetSwitchesResult.setModel(new DefaultTableModel());
+				((MyTableModel) tableBudgetBoxesResult.getModel()).setRowCount(0);
+//				tableBudgetBoxesResult.setModel(new DefaultTableModel());
+				((MyTableModel) tableBudgetBoardsResult.getModel()).setRowCount(0);
+//				tableBudgetBoardsResult.setModel(new DefaultTableModel());
+				((MyTableModel) tableBudgetMaterialsResult.getModel()).setRowCount(0);
+//				tableBudgetMaterialsResult.setModel(new DefaultTableModel());
 				
 				JTabbedPane budgetTabbedPane = (JTabbedPane) budgetSwitchesPanel.getParent();
 				setTabsEnabled(budgetTabbedPane, false);
@@ -11901,15 +12010,7 @@ public class SalesMainView extends JFrame{
 			} else if (actionCommand.equalsIgnoreCase("board.switch.remove")) {
 				int response = JOptionPane.showConfirmDialog(null, "Esta seguro que desea remover este interruptor del tablero?", "Remover interruptor del tablero", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 				if(response == JOptionPane.YES_OPTION) {
-					int boardContainerId = db.getSwitchBoardId(selectedBoardSwitchId);
-					ArrayList<Integer> boardMainSwitches = db.getBoardSwitchMainIds(boardContainerId);
 					if(db.removeBoardSwitch(selectedBoardSwitchId)) {
-						boardMainSwitches.remove(String.valueOf(selectedBoardSwitchId));
-						ArrayList<Object> listFields = new ArrayList<Object>();
-						ArrayList<Object> listValues = new ArrayList<Object>();
-						listFields.add("main_switch_id");
-						listValues.add("'" + StringTools.implode(",", boardMainSwitches) + "'");
-						db.editBoard(boardContainerId, listFields, listValues);
 						if(tableBoardsResult.getSelectedRow() > -1) {
 							selectedBoardId = Integer.valueOf( (String) tableBoardsResult.getValueAt(tableBoardsResult.getSelectedRow(), SharedListSelectionListener.BOARD_ID_COLUMN));
 							loadBoardSwitchTable();

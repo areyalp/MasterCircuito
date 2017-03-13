@@ -6,20 +6,31 @@ import ve.com.mastercircuito.db.Db;
 
 public class ProductionOrder {
 	
-	private Integer id;
-	private Integer budgetId;
+	private int id;
+	private int budgetId;
 	private Timestamp dateProcessed;
 	private Timestamp dateFinished;
-	private Integer creatorId;
-	private Integer authorizerId;
-	private Boolean processed;
+	private int creatorId;
+	private int authorizerId;
+	private boolean processed;
 
 	public ProductionOrder() {
 		super();
 	}
+	
+	public ProductionOrder(int budgetId) {
+		ProductionOrder productionOrder = Db.pullProductionOrderByBudgetId(budgetId);
+		this.setId(productionOrder.getId());
+		this.setBudgetId(budgetId);
+		this.setDateProcessed(productionOrder.getDateProcessed());
+		this.setDateFinished(productionOrder.getDateFinished());
+		this.setCreatorId(productionOrder.getCreatorId());
+		this.setAuthorizerId(productionOrder.getAuthorizerId());
+		this.setProcessed(productionOrder.getProcessed());
+	}
 
-	public ProductionOrder(Integer id, Integer budgetId, Timestamp dateProcessed, Timestamp dateFinished, Integer creatorId,
-			Integer authorizerId, Boolean processed) {
+	public ProductionOrder(int id, int budgetId, Timestamp dateProcessed, Timestamp dateFinished, int creatorId,
+			int authorizerId, boolean processed) {
 		super();
 		this.id = id;
 		this.budgetId = budgetId;
@@ -41,19 +52,19 @@ public class ProductionOrder {
 		this.processed = productionOrder.getProcessed();
 	}
 
-	public Integer getId() {
+	public int getId() {
 		return id;
 	}
 
-	public void setId(Integer id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 
-	public Integer getBudgetId() {
+	public int getBudgetId() {
 		return budgetId;
 	}
 
-	public void setBudgetId(Integer budgetId) {
+	public void setBudgetId(int budgetId) {
 		this.budgetId = budgetId;
 	}
 
@@ -73,41 +84,41 @@ public class ProductionOrder {
 		this.dateFinished = dateFinished;
 	}
 
-	public Integer getCreatorId() {
+	public int getCreatorId() {
 		return creatorId;
 	}
 
-	public void setCreatorId(Integer creatorId) {
+	public void setCreatorId(int creatorId) {
 		this.creatorId = creatorId;
 	}
 
-	public Integer getAuthorizerId() {
+	public int getAuthorizerId() {
 		return authorizerId;
 	}
 	
-	public void setAuthorizerId(Integer authorizerId) {
+	public void setAuthorizerId(int authorizerId) {
 		this.authorizerId = authorizerId;
 	}
 	
-	public Boolean getProcessed() {
+	public boolean getProcessed() {
 		return processed;
 	}
 	
-	public Boolean isProcessed() {
+	public boolean isProcessed() {
 		return this.getProcessed();
 	}
 	
-	public void setProcessed(Boolean processed) {
+	public void setProcessed(boolean processed) {
 		this.processed = processed;
 	}
 	
-	public static Integer pushToDb(Integer budgetId, Integer creatorId) {
+	public static int pushToDb(int budgetId, int creatorId) {
 		Db db = new Db();
 		db.insert("INSERT INTO production_orders (budget_id, creator_id) VALUES (" + budgetId + ", " + creatorId + ")");
 		return db.getInsertId();
 	}
 	
-	public void pullFromDb(Integer orderId) {
+	public void pullFromDb(int orderId) {
 		Db db = new Db();
 		ProductionOrder productionOrder = db.pullProductionOrder(orderId);
 		this.setId(orderId);
@@ -123,21 +134,16 @@ public class ProductionOrder {
 		return "O/P " + this.getId();
 	}
 	
-	public static Boolean exists(Integer budgetId) {
-		Db db = new Db();
-		return db.productionOrderExists(budgetId);
+	public static boolean exists(int orderId) {
+		return Db.productionOrderExists(orderId);
 	}
 
-	public void pullByBudget(Integer budgetId) {
-		Db db = new Db();
-		ProductionOrder productionOrder = db.pullProductionOrderByBudget(budgetId);
-		this.setId(productionOrder.getId());
-		this.setBudgetId(budgetId);
-		this.setDateProcessed(productionOrder.getDateProcessed());
-		this.setDateFinished(productionOrder.getDateFinished());
-		this.setCreatorId(productionOrder.getCreatorId());
-		this.setAuthorizerId(productionOrder.getAuthorizerId());
-		this.setProcessed(productionOrder.getProcessed());
+	public static ProductionOrder getByBudgetId(int budgetId) {
+		return Db.pullProductionOrderByBudgetId(budgetId);
+	}
+
+	public static boolean existsByBudgetId(Integer budgetId) {
+		return Db.productionOrderExistsByBudgetId(budgetId);
 	}
 	
 }

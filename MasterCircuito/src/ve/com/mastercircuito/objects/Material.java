@@ -1,10 +1,10 @@
 package ve.com.mastercircuito.objects;
 
-public class Material {
+public class Material extends Product{
 	
-	private Integer id;
+	private int id;
 	private String material;
-	private Double price;
+	private double price;
 
 	public Material() {
 		super();
@@ -17,11 +17,11 @@ public class Material {
 		this.price = price;
 	}
 
-	public Integer getId() {
+	public int getId() {
 		return id;
 	}
 
-	public void setId(Integer id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 
@@ -33,11 +33,11 @@ public class Material {
 		this.material = material;
 	}
 
-	public Double getPrice() {
+	public double getPrice() {
 		return price;
 	}
 
-	public void setPrice(Double price) {
+	public void setPrice(double price) {
 		this.price = price;
 	}
 	

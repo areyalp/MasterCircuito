@@ -163,7 +163,7 @@ public class MysqlDriver {
 				e.printStackTrace();
 			}
 		}
-		Object[][] results = new Object[rows][columns+1];
+		Object[][] results = new Object[rows][columns];
 		if(set != null) {
 			try {
 				set.beforeFirst();
@@ -228,7 +228,7 @@ public class MysqlDriver {
 				e.printStackTrace();
 			}
 		}
-		Object[][] results = new Object[rows][columns+1];
+		Object[][] results = new Object[rows][columns];
 		if(set != null) {
 			try {
 				set.beforeFirst();
@@ -273,7 +273,7 @@ public class MysqlDriver {
 		try {
 			set.last();
 			this.numRows = set.getRow();
-			set.beforeFirst();;
+			set.beforeFirst();
 		} catch (SQLException e) {
 			this.numRows = 0;
 			e.printStackTrace();

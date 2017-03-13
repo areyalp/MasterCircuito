@@ -16,7 +16,7 @@ public class Board extends Product {
 	private Boolean ground;
 	private Interruption interruption;
 	private LockType lockType;
-	private ArrayList<Integer> mainSwitchId;
+	private int mainSwitchId;
 	private ArrayList<Material> materials;
 	private Double price;
 	private String comments;
@@ -30,7 +30,7 @@ public class Board extends Product {
 	
 	public Board(Integer id, String name, BoardType type, Installation installation, Nema nema, BarCapacity barCapacity,
 			BarType barType, Circuits circuits, BoardVoltage voltage, Integer phases, Boolean ground,
-			Interruption interruption, LockType lockType, ArrayList<Integer> mainSwitchId,
+			Interruption interruption, LockType lockType, int mainSwitchId,
 			ArrayList<Material> materials, Double price, String comments, Boolean active, ArrayList<Switch> switches) {
 		super();
 		this.setId(id);
@@ -150,11 +150,11 @@ public class Board extends Product {
 		this.lockType = lockType;
 	}
 	
-	public ArrayList<Integer> getMainSwitchId() {
+	public int getMainSwitchId() {
 		return mainSwitchId;
 	}
 	
-	public void setMainSwitchId(ArrayList<Integer> mainSwitchId) {
+	public void setMainSwitchId(int mainSwitchId) {
 		this.mainSwitchId = mainSwitchId;
 	}
 	

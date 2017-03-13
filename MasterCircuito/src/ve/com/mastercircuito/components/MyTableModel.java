@@ -1,5 +1,6 @@
 package ve.com.mastercircuito.components;
 
+import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Vector;
 
@@ -14,10 +15,8 @@ public class MyTableModel extends DefaultTableModel {
 	 */
 	private static final long serialVersionUID = -7291256884024381770L;
 	
-	private Db db;
 	private String[] columnNames;
 	private String query;
-//	private Object[][] data;
 	private String table;
 	private HashSet<Integer> editableColumns;
 	
@@ -31,8 +30,6 @@ public class MyTableModel extends DefaultTableModel {
 	
 	public MyTableModel(Object[][] data, String[] columnNames) {
 		super(data, columnNames);
-//		db = new Db();
-//		this.data = data;
 		this.columnNames = columnNames;
 	}
 	
@@ -56,6 +53,11 @@ public class MyTableModel extends DefaultTableModel {
 		}
 		Db db = new Db();
 		Object[][] localObject = db.fetchAll(db.select(query));
+		try {
+			db.getConnection().close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		return localObject;
 	}
 	
@@ -65,22 +67,30 @@ public class MyTableModel extends DefaultTableModel {
 		}
 		Db db = new Db();
 		Object[][] localObject = db.fetchAllAddBoolean(db.select(query), booleanColumn);
+		try {
+			db.getConnection().close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		return localObject;
 	}
 	
 	public void setQuery(String query) {
-		this.setDataVector(convertToVector(queryToObject(query)), this.columnIdentifiers);
-		if (this.getDataVector().size() > 0) {
-			fireTableDataChanged();
-		} else {
-			this.setRowCount(0);
-		}
+		Object[][] objectData = queryToObject(query);
+		this.setData(objectData);
 	}
 	
 	public void setQueryAddBoolean(String query, int booleanColumn) {
-		this.setDataVector(convertToVector(queryToObjectBoolean(query, booleanColumn)), this.columnIdentifiers);
-		if (this.getDataVector().size() > 0) {
-			fireTableDataChanged();
+		Object[][] objectData = queryToObjectBoolean(query, booleanColumn);
+		this.setData(objectData);
+	}
+	
+	private void setData(Object[][] objectData) {
+		if (objectData.length > 0) {
+			this.setDataVector(convertToVector(objectData), this.columnIdentifiers);
+			if (this.getDataVector().size() > 0) {
+				fireTableDataChanged();
+			}
 		} else {
 			this.setRowCount(0);
 		}
@@ -224,8 +234,14 @@ public class MyTableModel extends DefaultTableModel {
 						Db.update(sql);
 						break;
 				}
-				this.setDataVector(convertToVector(db.fetchAll(db.select(query))), localVector);
+				Db db = new Db();
+				this.setDataVector(convertToVector(db.fetchAll(db.select(query))), this.columnIdentifiers);
 				fireTableDataChanged();
+				try {
+					db.getConnection().close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
@@ -241,6 +257,12 @@ public class MyTableModel extends DefaultTableModel {
 			db.removeMainSwitch(table, switchId);
 		} else {
 			db.addMainSwitch(table, switchId);
+		}
+		
+		try {
+			db.getConnection().close();
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
 	}
 	

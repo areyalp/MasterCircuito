@@ -1,7 +1,10 @@
 package ve.com.mastercircuito.objects;
 
 import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+
+import ve.com.mastercircuito.db.Db;
 
 public class Budget {
 	
@@ -27,6 +30,10 @@ public class Budget {
 	
 	public Budget() {
 		super();
+	}
+	
+	public Budget(int budgetId) {
+		this(Db.pullBudget(budgetId));
 	}
 	
 	public Budget(Integer id, String code, Date date, Integer expiryDays, Client client, String workName,
@@ -56,37 +63,17 @@ public class Budget {
 	public Budget(Integer id, String code, Date date, Integer expiryDays, Client client, String workName,
 			PaymentMethod paymentMethod, User seller, DispatchPlace dispatchPlace, Integer deliveryTime,
 			DeliveryPeriod deliveryPeriod, Boolean tracing, BudgetStage stage) {
-		super();
-		this.id = id;
-		this.code = code;
-		this.date = date;
-		this.expiryDays = expiryDays;
-		this.client = client;
-		this.workName = workName;
-		this.paymentMethod = paymentMethod;
-		this.seller = seller;
-		this.dispatchPlace = dispatchPlace;
-		this.deliveryTime = deliveryTime;
-		this.deliveryPeriod = deliveryPeriod;
-		this.tracing = tracing;
-		this.stage = stage;
+		this(id, code, date, expiryDays, client, workName, paymentMethod, seller, dispatchPlace, 
+				deliveryTime, deliveryPeriod, tracing, stage, "", new ArrayList<Switch>(), 
+				new ArrayList<Box>(), new ArrayList<Board>());
 	}
 
 	
-	public Budget(Budget selectedValue) {
-		this.id = selectedValue.getId();
-		this.code = selectedValue.getCode();
-		this.date = selectedValue.getDate();
-		this.expiryDays = selectedValue.getExpiryDays();
-		this.client = selectedValue.getClient();
-		this.workName = selectedValue.getWorkName();
-		this.paymentMethod = selectedValue.getPaymentMethod();
-		this.seller = selectedValue.getSeller();
-		this.dispatchPlace = selectedValue.getDispatchPlace();
-		this.deliveryTime = selectedValue.getDeliveryTime();
-		this.deliveryPeriod = selectedValue.getDeliveryPeriod();
-		this.tracing = selectedValue.getTracing();
-		this.stage = selectedValue.getStage();
+	public Budget(Budget budget) {
+		this(budget.getId(), budget.getCode(), budget.getDate(), budget.getExpiryDays(), budget.getClient(),
+				budget.getWorkName(), budget.getPaymentMethod(), budget.getSeller(), budget.getDispatchPlace(),
+				budget.getDeliveryTime(), budget.getDeliveryPeriod(), budget.getTracing(), budget.getStage(),
+				budget.getNotes(), budget.getSwitches(), budget.getBoxes(), budget.getBoards());
 	}
 
 	public Integer getId() {
@@ -259,7 +246,7 @@ public class Budget {
 	}
 	
 	public String toString() {
-		return this.getCode() + " \t\t " + this.getDate().toString() + " \t\t " + this.getClient().getClient();
+		return this.getCode() + " \t\t " + new SimpleDateFormat("dd-MM-yyyy").format(this.getDate()) + " \t\t " + this.getClient().getClient();
 	}
 	
 }

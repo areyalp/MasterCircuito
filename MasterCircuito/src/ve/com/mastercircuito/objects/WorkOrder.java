@@ -1,5 +1,6 @@
 package ve.com.mastercircuito.objects;
 
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 
@@ -7,22 +8,64 @@ import ve.com.mastercircuito.db.Db;
 
 public class WorkOrder {
 	
-	private Integer id;
-	private Integer productionOrderId;
-	private Integer productId;
-	private Integer productTypeId;
-	private Integer creatorId;
-	private Integer authorizerId;
+	private int id;
+	private int productionOrderId;
+	private int productId;
+	private int productTypeId;
+	private int creatorId;
+	private int authorizerId;
 	private Timestamp dateProcessed;
 	private Timestamp dateFinished;
-	private Boolean processed;
+	private boolean processed;
 
 	public WorkOrder() {
 		super();
 	}
+	
+	public WorkOrder(int orderId) {
+		Db db = new Db();
+		WorkOrder workOrder = db.pullWorkOrder(orderId);
+		if(workOrder.getId() > 0) {
+			this.setId(orderId);
+			this.setProductionOrderId(workOrder.getProductionOrderId());
+			this.setProductId(workOrder.getProductId());
+			this.setProductTypeId(workOrder.getProductTypeId());
+			this.setCreatorId(workOrder.getCreatorId());
+			this.setAuthorizerId(workOrder.getAuthorizerId());
+			this.setDateProcessed(workOrder.getDateProcessed());
+			this.setDateFinished(workOrder.getDateFinished());
+			this.setProcessed(workOrder.getProcessed());
+		}
+		try {
+			db.getConnection().close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public WorkOrder(int orderId, int budgetId) {
+		Db db = new Db();
+		WorkOrder workOrder = db.pullWorkOrder(orderId, budgetId);
+		if(workOrder.getId() > 0) {
+			this.setId(orderId);
+			this.setProductionOrderId(workOrder.getProductionOrderId());
+			this.setProductId(workOrder.getProductId());
+			this.setProductTypeId(workOrder.getProductTypeId());
+			this.setCreatorId(workOrder.getCreatorId());
+			this.setAuthorizerId(workOrder.getAuthorizerId());
+			this.setDateProcessed(workOrder.getDateProcessed());
+			this.setDateFinished(workOrder.getDateFinished());
+			this.setProcessed(workOrder.getProcessed());
+		}
+		try {
+			db.getConnection().close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
 
-	public WorkOrder(Integer id, Integer productionOrderId, Integer productId, Integer productTypeId, Integer creatorId,
-			Integer authorizerId, Timestamp dateProcessed, Timestamp dateFinished, Boolean processed) {
+	public WorkOrder(int id, int productionOrderId, int productId, int productTypeId, int creatorId,
+			int authorizerId, Timestamp dateProcessed, Timestamp dateFinished, boolean processed) {
 		super();
 		this.id = id;
 		this.productionOrderId = productionOrderId;
@@ -35,51 +78,51 @@ public class WorkOrder {
 		this.processed = processed;
 	}
 
-	public Integer getId() {
+	public int getId() {
 		return id;
 	}
 
-	public void setId(Integer id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 
-	public Integer getProductionOrderId() {
+	public int getProductionOrderId() {
 		return productionOrderId;
 	}
 
-	public void setProductionOrderId(Integer productionOrderId) {
+	public void setProductionOrderId(int productionOrderId) {
 		this.productionOrderId = productionOrderId;
 	}
 
-	public Integer getProductId() {
+	public int getProductId() {
 		return productId;
 	}
 
-	public void setProductId(Integer productId) {
+	public void setProductId(int productId) {
 		this.productId = productId;
 	}
 
-	public Integer getProductTypeId() {
+	public int getProductTypeId() {
 		return productTypeId;
 	}
 
-	public void setProductTypeId(Integer productTypeId) {
+	public void setProductTypeId(int productTypeId) {
 		this.productTypeId = productTypeId;
 	}
 
-	public Integer getCreatorId() {
+	public int getCreatorId() {
 		return creatorId;
 	}
 
-	public void setCreatorId(Integer creatorId) {
+	public void setCreatorId(int creatorId) {
 		this.creatorId = creatorId;
 	}
 
-	public Integer getAuthorizerId() {
+	public int getAuthorizerId() {
 		return authorizerId;
 	}
 
-	public void setAuthorizerId(Integer authorizerId) {
+	public void setAuthorizerId(int authorizerId) {
 		this.authorizerId = authorizerId;
 	}
 
@@ -99,11 +142,11 @@ public class WorkOrder {
 		this.dateFinished = dateFinished;
 	}
 
-	public Boolean getProcessed() {
+	public boolean getProcessed() {
 		return processed;
 	}
 
-	public void setProcessed(Boolean processed) {
+	public void setProcessed(boolean processed) {
 		this.processed = processed;
 	}
 	
@@ -111,27 +154,24 @@ public class WorkOrder {
 		return "O/T " + this.getId();
 	}
 
-	public static Integer pushToDb(Integer productionOrderId, Integer productId, Integer productTypeId, Integer userId) {
+	public static int pushToDb(int productionOrderId, int productId, int productTypeId, int userId) {
 		Db db = new Db();
 		db.insert("INSERT INTO work_orders (production_order_id, product_id, product_type_id, creator_id) VALUES (" + productionOrderId + ", " + productId + ", " + productTypeId + ", " + userId + ")");
 		return db.getInsertId();
 	}
 
-	public void pullFromDb(Integer orderId) {
+	public static WorkOrder pullFromDb(int orderId) {
 		Db db = new Db();
 		WorkOrder workOrder = db.pullWorkOrder(orderId);
-		this.setId(orderId);
-		this.setProductionOrderId(workOrder.getProductionOrderId());
-		this.setProductId(workOrder.getProductId());
-		this.setProductTypeId(workOrder.getProductTypeId());
-		this.setCreatorId(workOrder.getCreatorId());
-		this.setAuthorizerId(workOrder.getAuthorizerId());
-		this.setDateProcessed(workOrder.getDateProcessed());
-		this.setDateFinished(workOrder.getDateFinished());
-		this.setProcessed(workOrder.getProcessed());
+		try {
+			db.getConnection().close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return workOrder;
 	}
 
-	public static ArrayList<WorkOrder> pullAllFromDb(Integer orderId) {
+	public static ArrayList<WorkOrder> pullAllFromDb(int orderId) {
 		Db db = new Db();
 		ArrayList<WorkOrder> workOrders = db.pullAllWorkOrders(orderId);
 		return workOrders;

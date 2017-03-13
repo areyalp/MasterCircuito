@@ -3,6 +3,7 @@ package ve.com.mastercircuito.dialogs;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.Window;
@@ -147,9 +148,13 @@ public class PrintDialog extends JDialog {
 						addType = "Caja";
 					} else if (product.equalsIgnoreCase("board")) {
 						addType = "Tablero";
+					} else if (product.equalsIgnoreCase("control_board")) {
+						addType = "TableroControl";
+					} else if (product.equalsIgnoreCase("material")) {
+						addType = "Material";
 					}
 					reportType = "OrdenTrabajo" + addType;
-					filename = reportType + " " + parametersMap.get("work_order_id");
+					filename = reportType + " " + parametersMap.get("workorderid");
 				}
 				
 				try {
@@ -201,6 +206,9 @@ public class PrintDialog extends JDialog {
 				finally {
 					dispose();
 				}
+				Frame[] frames = JasperViewer.getFrames();
+				Frame reportFrame = frames[frames.length - 1];
+				reportFrame.setExtendedState(Frame.MAXIMIZED_BOTH);
 			}
 
 			private String getSelectedButtonActionCommand(ButtonGroup radioGroup) {
