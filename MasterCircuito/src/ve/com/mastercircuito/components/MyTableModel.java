@@ -215,6 +215,18 @@ public class MyTableModel extends DefaultTableModel {
 				case "descripcion":
 					field = "material";
 					break;
+				case "cliente":
+					field = "client";
+					break;
+				case "codigo cliente":
+					field = "client_code";
+					break;
+				case "representante":
+					field = "representative";
+					break;
+				case "rif":
+					field = "rif";
+					break;
 			}
 			
 			if(cellChanged && !field.isEmpty()) {
@@ -230,6 +242,7 @@ public class MyTableModel extends DefaultTableModel {
 					case "budget_control_boards":
 					case "budget_materials":
 					case "materials":
+					case "clients":
 						sql = "UPDATE " + table + " SET " + field + " = '" + value + "' WHERE id = " + localVector.elementAt(0);
 						Db.update(sql);
 						break;

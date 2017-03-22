@@ -14,6 +14,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.swing.AbstractButton;
@@ -29,6 +30,7 @@ import javax.swing.JRadioButton;
 import javax.swing.filechooser.FileSystemView;
 
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
@@ -158,6 +160,7 @@ public class PrintDialog extends JDialog {
 				}
 				
 				try {
+					parametersMap.put(JRParameter.REPORT_LOCALE, new Locale("es", "VE"));
 					JasperReport report = (JasperReport) JRLoader.loadObjectFromFile( reportType + printType + ".jasper" );
 					JasperPrint jasperPrint = JasperFillManager.fillReport(report, parametersMap, db.getConnection());
 					if(checkPrintPreview.isSelected()) {

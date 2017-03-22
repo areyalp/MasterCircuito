@@ -12,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,12 +25,11 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRootPane;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
-import javax.swing.table.DefaultTableModel;
-
 import ve.com.mastercircuito.components.MyTableModel;
 import ve.com.mastercircuito.db.Db;
 import ve.com.mastercircuito.utils.Errors;
@@ -48,7 +48,6 @@ public class ClientDialog extends JDialog {
 	private Integer width = 600;
 	
 	private Db db;
-	private Object[][] companiesSearchData;
 	private JTable tableCompaniesSearchResult;
 	private ListSelectionModel listCompanySearchSelectionModel;
 	private JTextField textSearchClient, textSearchClientCode, textSearchRepresentative, textSearchRif;
@@ -82,7 +81,9 @@ public class ClientDialog extends JDialog {
 		panelCenter.setLayout(new BoxLayout(panelCenter, BoxLayout.PAGE_AXIS));
 		panelCenter.add(createCompanyAddSearchPanel());
 		panelCenter.add(Box.createRigidArea(new Dimension(0, 10)));
-		panelCenter.add(createCompanyAddTablePanel());
+		JScrollPane scrollPane = new JScrollPane(createCompanyAddTablePanel());
+		tableCompaniesSearchResult.setFillsViewportHeight(true);
+		panelCenter.add(scrollPane);
 		this.add(panelCenter, BorderLayout.CENTER);
 		
 		JPanel panelLower = new JPanel();
@@ -133,12 +134,6 @@ public class ClientDialog extends JDialog {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				loadClientSearchTable("");
-				
-				if(companiesSearchData.length > 0) {
-					tableCompaniesSearchResult.setModel(new MyTableModel(companiesSearchData, companiesColumnNames));
-				} else {
-					tableCompaniesSearchResult.setModel(new DefaultTableModel());
-				}
 			}
 			
 			@Override
@@ -160,12 +155,6 @@ public class ClientDialog extends JDialog {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				loadClientSearchTable("");
-				
-				if(companiesSearchData.length > 0) {
-					tableCompaniesSearchResult.setModel(new MyTableModel(companiesSearchData, companiesColumnNames));
-				} else {
-					tableCompaniesSearchResult.setModel(new DefaultTableModel());
-				}
 			}
 			
 			@Override
@@ -187,12 +176,6 @@ public class ClientDialog extends JDialog {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				loadClientSearchTable("");
-				
-				if(companiesSearchData.length > 0) {
-					tableCompaniesSearchResult.setModel(new MyTableModel(companiesSearchData, companiesColumnNames));
-				} else {
-					tableCompaniesSearchResult.setModel(new DefaultTableModel());
-				}
 			}
 			
 			@Override
@@ -214,12 +197,6 @@ public class ClientDialog extends JDialog {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				loadClientSearchTable("");
-				
-				if(companiesSearchData.length > 0) {
-					tableCompaniesSearchResult.setModel(new MyTableModel(companiesSearchData, companiesColumnNames));
-				} else {
-					tableCompaniesSearchResult.setModel(new DefaultTableModel());
-				}
 			}
 			
 			@Override
@@ -243,12 +220,21 @@ public class ClientDialog extends JDialog {
 			+ "ORDER BY clients.id ASC "
 			+ "LIMIT 5";
 		
-		companiesSearchData = db.fetchAll(db.select(companiesQuery));
-		
-		MyTableModel mForTable = new MyTableModel(companiesSearchData, companiesColumnNames);
-		
 		tableCompaniesSearchResult = new JTable();
-		tableCompaniesSearchResult.setModel(mForTable);
+		
+		HashSet<Integer> editableColumns = new HashSet<Integer>();
+		editableColumns.add(1);
+		editableColumns.add(2);
+		editableColumns.add(3);
+		editableColumns.add(4);
+		
+		if(tableCompaniesSearchResult.getModel() instanceof MyTableModel) {
+			((MyTableModel) tableCompaniesSearchResult.getModel()).setQuery(companiesQuery);
+		} else {
+			MyTableModel mForTable = new MyTableModel(companiesQuery, companiesColumnNames, "clients", editableColumns);
+			tableCompaniesSearchResult.setModel(mForTable);
+		}
+		
 		tableCompaniesSearchResult.setAutoCreateRowSorter(true);
 		tableCompaniesSearchResult.getTableHeader().setReorderingAllowed(false);
 		
@@ -500,11 +486,6 @@ public class ClientDialog extends JDialog {
 						if(err.isEmpty()) {
 							if(db.addClient(client, clientCode, representative, rif, address, phone, email, instagram, facebook, twitter)) {
 								loadClientSearchTable("");
-								if(companiesSearchData.length > 0) {
-									tableCompaniesSearchResult.setModel(new MyTableModel(companiesSearchData, companiesColumnNames));
-								} else {
-									tableCompaniesSearchResult.setModel(new DefaultTableModel());
-								}
 								dialog.dispose();
 							} else {
 								JOptionPane.showMessageDialog(null, "Ocurrio un error al agregar el cliente");
@@ -598,7 +579,18 @@ public class ClientDialog extends JDialog {
 			+ whereQuery
 			+ " ORDER BY id ASC";
 		
-		companiesSearchData = db.fetchAll(db.select(companiesQuery));
+		HashSet<Integer> editableColumns = new HashSet<Integer>();
+		editableColumns.add(1);
+		editableColumns.add(2);
+		editableColumns.add(3);
+		editableColumns.add(4);
+		
+		if(tableCompaniesSearchResult.getModel() instanceof MyTableModel) {
+			((MyTableModel) tableCompaniesSearchResult.getModel()).setQuery(companiesQuery);
+		} else {
+			MyTableModel mForTable = new MyTableModel(companiesQuery, companiesColumnNames, "clients", editableColumns);
+			tableCompaniesSearchResult.setModel(mForTable);
+		}
 	}
 	
 	private String selectWhereQuery(String whereQuery) {

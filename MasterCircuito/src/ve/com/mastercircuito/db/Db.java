@@ -2979,5 +2979,30 @@ public class Db extends MysqlDriver {
 		
 		return budget;
 	}
+
+	public boolean controlBoardCircuitsExists(String controlBoardCircuits) {
+		String queryString;
+		
+		queryString = "SELECT circuits FROM control_board_circuits WHERE circuits = " + controlBoardCircuits;
+		this.select(queryString);
+		
+		return (this.getNumRows() > 0)? true:false;
+	}
+
+	public boolean addControlBoardCircuits(String controlBoardCircuits) {
+		String queryInsert;
+		
+		queryInsert = "INSERT INTO control_board_circuits (circuits) VALUES (" + controlBoardCircuits + ")";
+		this.insert(queryInsert);
+		
+		return (this.getInsertId() > 0)? true:false;
+	}
+
+	public boolean removeControlBoardCircuits(String controlBoardCircuits) {
+		String queryDelete;
+		
+		queryDelete = "DELETE FROM control_board_circuits WHERE circuits = '" + controlBoardCircuits + "'";
+		return this.delete(queryDelete);
+	}
 	
 }

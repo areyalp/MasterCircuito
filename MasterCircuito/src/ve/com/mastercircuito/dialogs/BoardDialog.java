@@ -21,6 +21,7 @@ import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
@@ -106,7 +107,9 @@ public class BoardDialog extends JDialog {
 		panelCenter.setLayout(new BoxLayout(panelCenter, BoxLayout.PAGE_AXIS));
 		panelCenter.add(createBoardAddSearchPanel());
 		panelCenter.add(Box.createRigidArea(new Dimension(0, 10)));
-		panelCenter.add(createBoardAddTablePanel());
+		JScrollPane scrollPane = new JScrollPane(createBoardAddTablePanel());
+		tableBoardsSearchResult.setFillsViewportHeight(true);
+		panelCenter.add(scrollPane);
 		this.add(panelCenter, BorderLayout.CENTER);
 		
 		JPanel panelLower = new JPanel();

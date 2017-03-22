@@ -23,6 +23,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRootPane;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
@@ -82,7 +83,9 @@ public class MaterialDialog extends JDialog {
 		panelCenter.setLayout(new BoxLayout(panelCenter, BoxLayout.PAGE_AXIS));
 		panelCenter.add(createMaterialAddSearchPanel());
 		panelCenter.add(Box.createRigidArea(new Dimension(0, 10)));
-		panelCenter.add(createMaterialAddTablePanel());
+		JScrollPane scrollPane = new JScrollPane(createMaterialAddTablePanel());
+		tableMaterialsSearchResult.setFillsViewportHeight(true);
+		panelCenter.add(scrollPane);
 		this.add(panelCenter, BorderLayout.CENTER);
 		
 		JPanel panelLower = new JPanel();
