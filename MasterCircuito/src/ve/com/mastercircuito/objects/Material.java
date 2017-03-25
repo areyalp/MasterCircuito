@@ -3,6 +3,7 @@ package ve.com.mastercircuito.objects;
 public class Material extends Product{
 	
 	private int id;
+	private String reference;
 	private String material;
 	private double price;
 
@@ -10,9 +11,10 @@ public class Material extends Product{
 		super();
 	}
 
-	public Material(Integer id, String material, Double price) {
+	public Material(Integer id, String reference, String material, Double price) {
 		super();
 		this.id = id;
+		this.setReference(reference);
 		this.material = material;
 		this.price = price;
 	}
@@ -39,6 +41,14 @@ public class Material extends Product{
 
 	public void setPrice(double price) {
 		this.price = price;
+	}
+
+	public String getReference() {
+		return reference;
+	}
+
+	public void setReference(String reference) {
+		this.reference = reference;
 	}
 	
 }

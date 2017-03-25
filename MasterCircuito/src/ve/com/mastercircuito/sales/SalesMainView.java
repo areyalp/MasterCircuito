@@ -5406,7 +5406,7 @@ public class SalesMainView extends JFrame{
 	
 	private void loadBoardSwitchTable() {
 		String boardSwitchesQuery = "SELECT board_switches.id, "
-				+ " CONCAT('Interruptor ', boards.phases, 'X', currents.current, 'A,', switch_models.model, ',', switch_brands.brand) as description, "
+				+ " CONCAT('Interruptor ', switches.phases, 'X', currents.current, 'A,', switch_models.model, ',', switch_brands.brand) as description, "
 				+ " board_switches.quantity, "
 				+ " board_switches.price, "
 				+ " (board_switches.quantity * board_switches.price) as total, "

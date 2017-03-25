@@ -25,6 +25,7 @@ import ve.com.mastercircuito.objects.Caliber;
 import ve.com.mastercircuito.objects.Circuits;
 import ve.com.mastercircuito.objects.Client;
 import ve.com.mastercircuito.objects.Color;
+import ve.com.mastercircuito.objects.ControlBoard;
 import ve.com.mastercircuito.objects.DeliveryPeriod;
 import ve.com.mastercircuito.objects.DispatchPlace;
 import ve.com.mastercircuito.objects.Finish;
@@ -1014,14 +1015,15 @@ public class Db extends MysqlDriver {
 	public ArrayList<Material> getBoardMaterials(int boardId) {
 		ResultSet setBoardMaterials;
 		ArrayList<Material> materials = new ArrayList<Material>();
-		setBoardMaterials = this.select("SELECT * FROM materials WHERE id = '" + boardId + "'");
+		setBoardMaterials = this.select("SELECT materials.id, materials.reference, materials.material, materials.price FROM board_materials INNER JOIN materials ON materials.id = board_materials.material_id WHERE board_materials.board_container_id = '" + boardId + "'");
 		
 		try {
 			while(setBoardMaterials.next()) {
 				int id = setBoardMaterials.getInt("id");
+				String reference = setBoardMaterials.getString("reference");
 				String material = setBoardMaterials.getString("material");
 				double price = setBoardMaterials.getDouble("price");
-				materials.add(new Material(id, material, price));
+				materials.add(new Material(id, reference, material, price));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -2068,6 +2070,75 @@ public class Db extends MysqlDriver {
 				switches = db.getBoardSwitches(id);
 				products.add(new Board(id, name, boardType, installation, nema, barCapacity, barType, circuits, boardVoltage, phases, ground, interruption, lockType, mainSwitchId, materials, price, comments, active, switches));
 			}
+			
+			statement = db.conn.prepareCall("{call SP_GET_PRODUCTION_ORDER_CONTROL_BOARDS(?)}");
+			statement.setInt(1, productionOrderId);
+			setProducts = statement.executeQuery();
+			while (setProducts.next()) {
+				int id = setProducts.getInt("id");
+				String name = setProducts.getString("name");
+				int controlBoardTypeId = setProducts.getInt("type_id");
+				String strControlBoardtype = setProducts.getString("type");
+				BoardType controlBoardType = new BoardType(controlBoardTypeId, strControlBoardtype);
+				
+				int installationId = setProducts.getInt("installation_id");
+				String strInstallation = setProducts.getString("installation");
+				Installation installation = new Installation(installationId, strInstallation);
+				
+				int nemaId = setProducts.getInt("nema_id");
+				String strNema = setProducts.getString("nema");
+				Nema nema = new Nema(nemaId, strNema);
+				
+				int barCapacityId = setProducts.getInt("bar_capacity_id");
+				int strBarCapacity = setProducts.getInt("bar_capacity");
+				BarCapacity barCapacity = new BarCapacity(barCapacityId, strBarCapacity);
+				
+				int barTypeId = setProducts.getInt("bar_type_id");
+				String strBarType = setProducts.getString("nema");
+				BarType barType = new BarType(barTypeId, strBarType);
+				
+				int circuitsId = setProducts.getInt("circuits_id");
+				int strCircuits = setProducts.getInt("circuits");
+				Circuits circuits = new Circuits(circuitsId, strCircuits);
+				
+				int controlBoardVoltageId = setProducts.getInt("voltage_id");
+				String strControlBoardVoltage = setProducts.getString("voltage");
+				BoardVoltage boardVoltage = new BoardVoltage(controlBoardVoltageId, strControlBoardVoltage);
+				
+				int phases = setProducts.getInt("phases");
+				boolean ground = setProducts.getBoolean("ground");
+				
+				int interruptionId = setProducts.getInt("interruption_id");
+				int strInterruption = setProducts.getInt("interruption");
+				Interruption interruption = new Interruption(interruptionId, strInterruption);
+				
+				int lockTypeId = setProducts.getInt("lock_type_id");
+				String strLockType = setProducts.getString("lock_type");
+				LockType lockType = new LockType(lockTypeId, strLockType);
+				
+				int mainSwitchId = db.getControlBoardSwitchMainId(id);
+				
+				ArrayList<Material> materials = db.getControlBoardMaterials(id);
+				
+				double price = setProducts.getDouble("price");
+				String comments = setProducts.getString("comments");
+				boolean active = (setProducts.getInt("active")==1?true:false);
+				
+				ArrayList<Switch> switches = new ArrayList<Switch>();
+				switches = db.getControlBoardSwitches(id);
+				products.add(new ControlBoard(id, name, controlBoardType, installation, nema, barCapacity, barType, circuits, boardVoltage, phases, ground, interruption, lockType, mainSwitchId, materials, price, comments, active, switches));
+			}
+			
+			statement = db.conn.prepareCall("{call SP_GET_PRODUCTION_ORDER_MATERIALS(?)}");
+			statement.setInt(1, productionOrderId);
+			setProducts = statement.executeQuery();
+			while (setProducts.next()) {
+				int id = setProducts.getInt("id");
+				String reference = setProducts.getString("reference");
+				String material = setProducts.getString("material");
+				double price = setProducts.getDouble("price");
+				products.add(new Material(id, reference, material, price));
+			}
 		}catch(SQLException e) {
 			e.printStackTrace();
 		}
@@ -2077,6 +2148,85 @@ public class Db extends MysqlDriver {
 			e.printStackTrace();
 		}
 		return products;
+	}
+
+	private ArrayList<Switch> getControlBoardSwitches(int budgetId) {
+		ArrayList<Switch> switches = new ArrayList<Switch>();
+		ResultSet setControlBoardSwitches = null;
+		CallableStatement statement = null;
+		
+		try {
+			statement = this.conn.prepareCall("{call SP_GET_CONTROL_BOARD_SWITCHES(?)}");
+			statement.setInt(1, budgetId);
+			setControlBoardSwitches = statement.executeQuery();
+			
+			while(setControlBoardSwitches.next()) {
+				int id = setControlBoardSwitches.getInt("id");
+				int brandId = setControlBoardSwitches.getInt("brand_id");
+				String brand = setControlBoardSwitches.getString("brand");
+				int modelId = setControlBoardSwitches.getInt("model_id");
+				String model = setControlBoardSwitches.getString("model");
+				String reference = setControlBoardSwitches.getString("reference");
+				int phases = setControlBoardSwitches.getInt("phases");
+				int currentId = setControlBoardSwitches.getInt("current_id");
+				String current = setControlBoardSwitches.getString("current");
+				int voltageId = setControlBoardSwitches.getInt("voltage_id");
+				String voltage = setControlBoardSwitches.getString("voltage");
+				int interruptionId = setControlBoardSwitches.getInt("interruption_id");
+				String interruption = setControlBoardSwitches.getString("interruption");
+				double price = setControlBoardSwitches.getDouble("price");
+				boolean active = (setControlBoardSwitches.getInt("active")==1?true:false);
+				int containerId = setControlBoardSwitches.getInt("container_id");
+				int quantity = setControlBoardSwitches.getInt("quantity");
+				switches.add(new Switch(id, brandId, brand, modelId, model, reference, phases, currentId, current, voltageId, voltage, interruptionId, interruption, price, active, containerId, quantity));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener los interruptores del tablero de control");
+		}
+		
+		return switches;
+	}
+
+	private ArrayList<Material> getControlBoardMaterials(int controlBoardId) {
+		ResultSet setControlBoardMaterials;
+		ArrayList<Material> materials = new ArrayList<Material>();
+		setControlBoardMaterials = this.select("SELECT materials.id, materials.reference, materials.material, materials.price FROM control_board_materials INNER JOIN materials ON materials.id = control_board_materials.material_id WHERE control_board_materials.board_container_id = '" + controlBoardId + "'");
+		
+		try {
+			while(setControlBoardMaterials.next()) {
+				int id = setControlBoardMaterials.getInt("id");
+				String reference = setControlBoardMaterials.getString("reference");
+				String material = setControlBoardMaterials.getString("material");
+				double price = setControlBoardMaterials.getDouble("price");
+				materials.add(new Material(id, reference, material, price));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener los materiales del tablero de control");
+		}
+		return materials;
+	}
+
+	private int getControlBoardSwitchMainId(int controlBoardId) {
+		int controlBoardSwitchMainId = 0;
+		ResultSet setControlBoardSwitchMainId;
+		CallableStatement statement;
+		
+		try {
+			statement = this.conn.prepareCall("{call SP_GET_CONTROL_BOARD_MAIN_SWITCHES(?)}");
+			statement.setInt(1, controlBoardId);
+			setControlBoardSwitchMainId = statement.executeQuery();
+			
+			while(setControlBoardSwitchMainId.next()) {
+				controlBoardSwitchMainId = setControlBoardSwitchMainId.getInt(1);
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return controlBoardSwitchMainId;
 	}
 
 	public WorkOrder pullWorkOrder(int orderId) {

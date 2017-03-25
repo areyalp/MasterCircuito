@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class ControlBoard extends Product {
 	
 	private String name;
-	private ControlBoardType type;
+	private BoardType type;
 	private Installation installation;
 	private Nema nema;
 	private BoardVoltage voltage;
@@ -17,6 +17,7 @@ public class ControlBoard extends Product {
 	private Circuits circuits;
 	private Interruption interruption;
 	private LockType lockType;
+	private int mainSwitchId;
 	private ArrayList<Material> materials;
 	
 	private double price;
@@ -29,9 +30,9 @@ public class ControlBoard extends Product {
 		super();
 	}
 	
-	public ControlBoard(int id, String name, ControlBoardType type, Installation installation, Nema nema, BarCapacity barCapacity,
+	public ControlBoard(int id, String name, BoardType type, Installation installation, Nema nema, BarCapacity barCapacity,
 			BarType barType, Circuits circuits, BoardVoltage voltage, int phases, boolean ground,
-			Interruption interruption, LockType lockType,
+			Interruption interruption, LockType lockType, int mainSwitchId,
 			ArrayList<Material> materials, double price, String comments, boolean active, ArrayList<Switch> switches) {
 		super();
 		this.setId(id);
@@ -46,6 +47,7 @@ public class ControlBoard extends Product {
 		this.phases = phases;
 		this.ground = ground;
 		this.interruption = interruption;
+		this.setMainSwitchId(mainSwitchId);
 		this.lockType = lockType;
 		this.materials = materials;
 		this.price = price;
@@ -53,7 +55,7 @@ public class ControlBoard extends Product {
 		this.active = active;
 		this.switches = switches;
 	}
-	
+
 	public String getName() {
 		return name;
 	}
@@ -62,11 +64,11 @@ public class ControlBoard extends Product {
 		this.name = name;
 	}
 	
-	public ControlBoardType getType() {
+	public BoardType getType() {
 		return type;
 	}
 	
-	public void setType(ControlBoardType type) {
+	public void setType(BoardType type) {
 		this.type = type;
 	}
 	
@@ -188,6 +190,14 @@ public class ControlBoard extends Product {
 	
 	public void setSwitches(ArrayList<Switch> switches) {
 		this.switches = switches;
+	}
+
+	public int getMainSwitchId() {
+		return mainSwitchId;
+	}
+
+	public void setMainSwitchId(int mainSwitchId) {
+		this.mainSwitchId = mainSwitchId;
 	}
 	
 }

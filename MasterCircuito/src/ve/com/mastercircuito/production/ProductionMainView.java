@@ -548,7 +548,6 @@ public class ProductionMainView extends JFrame{
 				model.addElement(workOrder);
 			}
 			listWorkOrders.setModel(model);
-			listProductionOrders.getSelectedValue().setProcessed(true);
 			Db.setProductionOrderProcessed(productionOrder.getId());
 		} else {
 			ArrayList<WorkOrder> workOrders = new ArrayList<WorkOrder>();
@@ -682,6 +681,7 @@ public class ProductionMainView extends JFrame{
 		}
 	}
 	
+	@SuppressWarnings("unused")
 	private void loadListWorkOrders(ProductionOrder productionOrder, String whereQuery) {
 		if(textSearchWorkOrder.getText().isEmpty()) {
 			searchingWorkOrder = false;
@@ -776,7 +776,6 @@ public class ProductionMainView extends JFrame{
 						
 						Budget selectedBudget = new Budget(listInbox.getSelectedValue());
 						if (ProductionOrder.existsByBudgetId(selectedBudget.getId())) {
-							ProductionOrder productionOrder = loadProductionOrder();
 							loadListWorkOrders("");
 						} else {
 							((DefaultListModel<ProductionOrder>) listProductionOrders.getModel()).removeAllElements();
