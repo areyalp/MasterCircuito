@@ -816,25 +816,73 @@ public class Db extends MysqlDriver {
 		return (this.getInsertId() > 0)? true:false;
 	}
 	
-	public boolean addBoard(String name, String type, String installation, String nema, int barCapacity, String barType, int circuits, String voltage, int phases, String ground, int interruption, String lockType, double price) {
+	public boolean addBoard(String name, String type, String installation, String nema, String sheet, String color, int barCapacity, String barType, int circuits, String voltage, int phases, String ground, int interruption, Integer caliber, String lockType, double price) {
 		int typeId = this.getBoardTypeId(type);
 		int installationId = this.getInstallationId(installation);
 		int nemaId = this.getNemaId(nema);
+		int sheetId = this.getBoardSheetId(sheet);
+		int colorId = this.getBoardColorId(color);
 		int barCapacityId = this.getBoardBarCapacityId(barCapacity);
 		int barTypeId = this.getBoardBarTypeId(barType);
 		int circuitsId = this.getBoardCircuitsId(circuits);
 		int voltageId = this.getBoardVoltageId(voltage);
 		int interruptionId = this.getInterruptionId(interruption);
+		int caliberId = this.getBoardCaliberId(caliber);
 		int lockTypeId = this.getLockTypeId(lockType);
 
-		String queryInsert = "INSERT INTO boards (name, type_id, installation_id, nema_id, bar_capacity_id, bar_type_id, circuits_id, voltage_id, phases, ground, interruption_id, lock_type_id, price) "
-				+ "VALUES('" + name + "', " + typeId + ", " + installationId + ", " + nemaId + ", " + barCapacityId + ", " + barTypeId + ", " + circuitsId + ", " + voltageId + ", '" + phases + "', '" + ground + "', " + interruptionId + ", " + lockTypeId + ", " + price + ")";
+		String queryInsert = "INSERT INTO boards (name, type_id, installation_id, nema_id, sheet_id, color_id, bar_capacity_id, bar_type_id, circuits_id, voltage_id, phases, ground, interruption_id, caliber_id, lock_type_id, price) "
+				+ "VALUES('" + name + "', " + typeId + ", " + installationId + ", " + nemaId + ", " + sheetId + ", " + colorId + ", " + barCapacityId + ", " + barTypeId + ", " + circuitsId + ", " + voltageId + ", '" + phases + "', '" + ground + "', " + interruptionId + ", " + caliberId + ", " + lockTypeId + ", " + price + ")";
 		
 		this.insert(queryInsert);
 		
 		return (this.getInsertId() > 0)? true:false;
 	}
 	
+	public int getBoardCaliberId(Integer caliber) {
+		ResultSet setCaliber;
+		int caliberId = 0;
+		setCaliber = this.select("SELECT id FROM board_calibers WHERE caliber = '" + caliber + "'");
+		
+		try {
+			setCaliber.first();
+			caliberId = setCaliber.getInt("id");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener el id del calibre");
+		}
+		return caliberId;
+	}
+
+	public int getBoardColorId(String color) {
+		ResultSet setColor;
+		int colorId = 0;
+		setColor = this.select("SELECT id FROM board_colors WHERE color = '" + color + "'");
+		
+		try {
+			setColor.first();
+			colorId = setColor.getInt("id");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener el id del color");
+		}
+		return colorId;
+	}
+
+	public int getBoardSheetId(String sheet) {
+		ResultSet setSheet;
+		int sheetId = 0;
+		setSheet = this.select("SELECT id FROM board_sheets WHERE sheet = '" + sheet + "'");
+		
+		try {
+			setSheet.first();
+			sheetId = setSheet.getInt("id");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener el id de la lamina");
+		}
+		return sheetId;
+	}
+
 	public boolean addBudget(String date, int expiryDays, String clientId, 
 			String workName, String method, int sellerId,
 			String place, int deliveryTime, String deliveryPeriod, Integer creatorId) {
@@ -2434,25 +2482,73 @@ public class Db extends MysqlDriver {
 	}
 
 	public boolean addControlBoard(String controlBoardName, String controlBoardType, String controlBoardInstallation,
-			String controlBoardNema, Integer controlBoardBarCapacity, String controlBoardBarType, Integer controlBoardCircuits,
+			String controlBoardNema, String controlBoardSheet, String controlBoardColor, Integer controlBoardBarCapacity, String controlBoardBarType, Integer controlBoardCircuits,
 			String controlBoardVoltage, Integer controlBoardPhases, String controlBoardGround, Integer controlBoardInterruption,
-			String controlBoardLockType, Double controlBoardPrice) {
+			Integer controlBoardCaliber, String controlBoardLockType, Double controlBoardPrice) {
 		int typeId = this.getControlBoardTypeId(controlBoardType);
 		int installationId = this.getInstallationId(controlBoardInstallation);
 		int nemaId = this.getNemaId(controlBoardNema);
+		int sheetId = this.getControlBoardSheetId(controlBoardSheet);
+		int colorId = this.getControlBoardColorId(controlBoardColor);
 		int barCapacityId = this.getControlBoardBarCapacityId(controlBoardBarCapacity);
 		int barTypeId = this.getControlBoardBarTypeId(controlBoardBarType);
 		int circuitsId = this.getControlBoardCircuitsId(controlBoardCircuits);
 		int voltageId = this.getControlBoardVoltageId(controlBoardVoltage);
 		int interruptionId = this.getInterruptionId(controlBoardInterruption);
+		int caliberId = this.getControlBoardCaliberId(controlBoardCaliber);
 		int lockTypeId = this.getLockTypeId(controlBoardLockType);
 
-		String queryInsert = "INSERT INTO control_boards (name, type_id, installation_id, nema_id, bar_capacity_id, bar_type_id, circuits_id, voltage_id, phases, ground, interruption_id, lock_type_id, price) "
-				+ "VALUES('" + controlBoardName + "', " + typeId + ", " + installationId + ", " + nemaId + ", " + barCapacityId + ", " + barTypeId + ", " + circuitsId + ", " + voltageId + ", '" + controlBoardPhases + "', '" + controlBoardGround + "', " + interruptionId + ", " + lockTypeId + ", " + controlBoardPrice + ")";
+		String queryInsert = "INSERT INTO control_boards (name, type_id, installation_id, nema_id, sheet_id, color_id, bar_capacity_id, bar_type_id, circuits_id, voltage_id, phases, ground, interruption_id, caliber_id, lock_type_id, price) "
+				+ "VALUES('" + controlBoardName + "', " + typeId + ", " + installationId + ", " + nemaId + ", " + sheetId + ", " + colorId + ", " + barCapacityId + ", " + barTypeId + ", " + circuitsId + ", " + voltageId + ", '" + controlBoardPhases + "', '" + controlBoardGround + "', " + interruptionId + ", " + caliberId + ", " + lockTypeId + ", " + controlBoardPrice + ")";
 		
 		this.insert(queryInsert);
 		
 		return (this.getInsertId() > 0)? true:false;
+	}
+
+	public int getControlBoardSheetId(String sheet) {
+		ResultSet setSheet;
+		int sheetId = 0;
+		setSheet = this.select("SELECT id FROM control_board_sheets WHERE sheet = '" + sheet + "'");
+		
+		try {
+			setSheet.first();
+			sheetId = setSheet.getInt("id");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener el id de la lamina");
+		}
+		return sheetId;
+	}
+
+	public int getControlBoardColorId(String color) {
+		ResultSet setColor;
+		int colorId = 0;
+		setColor = this.select("SELECT id FROM control_board_colors WHERE color = '" + color + "'");
+		
+		try {
+			setColor.first();
+			colorId = setColor.getInt("id");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener el id del color");
+		}
+		return colorId;
+	}
+
+	public int getControlBoardCaliberId(Integer caliber) {
+		ResultSet setCaliber;
+		int caliberId = 0;
+		setCaliber = this.select("SELECT id FROM control_board_calibers WHERE caliber = '" + caliber + "'");
+		
+		try {
+			setCaliber.first();
+			caliberId = setCaliber.getInt("id");
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Error al obtener el id del calibre");
+		}
+		return caliberId;
 	}
 
 	public String getControlBoardComments(Integer controlBoardId) {

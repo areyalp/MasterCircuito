@@ -150,32 +150,43 @@ public class SalesMainView extends JFrame{
 		private static final String BOARD_TABLE = "boards";
 		private static final String BOARD_BAR_CAPACITIES_TABLE = "board_bar_capacities";
 		private static final String BOARD_BAR_TYPES_TABLE = "board_bar_types";
+		private static final String BOARD_CALIBERS_TABLE = "board_calibers";
 		private static final String BOARD_CIRCUITS_TABLE = "board_circuits";
+		private static final String BOARD_COLORS_TABLE = "board_colors";
+		private static final String BOARD_SHEETS_TABLE = "board_sheets";
 		private static final String BOARD_TYPES_TABLE = "board_types";
 		private static final String BOARD_VOLTAGES_TABLE = "board_voltages";
 	// Board Fields
 		private static final String BOARD_ID_FIELD = "boards.id";
 		private static final String BOARD_NAME_FIELD = "boards.`name`";
 		private static final String BOARD_TYPE_FIELD = "board_types.type";
+		private static final String BOARD_SHEET_FIELD = "board_sheets.sheet";
+		private static final String BOARD_COLOR_FIELD = "board_colors.color";
 		private static final String BOARD_BAR_CAPACITY_FIELD = "board_bar_capacities.bar_capacity";
 		private static final String BOARD_BAR_TYPE_FIELD = "board_bar_types.bar_type";
 		private static final String BOARD_CIRCUITS_FIELD = "board_circuits.circuits";
 		private static final String BOARD_VOLTAGE_FIELD = "board_voltages.voltage";
 		private static final String BOARD_PHASES_FIELD = "boards.phases";
 		private static final String BOARD_GROUND_FIELD = "IF(boards.ground=0,'NO','SI') as ground";
+		private static final String BOARD_CALIBER_FIELD = "board_calibers.caliber";
 		private static final String BOARD_LOCK_TYPE_FIELD = "lock_types.lock_type";
 		private static final String BOARD_PRICE_FIELD = "boards.price";
 	// Control Board Tables
 		private static final String CONTROL_BOARD_TABLE = "control_boards";
+		private static final String CONTROL_BOARD_SHEETS_TABLE = "control_board_sheets";
+		private static final String CONTROL_BOARD_COLORS_TABLE = "control_board_colors";
 		private static final String CONTROL_BOARD_BAR_CAPACITIES_TABLE = "control_board_bar_capacities";
 		private static final String CONTROL_BOARD_BAR_TYPES_TABLE = "control_board_bar_types";
 		private static final String CONTROL_BOARD_CIRCUITS_TABLE = "control_board_circuits";
 		private static final String CONTROL_BOARD_TYPES_TABLE = "control_board_types";
 		private static final String CONTROL_BOARD_VOLTAGES_TABLE = "control_board_voltages";
+		private static final String CONTROL_BOARD_CALIBERS_TABLE = "control_board_calibers";
 	// Control Board Fields
 		private static final String CONTROL_BOARD_ID_FIELD = "control_boards.id";
 		private static final String CONTROL_BOARD_NAME_FIELD = "control_boards.`name`";
 		private static final String CONTROL_BOARD_TYPE_FIELD = "control_board_types.type";
+		private static final String CONTROL_BOARD_SHEET_FIELD = "control_board_sheets.sheet";
+		private static final String CONTROL_BOARD_COLOR_FIELD = "control_board_colors.color";
 		private static final String CONTROL_BOARD_BAR_CAPACITY_FIELD = "if(control_boards.bar_capacity_id=0,'N/A',control_board_bar_capacities.bar_capacity) as bar_capacity";
 		private static final String CONTROL_BOARD_BAR_TYPE_FIELD = "if(control_boards.bar_type_id=0,'N/A',control_board_bar_types.bar_type) as bar_type";
 		private static final String CONTROL_BOARD_CIRCUITS_FIELD = "if(control_boards.circuits_id=0,'N/A',control_board_circuits.circuits) as circuits";
@@ -183,6 +194,7 @@ public class SalesMainView extends JFrame{
 		private static final String CONTROL_BOARD_PHASES_FIELD = "control_boards.phases";
 		private static final String CONTROL_BOARD_GROUND_FIELD = "IF(control_boards.ground=0,'NO','SI') as ground";
 		private static final String CONTROL_BOARD_INTERRUPTION_FIELD = "if(control_boards.interruption_id=0,'N/A',interruptions.interruption) as interruption";
+		private static final String CONTROL_BOARD_CALIBER_FIELD = "control_board_calibers.caliber";
 		private static final String CONTROL_BOARD_LOCK_TYPE_FIELD = "if(control_boards.lock_type_id=0,'N/A',lock_types.lock_type) as lock_type";
 		private static final String CONTROL_BOARD_PRICE_FIELD = "control_boards.price";
 	//Budget Tables	
@@ -293,9 +305,9 @@ public class SalesMainView extends JFrame{
 		private JPanel panelBoardDescription, panelWrapperBoardDescription;
 		private JButton buttonBoardAdd, buttonBoardEdit;
 		private JTextField textBoardSearchNames;
-		private JComboBox<String> comboBoardTypes, comboBoardInstallations, comboBoardNemas, comboBoardBarCapacities, comboBoardBarTypes, comboBoardCircuits, comboBoardVoltages, comboBoardPhases, comboBoardGround, comboBoardInterruptions, comboBoardLockTypes;
-		private String searchSelectedBoardType = "", searchSelectedBoardInstallation = "", searchSelectedBoardNema = "", searchSelectedBoardBarCapacity = "", searchSelectedBoardBarType = "", searchSelectedBoardCircuits = "", searchSelectedBoardVoltage = "", searchSelectedBoardPhases = "", searchSelectedBoardGround = "", searchSelectedBoardInterruption = "", searchSelectedBoardLockType = "";
-		private JTextField textBoardDescriptionName, textBoardDescriptionType, textBoardDescriptionInstallation, textBoardDescriptionNema, textBoardDescriptionBarCapacity, textBoardDescriptionBarType, textBoardDescriptionCircuits, textBoardDescriptionVoltage, textBoardDescriptionPhases, textBoardDescriptionGround, textBoardDescriptionInterruption, textBoardDescriptionLockType, textBoardDescriptionPrice;
+		private JComboBox<String> comboBoardTypes, comboBoardInstallations, comboBoardNemas, comboBoardSheets, comboBoardColors, comboBoardBarCapacities, comboBoardBarTypes, comboBoardCircuits, comboBoardVoltages, comboBoardPhases, comboBoardGround, comboBoardInterruptions, comboBoardCalibers, comboBoardLockTypes;
+		private String searchSelectedBoardType = "", searchSelectedBoardInstallation = "", searchSelectedBoardNema = "", searchSelectedBoardSheet = "", searchSelectedBoardColor = "", searchSelectedBoardBarCapacity = "", searchSelectedBoardBarType = "", searchSelectedBoardCircuits = "", searchSelectedBoardVoltage = "", searchSelectedBoardPhases = "", searchSelectedBoardGround = "", searchSelectedBoardInterruption = "", searchSelectedBoardCaliber = "", searchSelectedBoardLockType = "";
+		private JTextField textBoardDescriptionName, textBoardDescriptionType, textBoardDescriptionInstallation, textBoardDescriptionNema, textBoardDescriptionSheet, textBoardDescriptionColor, textBoardDescriptionBarCapacity, textBoardDescriptionBarType, textBoardDescriptionCircuits, textBoardDescriptionVoltage, textBoardDescriptionPhases, textBoardDescriptionGround, textBoardDescriptionInterruption, textBoardDescriptionCaliber, textBoardDescriptionLockType, textBoardDescriptionPrice;
 		private JTextArea textBoardDescription;
 		private JLabel labelBoardCopy;
 	// Board Table Objects
@@ -333,7 +345,7 @@ public class SalesMainView extends JFrame{
 		private JPanel panelBoardAddNew;
 		private JButton buttonBoardAddCancel;
 		private JTextField textBoardAddName, textBoardAddPrice;
-		private JComboBox<String> comboBoardAddType, comboBoardAddInstallation, comboBoardAddNema, comboBoardAddBarCapacity, comboBoardAddBarType, comboBoardAddCircuits, comboBoardAddVoltage, comboBoardAddPhases, comboBoardAddInterruption, comboBoardAddLockType;
+		private JComboBox<String> comboBoardAddType, comboBoardAddInstallation, comboBoardAddNema, comboBoardAddSheet, comboBoardAddColor, comboBoardAddBarCapacity, comboBoardAddBarType, comboBoardAddCircuits, comboBoardAddVoltage, comboBoardAddPhases, comboBoardAddInterruption, comboBoardAddCaliber, comboBoardAddLockType;
 		private JCheckBox checkBoardAddGround;
 		private JTextArea textBoardAddDescription;
 	// Board Edit Objects
@@ -341,9 +353,9 @@ public class SalesMainView extends JFrame{
 		private JButton buttonBoardAddSave;
 		private int editBoardId, editBoardPhases;
 		private Double editBoardPrice;
-		private String editBoardType, editBoardName, editBoardInstallation, editBoardNema, editBoardBarCapacity, editBoardBarType, editBoardCircuits, editBoardVoltage, editBoardGround, editBoardInterruption, editBoardLockType;
+		private String editBoardType, editBoardName, editBoardInstallation, editBoardNema, editBoardSheet, editBoardColor, editBoardBarCapacity, editBoardBarType, editBoardCircuits, editBoardVoltage, editBoardGround, editBoardInterruption, editBoardCaliber, editBoardLockType;
 		private JTextField textBoardEditName, textBoardEditPrice;
-		private JComboBox<String> comboBoardEditType, comboBoardEditInstallation, comboBoardEditNema, comboBoardEditBarCapacity, comboBoardEditBarType, comboBoardEditCircuits, comboBoardEditVoltage, comboBoardEditPhases, comboBoardEditInterruption, comboBoardEditLockType;
+		private JComboBox<String> comboBoardEditType, comboBoardEditInstallation, comboBoardEditNema, comboBoardEditSheet, comboBoardEditColor, comboBoardEditBarCapacity, comboBoardEditBarType, comboBoardEditCircuits, comboBoardEditVoltage, comboBoardEditPhases, comboBoardEditInterruption, comboBoardEditCaliber, comboBoardEditLockType;
 		private JCheckBox checkBoardEditGround;
 		private JTextArea textBoardEditDescription;
 		private JButton buttonBoardEditSave, buttonBoardEditCancel;
@@ -364,9 +376,9 @@ public class SalesMainView extends JFrame{
 		private JPanel panelControlBoardDescription, panelWrapperControlBoardDescription;
 		private JButton buttonControlBoardAdd, buttonControlBoardEdit;
 		private JTextField textControlBoardSearchNames;
-		private JComboBox<String> comboControlBoardTypes, comboControlBoardInstallations, comboControlBoardNemas, comboControlBoardBarCapacities, comboControlBoardBarTypes, comboControlBoardCircuits, comboControlBoardVoltages, comboControlBoardPhases, comboControlBoardGround, comboControlBoardInterruptions, comboControlBoardLockTypes;
-		private String searchSelectedControlBoardType = "", searchSelectedControlBoardInstallation = "", searchSelectedControlBoardNema = "", searchSelectedControlBoardBarCapacity = "", searchSelectedControlBoardBarType = "", searchSelectedControlBoardCircuits = "", searchSelectedControlBoardVoltage = "", searchSelectedControlBoardPhases = "", searchSelectedControlBoardGround = "", searchSelectedControlBoardInterruption = "", searchSelectedControlBoardLockType = "";
-		private JTextField textControlBoardDescriptionName, textControlBoardDescriptionType, textControlBoardDescriptionInstallation, textControlBoardDescriptionNema, textControlBoardDescriptionBarCapacity, textControlBoardDescriptionBarType, textControlBoardDescriptionCircuits, textControlBoardDescriptionVoltage, textControlBoardDescriptionPhases, textControlBoardDescriptionGround, textControlBoardDescriptionInterruption, textControlBoardDescriptionLockType, textControlBoardDescriptionPrice;
+		private JComboBox<String> comboControlBoardTypes, comboControlBoardInstallations, comboControlBoardNemas,comboControlBoardSheets, comboControlBoardColors, comboControlBoardBarCapacities, comboControlBoardBarTypes, comboControlBoardCircuits, comboControlBoardVoltages, comboControlBoardPhases, comboControlBoardGround, comboControlBoardInterruptions, comboControlBoardCalibers, comboControlBoardLockTypes;
+		private String searchSelectedControlBoardType = "", searchSelectedControlBoardInstallation = "", searchSelectedControlBoardNema = "", searchSelectedControlBoardSheet = "", searchSelectedControlBoardColor = "", searchSelectedControlBoardBarCapacity = "", searchSelectedControlBoardBarType = "", searchSelectedControlBoardCircuits = "", searchSelectedControlBoardVoltage = "", searchSelectedControlBoardPhases = "", searchSelectedControlBoardGround = "", searchSelectedControlBoardInterruption = "", searchSelectedControlBoardCaliber = "", searchSelectedControlBoardLockType = "";
+		private JTextField textControlBoardDescriptionName, textControlBoardDescriptionType, textControlBoardDescriptionInstallation, textControlBoardDescriptionNema, textControlBoardDescriptionSheet, textControlBoardDescriptionColor, textControlBoardDescriptionBarCapacity, textControlBoardDescriptionBarType, textControlBoardDescriptionCircuits, textControlBoardDescriptionVoltage, textControlBoardDescriptionPhases, textControlBoardDescriptionGround, textControlBoardDescriptionInterruption, textControlBoardDescriptionCaliber, textControlBoardDescriptionLockType, textControlBoardDescriptionPrice;
 		private JTextArea textControlBoardDescription;
 		private JLabel labelControlBoardCopy;
 	// Control Board Table Objects
@@ -398,13 +410,13 @@ public class SalesMainView extends JFrame{
 		private int controlBoardMaterialsTableSelectedIndex;
 		private JButton buttonAddControlBoardMaterial, buttonRemoveControlBoardMaterial;
 		private int selectedControlBoardMaterialId;
-	// Board Materials Add Objects
+	// Control Board Materials Add Objects
 		private MaterialDialog dialogControlBoardMaterialAdd;
 	// Control Board Add Objects
 		private JPanel panelControlBoardAddNew;
 		private JButton buttonControlBoardAddCancel;
 		private JTextField textControlBoardAddName, textControlBoardAddPrice;
-		private JComboBox<String> comboControlBoardAddType, comboControlBoardAddInstallation, comboControlBoardAddNema, comboControlBoardAddBarCapacity, comboControlBoardAddBarType, comboControlBoardAddCircuits, comboControlBoardAddVoltage, comboControlBoardAddPhases, comboControlBoardAddInterruption, comboControlBoardAddLockType;
+		private JComboBox<String> comboControlBoardAddType, comboControlBoardAddInstallation, comboControlBoardAddNema, comboControlBoardAddSheet, comboControlBoardAddColor, comboControlBoardAddBarCapacity, comboControlBoardAddBarType, comboControlBoardAddCircuits, comboControlBoardAddVoltage, comboControlBoardAddPhases, comboControlBoardAddInterruption, comboControlBoardAddCaliber, comboControlBoardAddLockType;
 		private JCheckBox checkControlBoardAddGround;
 		private JTextArea textControlBoardAddDescription;
 	// Control Board Edit Objects
@@ -412,9 +424,10 @@ public class SalesMainView extends JFrame{
 		private JButton buttonControlBoardAddSave;
 		private int editControlBoardId, editControlBoardPhases;
 		private Double editControlBoardPrice;
-		private String editControlBoardType, editControlBoardName, editControlBoardInstallation, editControlBoardNema, editControlBoardBarCapacity, editControlBoardBarType, editControlBoardCircuits, editControlBoardVoltage, editControlBoardGround, editControlBoardInterruption, editControlBoardLockType;
+		private String editControlBoardType, editControlBoardName, editControlBoardInstallation, editControlBoardNema, editControlBoardSheet, editControlBoardColor, editControlBoardBarCapacity, editControlBoardBarType, editControlBoardCircuits, editControlBoardVoltage, editControlBoardGround, editControlBoardInterruption, editControlBoardLockType;
+		Integer editControlBoardCaliber;
 		private JTextField textControlBoardEditName, textControlBoardEditPrice;
-		private JComboBox<String> comboControlBoardEditType, comboControlBoardEditInstallation, comboControlBoardEditNema, comboControlBoardEditBarCapacity, comboControlBoardEditBarType, comboControlBoardEditCircuits, comboControlBoardEditVoltage, comboControlBoardEditPhases, comboControlBoardEditInterruption, comboControlBoardEditLockType;
+		private JComboBox<String> comboControlBoardEditType, comboControlBoardEditInstallation, comboControlBoardEditNema, comboControlBoardEditSheet, comboControlBoardEditColor, comboControlBoardEditBarCapacity, comboControlBoardEditBarType, comboControlBoardEditCircuits, comboControlBoardEditVoltage, comboControlBoardEditPhases, comboControlBoardEditInterruption, comboControlBoardEditCaliber, comboControlBoardEditLockType;
 		private JCheckBox checkControlBoardEditGround;
 		private JTextArea textControlBoardEditDescription;
 		private JButton buttonControlBoardEditSave, buttonControlBoardEditCancel;
@@ -542,6 +555,8 @@ public class SalesMainView extends JFrame{
 		private JPanel panelBudgetNotesEditSaveCancel;
 		private JButton buttonBudgetNotesEdit, buttonBudgetNotesEditSave, buttonBudgetNotesEditCancel;
 		
+		boolean debugging = true;
+		
 	public static void main(String[] args) {
 			new SalesMainView();
 	}
@@ -563,16 +578,16 @@ public class SalesMainView extends JFrame{
 		String macAddress = GetNetworkAddress.GetAddress("mac");
 		
 		if(null != macAddress){
-//			if(!macAddress.equalsIgnoreCase("6c-f0-49-0e-ff-0a")) {
-			boolean debugCondition = false;
-			if(debugCondition) {
-				JOptionPane.showMessageDialog(null, "Instalacion corrupta", "Instalacion corrupta", JOptionPane.ERROR_MESSAGE);
-				try {
-					throw new Exception("Instalacion corrupta");
-				} catch (Exception e) {
-					e.printStackTrace();
+			if(!debugging) {
+				if(!macAddress.equalsIgnoreCase("6c-f0-49-0e-ff-0a")) {
+					JOptionPane.showMessageDialog(null, "Instalacion corrupta", "Instalacion corrupta", JOptionPane.ERROR_MESSAGE);
+					try {
+						throw new Exception("Instalacion corrupta");
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					System.exit(0);
 				}
-				System.exit(0);
 			}
 		} else {
 			JOptionPane.showMessageDialog(null, "No esta conectado a la red correcta", "Red desconectada", JOptionPane.ERROR_MESSAGE);
@@ -616,14 +631,16 @@ public class SalesMainView extends JFrame{
 		
 		DateTime dt = new DateTime();
 		
-		if(dt.isAfter(new DateTime(2017, 04, 01, 0, 0))) {
-			JOptionPane.showMessageDialog(null, "Error, debe comunicarse con el programador");
-			try {
-				throw new Exception("Outdated");
-			} catch (Exception e) {
-				e.printStackTrace();
+		if(!debugging) {
+			if(dt.isAfter(new DateTime(2017, 04, 01, 0, 0))) {
+				JOptionPane.showMessageDialog(null, "Error, debe comunicarse con el programador");
+				try {
+					throw new Exception("Outdated");
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				System.exit(0);
 			}
-			System.exit(0);
 		}
 		
 		System.err.println("License is active");
@@ -3837,6 +3854,16 @@ public class SalesMainView extends JFrame{
 				+ " WHERE " + SalesMainView.NEMAS_TABLE + ".id = " + SalesMainView.BOARD_TABLE + ".nema_id "
 				+ " GROUP BY " + SalesMainView.NEMAS_TABLE + ".nema";
 		
+		String querySheets = "SELECT " + SalesMainView.BOARD_SHEET_FIELD
+				+ " FROM " + SalesMainView.BOARD_SHEETS_TABLE + "," + SalesMainView.BOARD_TABLE
+				+ " WHERE " + SalesMainView.BOARD_SHEETS_TABLE + ".id = " + SalesMainView.BOARD_TABLE + ".sheet_id "
+				+ " GROUP BY " + SalesMainView.BOARD_SHEETS_TABLE + ".sheet";
+		
+		String queryColors = "SELECT " + SalesMainView.BOARD_COLOR_FIELD
+				+ " FROM " + SalesMainView.BOARD_COLORS_TABLE + "," + SalesMainView.BOARD_TABLE
+				+ " WHERE " + SalesMainView.BOARD_COLORS_TABLE + ".id = " + SalesMainView.BOARD_TABLE + ".color_id "
+				+ " GROUP BY " + SalesMainView.BOARD_COLORS_TABLE + ".color";
+		
 		String queryBarCapacities = "SELECT " + SalesMainView.BOARD_BAR_CAPACITY_FIELD
 				+ " FROM " + SalesMainView.BOARD_BAR_CAPACITIES_TABLE + "," + SalesMainView.BOARD_TABLE
 				+ " WHERE " + SalesMainView.BOARD_BAR_CAPACITIES_TABLE + ".id = " + SalesMainView.BOARD_TABLE + ".bar_capacity_id "
@@ -3870,6 +3897,11 @@ public class SalesMainView extends JFrame{
 				+ " WHERE " + SalesMainView.INTERRUPTIONS_TABLE + ".id = " + SalesMainView.BOARD_TABLE + ".interruption_id "
 				+ " GROUP BY " + SalesMainView.INTERRUPTIONS_TABLE + ".interruption";
 		
+		String queryCalibers = "SELECT " + SalesMainView.BOARD_CALIBER_FIELD
+				+ " FROM " + SalesMainView.BOARD_CALIBERS_TABLE + "," + SalesMainView.BOARD_TABLE
+				+ " WHERE " + SalesMainView.BOARD_CALIBERS_TABLE + ".id = " + SalesMainView.BOARD_TABLE + ".caliber_id "
+				+ " GROUP BY " + SalesMainView.BOARD_CALIBERS_TABLE + ".caliber";
+		
 		String queryLockTypes = "SELECT " + SalesMainView.BOARD_LOCK_TYPE_FIELD
 				+ " FROM " + SalesMainView.LOCK_TYPES_TABLE + "," + SalesMainView.BOARD_TABLE
 				+ " WHERE " + SalesMainView.LOCK_TYPES_TABLE + ".id = " + SalesMainView.BOARD_TABLE + ".lock_type_id "
@@ -3879,6 +3911,8 @@ public class SalesMainView extends JFrame{
 		JLabel labelType = new JLabel("Tipo:");
 		JLabel labelInstallation = new JLabel("Instalacion:");
 		JLabel labelNema = new JLabel("Nema:");
+		JLabel labelSheet = new JLabel("Lamina:");
+		JLabel labelColor = new JLabel("Color:");
 		JLabel labelBarCapacity = new JLabel("Cap. Barra:");
 		JLabel labelBarType = new JLabel("Tipo Barra:");
 		JLabel labelCircuits = new JLabel("Circuitos:");
@@ -3886,6 +3920,7 @@ public class SalesMainView extends JFrame{
 		JLabel labelPhases = new JLabel("Fases:");
 		JLabel labelGround = new JLabel("Tierra:");
 		JLabel labelInterruption = new JLabel("Interrupcion:");
+		JLabel labelCaliber = new JLabel("Calibre:");
 		JLabel labelLockType = new JLabel("Cerradura:");
 		
 		ComboBoxListener lForCombo = new ComboBoxListener();
@@ -3948,6 +3983,18 @@ public class SalesMainView extends JFrame{
 		searchBarPanel1.add(labelNema);
 		searchBarPanel1.add(comboBoardNemas);
 		
+		comboBoardSheets = new JComboBox<String>(new Vector<String>(loadComboList(querySheets, "sheet")));
+		comboBoardSheets.setActionCommand("board.search.sheet");
+		comboBoardSheets.addActionListener(lForCombo);
+		searchBarPanel1.add(labelSheet);
+		searchBarPanel1.add(comboBoardSheets);
+		
+		comboBoardColors = new JComboBox<String>(new Vector<String>(loadComboList(queryColors, "color")));
+		comboBoardColors.setActionCommand("board.search.color");
+		comboBoardColors.addActionListener(lForCombo);
+		searchBarPanel1.add(labelColor);
+		searchBarPanel1.add(comboBoardColors);
+		
 		comboBoardBarCapacities = new JComboBox<String>(new Vector<String>(loadComboList(queryBarCapacities, "bar_capacity")));
 		comboBoardBarCapacities.setActionCommand("board.search.bar_capacity");
 		comboBoardBarCapacities.addActionListener(lForCombo);
@@ -3989,6 +4036,12 @@ public class SalesMainView extends JFrame{
 		comboBoardInterruptions.addActionListener(lForCombo);
 		searchBarPanel2.add(labelInterruption);
 		searchBarPanel2.add(comboBoardInterruptions);
+		
+		comboBoardCalibers = new JComboBox<String>(new Vector<String>(loadComboList(queryCalibers, "caliber")));
+		comboBoardCalibers.setActionCommand("board.search.caliber");
+		comboBoardCalibers.addActionListener(lForCombo);
+		searchBarPanel2.add(labelCaliber);
+		searchBarPanel2.add(comboBoardCalibers);
 		
 		comboBoardLockTypes = new JComboBox<String>(new Vector<String>(loadComboList(queryLockTypes, "lock_type")));
 		searchBarPanel2.add(labelLockType);
@@ -4088,6 +4141,8 @@ public class SalesMainView extends JFrame{
 		fields.add(SalesMainView.BOARD_TYPE_FIELD);
 		fields.add(SalesMainView.INSTALLATION_FIELD);
 		fields.add(SalesMainView.NEMA_FIELD);
+		fields.add(SalesMainView.BOARD_SHEET_FIELD);
+		fields.add(SalesMainView.BOARD_COLOR_FIELD);
 		fields.add(SalesMainView.BOARD_BAR_CAPACITY_FIELD);
 		fields.add(SalesMainView.BOARD_BAR_TYPE_FIELD);
 		fields.add(SalesMainView.BOARD_CIRCUITS_FIELD);
@@ -4095,11 +4150,14 @@ public class SalesMainView extends JFrame{
 		fields.add(SalesMainView.BOARD_PHASES_FIELD);
 		fields.add(SalesMainView.BOARD_GROUND_FIELD);
 		fields.add(SalesMainView.INTERRUPTION_FIELD);
+		fields.add(SalesMainView.BOARD_CALIBER_FIELD);
 		fields.add(SalesMainView.BOARD_LOCK_TYPE_FIELD);
 		fields.add(SalesMainView.BOARD_PRICE_FIELD);
 		
 		ArrayList<String> tables = new ArrayList<String>();
 		tables.add(SalesMainView.BOARD_TABLE);
+		tables.add(SalesMainView.BOARD_SHEETS_TABLE);
+		tables.add(SalesMainView.BOARD_COLORS_TABLE);
 		tables.add(SalesMainView.BOARD_BAR_CAPACITIES_TABLE);
 		tables.add(SalesMainView.BOARD_BAR_TYPES_TABLE);
 		tables.add(SalesMainView.BOARD_CIRCUITS_TABLE);
@@ -4107,6 +4165,7 @@ public class SalesMainView extends JFrame{
 		tables.add(SalesMainView.BOARD_VOLTAGES_TABLE);
 		tables.add(SalesMainView.INSTALLATIONS_TABLE);
 		tables.add(SalesMainView.INTERRUPTIONS_TABLE);
+		tables.add(SalesMainView.BOARD_CALIBERS_TABLE);
 		tables.add(SalesMainView.LOCK_TYPES_TABLE);
 		tables.add(SalesMainView.NEMAS_TABLE);
 		
@@ -4118,17 +4177,20 @@ public class SalesMainView extends JFrame{
 						+ " WHERE boards.type_id = board_types.id "
 						+ "AND boards.installation_id = installations.id "
 						+ "AND boards.nema_id = nemas.id "
+						+ "AND boards.sheet_id = board_sheets.id "
+						+ "AND boards.color_id = board_colors.id "
 						+ "AND boards.bar_capacity_id = board_bar_capacities.id "
 						+ "AND boards.bar_type_id = board_bar_types.id "
 						+ "AND boards.circuits_id = board_circuits.id "
 						+ "AND boards.voltage_id = board_voltages.id "
 						+ "AND boards.interruption_id = interruptions.id "
+						+ "AND boards.caliber_id = board_calibers.id "
 						+ "AND boards.lock_type_id = lock_types.id "
 						+ "AND boards.active = '1' "
 						+ "GROUP BY boards.id "
 						+ "LIMIT 10";
 		
-		String[] boardsColumnNames = { "Id", "Nombre", "Tipo", "Instalacion", "Nema", "Cap. Barra", "Tipo Barra", "Circuitos", "Voltaje", "Fases", "Tierra", "Interrupcion", "Cerradura", "Precio"};
+		String[] boardsColumnNames = { "Id", "Nombre", "Tipo", "Instalacion", "Nema", "Lamina", "Color", "Cap. Barra", "Tipo Barra", "Circuitos", "Voltaje", "Fases", "Tierra", "Interrupcion", "Calibre", "Cerradura", "Precio"};
 //		ArrayList<String> listBoxesColumnNames = new ArrayList<String>(Arrays.asList(originalColumns));
 //		listBoxesColumnNames.add("Button");
 //		String [] boxesColumnNames = listBoxesColumnNames.toArray(new String[0]);
@@ -4330,6 +4392,7 @@ public class SalesMainView extends JFrame{
 		cs.gridwidth = 1;
 		descriptionPanel.add(labelNema, cs);
 		
+		
 		textBoardDescriptionNema = new JTextField("", 4);
 		textBoardDescriptionNema.setEditable(false);
 		cs.gridx = 32;
@@ -4337,126 +4400,165 @@ public class SalesMainView extends JFrame{
 		cs.gridwidth = 4;
 		descriptionPanel.add(textBoardDescriptionNema, cs);
 		
-		JLabel labelBarCapacity = new JLabel("Cap. Barra:");
+		JLabel labelSheet = new JLabel("Lamina:");
 		cs.gridx = 36;
 		cs.gridy = 0;
+		cs.gridwidth = 1;
+		descriptionPanel.add(labelSheet, cs);
+		
+		textBoardDescriptionSheet = new JTextField("", 10);
+		textBoardDescriptionSheet.setEditable(false);
+		cs.gridx = 37;
+		cs.gridy = 0;
+		cs.gridwidth = 10;
+		descriptionPanel.add(textBoardDescriptionSheet, cs);
+		
+		JLabel labelColor = new JLabel("Color:");
+		cs.gridx = 47;
+		cs.gridy = 0;
+		cs.gridwidth = 1;
+		descriptionPanel.add(labelColor, cs);
+		
+		textBoardDescriptionColor = new JTextField("", 8);
+		textBoardDescriptionColor.setEditable(false);
+		cs.gridx = 48;
+		cs.gridy = 0;
+		cs.gridwidth = 8;
+		descriptionPanel.add(textBoardDescriptionColor, cs);
+		
+		JLabel labelBarCapacity = new JLabel("Cap. Barra:");
+		cs.gridx = 0;
+		cs.gridy = 1;
 		cs.gridwidth = 1;
 		descriptionPanel.add(labelBarCapacity, cs);
 		
 		textBoardDescriptionBarCapacity = new JTextField("", 4);
 		textBoardDescriptionBarCapacity.setEditable(false);
-		cs.gridx = 37;
-		cs.gridy = 0;
+		cs.gridx = 1;
+		cs.gridy = 1;
 		cs.gridwidth = 4;
 		descriptionPanel.add(textBoardDescriptionBarCapacity, cs);
 		
 		JLabel labelBarType = new JLabel("Tipo Barra:");
-		cs.gridx = 41;
-		cs.gridy = 0;
+		cs.gridx = 5;
+		cs.gridy = 1;
 		cs.gridwidth = 1;
 		descriptionPanel.add(labelBarType, cs);
 		
 		textBoardDescriptionBarType = new JTextField("", 8);
 		textBoardDescriptionBarType.setEditable(false);
-		cs.gridx = 42;
-		cs.gridy = 0;
+		cs.gridx = 6;
+		cs.gridy = 1;
 		cs.gridwidth = 8;
 		descriptionPanel.add(textBoardDescriptionBarType, cs);
 		
 		JLabel labelCircuits = new JLabel("Circuitos:");
-		cs.gridx = 0;
+		cs.gridx = 14;
 		cs.gridy = 1;
 		cs.gridwidth = 1;
 		descriptionPanel.add(labelCircuits, cs);
 		
 		textBoardDescriptionCircuits = new JTextField("", 8);
 		textBoardDescriptionCircuits.setEditable(false);
-		cs.gridx = 1;
+		cs.gridx = 15;
 		cs.gridy = 1;
 		cs.gridwidth = 8;
 		descriptionPanel.add(textBoardDescriptionCircuits, cs);
 		
 		JLabel labelVoltage = new JLabel("Voltaje:");
-		cs.gridx = 9;
+		cs.gridx = 23;
 		cs.gridy = 1;
 		cs.gridwidth = 1;
 		descriptionPanel.add(labelVoltage, cs);
 		
 		textBoardDescriptionVoltage = new JTextField("", 8);
 		textBoardDescriptionVoltage.setEditable(false);
-		cs.gridx = 10;
+		cs.gridx = 24;
 		cs.gridy = 1;
 		cs.gridwidth = 8;
 		descriptionPanel.add(textBoardDescriptionVoltage, cs);
 		
 		JLabel labelPhases = new JLabel("Fases:");
-		cs.gridx = 18;
+		cs.gridx = 32;
 		cs.gridy = 1;
 		cs.gridwidth = 1;
 		descriptionPanel.add(labelPhases, cs);
 		
 		textBoardDescriptionPhases = new JTextField("", 4);
 		textBoardDescriptionPhases.setEditable(false);
-		cs.gridx = 19;
+		cs.gridx = 33;
 		cs.gridy = 1;
 		cs.gridwidth = 4;
 		descriptionPanel.add(textBoardDescriptionPhases, cs);
 		
 		JLabel labelGround = new JLabel("Tierra:");
-		cs.gridx = 23;
+		cs.gridx = 37;
 		cs.gridy = 1;
 		cs.gridwidth = 1;
 		descriptionPanel.add(labelGround, cs);
 		
 		textBoardDescriptionGround = new JTextField("", 4);
 		textBoardDescriptionGround.setEditable(false);
-		cs.gridx = 24;
+		cs.gridx = 38;
 		cs.gridy = 1;
 		cs.gridwidth = 4;
 		descriptionPanel.add(textBoardDescriptionGround, cs);
 		
 		JLabel labelInterruption = new JLabel("Interrupcion:");
-		cs.gridx = 28;
+		cs.gridx = 42;
 		cs.gridy = 1;
 		cs.gridwidth = 1;
 		descriptionPanel.add(labelInterruption, cs);
 		
 		textBoardDescriptionInterruption = new JTextField("", 4);
 		textBoardDescriptionInterruption.setEditable(false);
-		cs.gridx = 29;
+		cs.gridx = 43;
 		cs.gridy = 1;
 		cs.gridwidth = 4;
 		descriptionPanel.add(textBoardDescriptionInterruption, cs);
 		
-		JLabel labelLockType = new JLabel("Cerradura:");
-		cs.gridx = 33;
+		JLabel labelCaliber = new JLabel("Calibre:");
+		cs.gridx = 47;
 		cs.gridy = 1;
+		cs.gridwidth = 1;
+		descriptionPanel.add(labelCaliber, cs);
+		
+		textBoardDescriptionCaliber = new JTextField("", 4);
+		textBoardDescriptionCaliber.setEditable(false);
+		cs.gridx = 48;
+		cs.gridy = 1;
+		cs.gridwidth = 4;
+		descriptionPanel.add(textBoardDescriptionCaliber, cs);
+		
+		JLabel labelLockType = new JLabel("Cerradura:");
+		cs.gridx = 0;
+		cs.gridy = 2;
 		cs.gridwidth = 1;
 		descriptionPanel.add(labelLockType, cs);
 		
 		textBoardDescriptionLockType = new JTextField("", 8);
 		textBoardDescriptionLockType.setEditable(false);
-		cs.gridx = 34;
-		cs.gridy = 1;
+		cs.gridx = 1;
+		cs.gridy = 2;
 		cs.gridwidth = 8;
 		descriptionPanel.add(textBoardDescriptionLockType, cs);
 		
 		JLabel labelPrice = new JLabel("Precio:");
-		cs.gridx = 42;
-		cs.gridy = 1;
+		cs.gridx = 9;
+		cs.gridy = 2;
 		cs.gridwidth = 1;
 		descriptionPanel.add(labelPrice, cs);
 		
 		textBoardDescriptionPrice = new JTextField("", 8);
 		textBoardDescriptionPrice.setEditable(false);
-		cs.gridx = 43;
-		cs.gridy = 1;
+		cs.gridx = 10;
+		cs.gridy = 2;
 		cs.gridwidth = 8;
 		descriptionPanel.add(textBoardDescriptionPrice, cs);
 		
 		JLabel labelDescription = new JLabel("Descripcion:");
 		cs.gridx = 0;
-		cs.gridy = 2;
+		cs.gridy = 3;
 		cs.gridwidth = 1;
 		descriptionPanel.add(labelDescription, cs);
 		
@@ -4465,7 +4567,7 @@ public class SalesMainView extends JFrame{
 		textBoardDescription.setLineWrap(true);
 		textBoardDescription.setWrapStyleWord(true);
 		cs.gridx = 0;
-		cs.gridy = 3;
+		cs.gridy = 4;
 		cs.gridwidth = 26;
 		descriptionPanel.add(textBoardDescription, cs);
 		
@@ -4475,13 +4577,13 @@ public class SalesMainView extends JFrame{
 		buttonCopy.addActionListener(lForButton);
 		buttonCopy.setActionCommand("board.description.copy");
 		cs.gridx = 0;
-		cs.gridy = 4;
+		cs.gridy = 5;
 		cs.gridwidth = 4;
 		descriptionPanel.add(buttonCopy, cs);
 		
 		labelBoardCopy = new JLabel("");
 		cs.gridx = 4;
-		cs.gridy = 4;
+		cs.gridy = 5;
 		cs.gridwidth = 12;
 		descriptionPanel.add(labelBoardCopy, cs);
 		
@@ -4509,6 +4611,14 @@ public class SalesMainView extends JFrame{
 				+ "FROM nemas "
 				+ "GROUP BY nemas.nema";
 		
+		String querySheets = "SELECT board_sheets.sheet "
+				+ "FROM board_sheets "
+				+ "GROUP BY board_sheets.sheet";
+		
+		String queryColors = "SELECT board_colors.color "
+				+ "FROM board_colors "
+				+ "GROUP BY board_colors.color";
+		
 		String queryBarCapacities = "SELECT board_bar_capacities.bar_capacity "
 				+ "FROM board_bar_capacities "
 				+ "GROUP BY board_bar_capacities.bar_capacity";
@@ -4530,6 +4640,10 @@ public class SalesMainView extends JFrame{
 		String queryInterruptions = "SELECT interruptions.interruption "
 				+ "FROM interruptions "
 				+ "GROUP BY interruptions.interruption";
+		
+		String queryCalibers = "SELECT board_calibers.caliber "
+				+ "FROM board_calibers "
+				+ "GROUP BY board_calibers.caliber";
 		
 		String queryLockTypes = "SELECT lock_types.lock_type "
 				+ "FROM lock_types "
@@ -4590,34 +4704,64 @@ public class SalesMainView extends JFrame{
 		cs.gridwidth = 8;
 		addPanel.add(comboBoardAddNema, cs);
 		
-		JLabel labelBarCapacity = new JLabel("Cap. Barra:");
+		JLabel labelSheet = new JLabel("Lamina:");
 		cs.gridx = 26;
+		cs.gridy = 0;
+		cs.gridwidth = 1;
+		addPanel.add(labelSheet, cs);
+		
+		comboBoardAddSheet = new JComboBox<String>(new Vector<String>(loadComboList(querySheets, "sheet")));
+		comboBoardAddSheet.removeItem("Todas");
+		comboBoardAddSheet.setActionCommand("board.description.add.sheet");
+		comboBoardAddSheet.addActionListener(lForCombo);
+		cs.gridx = 27;
+		cs.gridy = 0;
+		cs.gridwidth = 8;
+		addPanel.add(comboBoardAddSheet, cs);
+		
+		JLabel labelColor = new JLabel("Color:");
+		cs.gridx = 35;
+		cs.gridy = 0;
+		cs.gridwidth = 1;
+		addPanel.add(labelColor, cs);
+		
+		comboBoardAddColor = new JComboBox<String>(new Vector<String>(loadComboList(queryColors, "color")));
+		comboBoardAddColor.removeItem("Todas");
+		comboBoardAddColor.setActionCommand("board.description.add.color");
+		comboBoardAddColor.addActionListener(lForCombo);
+		cs.gridx = 36;
+		cs.gridy = 0;
+		cs.gridwidth = 8;
+		addPanel.add(comboBoardAddColor, cs);
+		
+		JLabel labelBarCapacity = new JLabel("Cap. Barra:");
+		cs.gridx = 44;
 		cs.gridy = 0;
 		cs.gridwidth = 1;
 		addPanel.add(labelBarCapacity, cs);
 		
 		comboBoardAddBarCapacity = new JComboBox<String>(new Vector<String>(loadComboList(queryBarCapacities, "bar_capacity")));
 		comboBoardAddBarCapacity.removeItem("Todas");
-		cs.gridx = 27;
+		cs.gridx = 45;
 		cs.gridy = 0;
 		cs.gridwidth = 2;
 		addPanel.add(comboBoardAddBarCapacity, cs);
 		
 		JLabel labelBarType = new JLabel("Tipo Barra:");
-		cs.gridx = 29;
+		cs.gridx = 47;
 		cs.gridy = 0;
 		cs.gridwidth = 1;
 		addPanel.add(labelBarType, cs);
 		
 		comboBoardAddBarType = new JComboBox<String>(new Vector<String>(loadComboList(queryBarTypes, "bar_type")));
 		comboBoardAddBarType.removeItem("Todas");
-		cs.gridx = 30;
+		cs.gridx = 48;
 		cs.gridy = 0;
 		cs.gridwidth = 6;
 		addPanel.add(comboBoardAddBarType, cs);
 		
 		JLabel labelCircuits = new JLabel("Circuitos:");
-		cs.gridx = 36;
+		cs.gridx = 54;
 		cs.gridy = 0;
 		cs.gridwidth = 1;
 		addPanel.add(labelCircuits, cs);
@@ -4626,7 +4770,7 @@ public class SalesMainView extends JFrame{
 		comboBoardAddCircuits.removeItem("Todas");
 		comboBoardAddCircuits.setActionCommand("board.description.add.circuits");
 		comboBoardAddCircuits.addActionListener(lForCombo);
-		cs.gridx = 37;
+		cs.gridx = 55;
 		cs.gridy = 0;
 		cs.gridwidth = 6;
 		addPanel.add(comboBoardAddCircuits, cs);
@@ -4677,27 +4821,40 @@ public class SalesMainView extends JFrame{
 		cs.gridwidth = 6;
 		addPanel.add(comboBoardAddInterruption, cs);
 		
-		JLabel labelLockType = new JLabel("Cerradura:");
+		JLabel labelCaliber = new JLabel("Calibre:");
 		cs.gridx = 23;
+		cs.gridy = 1;
+		cs.gridwidth = 1;
+		addPanel.add(labelCaliber, cs);
+		
+		comboBoardAddCaliber = new JComboBox<String>(new Vector<String>(loadComboList(queryCalibers, "caliber")));
+		comboBoardAddCaliber.removeItem("Todas");
+		cs.gridx = 24;
+		cs.gridy = 1;
+		cs.gridwidth = 6;
+		addPanel.add(comboBoardAddCaliber, cs);
+		
+		JLabel labelLockType = new JLabel("Cerradura:");
+		cs.gridx = 30;
 		cs.gridy = 1;
 		cs.gridwidth = 1;
 		addPanel.add(labelLockType, cs);
 		
 		comboBoardAddLockType = new JComboBox<String>(new Vector<String>(loadComboList(queryLockTypes, "lock_type")));
 		comboBoardAddLockType.removeItem("Todas");
-		cs.gridx = 24;
+		cs.gridx = 31;
 		cs.gridy = 1;
 		cs.gridwidth = 6;
 		addPanel.add(comboBoardAddLockType, cs);
 		
 		JLabel labelPrice = new JLabel("Precio:");
-		cs.gridx = 30;
+		cs.gridx = 37;
 		cs.gridy = 1;
 		cs.gridwidth = 1;
 		addPanel.add(labelPrice, cs);
 		
 		textBoardAddPrice = new JTextField(6);
-		cs.gridx = 31;
+		cs.gridx = 38;
 		cs.gridy = 1;
 		cs.gridwidth = 6;
 		addPanel.add(textBoardAddPrice, cs);
@@ -4762,6 +4919,14 @@ public class SalesMainView extends JFrame{
 				+ "FROM nemas "
 				+ "GROUP BY nemas.nema";
 		
+		String querySheets = "SELECT board_sheets.sheet "
+				+ "FROM board_sheets "
+				+ "GROUP BY board_sheets.sheet";
+		
+		String queryColors = "SELECT board_colors.color "
+				+ "FROM board_colors "
+				+ "GROUP BY board_colors.color";
+		
 		String queryBarCapacities = "SELECT board_bar_capacities.bar_capacity "
 				+ "FROM board_bar_capacities "
 				+ "GROUP BY board_bar_capacities.bar_capacity";
@@ -4783,6 +4948,10 @@ public class SalesMainView extends JFrame{
 		String queryInterruptions = "SELECT interruptions.interruption "
 				+ "FROM interruptions "
 				+ "GROUP BY interruptions.interruption";
+		
+		String queryCalibers = "SELECT board_calibers.caliber "
+				+ "FROM board_calibers "
+				+ "GROUP BY board_calibers.caliber";
 		
 		String queryLockTypes = "SELECT lock_types.lock_type "
 				+ "FROM lock_types "
@@ -4844,28 +5013,58 @@ public class SalesMainView extends JFrame{
 		cs.gridwidth = 2;
 		editPanel.add(comboBoardEditNema, cs);
 		
-		JLabel labelBarCapacity = new JLabel("Cap. Barra:");
+		JLabel labelSheet = new JLabel("Lamina:");
 		cs.gridx = 22;
+		cs.gridy = 0;
+		cs.gridwidth = 1;
+		editPanel.add(labelSheet, cs);
+		
+		comboBoardEditSheet = new JComboBox<String>(new Vector<String>(loadComboList(querySheets, "sheet")));
+		comboBoardEditSheet.removeItem("Todas");
+		comboBoardEditSheet.setActionCommand("board.description.edit.sheet");
+		comboBoardEditSheet.addActionListener(lForCombo);
+		cs.gridx = 23;
+		cs.gridy = 0;
+		cs.gridwidth = 2;
+		editPanel.add(comboBoardEditSheet, cs);
+		
+		JLabel labelColor = new JLabel("Color:");
+		cs.gridx = 25;
+		cs.gridy = 0;
+		cs.gridwidth = 1;
+		editPanel.add(labelColor, cs);
+		
+		comboBoardEditColor = new JComboBox<String>(new Vector<String>(loadComboList(queryColors, "color")));
+		comboBoardEditColor.removeItem("Todas");
+		comboBoardEditColor.setActionCommand("board.description.edit.color");
+		comboBoardEditColor.addActionListener(lForCombo);
+		cs.gridx = 26;
+		cs.gridy = 0;
+		cs.gridwidth = 2;
+		editPanel.add(comboBoardEditColor, cs);
+		
+		JLabel labelBarCapacity = new JLabel("Cap. Barra:");
+		cs.gridx = 28;
 		cs.gridy = 0;
 		cs.gridwidth = 1;
 		editPanel.add(labelBarCapacity, cs);
 		
 		comboBoardEditBarCapacity = new JComboBox<String>(new Vector<String>(loadComboList(queryBarCapacities, "bar_capacity")));
 		comboBoardEditBarCapacity.removeItem("Todas");
-		cs.gridx = 23;
+		cs.gridx = 29;
 		cs.gridy = 0;
 		cs.gridwidth = 2;
 		editPanel.add(comboBoardEditBarCapacity, cs);
 		
 		JLabel labelBarType = new JLabel("Tipo Barra:");
-		cs.gridx = 25;
+		cs.gridx = 31;
 		cs.gridy = 0;
 		cs.gridwidth = 1;
 		editPanel.add(labelBarType, cs);
 		
 		comboBoardEditBarType = new JComboBox<String>(new Vector<String>(loadComboList(queryBarTypes, "bar_type")));
 		comboBoardEditBarType.removeItem("Todas");
-		cs.gridx = 26;
+		cs.gridx = 32;
 		cs.gridy = 0;
 		cs.gridwidth = 4;
 		editPanel.add(comboBoardEditBarType, cs);
@@ -4930,27 +5129,40 @@ public class SalesMainView extends JFrame{
 		cs.gridwidth = 2;
 		editPanel.add(comboBoardEditInterruption, cs);
 		
-		JLabel labelLockType = new JLabel("Cerradura:");
+		JLabel labelCaliber = new JLabel("Calibre:");
 		cs.gridx = 16;
+		cs.gridy = 1;
+		cs.gridwidth = 1;
+		editPanel.add(labelCaliber, cs);
+		
+		comboBoardEditCaliber = new JComboBox<String>(new Vector<String>(loadComboList(queryCalibers, "caliber")));
+		comboBoardEditCaliber.removeItem("Todas");
+		cs.gridx = 17;
+		cs.gridy = 1;
+		cs.gridwidth = 2;
+		editPanel.add(comboBoardEditCaliber, cs);
+		
+		JLabel labelLockType = new JLabel("Cerradura:");
+		cs.gridx = 19;
 		cs.gridy = 1;
 		cs.gridwidth = 1;
 		editPanel.add(labelLockType, cs);
 		
 		comboBoardEditLockType = new JComboBox<String>(new Vector<String>(loadComboList(queryLockTypes, "lock_type")));
 		comboBoardEditLockType.removeItem("Todas");
-		cs.gridx = 17;
+		cs.gridx = 20;
 		cs.gridy = 1;
 		cs.gridwidth = 6;
 		editPanel.add(comboBoardEditLockType, cs);
 		
 		JLabel labelPrice = new JLabel("Precio:");
-		cs.gridx = 23;
+		cs.gridx = 26;
 		cs.gridy = 1;
 		cs.gridwidth = 1;
 		editPanel.add(labelPrice, cs);
 		
 		textBoardEditPrice = new JTextField(6);
-		cs.gridx = 24;
+		cs.gridx = 27;
 		cs.gridy = 1;
 		cs.gridwidth = 6;
 		editPanel.add(textBoardEditPrice, cs);
@@ -5126,6 +5338,8 @@ public class SalesMainView extends JFrame{
 			editBoardType = String.valueOf(tableBoardsResult.getValueAt(boardsTableSelectedIndex, SharedListSelectionListener.BOARD_TYPE_COLUMN));
 			editBoardInstallation = String.valueOf(tableBoardsResult.getValueAt(boardsTableSelectedIndex, SharedListSelectionListener.BOARD_INSTALLATION_COLUMN));
 			editBoardNema = String.valueOf(tableBoardsResult.getValueAt(boardsTableSelectedIndex, SharedListSelectionListener.BOARD_NEMA_COLUMN));
+			editBoardSheet = String.valueOf(tableBoardsResult.getValueAt(boardsTableSelectedIndex, SharedListSelectionListener.BOARD_SHEET_COLUMN));
+			editBoardColor = String.valueOf(tableBoardsResult.getValueAt(boardsTableSelectedIndex, SharedListSelectionListener.BOARD_COLOR_COLUMN));
 			editBoardBarCapacity = String.valueOf(tableBoardsResult.getValueAt(boardsTableSelectedIndex, SharedListSelectionListener.BOARD_BAR_CAPACITY_COLUMN));
 			editBoardBarType = String.valueOf(tableBoardsResult.getValueAt(boardsTableSelectedIndex, SharedListSelectionListener.BOARD_BAR_TYPE_COLUMN));
 			editBoardCircuits = String.valueOf(tableBoardsResult.getValueAt(boardsTableSelectedIndex, SharedListSelectionListener.BOARD_CIRCUITS_COLUMN));
@@ -5133,6 +5347,7 @@ public class SalesMainView extends JFrame{
 			editBoardPhases = Integer.valueOf(String.valueOf(tableBoardsResult.getValueAt(boardsTableSelectedIndex, SharedListSelectionListener.BOARD_PHASES_COLUMN)));
 			editBoardGround = String.valueOf(tableBoardsResult.getValueAt(boardsTableSelectedIndex, SharedListSelectionListener.BOARD_GROUND_COLUMN));
 			editBoardInterruption = String.valueOf(tableBoardsResult.getValueAt(boardsTableSelectedIndex, SharedListSelectionListener.BOARD_INTERRUPTION_COLUMN));
+			editBoardCaliber = String.valueOf(tableBoardsResult.getValueAt(boardsTableSelectedIndex, SharedListSelectionListener.BOARD_CALIBER_COLUMN));
 			editBoardLockType = String.valueOf(tableBoardsResult.getValueAt(boardsTableSelectedIndex, SharedListSelectionListener.BOARD_LOCK_TYPE_COLUMN));
 			editBoardPrice = Double.valueOf(String.valueOf(tableBoardsResult.getValueAt(boardsTableSelectedIndex, SharedListSelectionListener.BOARD_PRICE_COLUMN)));
 			
@@ -5147,6 +5362,14 @@ public class SalesMainView extends JFrame{
 			String queryNemas = "SELECT nemas.nema "
 					+ "FROM nemas "
 					+ "GROUP BY nemas.nema";
+			
+			String querySheets = "SELECT board_sheets.sheet "
+					+ "FROM board_sheets "
+					+ "GROUP BY board_sheets.sheet";
+			
+			String queryColors = "SELECT board_colors.color "
+					+ "FROM board_colors "
+					+ "GROUP BY board_colors.color";
 			
 			String queryBarCapacities = "SELECT board_bar_capacities.bar_capacity "
 					+ "FROM board_bar_capacities "
@@ -5170,6 +5393,10 @@ public class SalesMainView extends JFrame{
 					+ "FROM interruptions "
 					+ "GROUP BY interruptions.interruption";
 			
+			String queryCalibers = "SELECT board_calibers.caliber "
+					+ "FROM board_calibers "
+					+ "GROUP BY board_calibers.caliber";
+			
 			String queryLockTypes = "SELECT lock_types.lock_type "
 					+ "FROM lock_types "
 					+ "GROUP BY lock_types.lock_type";
@@ -5187,6 +5414,14 @@ public class SalesMainView extends JFrame{
 			comboBoardEditNema.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadComboList(queryNemas, "nema"))));
 			comboBoardEditNema.removeItem("Todas");
 			comboBoardEditNema.setSelectedItem(editBoardNema);
+			
+			comboBoardEditSheet.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadComboList(querySheets, "sheet"))));
+			comboBoardEditSheet.removeItem("Todas");
+			comboBoardEditSheet.setSelectedItem(editBoardSheet);
+			
+			comboBoardEditColor.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadComboList(queryColors, "color"))));
+			comboBoardEditColor.removeItem("Todas");
+			comboBoardEditColor.setSelectedItem(editBoardColor);
 			
 			comboBoardEditBarCapacity.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadComboList(queryBarCapacities, "bar_capacity"))));
 			comboBoardEditBarCapacity.removeItem("Todas");
@@ -5212,6 +5447,10 @@ public class SalesMainView extends JFrame{
 			comboBoardEditInterruption.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadComboList(queryInterruptions, "interruption"))));
 			comboBoardEditInterruption.removeItem("Todas");
 			comboBoardEditInterruption.setSelectedItem(editBoardInterruption);
+			
+			comboBoardEditCaliber.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadComboList(queryCalibers, "caliber"))));
+			comboBoardEditCaliber.removeItem("Todas");
+			comboBoardEditCaliber.setSelectedItem(editBoardCaliber);
 			
 			comboBoardEditLockType.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadComboList(queryLockTypes, "lock_type"))));
 			comboBoardEditLockType.removeItem("Todas");
@@ -5241,6 +5480,8 @@ public class SalesMainView extends JFrame{
 			textBoardDescriptionType.setText("");
 			textBoardDescriptionInstallation.setText("");
 			textBoardDescriptionNema.setText("");
+			textBoardDescriptionSheet.setText("");
+			textBoardDescriptionColor.setText("");
 			textBoardDescriptionBarCapacity.setText("");
 			textBoardDescriptionBarType.setText("");
 			textBoardDescriptionCircuits.setText("");
@@ -5248,6 +5489,7 @@ public class SalesMainView extends JFrame{
 			textBoardDescriptionPhases.setText("");
 			textBoardDescriptionGround.setText("");
 			textBoardDescriptionInterruption.setText("");
+			textBoardDescriptionCaliber.setText("");
 			textBoardDescriptionLockType.setText("");
 			textBoardDescriptionPrice.setText("");
 			textBoardDescription.setText("");
@@ -5262,6 +5504,8 @@ public class SalesMainView extends JFrame{
 		searchSelectedBoardType = comboBoardTypes.getSelectedItem().toString();
 		searchSelectedBoardInstallation = comboBoardInstallations.getSelectedItem().toString();
 		searchSelectedBoardNema = comboBoardNemas.getSelectedItem().toString();
+		searchSelectedBoardSheet = comboBoardSheets.getSelectedItem().toString();
+		searchSelectedBoardColor = comboBoardColors.getSelectedItem().toString();
 		searchSelectedBoardBarCapacity = comboBoardBarCapacities.getSelectedItem().toString();
 		searchSelectedBoardBarType = comboBoardBarTypes.getSelectedItem().toString();
 		searchSelectedBoardCircuits = comboBoardCircuits.getSelectedItem().toString();
@@ -5286,6 +5530,16 @@ public class SalesMainView extends JFrame{
 				!searchSelectedBoardNema.isEmpty()) {
 			whereQuery += " AND " + SalesMainView.BOARD_TABLE + ".nema_id = " + SalesMainView.NEMAS_TABLE + ".id ";
 			whereQuery += " AND " + SalesMainView.NEMAS_TABLE + ".nema = '" + searchSelectedBoardNema + "'";
+		}
+		if(searchSelectedBoardSheet != null && !searchSelectedBoardSheet.equalsIgnoreCase("Todas") &&
+				!searchSelectedBoardSheet.isEmpty()) {
+			whereQuery += " AND " + SalesMainView.BOARD_TABLE + ".sheet_id = " + SalesMainView.BOARD_SHEETS_TABLE + ".id ";
+			whereQuery += " AND " + SalesMainView.BOARD_SHEETS_TABLE + ".sheet = '" + searchSelectedBoardSheet + "'";
+		}
+		if(searchSelectedBoardColor != null && !searchSelectedBoardColor.equalsIgnoreCase("Todas") &&
+				!searchSelectedBoardColor.isEmpty()) {
+			whereQuery += " AND " + SalesMainView.BOARD_TABLE + ".color_id = " + SalesMainView.BOARD_COLORS_TABLE + ".id ";
+			whereQuery += " AND " + SalesMainView.BOARD_COLORS_TABLE + ".color = '" + searchSelectedBoardColor + "'";
 		}
 		if(searchSelectedBoardBarCapacity != null && !searchSelectedBoardBarCapacity.equalsIgnoreCase("Todas") &&
 				!searchSelectedBoardBarCapacity.isEmpty()) {
@@ -5320,6 +5574,11 @@ public class SalesMainView extends JFrame{
 			whereQuery += " AND " + SalesMainView.BOARD_TABLE + ".interruption_id = " + SalesMainView.INTERRUPTIONS_TABLE + ".id ";
 			whereQuery += " AND " + SalesMainView.INTERRUPTIONS_TABLE + ".interruption = '" + searchSelectedBoardInterruption + "'";
 		}
+		if(searchSelectedBoardCaliber != null && !searchSelectedBoardCaliber.equalsIgnoreCase("Todas") &&
+				!searchSelectedBoardCaliber.isEmpty()) {
+			whereQuery += " AND " + SalesMainView.BOARD_TABLE + ".caliber_id = " + SalesMainView.BOARD_CALIBERS_TABLE + ".id ";
+			whereQuery += " AND " + SalesMainView.BOARD_CALIBERS_TABLE + ".caliber = '" + searchSelectedBoardCaliber + "'";
+		}
 		if(searchSelectedBoardLockType != null && !searchSelectedBoardLockType.equalsIgnoreCase("Todas") &&
 				!searchSelectedBoardLockType.isEmpty()) {
 			whereQuery += " AND " + SalesMainView.BOARD_TABLE + ".lock_type_id = " + SalesMainView.LOCK_TYPES_TABLE + ".id ";
@@ -5338,6 +5597,8 @@ public class SalesMainView extends JFrame{
 		fields.add(SalesMainView.BOARD_TYPE_FIELD);
 		fields.add(SalesMainView.INSTALLATION_FIELD);
 		fields.add(SalesMainView.NEMA_FIELD);
+		fields.add(SalesMainView.BOARD_SHEET_FIELD);
+		fields.add(SalesMainView.BOARD_COLOR_FIELD);
 		fields.add(SalesMainView.BOARD_BAR_CAPACITY_FIELD);
 		fields.add(SalesMainView.BOARD_BAR_TYPE_FIELD);
 		fields.add(SalesMainView.BOARD_CIRCUITS_FIELD);
@@ -5345,6 +5606,7 @@ public class SalesMainView extends JFrame{
 		fields.add(SalesMainView.BOARD_PHASES_FIELD);
 		fields.add(SalesMainView.BOARD_GROUND_FIELD);
 		fields.add(SalesMainView.INTERRUPTION_FIELD);
+		fields.add(SalesMainView.BOARD_CALIBER_FIELD);
 		fields.add(SalesMainView.BOARD_LOCK_TYPE_FIELD);
 		fields.add(SalesMainView.BOARD_PRICE_FIELD);
 		
@@ -5353,11 +5615,14 @@ public class SalesMainView extends JFrame{
 		tables.add(SalesMainView.BOARD_TYPES_TABLE);
 		tables.add(SalesMainView.INSTALLATIONS_TABLE);
 		tables.add(SalesMainView.NEMAS_TABLE);
+		tables.add(SalesMainView.BOARD_SHEETS_TABLE);
+		tables.add(SalesMainView.BOARD_COLORS_TABLE);
 		tables.add(SalesMainView.BOARD_BAR_CAPACITIES_TABLE);
 		tables.add(SalesMainView.BOARD_BAR_TYPES_TABLE);
 		tables.add(SalesMainView.BOARD_CIRCUITS_TABLE);
 		tables.add(SalesMainView.BOARD_VOLTAGES_TABLE);
 		tables.add(SalesMainView.INTERRUPTIONS_TABLE);
+		tables.add(SalesMainView.BOARD_CALIBERS_TABLE);
 		tables.add(SalesMainView.LOCK_TYPES_TABLE);
 		
 		String fieldsQuery = StringTools.implode(",", fields);
@@ -5368,18 +5633,21 @@ public class SalesMainView extends JFrame{
 						+ " WHERE boards.type_id = board_types.id "
 						+ "AND boards.installation_id = installations.id "
 						+ "AND boards.nema_id = nemas.id "
+						+ "AND boards.sheet_id = board_sheets.id "
+						+ "AND boards.color_id = board_colors.id "
 						+ "AND boards.bar_capacity_id = board_bar_capacities.id "
 						+ "AND boards.bar_type_id = board_bar_types.id "
 						+ "AND boards.circuits_id = board_circuits.id "
 						+ "AND boards.voltage_id = board_voltages.id "
 						+ "AND boards.interruption_id = interruptions.id "
+						+ "AND boards.caliber_id = board_calibers.id "
 						+ "AND boards.lock_type_id = lock_types.id "
 						+ "AND boards.active = '1' "
 						+ whereQuery
 						+ " GROUP BY boards.id "
 						+ limitQuery;
 		
-		String[] boardsColumnNames = { "Id", "Nombre", "Tipo", "Instalacion", "Nema", "Cap. Barra", "Tipo Barra", "Circuitos", "Voltaje", "Fases", "Tierra", "Interrupcion", "Cerradura", "Precio"};
+		String[] boardsColumnNames = { "Id", "Nombre", "Tipo", "Instalacion", "Nema", "Lamina", "Color", "Cap. Barra", "Tipo Barra", "Circuitos", "Voltaje", "Fases", "Tierra", "Interrupcion", "Calibre", "Cerradura", "Precio"};
 		
 		if(tableBoardsResult.getModel() instanceof MyTableModel) {
 			((MyTableModel) tableBoardsResult.getModel()).setQuery(boardsQuery);
@@ -5635,6 +5903,16 @@ public class SalesMainView extends JFrame{
 				+ " WHERE " + SalesMainView.NEMAS_TABLE + ".id = " + SalesMainView.CONTROL_BOARD_TABLE + ".nema_id "
 				+ " GROUP BY " + SalesMainView.NEMAS_TABLE + ".nema";
 		
+		String querySheets = "SELECT " + SalesMainView.CONTROL_BOARD_SHEET_FIELD
+				+ " FROM " + SalesMainView.CONTROL_BOARD_SHEETS_TABLE + "," + SalesMainView.CONTROL_BOARD_TABLE
+				+ " WHERE " + SalesMainView.CONTROL_BOARD_SHEETS_TABLE + ".id = " + SalesMainView.CONTROL_BOARD_TABLE + ".sheet_id "
+				+ " GROUP BY " + SalesMainView.CONTROL_BOARD_SHEETS_TABLE + ".sheet";
+		
+		String queryColors = "SELECT " + SalesMainView.CONTROL_BOARD_COLOR_FIELD
+				+ " FROM " + SalesMainView.CONTROL_BOARD_COLORS_TABLE + "," + SalesMainView.CONTROL_BOARD_TABLE
+				+ " WHERE " + SalesMainView.CONTROL_BOARD_COLORS_TABLE + ".id = " + SalesMainView.CONTROL_BOARD_TABLE + ".color_id "
+				+ " GROUP BY " + SalesMainView.CONTROL_BOARD_COLORS_TABLE + ".color";
+		
 		String queryBarCapacities = "SELECT " + SalesMainView.CONTROL_BOARD_BAR_CAPACITY_FIELD
 				+ " FROM " + SalesMainView.CONTROL_BOARD_BAR_CAPACITIES_TABLE + "," + SalesMainView.CONTROL_BOARD_TABLE
 				+ " WHERE " + SalesMainView.CONTROL_BOARD_BAR_CAPACITIES_TABLE + ".id = " + SalesMainView.CONTROL_BOARD_TABLE + ".bar_capacity_id "
@@ -5668,6 +5946,11 @@ public class SalesMainView extends JFrame{
 				+ " WHERE " + SalesMainView.INTERRUPTIONS_TABLE + ".id = " + SalesMainView.CONTROL_BOARD_TABLE + ".interruption_id "
 				+ " GROUP BY " + SalesMainView.INTERRUPTIONS_TABLE + ".interruption";
 		
+		String queryCalibers = "SELECT " + SalesMainView.CONTROL_BOARD_CALIBER_FIELD
+				+ " FROM " + SalesMainView.CONTROL_BOARD_CALIBERS_TABLE + "," + SalesMainView.CONTROL_BOARD_TABLE
+				+ " WHERE " + SalesMainView.CONTROL_BOARD_CALIBERS_TABLE + ".id = " + SalesMainView.CONTROL_BOARD_TABLE + ".caliber_id "
+				+ " GROUP BY " + SalesMainView.CONTROL_BOARD_CALIBERS_TABLE + ".caliber";
+		
 		String queryLockTypes = "SELECT " + SalesMainView.CONTROL_BOARD_LOCK_TYPE_FIELD
 				+ " FROM " + SalesMainView.LOCK_TYPES_TABLE + "," + SalesMainView.CONTROL_BOARD_TABLE
 				+ " WHERE " + SalesMainView.LOCK_TYPES_TABLE + ".id = " + SalesMainView.CONTROL_BOARD_TABLE + ".lock_type_id "
@@ -5677,6 +5960,8 @@ public class SalesMainView extends JFrame{
 		JLabel labelType = new JLabel("Tipo:");
 		JLabel labelInstallation = new JLabel("Instalacion:");
 		JLabel labelNema = new JLabel("Nema:");
+		JLabel labelSheet = new JLabel("Lamina:");
+		JLabel labelColor = new JLabel("Color:");
 		JLabel labelBarCapacity = new JLabel("Cap. Barra:");
 		JLabel labelBarType = new JLabel("Tipo Barra:");
 		JLabel labelCircuits = new JLabel("Circuitos:");
@@ -5684,6 +5969,7 @@ public class SalesMainView extends JFrame{
 		JLabel labelPhases = new JLabel("Fases:");
 		JLabel labelGround = new JLabel("Tierra:");
 		JLabel labelInterruption = new JLabel("Interrupcion:");
+		JLabel labelCaliber = new JLabel("Calibre:");
 		JLabel labelLockType = new JLabel("Cerradura:");
 		
 		ComboBoxListener lForCombo = new ComboBoxListener();
@@ -5746,6 +6032,18 @@ public class SalesMainView extends JFrame{
 		searchBarPanel1.add(labelNema);
 		searchBarPanel1.add(comboControlBoardNemas);
 		
+		comboControlBoardSheets = new JComboBox<String>(new Vector<String>(loadComboList(querySheets, "sheet")));
+		comboControlBoardSheets.setActionCommand("control.search.sheet");
+		comboControlBoardSheets.addActionListener(lForCombo);
+		searchBarPanel1.add(labelSheet);
+		searchBarPanel1.add(comboControlBoardSheets);
+		
+		comboControlBoardColors = new JComboBox<String>(new Vector<String>(loadComboList(queryColors, "color")));
+		comboControlBoardColors.setActionCommand("control.search.color");
+		comboControlBoardColors.addActionListener(lForCombo);
+		searchBarPanel1.add(labelColor);
+		searchBarPanel1.add(comboControlBoardColors);
+		
 		comboControlBoardBarCapacities = new JComboBox<String>(new Vector<String>(loadComboList(queryBarCapacities, "bar_capacity")));
 		comboControlBoardBarCapacities.setActionCommand("control.search.bar_capacity");
 		comboControlBoardBarCapacities.addActionListener(lForCombo);
@@ -5787,6 +6085,12 @@ public class SalesMainView extends JFrame{
 		comboControlBoardInterruptions.addActionListener(lForCombo);
 		searchBarPanel2.add(labelInterruption);
 		searchBarPanel2.add(comboControlBoardInterruptions);
+		
+		comboControlBoardCalibers = new JComboBox<String>(new Vector<String>(loadComboList(queryCalibers, "caliber")));
+		comboControlBoardCalibers.setActionCommand("control.search.caliber");
+		comboControlBoardCalibers.addActionListener(lForCombo);
+		searchBarPanel2.add(labelCaliber);
+		searchBarPanel2.add(comboControlBoardCalibers);
 		
 		comboControlBoardLockTypes = new JComboBox<String>(new Vector<String>(loadComboList(queryLockTypes, "lock_type")));
 		searchBarPanel2.add(labelLockType);
@@ -5869,6 +6173,8 @@ public class SalesMainView extends JFrame{
 		fields.add(SalesMainView.CONTROL_BOARD_TYPE_FIELD);
 		fields.add(SalesMainView.INSTALLATION_FIELD);
 		fields.add(SalesMainView.NEMA_FIELD);
+		fields.add(SalesMainView.CONTROL_BOARD_SHEET_FIELD);
+		fields.add(SalesMainView.CONTROL_BOARD_COLOR_FIELD);
 		fields.add(SalesMainView.CONTROL_BOARD_BAR_CAPACITY_FIELD);
 		fields.add(SalesMainView.CONTROL_BOARD_BAR_TYPE_FIELD);
 		fields.add(SalesMainView.CONTROL_BOARD_CIRCUITS_FIELD);
@@ -5876,11 +6182,15 @@ public class SalesMainView extends JFrame{
 		fields.add(SalesMainView.CONTROL_BOARD_PHASES_FIELD);
 		fields.add(SalesMainView.CONTROL_BOARD_GROUND_FIELD);
 		fields.add(SalesMainView.CONTROL_BOARD_INTERRUPTION_FIELD);
+		fields.add(SalesMainView.CONTROL_BOARD_CALIBER_FIELD);
 		fields.add(SalesMainView.CONTROL_BOARD_LOCK_TYPE_FIELD);
 		fields.add(SalesMainView.CONTROL_BOARD_PRICE_FIELD);
 		
 		ArrayList<String> tables = new ArrayList<String>();
 		tables.add(SalesMainView.CONTROL_BOARD_TABLE);
+		tables.add(SalesMainView.NEMAS_TABLE);
+		tables.add(SalesMainView.CONTROL_BOARD_SHEETS_TABLE);
+		tables.add(SalesMainView.CONTROL_BOARD_COLORS_TABLE);
 		tables.add(SalesMainView.CONTROL_BOARD_BAR_CAPACITIES_TABLE);
 		tables.add(SalesMainView.CONTROL_BOARD_BAR_TYPES_TABLE);
 		tables.add(SalesMainView.CONTROL_BOARD_CIRCUITS_TABLE);
@@ -5888,8 +6198,9 @@ public class SalesMainView extends JFrame{
 		tables.add(SalesMainView.CONTROL_BOARD_VOLTAGES_TABLE);
 		tables.add(SalesMainView.INSTALLATIONS_TABLE);
 		tables.add(SalesMainView.INTERRUPTIONS_TABLE);
+		tables.add(SalesMainView.CONTROL_BOARD_CALIBERS_TABLE);
 		tables.add(SalesMainView.LOCK_TYPES_TABLE);
-		tables.add(SalesMainView.NEMAS_TABLE);
+		
 		
 		limitQuery = " LIMIT 10";
 		
@@ -5901,6 +6212,8 @@ public class SalesMainView extends JFrame{
 						+ " WHERE control_boards.type_id = control_board_types.id "
 						+ "AND control_boards.installation_id = installations.id "
 						+ "AND control_boards.nema_id = nemas.id "
+						+ "AND control_boards.sheet_id = control_board_sheets.id "
+						+ "AND control_boards.color_id = control_board_colors.id "
 						+ "AND ( (control_boards.bar_capacity_id > 0 "
 							+ "AND control_boards.bar_capacity_id = control_board_bar_capacities.id) "
 							+ "OR control_boards.bar_capacity_id = 0)"
@@ -5914,6 +6227,7 @@ public class SalesMainView extends JFrame{
 						+ "AND ( (control_boards.interruption_id > 0 "
 							+ "AND control_boards.interruption_id = interruptions.id) "
 							+ "OR control_boards.interruption_id = 0)"
+							+ "AND control_boards.caliber_id = control_board_calibers.id "
 						+ "AND ( (control_boards.lock_type_id > 0 "
 							+ "AND control_boards.lock_type_id = lock_types.id) "
 							+ "OR control_boards.lock_type_id = 0)"
@@ -5921,7 +6235,7 @@ public class SalesMainView extends JFrame{
 						+ "GROUP BY control_boards.id "
 						+ limitQuery;
 		
-		String[] controlBoardsColumnNames = { "Id", "Nombre", "Tipo", "Instalacion", "Nema", "Cap. Barra", "Tipo Barra", "Circuitos", "Voltaje", "Fases", "Tierra", "Interrupcion", "Cerradura", "Precio"};
+		String[] controlBoardsColumnNames = { "Id", "Nombre", "Tipo", "Instalacion", "Nema", "Lamina", "Color", "Cap. Barra", "Tipo Barra", "Circuitos", "Voltaje", "Fases", "Tierra", "Interrupcion", "Calibre", "Cerradura", "Precio"};
 		
 		tableControlBoardsResult = new JTable();
 		
@@ -6110,28 +6424,54 @@ public class SalesMainView extends JFrame{
 		cs.gridwidth = 4;
 		descriptionPanel.add(textControlBoardDescriptionNema, cs);
 		
-		JLabel labelBarCapacity = new JLabel("Cap. Barra:");
+		JLabel labelSheet = new JLabel("Lamina:");
 		cs.gridx = 36;
+		cs.gridy = 0;
+		cs.gridwidth = 1;
+		descriptionPanel.add(labelSheet, cs);
+		
+		textControlBoardDescriptionSheet = new JTextField("", 4);
+		textControlBoardDescriptionSheet.setEditable(false);
+		cs.gridx = 37;
+		cs.gridy = 0;
+		cs.gridwidth = 4;
+		descriptionPanel.add(textControlBoardDescriptionSheet, cs);
+		
+		JLabel labelColor = new JLabel("Color:");
+		cs.gridx = 41;
+		cs.gridy = 0;
+		cs.gridwidth = 1;
+		descriptionPanel.add(labelColor, cs);
+		
+		textControlBoardDescriptionColor = new JTextField("", 4);
+		textControlBoardDescriptionColor.setEditable(false);
+		cs.gridx = 42;
+		cs.gridy = 0;
+		cs.gridwidth = 4;
+		descriptionPanel.add(textControlBoardDescriptionColor, cs);
+		
+		JLabel labelBarCapacity = new JLabel("Cap. Barra:");
+		cs.gridx = 46;
 		cs.gridy = 0;
 		cs.gridwidth = 1;
 		descriptionPanel.add(labelBarCapacity, cs);
 		
 		textControlBoardDescriptionBarCapacity = new JTextField("", 4);
 		textControlBoardDescriptionBarCapacity.setEditable(false);
-		cs.gridx = 37;
+		cs.gridx = 47;
 		cs.gridy = 0;
 		cs.gridwidth = 4;
 		descriptionPanel.add(textControlBoardDescriptionBarCapacity, cs);
 		
 		JLabel labelBarType = new JLabel("Tipo Barra:");
-		cs.gridx = 41;
+		cs.gridx = 51;
 		cs.gridy = 0;
 		cs.gridwidth = 1;
 		descriptionPanel.add(labelBarType, cs);
 		
 		textControlBoardDescriptionBarType = new JTextField("", 8);
 		textControlBoardDescriptionBarType.setEditable(false);
-		cs.gridx = 42;
+		cs.gridx = 52;
 		cs.gridy = 0;
 		cs.gridwidth = 8;
 		descriptionPanel.add(textControlBoardDescriptionBarType, cs);
@@ -6201,28 +6541,41 @@ public class SalesMainView extends JFrame{
 		cs.gridwidth = 4;
 		descriptionPanel.add(textControlBoardDescriptionInterruption, cs);
 		
-		JLabel labelLockType = new JLabel("Cerradura:");
+		JLabel labelCaliber = new JLabel("Calibre:");
 		cs.gridx = 33;
+		cs.gridy = 1;
+		cs.gridwidth = 1;
+		descriptionPanel.add(labelCaliber, cs);
+		
+		textControlBoardDescriptionCaliber = new JTextField("", 4);
+		textControlBoardDescriptionCaliber.setEditable(false);
+		cs.gridx = 34;
+		cs.gridy = 1;
+		cs.gridwidth = 4;
+		descriptionPanel.add(textControlBoardDescriptionCaliber, cs);
+		
+		JLabel labelLockType = new JLabel("Cerradura:");
+		cs.gridx = 38;
 		cs.gridy = 1;
 		cs.gridwidth = 1;
 		descriptionPanel.add(labelLockType, cs);
 		
 		textControlBoardDescriptionLockType = new JTextField("", 8);
 		textControlBoardDescriptionLockType.setEditable(false);
-		cs.gridx = 34;
+		cs.gridx = 39;
 		cs.gridy = 1;
 		cs.gridwidth = 8;
 		descriptionPanel.add(textControlBoardDescriptionLockType, cs);
 		
 		JLabel labelPrice = new JLabel("Precio:");
-		cs.gridx = 42;
+		cs.gridx = 47;
 		cs.gridy = 1;
 		cs.gridwidth = 1;
 		descriptionPanel.add(labelPrice, cs);
 		
 		textControlBoardDescriptionPrice = new JTextField("", 8);
 		textControlBoardDescriptionPrice.setEditable(false);
-		cs.gridx = 43;
+		cs.gridx = 48;
 		cs.gridy = 1;
 		cs.gridwidth = 8;
 		descriptionPanel.add(textControlBoardDescriptionPrice, cs);
@@ -6283,6 +6636,14 @@ public class SalesMainView extends JFrame{
 				+ "FROM nemas "
 				+ "GROUP BY nemas.nema";
 		
+		String querySheets = "SELECT control_board_sheets.sheet "
+				+ "FROM control_board_sheets "
+				+ "GROUP BY control_board_sheets.sheet";
+		
+		String queryColors = "SELECT control_board_colors.color "
+				+ "FROM control_board_colors "
+				+ "GROUP BY control_board_colors.color";
+		
 		String queryBarCapacities = "SELECT control_board_bar_capacities.bar_capacity "
 				+ "FROM control_board_bar_capacities "
 				+ "GROUP BY control_board_bar_capacities.bar_capacity";
@@ -6304,6 +6665,10 @@ public class SalesMainView extends JFrame{
 		String queryInterruptions = "SELECT interruptions.interruption "
 				+ "FROM interruptions "
 				+ "GROUP BY interruptions.interruption";
+		
+		String queryCalibers = "SELECT control_board_calibers.caliber "
+				+ "FROM control_board_calibers "
+				+ "GROUP BY control_board_calibers.caliber";
 		
 		String queryLockTypes = "SELECT lock_types.lock_type "
 				+ "FROM lock_types "
@@ -6365,8 +6730,38 @@ public class SalesMainView extends JFrame{
 		cs.gridwidth = 8;
 		addPanel.add(comboControlBoardAddNema, cs);
 		
-		JLabel labelBarCapacity = new JLabel("Cap. Barra:");
+		JLabel labelSheet = new JLabel("Lamina:");
 		cs.gridx = 26;
+		cs.gridy = 0;
+		cs.gridwidth = 1;
+		addPanel.add(labelSheet, cs);
+		
+		comboControlBoardAddSheet = new JComboBox<String>(new Vector<String>(loadComboList(querySheets, "sheet")));
+		comboControlBoardAddSheet.removeItem("Todas");
+		comboControlBoardAddSheet.setActionCommand("control.description.add.sheet");
+		comboControlBoardAddSheet.addActionListener(lForCombo);
+		cs.gridx = 27;
+		cs.gridy = 0;
+		cs.gridwidth = 8;
+		addPanel.add(comboControlBoardAddSheet, cs);
+		
+		JLabel labelColor = new JLabel("Color:");
+		cs.gridx = 35;
+		cs.gridy = 0;
+		cs.gridwidth = 1;
+		addPanel.add(labelColor, cs);
+		
+		comboControlBoardAddColor = new JComboBox<String>(new Vector<String>(loadComboList(queryColors, "color")));
+		comboControlBoardAddColor.removeItem("Todas");
+		comboControlBoardAddColor.setActionCommand("control.description.add.color");
+		comboControlBoardAddColor.addActionListener(lForCombo);
+		cs.gridx = 36;
+		cs.gridy = 0;
+		cs.gridwidth = 8;
+		addPanel.add(comboControlBoardAddColor, cs);
+		
+		JLabel labelBarCapacity = new JLabel("Cap. Barra:");
+		cs.gridx = 44;
 		cs.gridy = 0;
 		cs.gridwidth = 1;
 		addPanel.add(labelBarCapacity, cs);
@@ -6375,13 +6770,13 @@ public class SalesMainView extends JFrame{
 		comboControlBoardAddBarCapacity.removeItem("Todas");
 		comboControlBoardAddBarCapacity.addItem("N/A");
 		comboControlBoardAddBarCapacity.setSelectedItem("N/A");
-		cs.gridx = 27;
+		cs.gridx = 45;
 		cs.gridy = 0;
 		cs.gridwidth = 2;
 		addPanel.add(comboControlBoardAddBarCapacity, cs);
 		
 		JLabel labelBarType = new JLabel("Tipo Barra:");
-		cs.gridx = 29;
+		cs.gridx = 47;
 		cs.gridy = 0;
 		cs.gridwidth = 1;
 		addPanel.add(labelBarType, cs);
@@ -6390,13 +6785,13 @@ public class SalesMainView extends JFrame{
 		comboControlBoardAddBarType.removeItem("Todas");
 		comboControlBoardAddBarType.addItem("N/A");
 		comboControlBoardAddBarType.setSelectedItem("N/A");
-		cs.gridx = 30;
+		cs.gridx = 48;
 		cs.gridy = 0;
 		cs.gridwidth = 6;
 		addPanel.add(comboControlBoardAddBarType, cs);
 		
 		JLabel labelCircuits = new JLabel("Circuitos:");
-		cs.gridx = 36;
+		cs.gridx = 54;
 		cs.gridy = 0;
 		cs.gridwidth = 1;
 		addPanel.add(labelCircuits, cs);
@@ -6407,7 +6802,7 @@ public class SalesMainView extends JFrame{
 		comboControlBoardAddCircuits.setSelectedItem("N/A");
 		comboControlBoardAddCircuits.setActionCommand("control.description.add.circuits");
 		comboControlBoardAddCircuits.addActionListener(lForCombo);
-		cs.gridx = 37;
+		cs.gridx = 55;
 		cs.gridy = 0;
 		cs.gridwidth = 6;
 		addPanel.add(comboControlBoardAddCircuits, cs);
@@ -6460,29 +6855,40 @@ public class SalesMainView extends JFrame{
 		cs.gridwidth = 6;
 		addPanel.add(comboControlBoardAddInterruption, cs);
 		
-		JLabel labelLockType = new JLabel("Cerradura:");
+		JLabel labelCaliber = new JLabel("Calibre:");
 		cs.gridx = 23;
+		cs.gridy = 1;
+		cs.gridwidth = 1;
+		addPanel.add(labelCaliber, cs);
+		
+		comboControlBoardAddCaliber = new JComboBox<String>(new Vector<String>(loadComboList(queryCalibers, "caliber")));
+		comboControlBoardAddCaliber.removeItem("Todas");
+		cs.gridx = 24;
+		cs.gridy = 1;
+		cs.gridwidth = 6;
+		addPanel.add(comboControlBoardAddCaliber, cs);
+		
+		JLabel labelLockType = new JLabel("Cerradura:");
+		cs.gridx = 30;
 		cs.gridy = 1;
 		cs.gridwidth = 1;
 		addPanel.add(labelLockType, cs);
 		
 		comboControlBoardAddLockType = new JComboBox<String>(new Vector<String>(loadComboList(queryLockTypes, "lock_type")));
 		comboControlBoardAddLockType.removeItem("Todas");
-		comboControlBoardAddLockType.addItem("N/A");
-		comboControlBoardAddLockType.setSelectedItem("N/A");
-		cs.gridx = 24;
+		cs.gridx = 31;
 		cs.gridy = 1;
 		cs.gridwidth = 6;
 		addPanel.add(comboControlBoardAddLockType, cs);
 		
 		JLabel labelPrice = new JLabel("Precio:");
-		cs.gridx = 30;
+		cs.gridx = 37;
 		cs.gridy = 1;
 		cs.gridwidth = 1;
 		addPanel.add(labelPrice, cs);
 		
 		textControlBoardAddPrice = new JTextField(6);
-		cs.gridx = 31;
+		cs.gridx = 38;
 		cs.gridy = 1;
 		cs.gridwidth = 6;
 		addPanel.add(textControlBoardAddPrice, cs);
@@ -6547,6 +6953,14 @@ public class SalesMainView extends JFrame{
 				+ "FROM nemas "
 				+ "GROUP BY nemas.nema";
 		
+		String querySheets = "SELECT control_board_sheets.sheet "
+				+ "FROM control_board_sheets "
+				+ "GROUP BY control_board_sheets.sheet";
+
+		String queryColors = "SELECT control_board_colors.color "
+				+ "FROM control_board_colors "
+				+ "GROUP BY control_board_colors.color";
+		
 		String queryBarCapacities = "SELECT control_board_bar_capacities.bar_capacity "
 				+ "FROM control_board_bar_capacities "
 				+ "GROUP BY control_board_bar_capacities.bar_capacity";
@@ -6568,6 +6982,10 @@ public class SalesMainView extends JFrame{
 		String queryInterruptions = "SELECT interruptions.interruption "
 				+ "FROM interruptions "
 				+ "GROUP BY interruptions.interruption";
+		
+		String queryCalibers = "SELECT control_board_calibers.caliber "
+				+ "FROM control_board_calibers "
+				+ "GROUP BY control_board_calibers.caliber";
 		
 		String queryLockTypes = "SELECT lock_types.lock_type "
 				+ "FROM lock_types "
@@ -6631,28 +7049,58 @@ public class SalesMainView extends JFrame{
 		cs.gridwidth = 2;
 		editPanel.add(comboControlBoardEditNema, cs);
 		
-		JLabel labelBarCapacity = new JLabel("Cap. Barra:");
+		JLabel labelSheet = new JLabel("Lamina:");
 		cs.gridx = 22;
+		cs.gridy = 0;
+		cs.gridwidth = 1;
+		editPanel.add(labelSheet, cs);
+		
+		comboControlBoardEditSheet = new JComboBox<String>(new Vector<String>(loadComboList(querySheets, "sheet")));
+		comboControlBoardEditSheet.removeItem("Todas");
+		comboControlBoardEditSheet.setActionCommand("control.description.edit.sheet");
+		comboControlBoardEditSheet.addActionListener(lForCombo);
+		cs.gridx = 23;
+		cs.gridy = 0;
+		cs.gridwidth = 2;
+		editPanel.add(comboControlBoardEditSheet, cs);
+		
+		JLabel labelColor = new JLabel("Color:");
+		cs.gridx = 25;
+		cs.gridy = 0;
+		cs.gridwidth = 1;
+		editPanel.add(labelColor, cs);
+		
+		comboControlBoardEditColor = new JComboBox<String>(new Vector<String>(loadComboList(queryColors, "color")));
+		comboControlBoardEditColor.removeItem("Todas");
+		comboControlBoardEditColor.setActionCommand("control.description.edit.color");
+		comboControlBoardEditColor.addActionListener(lForCombo);
+		cs.gridx = 26;
+		cs.gridy = 0;
+		cs.gridwidth = 2;
+		editPanel.add(comboControlBoardEditColor, cs);
+		
+		JLabel labelBarCapacity = new JLabel("Cap. Barra:");
+		cs.gridx = 28;
 		cs.gridy = 0;
 		cs.gridwidth = 1;
 		editPanel.add(labelBarCapacity, cs);
 		
 		comboControlBoardEditBarCapacity = new JComboBox<String>(new Vector<String>(loadComboList(queryBarCapacities, "bar_capacity")));
 		comboControlBoardEditBarCapacity.removeItem("Todas");
-		cs.gridx = 23;
+		cs.gridx = 29;
 		cs.gridy = 0;
 		cs.gridwidth = 2;
 		editPanel.add(comboControlBoardEditBarCapacity, cs);
 		
 		JLabel labelBarType = new JLabel("Tipo Barra:");
-		cs.gridx = 25;
+		cs.gridx = 31;
 		cs.gridy = 0;
 		cs.gridwidth = 1;
 		editPanel.add(labelBarType, cs);
 		
 		comboControlBoardEditBarType = new JComboBox<String>(new Vector<String>(loadComboList(queryBarTypes, "bar_type")));
 		comboControlBoardEditBarType.removeItem("Todas");
-		cs.gridx = 26;
+		cs.gridx = 32;
 		cs.gridy = 0;
 		cs.gridwidth = 4;
 		editPanel.add(comboControlBoardEditBarType, cs);
@@ -6717,27 +7165,40 @@ public class SalesMainView extends JFrame{
 		cs.gridwidth = 2;
 		editPanel.add(comboControlBoardEditInterruption, cs);
 		
-		JLabel labelLockType = new JLabel("Cerradura:");
+		JLabel labelCaliber = new JLabel("Calibre:");
 		cs.gridx = 16;
+		cs.gridy = 1;
+		cs.gridwidth = 1;
+		editPanel.add(labelCaliber, cs);
+		
+		comboControlBoardEditCaliber = new JComboBox<String>(new Vector<String>(loadComboList(queryCalibers, "caliber")));
+		comboControlBoardEditCaliber.removeItem("Todas");
+		cs.gridx = 17;
+		cs.gridy = 1;
+		cs.gridwidth = 2;
+		editPanel.add(comboControlBoardEditCaliber, cs);
+		
+		JLabel labelLockType = new JLabel("Cerradura:");
+		cs.gridx = 19;
 		cs.gridy = 1;
 		cs.gridwidth = 1;
 		editPanel.add(labelLockType, cs);
 		
 		comboControlBoardEditLockType = new JComboBox<String>(new Vector<String>(loadComboList(queryLockTypes, "lock_type")));
 		comboControlBoardEditLockType.removeItem("Todas");
-		cs.gridx = 17;
+		cs.gridx = 20;
 		cs.gridy = 1;
 		cs.gridwidth = 6;
 		editPanel.add(comboControlBoardEditLockType, cs);
 		
 		JLabel labelPrice = new JLabel("Precio:");
-		cs.gridx = 23;
+		cs.gridx = 26;
 		cs.gridy = 1;
 		cs.gridwidth = 1;
 		editPanel.add(labelPrice, cs);
 		
 		textControlBoardEditPrice = new JTextField(6);
-		cs.gridx = 24;
+		cs.gridx = 27;
 		cs.gridy = 1;
 		cs.gridwidth = 6;
 		editPanel.add(textControlBoardEditPrice, cs);
@@ -6913,6 +7374,8 @@ public class SalesMainView extends JFrame{
 			editControlBoardType = String.valueOf(tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, SharedListSelectionListener.CONTROL_BOARD_TYPE_COLUMN));
 			editControlBoardInstallation = String.valueOf(tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, SharedListSelectionListener.CONTROL_BOARD_INSTALLATION_COLUMN));
 			editControlBoardNema = String.valueOf(tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, SharedListSelectionListener.CONTROL_BOARD_NEMA_COLUMN));
+			editControlBoardSheet = String.valueOf(tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, SharedListSelectionListener.CONTROL_BOARD_SHEET_COLUMN));
+			editControlBoardColor = String.valueOf(tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, SharedListSelectionListener.CONTROL_BOARD_COLOR_COLUMN));
 			editControlBoardBarCapacity = String.valueOf(tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, SharedListSelectionListener.CONTROL_BOARD_BAR_CAPACITY_COLUMN));
 			editControlBoardBarType = String.valueOf(tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, SharedListSelectionListener.BOARD_BAR_TYPE_COLUMN));
 			editControlBoardCircuits = String.valueOf(tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, SharedListSelectionListener.CONTROL_BOARD_CIRCUITS_COLUMN));
@@ -6920,6 +7383,7 @@ public class SalesMainView extends JFrame{
 			editControlBoardPhases = Integer.valueOf(String.valueOf(tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, SharedListSelectionListener.CONTROL_BOARD_PHASES_COLUMN)));
 			editControlBoardGround = String.valueOf(tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, SharedListSelectionListener.CONTROL_BOARD_GROUND_COLUMN));
 			editControlBoardInterruption = String.valueOf(tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, SharedListSelectionListener.CONTROL_BOARD_INTERRUPTION_COLUMN));
+			editControlBoardCaliber = Integer.valueOf(String.valueOf(tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, SharedListSelectionListener.CONTROL_BOARD_CALIBER_COLUMN)));
 			editControlBoardLockType = String.valueOf(tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, SharedListSelectionListener.CONTROL_BOARD_LOCK_TYPE_COLUMN));
 			editControlBoardPrice = Double.valueOf(String.valueOf(tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, SharedListSelectionListener.CONTROL_BOARD_PRICE_COLUMN)));
 			
@@ -6934,6 +7398,14 @@ public class SalesMainView extends JFrame{
 			String queryNemas = "SELECT nemas.nema "
 					+ "FROM nemas "
 					+ "GROUP BY nemas.nema";
+			
+			String querySheets = "SELECT control_board_sheets.sheet "
+					+ "FROM control_board_sheets "
+					+ "GROUP BY control_board_sheets.sheet";
+			
+			String queryColors = "SELECT control_board_colors.color "
+					+ "FROM control_board_colors "
+					+ "GROUP BY control_board_colors.color";
 			
 			String queryBarCapacities = "SELECT control_board_bar_capacities.bar_capacity "
 					+ "FROM control_board_bar_capacities "
@@ -6957,6 +7429,10 @@ public class SalesMainView extends JFrame{
 					+ "FROM interruptions "
 					+ "GROUP BY interruptions.interruption";
 			
+			String queryCalibers = "SELECT control_board_calibers.caliber "
+					+ "FROM control_board_calibers "
+					+ "GROUP BY control_board_calibers.caliber";
+			
 			String queryLockTypes = "SELECT lock_types.lock_type "
 					+ "FROM lock_types "
 					+ "GROUP BY lock_types.lock_type";
@@ -6975,6 +7451,14 @@ public class SalesMainView extends JFrame{
 			comboControlBoardEditNema.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadComboList(queryNemas, "nema"))));
 			comboControlBoardEditNema.removeItem("Todas");
 			comboControlBoardEditNema.setSelectedItem(editControlBoardNema);
+			
+			comboControlBoardEditSheet.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadComboList(querySheets, "sheet"))));
+			comboControlBoardEditSheet.removeItem("Todas");
+			comboControlBoardEditSheet.setSelectedItem(editControlBoardSheet);
+			
+			comboControlBoardEditColor.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadComboList(queryColors, "color"))));
+			comboControlBoardEditColor.removeItem("Todas");
+			comboControlBoardEditColor.setSelectedItem(editControlBoardColor);
 			
 			comboControlBoardEditBarCapacity.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadComboList(queryBarCapacities, "bar_capacity"))));
 			comboControlBoardEditBarCapacity.removeItem("Todas");
@@ -7005,6 +7489,10 @@ public class SalesMainView extends JFrame{
 			comboControlBoardEditInterruption.addItem("N/A");
 			comboControlBoardEditInterruption.setSelectedItem(editControlBoardInterruption);
 			
+			comboControlBoardEditCaliber.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadComboList(queryCalibers, "caliber"))));
+			comboControlBoardEditCaliber.removeItem("Todas");
+			comboControlBoardEditCaliber.setSelectedItem(editControlBoardCaliber);
+			
 			comboControlBoardEditLockType.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadComboList(queryLockTypes, "lock_type"))));
 			comboControlBoardEditLockType.removeItem("Todas");
 			comboControlBoardEditLockType.addItem("N/A");
@@ -7034,6 +7522,8 @@ public class SalesMainView extends JFrame{
 			textControlBoardDescriptionType.setText("");
 			textControlBoardDescriptionInstallation.setText("");
 			textControlBoardDescriptionNema.setText("");
+			textControlBoardDescriptionSheet.setText("");
+			textControlBoardDescriptionColor.setText("");
 			textControlBoardDescriptionBarCapacity.setText("");
 			textControlBoardDescriptionBarType.setText("");
 			textControlBoardDescriptionCircuits.setText("");
@@ -7041,6 +7531,7 @@ public class SalesMainView extends JFrame{
 			textControlBoardDescriptionPhases.setText("");
 			textControlBoardDescriptionGround.setText("");
 			textControlBoardDescriptionInterruption.setText("");
+			textControlBoardDescriptionCaliber.setText("");
 			textControlBoardDescriptionLockType.setText("");
 			textControlBoardDescriptionPrice.setText("");
 			textControlBoardDescription.setText("");
@@ -7055,6 +7546,8 @@ public class SalesMainView extends JFrame{
 		searchSelectedControlBoardType = comboControlBoardTypes.getSelectedItem().toString();
 		searchSelectedControlBoardInstallation = comboControlBoardInstallations.getSelectedItem().toString();
 		searchSelectedControlBoardNema = comboControlBoardNemas.getSelectedItem().toString();
+		searchSelectedControlBoardSheet = comboControlBoardSheets.getSelectedItem().toString();
+		searchSelectedControlBoardColor = comboControlBoardColors.getSelectedItem().toString();
 		searchSelectedControlBoardBarCapacity = comboControlBoardBarCapacities.getSelectedItem().toString();
 		searchSelectedControlBoardBarType = comboControlBoardBarTypes.getSelectedItem().toString();
 		searchSelectedControlBoardCircuits = comboControlBoardCircuits.getSelectedItem().toString();
@@ -7062,6 +7555,7 @@ public class SalesMainView extends JFrame{
 		searchSelectedControlBoardPhases = comboControlBoardPhases.getSelectedItem().toString();
 		searchSelectedControlBoardGround = comboControlBoardGround.getSelectedItem().toString();
 		searchSelectedControlBoardInterruption = comboControlBoardInterruptions.getSelectedItem().toString();
+		searchSelectedControlBoardCaliber = comboControlBoardCalibers.getSelectedItem().toString();
 		searchSelectedControlBoardLockType = comboControlBoardLockTypes.getSelectedItem().toString();
 		
 		if(null != textControlBoardSearchNames && !textControlBoardSearchNames.getText().isEmpty()) {
@@ -7080,6 +7574,16 @@ public class SalesMainView extends JFrame{
 				!searchSelectedControlBoardNema.isEmpty()) {
 			whereQuery += " AND " + SalesMainView.CONTROL_BOARD_TABLE + ".nema_id = " + SalesMainView.NEMAS_TABLE + ".id ";
 			whereQuery += " AND " + SalesMainView.NEMAS_TABLE + ".nema = '" + searchSelectedControlBoardNema + "'";
+		}
+		if(searchSelectedControlBoardSheet != null && !searchSelectedControlBoardSheet.equalsIgnoreCase("Todas") &&
+				!searchSelectedControlBoardSheet.isEmpty()) {
+			whereQuery += " AND " + SalesMainView.CONTROL_BOARD_TABLE + ".sheet_id = " + SalesMainView.CONTROL_BOARD_SHEETS_TABLE + ".id ";
+			whereQuery += " AND " + SalesMainView.CONTROL_BOARD_SHEETS_TABLE + ".sheet = '" + searchSelectedControlBoardSheet + "'";
+		}
+		if(searchSelectedControlBoardColor != null && !searchSelectedControlBoardColor.equalsIgnoreCase("Todas") &&
+				!searchSelectedControlBoardColor.isEmpty()) {
+			whereQuery += " AND " + SalesMainView.CONTROL_BOARD_TABLE + ".color_id = " + SalesMainView.CONTROL_BOARD_COLORS_TABLE + ".id ";
+			whereQuery += " AND " + SalesMainView.CONTROL_BOARD_COLORS_TABLE + ".color = '" + searchSelectedControlBoardColor + "'";
 		}
 		if(searchSelectedControlBoardBarCapacity != null && !searchSelectedControlBoardBarCapacity.equalsIgnoreCase("Todas") &&
 				!searchSelectedControlBoardBarCapacity.isEmpty() && !searchSelectedControlBoardBarCapacity.equalsIgnoreCase("N/A")) {
@@ -7114,6 +7618,11 @@ public class SalesMainView extends JFrame{
 			whereQuery += " AND " + SalesMainView.CONTROL_BOARD_TABLE + ".interruption_id = " + SalesMainView.INTERRUPTIONS_TABLE + ".id ";
 			whereQuery += " AND " + SalesMainView.INTERRUPTIONS_TABLE + ".interruption = '" + searchSelectedControlBoardInterruption + "'";
 		}
+		if(searchSelectedControlBoardCaliber != null && !searchSelectedControlBoardCaliber.equalsIgnoreCase("Todas") &&
+				!searchSelectedControlBoardCaliber.isEmpty()) {
+			whereQuery += " AND " + SalesMainView.CONTROL_BOARD_TABLE + ".caliber_id = " + SalesMainView.CONTROL_BOARD_CALIBERS_TABLE + ".id ";
+			whereQuery += " AND " + SalesMainView.CONTROL_BOARD_CALIBERS_TABLE + ".caliber = '" + searchSelectedControlBoardCaliber + "'";
+		}
 		if(searchSelectedControlBoardLockType != null && !searchSelectedControlBoardLockType.equalsIgnoreCase("Todas") &&
 				!searchSelectedControlBoardLockType.isEmpty() && !searchSelectedControlBoardLockType.equalsIgnoreCase("N/A")) {
 			whereQuery += " AND " + SalesMainView.CONTROL_BOARD_TABLE + ".lock_type_id = " + SalesMainView.LOCK_TYPES_TABLE + ".id ";
@@ -7132,6 +7641,8 @@ public class SalesMainView extends JFrame{
 		fields.add(SalesMainView.CONTROL_BOARD_TYPE_FIELD);
 		fields.add(SalesMainView.INSTALLATION_FIELD);
 		fields.add(SalesMainView.NEMA_FIELD);
+		fields.add(SalesMainView.CONTROL_BOARD_SHEET_FIELD);
+		fields.add(SalesMainView.CONTROL_BOARD_COLOR_FIELD);
 		fields.add(SalesMainView.CONTROL_BOARD_BAR_CAPACITY_FIELD);
 		fields.add(SalesMainView.CONTROL_BOARD_BAR_TYPE_FIELD);
 		fields.add(SalesMainView.CONTROL_BOARD_CIRCUITS_FIELD);
@@ -7139,6 +7650,7 @@ public class SalesMainView extends JFrame{
 		fields.add(SalesMainView.CONTROL_BOARD_PHASES_FIELD);
 		fields.add(SalesMainView.CONTROL_BOARD_GROUND_FIELD);
 		fields.add(SalesMainView.CONTROL_BOARD_INTERRUPTION_FIELD);
+		fields.add(SalesMainView.CONTROL_BOARD_CALIBER_FIELD);
 		fields.add(SalesMainView.CONTROL_BOARD_LOCK_TYPE_FIELD);
 		fields.add(SalesMainView.CONTROL_BOARD_PRICE_FIELD);
 		
@@ -7147,11 +7659,14 @@ public class SalesMainView extends JFrame{
 		tables.add(SalesMainView.CONTROL_BOARD_TYPES_TABLE);
 		tables.add(SalesMainView.INSTALLATIONS_TABLE);
 		tables.add(SalesMainView.NEMAS_TABLE);
+		tables.add(SalesMainView.CONTROL_BOARD_SHEETS_TABLE);
+		tables.add(SalesMainView.CONTROL_BOARD_COLORS_TABLE);
 		tables.add(SalesMainView.CONTROL_BOARD_BAR_CAPACITIES_TABLE);
 		tables.add(SalesMainView.CONTROL_BOARD_BAR_TYPES_TABLE);
 		tables.add(SalesMainView.CONTROL_BOARD_CIRCUITS_TABLE);
 		tables.add(SalesMainView.CONTROL_BOARD_VOLTAGES_TABLE);
 		tables.add(SalesMainView.INTERRUPTIONS_TABLE);
+		tables.add(SalesMainView.CONTROL_BOARD_CALIBERS_TABLE);
 		tables.add(SalesMainView.LOCK_TYPES_TABLE);
 		
 		String fieldsQuery = StringTools.implode(",", fields);
@@ -7162,6 +7677,8 @@ public class SalesMainView extends JFrame{
 						+ " WHERE control_boards.type_id = control_board_types.id "
 						+ "AND control_boards.installation_id = installations.id "
 						+ "AND control_boards.nema_id = nemas.id "
+						+ "AND control_boards.sheet_id = control_board_sheets.id "
+						+ "AND control_boards.color_id = control_board_colors.id "
 						+ "AND ( (control_boards.bar_capacity_id > 0 "
 							+ "AND control_boards.bar_capacity_id = control_board_bar_capacities.id) "
 							+ "OR control_boards.bar_capacity_id = 0)"
@@ -7175,6 +7692,7 @@ public class SalesMainView extends JFrame{
 						+ "AND ( (control_boards.interruption_id > 0 "
 							+ "AND control_boards.interruption_id = interruptions.id) "
 							+ "OR control_boards.interruption_id = 0)"
+						+ "AND control_boards.caliber_id = control_board_calibers.id "
 						+ "AND ( (control_boards.lock_type_id > 0 "
 							+ "AND control_boards.lock_type_id = lock_types.id) "
 							+ "OR control_boards.lock_type_id = 0)"
@@ -7185,7 +7703,7 @@ public class SalesMainView extends JFrame{
 		
 //		controlBoardsData = db.fetchAll(db.select(controlBoardsQuery));
 		
-		String[] controlBoardsColumnNames = { "Id", "Nombre", "Tipo", "Instalacion", "Nema", "Cap. Barra", "Tipo Barra", "Circuitos", "Voltaje", "Fases", "Tierra", "Interrupcion", "Cerradura", "Precio"};
+		String[] controlBoardsColumnNames = { "Id", "Nombre", "Tipo", "Instalacion", "Nema", "Lamina", "Color", "Cap. Barra", "Tipo Barra", "Circuitos", "Voltaje", "Fases", "Tierra", "Interrupcion", "Calibre", "Cerradura", "Precio"};
 		
 		if(tableControlBoardsResult.getModel() instanceof MyTableModel) {
 			((MyTableModel) tableControlBoardsResult.getModel()).setQuery(controlBoardsQuery);
@@ -9891,6 +10409,24 @@ public class SalesMainView extends JFrame{
 					whereQuery += SalesMainView.NEMAS_TABLE + ".nema = '"+searchSelectedBoardNema+"' ";
 				}
 				this.loadComboBoard("nemas");
+			} else if (actionCommand.equalsIgnoreCase("board.search.sheet")) {
+				searchSelectedBoardSheet = comboBoardSheets.getSelectedItem().toString();
+				this.clearSelectedBoardOptions("sheet");
+				fromQuery = SalesMainView.BOARD_TABLE + "," + SalesMainView.BOARD_SHEETS_TABLE;
+				if(!searchSelectedBoardSheet.equalsIgnoreCase("Todas")) {
+					this.selectWhereQuery();
+					whereQuery += SalesMainView.BOARD_SHEETS_TABLE + ".sheet = '"+searchSelectedBoardSheet+"' ";
+				}
+				this.loadComboBoard("sheets");
+			} else if (actionCommand.equalsIgnoreCase("board.search.color")) {
+				searchSelectedBoardColor = comboBoardColors.getSelectedItem().toString();
+				this.clearSelectedBoardOptions("color");
+				fromQuery = SalesMainView.BOARD_TABLE + "," + SalesMainView.BOARD_COLORS_TABLE;
+				if(!searchSelectedBoardColor.equalsIgnoreCase("Todas")) {
+					this.selectWhereQuery();
+					whereQuery += SalesMainView.BOARD_COLORS_TABLE + ".color = '"+searchSelectedBoardColor+"' ";
+				}
+				this.loadComboBoard("colors");
 			} else if (actionCommand.equalsIgnoreCase("board.search.bar_capacity")) {
 				searchSelectedBoardBarCapacity = comboBoardBarCapacities.getSelectedItem().toString();
 				this.clearSelectedBoardOptions("bar_capacity");
@@ -9950,6 +10486,15 @@ public class SalesMainView extends JFrame{
 					whereQuery += SalesMainView.INTERRUPTIONS_TABLE + ".interruption = '"+searchSelectedBoardInterruption+"' ";
 				}
 				this.loadComboBoard("interruptions");
+			} else if (actionCommand.equalsIgnoreCase("board.search.caliber")) {
+				searchSelectedBoardCaliber = comboBoardCalibers.getSelectedItem().toString();
+				this.clearSelectedBoardOptions("caliber");
+				fromQuery = SalesMainView.BOARD_TABLE + "," + SalesMainView.BOARD_CALIBERS_TABLE;
+				if(!searchSelectedBoardCaliber.equalsIgnoreCase("Todas")) {
+					this.selectWhereQuery();
+					whereQuery += SalesMainView.BOARD_CALIBERS_TABLE + ".caliber = '"+searchSelectedBoardCaliber+"' ";
+				}
+				this.loadComboBoard("calibers");
 			} else if (actionCommand.equalsIgnoreCase("board.description.add.type") || 
 					actionCommand.equalsIgnoreCase("board.description.add.nema") || 
 					actionCommand.equalsIgnoreCase("board.description.add.circuits") || 
@@ -10056,6 +10601,10 @@ public class SalesMainView extends JFrame{
 				case "installation":
 					searchSelectedBoardNema = "";
 				case "nema":
+					searchSelectedBoardSheet = "";
+				case "sheet":
+					searchSelectedBoardColor = "";
+				case "color":
 					searchSelectedBoardBarCapacity = "";
 				case "bar_capacity":
 					searchSelectedBoardBarType = "";
@@ -10070,6 +10619,8 @@ public class SalesMainView extends JFrame{
 				case "ground":
 					searchSelectedBoardInterruption = "";
 				case "interruption":
+					searchSelectedBoardCaliber = "";
+				case "caliber":
 					searchSelectedBoardLockType = "";
 					break;
 			}
@@ -10481,62 +11032,29 @@ public class SalesMainView extends JFrame{
 		private void loadComboBoard(String start) {
 			switch(start) {
 			case "types":
-				this.selectWhereQuery();
-				fromQuery += "," + SalesMainView.INSTALLATIONS_TABLE;
-				whereQuery += SalesMainView.BOARD_TABLE + ".type_id = " + SalesMainView.BOARD_TYPES_TABLE + ".id";
-				this.selectWhereQuery();
-				whereQuery += SalesMainView.BOARD_TABLE + ".installation_id = " + SalesMainView.INSTALLATIONS_TABLE + ".id ";
-				comboBoardInstallations.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(SalesMainView.INSTALLATIONS_TABLE, "installation"))));
+				this.loadCombo(SalesMainView.INSTALLATIONS_TABLE, "type", "type_id", 
+						SalesMainView.BOARD_TYPES_TABLE, "type", "installation_id", comboBoardInstallations, "installation");
 			case "installations":
-				fromQuery += "," + SalesMainView.NEMAS_TABLE;
-				if(!searchSelectedBoardInstallation.isEmpty()) {
-					this.selectWhereQuery();
-					whereQuery += SalesMainView.BOARD_TABLE + ".installation_id = " + SalesMainView.INSTALLATIONS_TABLE + ".id";
-				}
-				this.addBoardAdditionalWhere("installation");
-				this.selectWhereQuery();
-				whereQuery += SalesMainView.BOARD_TABLE + ".nema_id = " + SalesMainView.NEMAS_TABLE + ".id ";
-				comboBoardNemas.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(SalesMainView.NEMAS_TABLE, "nema"))));
+				this.loadCombo(SalesMainView.NEMAS_TABLE, comboBoardInstallations.getSelectedItem().toString(), "installation_id", 
+						SalesMainView.INSTALLATIONS_TABLE, "installation", "nema_id", comboBoardNemas, "nema");
 			case "nemas":
-				fromQuery += "," + SalesMainView.BOARD_BAR_CAPACITIES_TABLE;
-				if(!searchSelectedBoardNema.isEmpty()) {
-					this.selectWhereQuery();
-					whereQuery += SalesMainView.BOARD_TABLE + ".nema_id = " + SalesMainView.NEMAS_TABLE + ".id";
-				}
-				this.addBoardAdditionalWhere("nema");
-				this.selectWhereQuery();
-				whereQuery += SalesMainView.BOARD_TABLE + ".bar_capacity_id = " + SalesMainView.BOARD_BAR_CAPACITIES_TABLE + ".id ";
-				comboBoardBarCapacities.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(SalesMainView.BOARD_BAR_CAPACITIES_TABLE, "bar_capacity"))));
+				this.loadCombo(SalesMainView.BOARD_SHEETS_TABLE, comboBoardNemas.getSelectedItem().toString(), "nema_id", 
+						SalesMainView.NEMAS_TABLE, "nema", "sheet_id", comboBoardSheets, "sheet");
+			case "sheet":
+				this.loadCombo(SalesMainView.BOARD_COLORS_TABLE, comboBoardSheets.getSelectedItem().toString(), "sheet_id", 
+						SalesMainView.BOARD_SHEETS_TABLE, "sheet", "color_id", comboBoardColors, "color");
+			case "color":
+				this.loadCombo(SalesMainView.BOARD_BAR_CAPACITIES_TABLE, comboBoardColors.getSelectedItem().toString(), "color_id", 
+						SalesMainView.BOARD_COLORS_TABLE, "color", "bar_capacity_id", comboBoardBarCapacities, "bar_capacity");
 			case "bar_capacity":
-				fromQuery += "," + SalesMainView.BOARD_BAR_TYPES_TABLE;
-				if(!searchSelectedBoardBarCapacity.isEmpty()) {
-					this.selectWhereQuery();
-					whereQuery += SalesMainView.BOARD_TABLE + ".bar_capacity_id = " + SalesMainView.BOARD_BAR_CAPACITIES_TABLE + ".id";
-				}
-				this.addBoardAdditionalWhere("bar_capacity");
-				this.selectWhereQuery();
-				whereQuery += SalesMainView.BOARD_TABLE + ".bar_type_id = " + SalesMainView.BOARD_BAR_TYPES_TABLE + ".id ";
-				comboBoardBarTypes.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(SalesMainView.BOARD_BAR_TYPES_TABLE, "bar_type"))));
+				this.loadCombo(SalesMainView.BOARD_BAR_TYPES_TABLE, comboBoardBarCapacities.getSelectedItem().toString(), "bar_capacity_id", 
+						SalesMainView.BOARD_COLORS_TABLE, "bar_capacity", "bar_type_id", comboBoardBarTypes, "bar_type");
 			case "bar_type":
-				fromQuery += "," + SalesMainView.BOARD_CIRCUITS_TABLE;
-				if(!searchSelectedBoardBarType.isEmpty()) {
-					this.selectWhereQuery();
-					whereQuery += SalesMainView.BOARD_TABLE + ".bar_type_id = " + SalesMainView.BOARD_BAR_TYPES_TABLE + ".id";
-				}
-				this.addBoardAdditionalWhere("bar_type");
-				this.selectWhereQuery();
-				whereQuery += SalesMainView.BOARD_TABLE + ".circuits_id = " + SalesMainView.BOARD_CIRCUITS_TABLE + ".id ";
-				comboBoardCircuits.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(SalesMainView.BOARD_CIRCUITS_TABLE, "circuits"))));
+				this.loadCombo(SalesMainView.BOARD_CIRCUITS_TABLE, comboBoardBarTypes.getSelectedItem().toString(), "bar_type_id", 
+						SalesMainView.BOARD_BAR_TYPES_TABLE, "bar_type", "circuits_id", comboBoardCircuits, "circuits");
 			case "circuits":
-				fromQuery += "," + SalesMainView.BOARD_VOLTAGES_TABLE;
-				if(!searchSelectedBoardCircuits.isEmpty()) {
-					this.selectWhereQuery();
-					whereQuery += SalesMainView.BOARD_TABLE + ".circuits_id = " + SalesMainView.BOARD_CIRCUITS_TABLE + ".id";
-				}
-				this.addBoardAdditionalWhere("circuits");
-				this.selectWhereQuery();
-				whereQuery += SalesMainView.BOARD_TABLE + ".voltage_id = " + SalesMainView.BOARD_VOLTAGES_TABLE + ".id ";
-				comboBoardVoltages.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(SalesMainView.BOARD_VOLTAGES_TABLE, "voltage"))));
+				this.loadCombo(SalesMainView.BOARD_VOLTAGES_TABLE, comboBoardCircuits.getSelectedItem().toString(), "circuits_id", 
+						SalesMainView.BOARD_CIRCUITS_TABLE, "circuits", "voltage_id", comboBoardVoltages, "voltage");
 			case "voltage":
 				if(!fromQuery.contains(SalesMainView.BOARD_TABLE)) {
 					fromQuery += "," + SalesMainView.BOARD_TABLE;
@@ -10568,19 +11086,29 @@ public class SalesMainView extends JFrame{
 				whereQuery += SalesMainView.BOARD_TABLE + ".interruption_id = " + SalesMainView.INTERRUPTIONS_TABLE + ".id ";
 				comboBoardInterruptions.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(SalesMainView.INTERRUPTIONS_TABLE, "interruption"))));
 			case "interruption":
-				fromQuery += "," + SalesMainView.LOCK_TYPES_TABLE;
-				if(!searchSelectedBoardInterruption.isEmpty()) {
-					this.selectWhereQuery();
-					whereQuery += SalesMainView.BOARD_TABLE + ".interruption_id = " + SalesMainView.INTERRUPTIONS_TABLE + ".id";
-				}
-				this.addBoardAdditionalWhere("interruption");
-				this.selectWhereQuery();
-				whereQuery += SalesMainView.BOARD_TABLE + ".lock_type_id = " + SalesMainView.LOCK_TYPES_TABLE + ".id ";
-				comboBoardLockTypes.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(SalesMainView.LOCK_TYPES_TABLE, "lock_type"))));
+				this.loadCombo(SalesMainView.BOARD_CALIBERS_TABLE, comboBoardInterruptions.getSelectedItem().toString(), "interruption_id", 
+						SalesMainView.INTERRUPTIONS_TABLE, "interruption", "caliber_id", comboBoardCalibers, "caliber");
+			case "caliber":
+				this.loadCombo(SalesMainView.LOCK_TYPES_TABLE, comboBoardCalibers.getSelectedItem().toString(), "caliber_id", 
+						SalesMainView.BOARD_CALIBERS_TABLE, "caliber", "lock_type_id", comboBoardLockTypes, "lock_type");
 				break;
 			}
 		}
 		
+		private void loadCombo(String nextComponentTable, String actualSelectedItem, String actualIdFieldName,
+				String actualComponentTable, String actualFieldName, String nextIdFieldname, JComboBox<String> nextComponent,
+				String nextFieldName) {
+			fromQuery += "," + nextComponentTable;
+			if(!actualSelectedItem.isEmpty()) {
+				this.selectWhereQuery();
+				whereQuery += SalesMainView.BOARD_TABLE + "." + actualIdFieldName + " = " + actualComponentTable + ".id";
+			}
+			this.addBoardAdditionalWhere(actualFieldName);
+			this.selectWhereQuery();
+			whereQuery += SalesMainView.BOARD_TABLE + "." + nextIdFieldname + " = " + nextComponentTable + ".id ";
+			nextComponent.setModel(new DefaultComboBoxModel<String>(new Vector<String>(loadList(nextComponentTable, nextFieldName))));
+		}
+
 		private void loadComboBoardSwitch(String start) {
 			switch(start) {
 				case "models":
@@ -10750,6 +11278,8 @@ public class SalesMainView extends JFrame{
 				textBoardDescriptionType.setText("");
 				textBoardDescriptionInstallation.setText("");
 				textBoardDescriptionNema.setText("");
+				textBoardDescriptionSheet.setText("");
+				textBoardDescriptionColor.setText("");
 				textBoardDescriptionBarCapacity.setText("");
 				textBoardDescriptionBarType.setText("");
 				textBoardDescriptionCircuits.setText("");
@@ -10757,6 +11287,7 @@ public class SalesMainView extends JFrame{
 				textBoardDescriptionPhases.setText("");
 				textBoardDescriptionGround.setText("");
 				textBoardDescriptionInterruption.setText("");
+				textBoardDescriptionCaliber.setText("");
 				textBoardDescriptionLockType.setText("");
 				textBoardDescriptionPrice.setText("");
 				textBoardDescription.setText("");
@@ -10828,30 +11359,36 @@ public class SalesMainView extends JFrame{
 		public static final int BOARD_TYPE_COLUMN = 2;
 		public static final int BOARD_INSTALLATION_COLUMN = 3;
 		public static final int BOARD_NEMA_COLUMN = 4;
-		public static final int BOARD_BAR_CAPACITY_COLUMN = 5;
-		public static final int BOARD_BAR_TYPE_COLUMN = 6;
-		public static final int BOARD_CIRCUITS_COLUMN = 7;
-		public static final int BOARD_VOLTAGE_COLUMN = 8;
-		public static final int BOARD_PHASES_COLUMN = 9;
-		public static final int BOARD_GROUND_COLUMN = 10;
-		public static final int BOARD_INTERRUPTION_COLUMN = 11;
-		public static final int BOARD_LOCK_TYPE_COLUMN = 12;
-		public static final int BOARD_PRICE_COLUMN = 13;
+		public static final int BOARD_SHEET_COLUMN = 5;
+		public static final int BOARD_COLOR_COLUMN = 6;
+		public static final int BOARD_BAR_CAPACITY_COLUMN = 7;
+		public static final int BOARD_BAR_TYPE_COLUMN = 8;
+		public static final int BOARD_CIRCUITS_COLUMN = 9;
+		public static final int BOARD_VOLTAGE_COLUMN = 10;
+		public static final int BOARD_PHASES_COLUMN = 11;
+		public static final int BOARD_GROUND_COLUMN = 12;
+		public static final int BOARD_INTERRUPTION_COLUMN = 13;
+		public static final int BOARD_CALIBER_COLUMN = 14;
+		public static final int BOARD_LOCK_TYPE_COLUMN = 15;
+		public static final int BOARD_PRICE_COLUMN = 16;
 		
 		public static final int CONTROL_BOARD_ID_COLUMN = 0;
 		public static final int CONTROL_BOARD_NAME_COLUMN = 1;
 		public static final int CONTROL_BOARD_TYPE_COLUMN = 2;
 		public static final int CONTROL_BOARD_INSTALLATION_COLUMN = 3;
 		public static final int CONTROL_BOARD_NEMA_COLUMN = 4;
-		public static final int CONTROL_BOARD_BAR_CAPACITY_COLUMN = 5;
-		public static final int CONTROL_BOARD_BAR_TYPE_COLUMN = 6;
-		public static final int CONTROL_BOARD_CIRCUITS_COLUMN = 7;
-		public static final int CONTROL_BOARD_VOLTAGE_COLUMN = 8;
-		public static final int CONTROL_BOARD_PHASES_COLUMN = 9;
-		public static final int CONTROL_BOARD_GROUND_COLUMN = 10;
-		public static final int CONTROL_BOARD_INTERRUPTION_COLUMN = 11;
-		public static final int CONTROL_BOARD_LOCK_TYPE_COLUMN = 12;
-		public static final int CONTROL_BOARD_PRICE_COLUMN = 13;
+		public static final int CONTROL_BOARD_SHEET_COLUMN = 5;
+		public static final int CONTROL_BOARD_COLOR_COLUMN = 6;
+		public static final int CONTROL_BOARD_BAR_CAPACITY_COLUMN = 7;
+		public static final int CONTROL_BOARD_BAR_TYPE_COLUMN = 8;
+		public static final int CONTROL_BOARD_CIRCUITS_COLUMN = 9;
+		public static final int CONTROL_BOARD_VOLTAGE_COLUMN = 10;
+		public static final int CONTROL_BOARD_PHASES_COLUMN = 11;
+		public static final int CONTROL_BOARD_GROUND_COLUMN = 12;
+		public static final int CONTROL_BOARD_INTERRUPTION_COLUMN = 13;
+		public static final int CONTROL_BOARD_CALIBER_COLUMN = 14;
+		public static final int CONTROL_BOARD_LOCK_TYPE_COLUMN = 15;
+		public static final int CONTROL_BOARD_PRICE_COLUMN = 16;
 		
 		public static final int BUDGET_ID_COLUMN = 0;
 		public static final int BUDGET_CODE_COLUMN = 1;
@@ -10981,6 +11518,8 @@ public class SalesMainView extends JFrame{
 						textBoardDescriptionType.setText("");
 						textBoardDescriptionInstallation.setText("");
 						textBoardDescriptionNema.setText("");
+						textBoardDescriptionSheet.setText("");
+						textBoardDescriptionColor.setText("");
 						textBoardDescriptionBarCapacity.setText("");
 						textBoardDescriptionBarType.setText("");
 						textBoardDescriptionCircuits.setText("");
@@ -10988,6 +11527,7 @@ public class SalesMainView extends JFrame{
 						textBoardDescriptionPhases.setText("");
 						textBoardDescriptionGround.setText("");
 						textBoardDescriptionInterruption.setText("");
+						textBoardDescriptionCaliber.setText("");
 						textBoardDescriptionLockType.setText("");
 						textBoardDescriptionPrice.setText("");
 						textBoardDescription.setText("");
@@ -11002,6 +11542,8 @@ public class SalesMainView extends JFrame{
 						textBoardDescriptionType.setText((String) tableBoardsResult.getValueAt(boardsTableSelectedIndex, BOARD_TYPE_COLUMN));
 						textBoardDescriptionInstallation.setText((String) tableBoardsResult.getValueAt(boardsTableSelectedIndex, BOARD_INSTALLATION_COLUMN));
 						textBoardDescriptionNema.setText((String) tableBoardsResult.getValueAt(boardsTableSelectedIndex, BOARD_NEMA_COLUMN));
+						textBoardDescriptionSheet.setText((String) tableBoardsResult.getValueAt(boardsTableSelectedIndex, BOARD_SHEET_COLUMN));
+						textBoardDescriptionColor.setText((String) tableBoardsResult.getValueAt(boardsTableSelectedIndex, BOARD_COLOR_COLUMN));
 						textBoardDescriptionBarCapacity.setText((String) tableBoardsResult.getValueAt(boardsTableSelectedIndex, BOARD_BAR_CAPACITY_COLUMN));
 						textBoardDescriptionBarType.setText((String) tableBoardsResult.getValueAt(boardsTableSelectedIndex, BOARD_BAR_TYPE_COLUMN));
 						textBoardDescriptionCircuits.setText((String) tableBoardsResult.getValueAt(boardsTableSelectedIndex, BOARD_CIRCUITS_COLUMN));
@@ -11012,6 +11554,7 @@ public class SalesMainView extends JFrame{
 						textBoardDescriptionPhases.setText((String) tableBoardsResult.getValueAt(boardsTableSelectedIndex, BOARD_PHASES_COLUMN));
 						textBoardDescriptionGround.setText((String) tableBoardsResult.getValueAt(boardsTableSelectedIndex, BOARD_GROUND_COLUMN));
 						textBoardDescriptionInterruption.setText((String) tableBoardsResult.getValueAt(boardsTableSelectedIndex, BOARD_INTERRUPTION_COLUMN));
+						textBoardDescriptionCaliber.setText((String) tableBoardsResult.getValueAt(boardsTableSelectedIndex, BOARD_CALIBER_COLUMN));
 						textBoardDescriptionLockType.setText((String) tableBoardsResult.getValueAt(boardsTableSelectedIndex, BOARD_LOCK_TYPE_COLUMN));
 						textBoardDescriptionPrice.setText("BsF " + tableBoardsResult.getValueAt(boardsTableSelectedIndex, BOARD_PRICE_COLUMN));
 						textBoardComments.setText(db.getBoardComments(selectedBoardId));
@@ -11055,6 +11598,8 @@ public class SalesMainView extends JFrame{
 						textControlBoardDescriptionType.setText("");
 						textControlBoardDescriptionInstallation.setText("");
 						textControlBoardDescriptionNema.setText("");
+						textControlBoardDescriptionSheet.setText("");
+						textControlBoardDescriptionColor.setText("");
 						textControlBoardDescriptionBarCapacity.setText("");
 						textControlBoardDescriptionBarType.setText("");
 						textControlBoardDescriptionCircuits.setText("");
@@ -11062,6 +11607,7 @@ public class SalesMainView extends JFrame{
 						textControlBoardDescriptionPhases.setText("");
 						textControlBoardDescriptionGround.setText("");
 						textControlBoardDescriptionInterruption.setText("");
+						textControlBoardDescriptionCaliber.setText("");
 						textControlBoardDescriptionLockType.setText("");
 						textControlBoardDescriptionPrice.setText("");
 						textControlBoardDescription.setText("");
@@ -11084,6 +11630,8 @@ public class SalesMainView extends JFrame{
 						textControlBoardDescriptionType.setText((String) tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, CONTROL_BOARD_TYPE_COLUMN));
 						textControlBoardDescriptionInstallation.setText((String) tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, CONTROL_BOARD_INSTALLATION_COLUMN));
 						textControlBoardDescriptionNema.setText((String) tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, CONTROL_BOARD_NEMA_COLUMN));
+						textControlBoardDescriptionSheet.setText((String) tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, CONTROL_BOARD_SHEET_COLUMN));
+						textControlBoardDescriptionColor.setText((String) tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, CONTROL_BOARD_COLOR_COLUMN));
 						textControlBoardDescriptionBarCapacity.setText((String) tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, CONTROL_BOARD_BAR_CAPACITY_COLUMN));
 						textControlBoardDescriptionBarType.setText((String) tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, CONTROL_BOARD_BAR_TYPE_COLUMN));
 						textControlBoardDescriptionCircuits.setText((String) tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, CONTROL_BOARD_CIRCUITS_COLUMN));
@@ -11094,6 +11642,7 @@ public class SalesMainView extends JFrame{
 						textControlBoardDescriptionPhases.setText((String) tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, CONTROL_BOARD_PHASES_COLUMN));
 						textControlBoardDescriptionGround.setText((String) tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, CONTROL_BOARD_GROUND_COLUMN));
 						textControlBoardDescriptionInterruption.setText((String) tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, CONTROL_BOARD_INTERRUPTION_COLUMN));
+						textControlBoardDescriptionCaliber.setText((String) tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, CONTROL_BOARD_CALIBER_COLUMN));
 						textControlBoardDescriptionLockType.setText((String) tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, CONTROL_BOARD_LOCK_TYPE_COLUMN));
 						textControlBoardDescriptionPrice.setText("BsF " + tableControlBoardsResult.getValueAt(controlBoardsTableSelectedIndex, CONTROL_BOARD_PRICE_COLUMN));
 						textControlBoardComments.setText(db.getControlBoardComments(selectedControlBoardId));
@@ -11262,6 +11811,8 @@ public class SalesMainView extends JFrame{
 				textBoardDescriptionType.setText("");
 				textBoardDescriptionInstallation.setText("");
 				textBoardDescriptionNema.setText("");
+				textBoardDescriptionSheet.setText("");
+				textBoardDescriptionColor.setText("");
 				textBoardDescriptionBarCapacity.setText("");
 				textBoardDescriptionBarType.setText("");
 				textBoardDescriptionCircuits.setText("");
@@ -11269,6 +11820,7 @@ public class SalesMainView extends JFrame{
 				textBoardDescriptionPhases.setText("");
 				textBoardDescriptionGround.setText("");
 				textBoardDescriptionInterruption.setText("");
+				textBoardDescriptionCaliber.setText("");
 				textBoardDescriptionLockType.setText("");
 				textBoardDescriptionPrice.setText("");
 				textBoardDescription.setText("");
@@ -11285,6 +11837,8 @@ public class SalesMainView extends JFrame{
 				textControlBoardDescriptionType.setText("");
 				textControlBoardDescriptionInstallation.setText("");
 				textControlBoardDescriptionNema.setText("");
+				textControlBoardDescriptionSheet.setText("");
+				textControlBoardDescriptionColor.setText("");
 				textControlBoardDescriptionBarCapacity.setText("");
 				textControlBoardDescriptionBarType.setText("");
 				textControlBoardDescriptionCircuits.setText("");
@@ -11292,6 +11846,7 @@ public class SalesMainView extends JFrame{
 				textControlBoardDescriptionPhases.setText("");
 				textControlBoardDescriptionGround.setText("");
 				textControlBoardDescriptionInterruption.setText("");
+				textControlBoardDescriptionCaliber.setText("");
 				textControlBoardDescriptionLockType.setText("");
 				textControlBoardDescriptionPrice.setText("");
 				textControlBoardDescription.setText("");
@@ -11769,6 +12324,8 @@ public class SalesMainView extends JFrame{
 				String boardType = comboBoardAddType.getSelectedItem().toString();
 				String boardInstallation = comboBoardAddInstallation.getSelectedItem().toString();
 				String boardNema = comboBoardAddNema.getSelectedItem().toString();
+				String boardSheet = comboBoardAddSheet.getSelectedItem().toString();
+				String boardColor = comboBoardAddColor.getSelectedItem().toString();
 				String boardBarCapacity = comboBoardAddBarCapacity.getSelectedItem().toString();
 				String boardBarType = comboBoardAddBarType.getSelectedItem().toString();
 				String boardCircuits = comboBoardAddCircuits.getSelectedItem().toString();
@@ -11776,6 +12333,7 @@ public class SalesMainView extends JFrame{
 				String boardPhases = comboBoardAddPhases.getSelectedItem().toString();
 				String boardGround = (checkBoardAddGround.isSelected())?"1":"0";
 				String boardInterruption = comboBoardAddInterruption.getSelectedItem().toString();
+				String boardCaliber = comboBoardAddCaliber.getSelectedItem().toString();
 				String boardLockType = comboBoardAddLockType.getSelectedItem().toString();
 				String boardPrice = textBoardAddPrice.getText();
 				Errors err = new Errors();
@@ -11787,7 +12345,7 @@ public class SalesMainView extends JFrame{
 					err.add("El precio no puede estar vacio y solo debe contener digitos numericos");
 				}
 				if(err.isEmpty()) {
-					boolean saved = db.addBoard(boardName, boardType, boardInstallation, boardNema, Integer.valueOf(boardBarCapacity), boardBarType, Integer.valueOf(boardCircuits), boardVoltage, Integer.valueOf(boardPhases), boardGround, Integer.valueOf(boardInterruption), boardLockType, Double.valueOf(boardPrice));
+					boolean saved = db.addBoard(boardName, boardType, boardInstallation, boardNema, boardSheet, boardColor, Integer.valueOf(boardBarCapacity), boardBarType, Integer.valueOf(boardCircuits), boardVoltage, Integer.valueOf(boardPhases), boardGround, Integer.valueOf(boardInterruption), Integer.valueOf(boardCaliber), boardLockType, Double.valueOf(boardPrice));
 					if(saved) {
 						JOptionPane.showMessageDialog(null, "Tablero creado exitosamente");
 						setBoardsMode(SalesMainView.VIEW_MODE);
@@ -11845,6 +12403,30 @@ public class SalesMainView extends JFrame{
 					}
 				} else {
 					err.add("No hay ninguna nema registrada, debe registrar una primero");
+				}
+				if(comboBoardEditSheet.getItemCount() > 0) {
+					if (comboBoardEditSheet.getSelectedIndex() > -1) {
+						if (!editBoardSheet.equals(comboBoardEditSheet.getSelectedItem().toString())) {
+							listFields.add("sheet_id");
+							listValues.add("'" + db.getBoardSheetId(comboBoardEditSheet.getSelectedItem().toString()) + "'");
+						}
+					} else {
+						err.add("Debe seleccionar una lamina para el tablero");
+					}
+				} else {
+					err.add("No hay ninguna lamina registrada, debe registrar una primero");
+				}
+				if(comboBoardEditColor.getItemCount() > 0) {
+					if (comboBoardEditColor.getSelectedIndex() > -1) {
+						if (!editBoardColor.equals(comboBoardEditColor.getSelectedItem().toString())) {
+							listFields.add("color_id");
+							listValues.add("'" + db.getBoardColorId(comboBoardEditColor.getSelectedItem().toString()) + "'");
+						}
+					} else {
+						err.add("Debe seleccionar un color para el tablero");
+					}
+				} else {
+					err.add("No hay ningun color registrado, debe registrar uno primero");
 				}
 				if(comboBoardEditBarCapacity.getItemCount() > 0) {
 					if(comboBoardEditBarCapacity.getSelectedIndex() > -1) {
@@ -11937,6 +12519,22 @@ public class SalesMainView extends JFrame{
 					}
 				} else {
 					err.add("No hay ninguna interrupcion registrada, debe registrar una primero");
+				}
+				if(comboBoardEditCaliber.getItemCount() > 0) {
+					if(comboBoardEditCaliber.getSelectedIndex() > -1) {
+						if(!Numbers.isNumeric(comboBoardEditCaliber.getSelectedItem().toString())) {
+							err.add("El calibre debe ser numerico");
+						} else {
+							if (!String.valueOf(editBoardCaliber).equals(comboBoardEditCaliber.getSelectedItem().toString())) {
+								listFields.add("caliber_id");
+								listValues.add(db.getBoardCaliberId(Integer.valueOf(comboBoardEditCaliber.getSelectedItem().toString())));
+							}
+						}
+					} else {
+						err.add("Debe seleccionar el calibre para el tablero");
+					}
+				} else {
+					err.add("No hay ningun calibre registrado, debe registrar uno primero");
 				}
 				if (comboBoardEditLockType.getItemCount() > 0) {
 					if (comboBoardEditLockType.getSelectedIndex() > -1) {
@@ -12058,6 +12656,8 @@ public class SalesMainView extends JFrame{
 				String controlBoardType = comboControlBoardAddType.getSelectedItem().toString();
 				String controlBoardInstallation = comboControlBoardAddInstallation.getSelectedItem().toString();
 				String controlBoardNema = comboControlBoardAddNema.getSelectedItem().toString();
+				String controlBoardSheet = comboControlBoardAddSheet.getSelectedItem().toString();
+				String controlBoardColor = comboControlBoardAddColor.getSelectedItem().toString();
 				String controlBoardBarCapacity = comboControlBoardAddBarCapacity.getSelectedItem().toString();
 				String controlBoardBarType = comboControlBoardAddBarType.getSelectedItem().toString();
 				String controlBoardCircuits = comboControlBoardAddCircuits.getSelectedItem().toString();
@@ -12065,6 +12665,7 @@ public class SalesMainView extends JFrame{
 				String controlBoardPhases = comboControlBoardAddPhases.getSelectedItem().toString();
 				String controlBoardGround = (checkControlBoardAddGround.isSelected())?"1":"0";
 				String controlBoardInterruption = comboControlBoardAddInterruption.getSelectedItem().toString();
+				String controlBoardCaliber = comboControlBoardAddCaliber.getSelectedItem().toString();
 				String controlBoardLockType = comboControlBoardAddLockType.getSelectedItem().toString();
 				String controlBoardPrice = textControlBoardAddPrice.getText();
 				Errors err = new Errors();
@@ -12089,7 +12690,7 @@ public class SalesMainView extends JFrame{
 					err.add("Debe seleccionar una cerradura");
 				}
 				if(err.isEmpty()) {
-					boolean saved = db.addControlBoard(controlBoardName, controlBoardType, controlBoardInstallation, controlBoardNema, Integer.valueOf(controlBoardBarCapacity), controlBoardBarType, Integer.valueOf(controlBoardCircuits), controlBoardVoltage, Integer.valueOf(controlBoardPhases), controlBoardGround, Integer.valueOf(controlBoardInterruption), controlBoardLockType, Double.valueOf(controlBoardPrice));
+					boolean saved = db.addControlBoard(controlBoardName, controlBoardType, controlBoardInstallation, controlBoardNema, controlBoardSheet, controlBoardColor, Integer.valueOf(controlBoardBarCapacity), controlBoardBarType, Integer.valueOf(controlBoardCircuits), controlBoardVoltage, Integer.valueOf(controlBoardPhases), controlBoardGround, Integer.valueOf(controlBoardInterruption), Integer.valueOf(controlBoardCaliber), controlBoardLockType, Double.valueOf(controlBoardPrice));
 					if(saved) {
 						JOptionPane.showMessageDialog(null, "Tablero de control creado exitosamente");
 						setControlBoardsMode(SalesMainView.VIEW_MODE);
@@ -12147,6 +12748,30 @@ public class SalesMainView extends JFrame{
 					}
 				} else {
 					err.add("No hay ninguna nema registrada, debe registrar una primero");
+				}
+				if(comboControlBoardEditSheet.getItemCount() > 0) {
+					if (comboControlBoardEditSheet.getSelectedIndex() > -1) {
+						if (!editControlBoardSheet.equals(comboControlBoardEditSheet.getSelectedItem().toString())) {
+							listFields.add("sheet_id");
+							listValues.add("'" + db.getControlBoardSheetId(comboControlBoardEditSheet.getSelectedItem().toString()) + "'");
+						}
+					} else {
+						err.add("Debe seleccionar una lamina para el tablero");
+					}
+				} else {
+					err.add("No hay ninguna lamina registrada, debe registrar una primero");
+				}
+				if(comboControlBoardEditColor.getItemCount() > 0) {
+					if (comboControlBoardEditColor.getSelectedIndex() > -1) {
+						if (!editControlBoardColor.equals(comboControlBoardEditColor.getSelectedItem().toString())) {
+							listFields.add("color_id");
+							listValues.add("'" + db.getControlBoardColorId(comboControlBoardEditColor.getSelectedItem().toString()) + "'");
+						}
+					} else {
+						err.add("Debe seleccionar un color para el tablero");
+					}
+				} else {
+					err.add("No hay ningun color registrado, debe registrar uno primero");
 				}
 				if(comboControlBoardEditBarCapacity.getItemCount() > 0) {
 					if(comboControlBoardEditBarCapacity.getSelectedIndex() > -1) {
@@ -12259,6 +12884,27 @@ public class SalesMainView extends JFrame{
 					}
 				} else {
 					err.add("No hay ninguna interrupcion registrada, debe registrar una primero");
+				}
+				if(comboControlBoardEditCaliber.getItemCount() > 0) {
+					if(comboControlBoardEditCaliber.getSelectedIndex() > -1) {
+						if(!Numbers.isNumeric(comboControlBoardEditCaliber.getSelectedItem().toString())) {
+							err.add("El calibre debe ser numerico");
+						} else {
+							if (!String.valueOf(editControlBoardCaliber).equals(comboControlBoardEditCaliber.getSelectedItem().toString())) {
+								if (comboControlBoardEditCaliber.getSelectedItem().toString().equalsIgnoreCase("N/A")) {
+									listFields.add("caliber_id");
+									listValues.add(0);
+								} else {
+									listFields.add("caliber_id");
+									listValues.add(db.getControlBoardCaliberId(Integer.valueOf(comboControlBoardEditCaliber.getSelectedItem().toString())));
+								}
+							}
+						}
+					} else {
+						err.add("Debe seleccionar el calibre para el tablero");
+					}
+				} else {
+					err.add("No hay ningun calibre registrado, debe registrar uno primero");
 				}
 				if (comboControlBoardEditLockType.getItemCount() > 0) {
 					if (comboControlBoardEditLockType.getSelectedIndex() > -1) {

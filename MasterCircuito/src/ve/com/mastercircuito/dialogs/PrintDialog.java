@@ -144,16 +144,14 @@ public class PrintDialog extends JDialog {
 				} else if (actionCommand.equalsIgnoreCase("work_order")) {
 					String product = (String) parametersMap.get("work_order_product");
 					String addType = "";
-					if (product.equalsIgnoreCase("switch")) {
-						addType = "Interruptor";
+					if (product.equalsIgnoreCase("materials")) {
+						addType = "Materiales";
 					} else if (product.equalsIgnoreCase("box")) {
 						addType = "Caja";
 					} else if (product.equalsIgnoreCase("board")) {
 						addType = "Tablero";
 					} else if (product.equalsIgnoreCase("control_board")) {
 						addType = "TableroControl";
-					} else if (product.equalsIgnoreCase("material")) {
-						addType = "Material";
 					}
 					reportType = "OrdenTrabajo" + addType;
 					filename = reportType + " " + parametersMap.get("workorderid");

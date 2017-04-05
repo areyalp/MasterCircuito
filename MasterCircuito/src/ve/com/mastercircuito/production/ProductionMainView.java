@@ -93,6 +93,8 @@ public class ProductionMainView extends JFrame{
 	private JButton buttonProcessBudget;
 	private Integer selectedProductionOrderId, selectedWorkOrderBudgetId, selectedWorkOrderId, selectedWorkOrderProductId;
 	
+	private boolean debug = true;
+	
 	public static void main(String[] args) {
 		new ve.com.mastercircuito.production.ProductionMainView();
 	}
@@ -113,9 +115,11 @@ public class ProductionMainView extends JFrame{
 		
 		DateTime dt = new DateTime();
 		
-		if(dt.isAfter(new DateTime(2017, 04, 01, 0, 0))) {
-			JOptionPane.showMessageDialog(null, "Error, debe comunicarse con el programador");
-			System.exit(0);
+		if(!debug) {
+			if(dt.isAfter(new DateTime(2017, 04, 01, 0, 0))) {
+				JOptionPane.showMessageDialog(null, "Error, debe comunicarse con el programador");
+				System.exit(0);
+			}
 		}
 		
 		this.setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -272,7 +276,6 @@ public class ProductionMainView extends JFrame{
 			
 			@Override
 			public void keyTyped(KeyEvent e) {
-				// TODO Auto-generated method stub
 				
 			}
 			
@@ -283,7 +286,6 @@ public class ProductionMainView extends JFrame{
 			
 			@Override
 			public void keyPressed(KeyEvent e) {
-				// TODO Auto-generated method stub
 				
 			}
 		});
@@ -292,7 +294,6 @@ public class ProductionMainView extends JFrame{
 			
 			@Override
 			public void keyTyped(KeyEvent arg0) {
-				// TODO Auto-generated method stub
 				
 			}
 			
@@ -303,7 +304,6 @@ public class ProductionMainView extends JFrame{
 			
 			@Override
 			public void keyPressed(KeyEvent arg0) {
-				// TODO Auto-generated method stub
 				
 			}
 		});
@@ -312,7 +312,6 @@ public class ProductionMainView extends JFrame{
 			
 			@Override
 			public void keyTyped(KeyEvent e) {
-				// TODO Auto-generated method stub
 				
 			}
 			
@@ -323,7 +322,6 @@ public class ProductionMainView extends JFrame{
 			
 			@Override
 			public void keyPressed(KeyEvent e) {
-				// TODO Auto-generated method stub
 				
 			}
 		});
@@ -332,7 +330,6 @@ public class ProductionMainView extends JFrame{
 			
 			@Override
 			public void keyTyped(KeyEvent e) {
-				// TODO Auto-generated method stub
 				
 			}
 			
@@ -343,7 +340,6 @@ public class ProductionMainView extends JFrame{
 			
 			@Override
 			public void keyPressed(KeyEvent e) {
-				// TODO Auto-generated method stub
 				
 			}
 		});
@@ -531,25 +527,35 @@ public class ProductionMainView extends JFrame{
 		ArrayList<Product> products = new ArrayList<Product>();
 		products = Db.getProductionOrderProducts(productionOrder.getId());
 		if (!productionOrder.isProcessed() && products.size() > 0) {
+			ArrayList<Product> materials = new ArrayList<Product>();
+			for(Product product:products) {
+				if((product instanceof Switch) || (product instanceof Material)) {
+					materials.add(product);
+				}
+			}
+			if(materials.size() > 0) {
+				Integer orderId = WorkOrder.pushToDb(productionOrder.getId(), materials, user.getId());
+				model.addElement(new WorkOrder(orderId));
+			}
 			for (Product product:products) {
 				Integer orderId = 0;
-				if (product instanceof Switch) {
-					orderId = WorkOrder.pushToDb(productionOrder.getId(), product.getId(), ProductType.SWITCH_TYPE, user.getId());
-				} else if (product instanceof Box) {
+				if (product instanceof Box) {
 					orderId = WorkOrder.pushToDb(productionOrder.getId(), product.getId(), ProductType.BOX_TYPE, user.getId());
 				} else if (product instanceof Board) {
 					orderId = WorkOrder.pushToDb(productionOrder.getId(), product.getId(), ProductType.BOARD_TYPE, user.getId());
 				} else if (product instanceof ControlBoard) {
 					orderId = WorkOrder.pushToDb(productionOrder.getId(), product.getId(), ProductType.CONTROL_BOARD_TYPE, user.getId());
-				} else if (product instanceof Material) {
-					orderId = WorkOrder.pushToDb(productionOrder.getId(), product.getId(), ProductType.MATERIAL_TYPE, user.getId());
 				}
-				WorkOrder workOrder = new WorkOrder(orderId);
-				model.addElement(workOrder);
+				if(orderId > 0) {
+					model.addElement(new WorkOrder(orderId));
+				}
 			}
 			listWorkOrders.setModel(model);
 			Db.setProductionOrderProcessed(productionOrder.getId());
 		} else {
+			DefaultListModel<ProductionOrder> productionOrderModel = new DefaultListModel<ProductionOrder>();
+			productionOrderModel.addElement(productionOrder);
+			listProductionOrders.setModel(productionOrderModel);
 			ArrayList<WorkOrder> workOrders = new ArrayList<WorkOrder>();
 			workOrders = WorkOrder.pullAllFromDb(productionOrder.getId());
 			for (WorkOrder workOrder:workOrders) {
@@ -669,6 +675,8 @@ public class ProductionMainView extends JFrame{
 			} else if (listProductionOrders.getModel().getSize() > 0) {
 				ProductionOrder productionOrder = new ProductionOrder(listProductionOrders.getModel().getElementAt(0));
 				workOrder = new WorkOrder(Integer.valueOf(textSearchWorkOrder.getText()), productionOrder.getBudgetId());
+			} else {
+				workOrder = new WorkOrder(Integer.valueOf(textSearchWorkOrder.getText()));
 			}
 			
 			DefaultListModel<WorkOrder> model = new DefaultListModel<WorkOrder>();
@@ -847,16 +855,14 @@ public class ProductionMainView extends JFrame{
 					new PrintDialog(null, "Imprimir Orden de Produccion", parametersMap);
 				} else if(selectedList == ProductionMainView.LIST_WORK) {
 					String product = "";
-					if (selectedWorkOrderProductId == 1) {
-						product = "switch";
+					if (selectedWorkOrderProductId == 6) {
+						product = "materials";
 					} else if (selectedWorkOrderProductId == 2) {
 						product = "box";
 					} else if (selectedWorkOrderProductId == 3) {
 						product = "board";
 					} else if (selectedWorkOrderProductId == 4) {
 						product = "control_board";
-					} else if (selectedWorkOrderProductId == 5) {
-						product = "material";
 					}
 					Map<String, Object> parametersMap = new HashMap<String, Object>();
 					parametersMap.put("action_command", "work_order");

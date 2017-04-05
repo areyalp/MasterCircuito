@@ -177,83 +177,86 @@ public class MyTableModel extends DefaultTableModel {
 				fireTableCellUpdated(row, col);
 			}
 		} else {
-			boolean cellChanged = false;
-			@SuppressWarnings("unchecked")
-			Vector<Object> localVector = (Vector<Object>) this.dataVector.elementAt(row);
-			if(localVector.elementAt(col) != value) {
-				cellChanged = true;
-			}
-			localVector.setElementAt(value, col);
-			fireTableCellUpdated(row, col);
-			
-			String columnName = this.getColumnName(col);
-			String field = "";
-			
-			switch(columnName.toLowerCase()) {
-				case "precio":
-				case "precio costo":
-					field = "price";
-					break;
-				case "cantidad":
-					field = "quantity";
-					break;
-				case "factor":
-					field = "factor";
-					break;
-				case "%mo":
-					field = "mo";
-					break;
-				case "%gi":
-					field = "gi";
-					break;
-				case "%ga":
-					field = "ga";
-					break;
-				case "referencia":
-					field = "reference";
-					break;
-				case "descripcion":
-					field = "material";
-					break;
-				case "cliente":
-					field = "client";
-					break;
-				case "codigo cliente":
-					field = "client_code";
-					break;
-				case "representante":
-					field = "representative";
-					break;
-				case "rif":
-					field = "rif";
-					break;
-			}
-			
-			if(cellChanged && !field.isEmpty()) {
-				String sql = "";
-				switch(table) {
-					case "board_switches":
-					case "board_materials":
-					case "control_board_switches":
-					case "control_board_materials":
-					case "budget_switches":
-					case "budget_boxes":
-					case "budget_boards":
-					case "budget_control_boards":
-					case "budget_materials":
-					case "materials":
-					case "clients":
-						sql = "UPDATE " + table + " SET " + field + " = '" + value + "' WHERE id = " + localVector.elementAt(0);
-						Db.update(sql);
+			if(!editableColumns.isEmpty()) {
+				boolean cellChanged = false;
+				@SuppressWarnings("unchecked")
+				Vector<Object> localVector = (Vector<Object>) this.dataVector.elementAt(row);
+				if(localVector.elementAt(col) != value) {
+					cellChanged = true;
+				}
+				localVector.setElementAt(value, col);
+				fireTableCellUpdated(row, col);
+				
+				String columnName = this.getColumnName(col);
+				String field = "";
+				
+				switch(columnName.toLowerCase()) {
+					case "precio":
+					case "precio costo":
+						field = "price";
+						break;
+					case "cantidad":
+						field = "quantity";
+						break;
+					case "factor":
+						field = "factor";
+						break;
+					case "%mo":
+						field = "mo";
+						break;
+					case "%gi":
+						field = "gi";
+						break;
+					case "%ga":
+						field = "ga";
+						break;
+					case "referencia":
+						field = "reference";
+						break;
+					case "descripcion":
+						field = "material";
+						break;
+					case "cliente":
+						field = "client";
+						break;
+					case "codigo cliente":
+						field = "client_code";
+						break;
+					case "representante":
+						field = "representative";
+						break;
+					case "rif":
+						field = "rif";
 						break;
 				}
-				Db db = new Db();
-				this.setDataVector(convertToVector(db.fetchAll(db.select(query))), this.columnIdentifiers);
-				fireTableDataChanged();
-				try {
-					db.getConnection().close();
-				} catch (SQLException e) {
-					e.printStackTrace();
+				
+				if(cellChanged && !field.isEmpty()) {
+					String sql = "";
+					Db db = new Db();
+					switch(table) {
+						case "board_switches":
+						case "board_materials":
+						case "control_board_switches":
+						case "control_board_materials":
+						case "budget_switches":
+						case "budget_boxes":
+						case "budget_boards":
+						case "budget_control_boards":
+						case "budget_materials":
+						case "materials":
+						case "clients":
+							sql = "UPDATE " + table + " SET " + field + " = '" + value + "' WHERE id = " + localVector.elementAt(0);
+							Db.update(sql);
+							this.setDataVector(convertToVector(db.fetchAll(db.select(query))), this.columnIdentifiers);
+							fireTableDataChanged();
+							break;
+					}
+					
+					try {
+						db.getConnection().close();
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		}

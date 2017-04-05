@@ -157,7 +157,35 @@ public class WorkOrder {
 	public static int pushToDb(int productionOrderId, int productId, int productTypeId, int userId) {
 		Db db = new Db();
 		db.insert("INSERT INTO work_orders (production_order_id, product_id, product_type_id, creator_id) VALUES (" + productionOrderId + ", " + productId + ", " + productTypeId + ", " + userId + ")");
+		try {
+			db.getConnection().close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		return db.getInsertId();
+	}
+	
+	public static Integer pushToDb(int productionOrderId, ArrayList<Product> materials, Integer userId) {
+		Db db = new Db();
+		String rows = "";
+		Integer orderId = WorkOrder.pushToDb(productionOrderId, 0, 6, userId);
+		for(Product product:materials) {
+			Integer productTypeId = (product instanceof Switch)?1:5;
+			rows += "('" + orderId + "', '" + productTypeId + "', '" + product.getId() + "'),";
+		}
+		// Check line below
+		String lastChar = rows.substring(rows.length() - 1);
+		if(lastChar.equalsIgnoreCase(",")) {
+			rows = rows.substring(0, rows.length() - 1);
+		}
+		db.insert("INSERT INTO work_order_products (work_order_id, type_id, product_id) "
+				+ "VALUES " + rows);
+		try {
+			db.getConnection().close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return orderId;
 	}
 
 	public static WorkOrder pullFromDb(int orderId) {
