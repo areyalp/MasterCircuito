@@ -337,14 +337,15 @@ public class SwitchDialog extends JDialog {
 				fromQuery = "switches, switch_models ";
 				searchSelectedSwitchBrand = comboSwitchBrands.getSelectedItem().toString();
 				this.clearSelectedSwitchOptions("model");
+				this.selectWhereQuery();
 				if(!searchSelectedSwitchBrand.equalsIgnoreCase("Todas")) {
 					fromQuery += ", switch_brands ";
-					whereQuery = "WHERE switches.brand_id = switch_brands.id "
+					whereQuery += " switches.brand_id = switch_brands.id "
 									+ "AND switch_models.brand_id = switch_brands.id "
 									+ "AND switch_models.id = switches.model_id "
 									+ "AND switch_brands.brand = '"+searchSelectedSwitchBrand+"' ";
 				} else {
-					whereQuery = "WHERE switch_models.id = switches.model_id ";
+					whereQuery += " switch_models.id = switches.model_id ";
 				}
 				this.addSwitchCommonQuery();
 				this.loadComboSwitch("models");
@@ -355,7 +356,8 @@ public class SwitchDialog extends JDialog {
 				this.clearSelectedSwitchOptions("phases");
 				if(!searchSelectedSwitchModel.equalsIgnoreCase("Todas")) {
 					fromQuery += ", switch_models ";
-					whereQuery = "WHERE switches.model_id = switch_models.id "
+					this.selectWhereQuery();
+					whereQuery += " switches.model_id = switch_models.id "
 									+ "AND switch_models.model = '"+searchSelectedSwitchModel+"' ";
 				} else {
 					whereQuery = "";
@@ -394,7 +396,7 @@ public class SwitchDialog extends JDialog {
 		}
 		
 		private void dynamicSearch() {
-			whereQuery = "";
+			String whereQuery = "";
 			if(searchSelectedSwitchBrand != null && !searchSelectedSwitchBrand.equalsIgnoreCase("Todas") &&
 					!searchSelectedSwitchBrand.isEmpty()) {
 				whereQuery += " AND switch_brands.brand = '" + searchSelectedSwitchBrand + "'";
@@ -424,7 +426,7 @@ public class SwitchDialog extends JDialog {
 				tableSwitchesSearchResult.setModel(new DefaultTableModel());
 			}
 		}
-		
+
 		private void clearSelectedSwitchOptions(String start) {
 			switch(start) {
 				case "model":

@@ -116,7 +116,7 @@ public class ProductionMainView extends JFrame{
 		DateTime dt = new DateTime();
 		
 		if(!debug) {
-			if(dt.isAfter(new DateTime(2017, 04, 01, 0, 0))) {
+			if(dt.isAfter(new DateTime(2017, 06, 01, 0, 0))) {
 				JOptionPane.showMessageDialog(null, "Error, debe comunicarse con el programador");
 				System.exit(0);
 			}

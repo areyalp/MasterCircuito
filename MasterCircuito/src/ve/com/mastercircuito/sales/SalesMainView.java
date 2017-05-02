@@ -31,15 +31,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.net.URL;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Vector;
-
 import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
@@ -48,6 +49,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDesktopPane;
 import javax.swing.JDialog;
+import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -307,7 +309,8 @@ public class SalesMainView extends JFrame{
 		private JTextField textBoardSearchNames;
 		private JComboBox<String> comboBoardTypes, comboBoardInstallations, comboBoardNemas, comboBoardSheets, comboBoardColors, comboBoardBarCapacities, comboBoardBarTypes, comboBoardCircuits, comboBoardVoltages, comboBoardPhases, comboBoardGround, comboBoardInterruptions, comboBoardCalibers, comboBoardLockTypes;
 		private String searchSelectedBoardType = "", searchSelectedBoardInstallation = "", searchSelectedBoardNema = "", searchSelectedBoardSheet = "", searchSelectedBoardColor = "", searchSelectedBoardBarCapacity = "", searchSelectedBoardBarType = "", searchSelectedBoardCircuits = "", searchSelectedBoardVoltage = "", searchSelectedBoardPhases = "", searchSelectedBoardGround = "", searchSelectedBoardInterruption = "", searchSelectedBoardCaliber = "", searchSelectedBoardLockType = "";
-		private JTextField textBoardDescriptionName, textBoardDescriptionType, textBoardDescriptionInstallation, textBoardDescriptionNema, textBoardDescriptionSheet, textBoardDescriptionColor, textBoardDescriptionBarCapacity, textBoardDescriptionBarType, textBoardDescriptionCircuits, textBoardDescriptionVoltage, textBoardDescriptionPhases, textBoardDescriptionGround, textBoardDescriptionInterruption, textBoardDescriptionCaliber, textBoardDescriptionLockType, textBoardDescriptionPrice;
+		private JTextField textBoardDescriptionName, textBoardDescriptionType, textBoardDescriptionInstallation, textBoardDescriptionNema, textBoardDescriptionSheet, textBoardDescriptionColor, textBoardDescriptionBarCapacity, textBoardDescriptionBarType, textBoardDescriptionCircuits, textBoardDescriptionVoltage, textBoardDescriptionPhases, textBoardDescriptionGround, textBoardDescriptionInterruption, textBoardDescriptionCaliber, textBoardDescriptionLockType;
+		private JFormattedTextField textBoardDescriptionPrice;
 		private JTextArea textBoardDescription;
 		private JLabel labelBoardCopy;
 	// Board Table Objects
@@ -452,7 +455,7 @@ public class SalesMainView extends JFrame{
 		private JTable tableBudgetsResult;
 		private ListSelectionModel listBudgetSelectionModel;
 		private JTextField textBudgetSearchId;
-		private JPanel panelBudgetDescription, panelWrapperBudgetDescription;
+		private JPanel panelBudgetDescriptionTop, panelBudgetDescriptionMiddleTop, panelBudgetDescriptionBottom, panelWrapperBudgetDescription;
 		private JPanel panelBudgetAddNew, panelBudgetEdit;
 		private JTextField textBudgetDescriptionId, textBudgetSearchClient,textBudgetDescriptionCode;
 		private JTextField textBudgetDescriptionDate, textBudgetDescriptionExpiryDays;
@@ -556,6 +559,12 @@ public class SalesMainView extends JFrame{
 		private JButton buttonBudgetNotesEdit, buttonBudgetNotesEditSave, buttonBudgetNotesEditCancel;
 		
 		boolean debugging = true;
+		private JPanel panelBudgetDescriptionWrapper;
+		private JPanel panelBudgetDescriptionMiddleBottom;
+		private JPanel panelBoardDescriptionTop;
+		private JPanel panelBoardDescriptionMiddleTop;
+		private JPanel panelBoardDescriptionMiddleBottom;
+		private JPanel panelBoardDescriptionBottom;
 		
 	public static void main(String[] args) {
 			new SalesMainView();
@@ -632,7 +641,7 @@ public class SalesMainView extends JFrame{
 		DateTime dt = new DateTime();
 		
 		if(!debugging) {
-			if(dt.isAfter(new DateTime(2017, 04, 01, 0, 0))) {
+			if(dt.isAfter(new DateTime(2017, 06, 01, 0, 0))) {
 				JOptionPane.showMessageDialog(null, "Error, debe comunicarse con el programador");
 				try {
 					throw new Exception("Outdated");
@@ -3949,7 +3958,7 @@ public class SalesMainView extends JFrame{
 				textBoardDescriptionGround.setText("");
 				textBoardDescriptionInterruption.setText("");
 				textBoardDescriptionLockType.setText("");
-				textBoardDescriptionPrice.setText("");
+				textBoardDescriptionPrice.setValue(new Double(0.00));
 				textBoardDescription.setText("");
 				buttonBoardAdd.setEnabled(true);
 				buttonBoardEdit.setEnabled(false);
@@ -4238,7 +4247,9 @@ public class SalesMainView extends JFrame{
 	
 	private JPanel createBoardSwitchesTablePanel() {
 		tableBoardSwitchesResult = new JTable();
-		tableBoardSwitchesResult.setModel(new MyTableModel(new Object[0][boardSwitchesColumnNames.length-1], boardSwitchesColumnNames, "board_switches", new HashSet<Integer>()));
+		HashSet<Integer> editableColumns = new HashSet<Integer>();
+		editableColumns.add(new Integer(5));
+		tableBoardSwitchesResult.setModel(new MyTableModel(new Object[0][boardSwitchesColumnNames.length-1], boardSwitchesColumnNames, "board_switches", editableColumns));
 		tableBoardSwitchesResult.setAutoCreateRowSorter(true);
 		tableBoardSwitchesResult.getTableHeader().setReorderingAllowed(false);
 		
@@ -4340,7 +4351,22 @@ public class SalesMainView extends JFrame{
 	}
 	
 	private JPanel createBoardDescriptionPanel() {
-		JPanel descriptionPanel = new JPanel(new GridBagLayout());
+		JPanel panelBoardDescriptionWrapper = new JPanel();
+		panelBoardDescriptionWrapper.setLayout(new GridBagLayout());
+		
+		JPanel panelWrapper = new JPanel(new BorderLayout(20, 20));
+		
+		panelBoardDescriptionTop = new JPanel();
+		panelBoardDescriptionTop.setLayout(new FlowLayout(FlowLayout.LEADING));
+		
+		panelBoardDescriptionMiddleTop = new JPanel();
+		panelBoardDescriptionMiddleTop.setLayout(new FlowLayout(FlowLayout.LEADING));
+		
+		panelBoardDescriptionMiddleBottom = new JPanel();
+		panelBoardDescriptionMiddleBottom.setLayout(new FlowLayout(FlowLayout.LEADING));
+		
+		panelBoardDescriptionBottom = new JPanel();
+		panelBoardDescriptionBottom.setLayout(new FlowLayout(FlowLayout.LEADING));
 		
 		GridBagConstraints cs = new GridBagConstraints();
 		
@@ -4348,228 +4374,157 @@ public class SalesMainView extends JFrame{
 		cs.insets = new Insets(0, 0, 5, 5);
 		
 		JLabel labelName = new JLabel("Nombre:");
-		cs.gridx = 0;
-		cs.gridy = 0;
-		cs.gridwidth = 1;
-		descriptionPanel.add(labelName, cs);
+		panelBoardDescriptionTop.add(labelName);
 		
-		textBoardDescriptionName = new JTextField("", 10);
+		textBoardDescriptionName = new JTextField("", 15);
 		textBoardDescriptionName.setEditable(false);
-		cs.gridx = 1;
-		cs.gridy = 0;
-		cs.gridwidth = 10;
-		descriptionPanel.add(textBoardDescriptionName, cs);
+		panelBoardDescriptionTop.add(textBoardDescriptionName);
 		
 		JLabel labelType = new JLabel("Tipo:");
-		cs.gridx = 11;
-		cs.gridy = 0;
-		cs.gridwidth = 1;
-		descriptionPanel.add(labelType, cs);
+		panelBoardDescriptionTop.add(labelType);
 		
 		textBoardDescriptionType = new JTextField("", 10);
 		textBoardDescriptionType.setEditable(false);
-		cs.gridx = 12;
-		cs.gridy = 0;
-		cs.gridwidth = 10;
-		descriptionPanel.add(textBoardDescriptionType, cs);
+		panelBoardDescriptionTop.add(textBoardDescriptionType);
 		
 		JLabel labelInstallation = new JLabel("Instalacion:");
-		cs.gridx = 22;
-		cs.gridy = 0;
-		cs.gridwidth = 1;
-		descriptionPanel.add(labelInstallation, cs);
+		panelBoardDescriptionTop.add(labelInstallation);
 		
 		textBoardDescriptionInstallation = new JTextField("", 8);
 		textBoardDescriptionInstallation.setEditable(false);
-		cs.gridx = 23;
-		cs.gridy = 0;
-		cs.gridwidth = 8;
-		descriptionPanel.add(textBoardDescriptionInstallation, cs);
+		panelBoardDescriptionTop.add(textBoardDescriptionInstallation);
 		
 		JLabel labelNema = new JLabel("Nema:");
-		cs.gridx = 31;
-		cs.gridy = 0;
-		cs.gridwidth = 1;
-		descriptionPanel.add(labelNema, cs);
+		panelBoardDescriptionTop.add(labelNema);
 		
 		
-		textBoardDescriptionNema = new JTextField("", 4);
+		textBoardDescriptionNema = new JTextField("", 2);
 		textBoardDescriptionNema.setEditable(false);
-		cs.gridx = 32;
+		panelBoardDescriptionTop.add(textBoardDescriptionNema);
+		
+		cs.gridx = 0;
 		cs.gridy = 0;
-		cs.gridwidth = 4;
-		descriptionPanel.add(textBoardDescriptionNema, cs);
+		cs.gridwidth = 5;
+		panelBoardDescriptionWrapper.add(panelBoardDescriptionTop, cs);
 		
 		JLabel labelSheet = new JLabel("Lamina:");
-		cs.gridx = 36;
-		cs.gridy = 0;
-		cs.gridwidth = 1;
-		descriptionPanel.add(labelSheet, cs);
+		panelBoardDescriptionMiddleTop.add(labelSheet);
 		
 		textBoardDescriptionSheet = new JTextField("", 10);
 		textBoardDescriptionSheet.setEditable(false);
-		cs.gridx = 37;
-		cs.gridy = 0;
-		cs.gridwidth = 10;
-		descriptionPanel.add(textBoardDescriptionSheet, cs);
+		panelBoardDescriptionMiddleTop.add(textBoardDescriptionSheet);
 		
 		JLabel labelColor = new JLabel("Color:");
-		cs.gridx = 47;
-		cs.gridy = 0;
-		cs.gridwidth = 1;
-		descriptionPanel.add(labelColor, cs);
+		panelBoardDescriptionMiddleTop.add(labelColor);
 		
 		textBoardDescriptionColor = new JTextField("", 8);
 		textBoardDescriptionColor.setEditable(false);
-		cs.gridx = 48;
-		cs.gridy = 0;
-		cs.gridwidth = 8;
-		descriptionPanel.add(textBoardDescriptionColor, cs);
+		panelBoardDescriptionMiddleTop.add(textBoardDescriptionColor);
 		
 		JLabel labelBarCapacity = new JLabel("Cap. Barra:");
-		cs.gridx = 0;
-		cs.gridy = 1;
-		cs.gridwidth = 1;
-		descriptionPanel.add(labelBarCapacity, cs);
+		panelBoardDescriptionMiddleTop.add(labelBarCapacity);
 		
 		textBoardDescriptionBarCapacity = new JTextField("", 4);
 		textBoardDescriptionBarCapacity.setEditable(false);
-		cs.gridx = 1;
-		cs.gridy = 1;
-		cs.gridwidth = 4;
-		descriptionPanel.add(textBoardDescriptionBarCapacity, cs);
+		panelBoardDescriptionMiddleTop.add(textBoardDescriptionBarCapacity);
 		
 		JLabel labelBarType = new JLabel("Tipo Barra:");
-		cs.gridx = 5;
-		cs.gridy = 1;
-		cs.gridwidth = 1;
-		descriptionPanel.add(labelBarType, cs);
+		panelBoardDescriptionMiddleTop.add(labelBarType);
 		
-		textBoardDescriptionBarType = new JTextField("", 8);
+		textBoardDescriptionBarType = new JTextField("", 6);
 		textBoardDescriptionBarType.setEditable(false);
-		cs.gridx = 6;
+		panelBoardDescriptionMiddleTop.add(textBoardDescriptionBarType);
+		
+		cs.gridx = 0;
 		cs.gridy = 1;
-		cs.gridwidth = 8;
-		descriptionPanel.add(textBoardDescriptionBarType, cs);
+		cs.gridwidth = 5;
+		panelBoardDescriptionWrapper.add(panelBoardDescriptionMiddleTop, cs);
 		
 		JLabel labelCircuits = new JLabel("Circuitos:");
-		cs.gridx = 14;
-		cs.gridy = 1;
-		cs.gridwidth = 1;
-		descriptionPanel.add(labelCircuits, cs);
+		panelBoardDescriptionMiddleBottom.add(labelCircuits);
 		
-		textBoardDescriptionCircuits = new JTextField("", 8);
+		textBoardDescriptionCircuits = new JTextField("", 3);
 		textBoardDescriptionCircuits.setEditable(false);
-		cs.gridx = 15;
-		cs.gridy = 1;
-		cs.gridwidth = 8;
-		descriptionPanel.add(textBoardDescriptionCircuits, cs);
+		panelBoardDescriptionMiddleBottom.add(textBoardDescriptionCircuits);
 		
 		JLabel labelVoltage = new JLabel("Voltaje:");
-		cs.gridx = 23;
-		cs.gridy = 1;
-		cs.gridwidth = 1;
-		descriptionPanel.add(labelVoltage, cs);
+		panelBoardDescriptionMiddleBottom.add(labelVoltage);
 		
 		textBoardDescriptionVoltage = new JTextField("", 8);
 		textBoardDescriptionVoltage.setEditable(false);
-		cs.gridx = 24;
-		cs.gridy = 1;
-		cs.gridwidth = 8;
-		descriptionPanel.add(textBoardDescriptionVoltage, cs);
+		panelBoardDescriptionMiddleBottom.add(textBoardDescriptionVoltage);
 		
 		JLabel labelPhases = new JLabel("Fases:");
-		cs.gridx = 32;
-		cs.gridy = 1;
-		cs.gridwidth = 1;
-		descriptionPanel.add(labelPhases, cs);
+		panelBoardDescriptionMiddleBottom.add(labelPhases);
 		
-		textBoardDescriptionPhases = new JTextField("", 4);
+		textBoardDescriptionPhases = new JTextField("", 2);
 		textBoardDescriptionPhases.setEditable(false);
-		cs.gridx = 33;
-		cs.gridy = 1;
-		cs.gridwidth = 4;
-		descriptionPanel.add(textBoardDescriptionPhases, cs);
+		panelBoardDescriptionMiddleBottom.add(textBoardDescriptionPhases);
 		
 		JLabel labelGround = new JLabel("Tierra:");
-		cs.gridx = 37;
-		cs.gridy = 1;
-		cs.gridwidth = 1;
-		descriptionPanel.add(labelGround, cs);
+		panelBoardDescriptionMiddleBottom.add(labelGround);
 		
-		textBoardDescriptionGround = new JTextField("", 4);
+		textBoardDescriptionGround = new JTextField("", 2);
 		textBoardDescriptionGround.setEditable(false);
-		cs.gridx = 38;
-		cs.gridy = 1;
-		cs.gridwidth = 4;
-		descriptionPanel.add(textBoardDescriptionGround, cs);
+		panelBoardDescriptionMiddleBottom.add(textBoardDescriptionGround);
 		
 		JLabel labelInterruption = new JLabel("Interrupcion:");
-		cs.gridx = 42;
-		cs.gridy = 1;
-		cs.gridwidth = 1;
-		descriptionPanel.add(labelInterruption, cs);
+		panelBoardDescriptionMiddleBottom.add(labelInterruption);
 		
-		textBoardDescriptionInterruption = new JTextField("", 4);
+		textBoardDescriptionInterruption = new JTextField("", 3);
 		textBoardDescriptionInterruption.setEditable(false);
-		cs.gridx = 43;
-		cs.gridy = 1;
-		cs.gridwidth = 4;
-		descriptionPanel.add(textBoardDescriptionInterruption, cs);
+		panelBoardDescriptionMiddleBottom.add(textBoardDescriptionInterruption);
 		
 		JLabel labelCaliber = new JLabel("Calibre:");
-		cs.gridx = 47;
-		cs.gridy = 1;
-		cs.gridwidth = 1;
-		descriptionPanel.add(labelCaliber, cs);
+		panelBoardDescriptionMiddleBottom.add(labelCaliber);
 		
-		textBoardDescriptionCaliber = new JTextField("", 4);
+		textBoardDescriptionCaliber = new JTextField("", 3);
 		textBoardDescriptionCaliber.setEditable(false);
-		cs.gridx = 48;
-		cs.gridy = 1;
-		cs.gridwidth = 4;
-		descriptionPanel.add(textBoardDescriptionCaliber, cs);
+		panelBoardDescriptionMiddleBottom.add(textBoardDescriptionCaliber);
 		
-		JLabel labelLockType = new JLabel("Cerradura:");
 		cs.gridx = 0;
 		cs.gridy = 2;
-		cs.gridwidth = 1;
-		descriptionPanel.add(labelLockType, cs);
+		cs.gridwidth = 5;
+		panelBoardDescriptionWrapper.add(panelBoardDescriptionMiddleBottom, cs);
 		
-		textBoardDescriptionLockType = new JTextField("", 8);
+		JLabel labelLockType = new JLabel("Cerradura:");
+		panelBoardDescriptionBottom.add(labelLockType);
+		
+		textBoardDescriptionLockType = new JTextField("", 15);
 		textBoardDescriptionLockType.setEditable(false);
-		cs.gridx = 1;
-		cs.gridy = 2;
-		cs.gridwidth = 8;
-		descriptionPanel.add(textBoardDescriptionLockType, cs);
+		panelBoardDescriptionBottom.add(textBoardDescriptionLockType);
 		
 		JLabel labelPrice = new JLabel("Precio:");
-		cs.gridx = 9;
-		cs.gridy = 2;
-		cs.gridwidth = 1;
-		descriptionPanel.add(labelPrice, cs);
+		panelBoardDescriptionBottom.add(labelPrice);
 		
-		textBoardDescriptionPrice = new JTextField("", 8);
+		NumberFormat format = NumberFormat.getCurrencyInstance(new Locale("es", "VE"));
+//		Currency bsf = Currency.getInstance("VEF");
+//		format.setCurrency(bsf);
+		
+		textBoardDescriptionPrice = new JFormattedTextField(format);
+		textBoardDescriptionPrice.setColumns(15);
 		textBoardDescriptionPrice.setEditable(false);
-		cs.gridx = 10;
-		cs.gridy = 2;
-		cs.gridwidth = 8;
-		descriptionPanel.add(textBoardDescriptionPrice, cs);
+		panelBoardDescriptionBottom.add(textBoardDescriptionPrice);
+		
+		cs.gridx = 0;
+		cs.gridy = 3;
+		cs.gridwidth = 5;
+		panelBoardDescriptionWrapper.add(panelBoardDescriptionBottom, cs);
 		
 		JLabel labelDescription = new JLabel("Descripcion:");
 		cs.gridx = 0;
-		cs.gridy = 3;
+		cs.gridy = 4;
 		cs.gridwidth = 1;
-		descriptionPanel.add(labelDescription, cs);
+		panelBoardDescriptionWrapper.add(labelDescription, cs);
 		
 		textBoardDescription = new JTextArea(1, 26);
 		textBoardDescription.setEditable(false);
 		textBoardDescription.setLineWrap(true);
 		textBoardDescription.setWrapStyleWord(true);
-		cs.gridx = 0;
+		cs.gridx = 1;
 		cs.gridy = 4;
-		cs.gridwidth = 26;
-		descriptionPanel.add(textBoardDescription, cs);
+		cs.gridwidth = 4;
+		panelBoardDescriptionWrapper.add(textBoardDescription, cs);
 		
 		SearchButtonListener lForButton = new SearchButtonListener();
 		
@@ -4578,22 +4533,31 @@ public class SalesMainView extends JFrame{
 		buttonCopy.setActionCommand("board.description.copy");
 		cs.gridx = 0;
 		cs.gridy = 5;
-		cs.gridwidth = 4;
-		descriptionPanel.add(buttonCopy, cs);
+		cs.gridwidth = 1;
+		panelBoardDescriptionWrapper.add(buttonCopy, cs);
 		
 		labelBoardCopy = new JLabel("");
-		cs.gridx = 4;
+		cs.gridx = 1;
 		cs.gridy = 5;
-		cs.gridwidth = 12;
-		descriptionPanel.add(labelBoardCopy, cs);
+		cs.gridwidth = 4;
+		panelBoardDescriptionWrapper.add(labelBoardCopy, cs);
 		
-		return descriptionPanel;
+		panelWrapper.add(panelBoardDescriptionWrapper, BorderLayout.CENTER);
+		
+		return panelWrapper;
 	}
 	
 	private JPanel createBoardAddPanel() {
+		JPanel wrapperPanel = new JPanel(new BorderLayout());
 		JPanel addPanel = new JPanel(new GridBagLayout());
+		
+		JPanel panelAddBoardTop = new JPanel(new FlowLayout(FlowLayout.LEADING));
+		JPanel panelAddBoardMiddleTop = new JPanel(new FlowLayout(FlowLayout.LEADING));
+		JPanel panelAddBoardMiddleBottom = new JPanel(new FlowLayout(FlowLayout.LEADING));
+		JPanel panelAddBoardBottom = new JPanel(new FlowLayout(FlowLayout.LEADING));
+		
 		ComboBoxListener lForCombo = new ComboBoxListener();
-		new TextFieldListener();
+		
 		GridBagConstraints cs = new GridBagConstraints();
 	
 		cs.fill = GridBagConstraints.HORIZONTAL;
@@ -4650,218 +4614,145 @@ public class SalesMainView extends JFrame{
 				+ "GROUP BY lock_types.lock_type";
 		
 		JLabel labelName = new JLabel("Nombre:");
-		cs.gridx = 0;
-		cs.gridy = 0;
-		cs.gridwidth = 1;
-		addPanel.add(labelName, cs);
+		panelAddBoardTop.add(labelName);
 		
-		textBoardAddName = new JTextField(6);
-		cs.gridx = 1;
-		cs.gridy = 0;
-		cs.gridwidth = 6;
-		addPanel.add(textBoardAddName, cs);
+		textBoardAddName = new JTextField(10);
+		panelAddBoardTop.add(textBoardAddName);
 		
 		JLabel labelType = new JLabel("Tipo:");
-		cs.gridx = 7;
-		cs.gridy = 0;
-		cs.gridwidth = 1;
-		addPanel.add(labelType, cs);
+		panelAddBoardTop.add(labelType);
 		
 		comboBoardAddType = new JComboBox<String>(new Vector<String>(loadComboList(queryTypes, "type")));
 		comboBoardAddType.removeItem("Todas");
 		comboBoardAddType.setActionCommand("board.description.add.type");
 		comboBoardAddType.addActionListener(lForCombo);
-		cs.gridx = 8;
-		cs.gridy = 0;
-		cs.gridwidth = 6;
-		addPanel.add(comboBoardAddType, cs);
+		panelAddBoardTop.add(comboBoardAddType);
 		
 		JLabel labelInstallation = new JLabel("Instalacion:");
-		cs.gridx = 14;
-		cs.gridy = 0;
-		cs.gridwidth = 1;
-		addPanel.add(labelInstallation, cs);
+		panelAddBoardTop.add(labelInstallation);
 		
 		comboBoardAddInstallation = new JComboBox<String>(new Vector<String>(loadComboList(queryInstallations, "installation")));
 		comboBoardAddInstallation.removeItem("Todas");
-		cs.gridx = 15;
-		cs.gridy = 0;
-		cs.gridwidth = 2;
-		addPanel.add(comboBoardAddInstallation, cs);
+		panelAddBoardTop.add(comboBoardAddInstallation);
 		
 		JLabel labelNema = new JLabel("Nema:");
-		cs.gridx = 17;
-		cs.gridy = 0;
-		cs.gridwidth = 1;
-		addPanel.add(labelNema, cs);
+		panelAddBoardTop.add(labelNema);
 		
 		comboBoardAddNema = new JComboBox<String>(new Vector<String>(loadComboList(queryNemas, "nema")));
 		comboBoardAddNema.removeItem("Todas");
 		comboBoardAddNema.setActionCommand("board.description.add.nema");
 		comboBoardAddNema.addActionListener(lForCombo);
-		cs.gridx = 18;
+		panelAddBoardTop.add(comboBoardAddNema);
+		
+		cs.gridx = 0;
 		cs.gridy = 0;
-		cs.gridwidth = 8;
-		addPanel.add(comboBoardAddNema, cs);
+		cs.gridwidth = 5;
+		addPanel.add(panelAddBoardTop, cs);
 		
 		JLabel labelSheet = new JLabel("Lamina:");
-		cs.gridx = 26;
-		cs.gridy = 0;
-		cs.gridwidth = 1;
-		addPanel.add(labelSheet, cs);
+		panelAddBoardMiddleTop.add(labelSheet);
 		
 		comboBoardAddSheet = new JComboBox<String>(new Vector<String>(loadComboList(querySheets, "sheet")));
 		comboBoardAddSheet.removeItem("Todas");
 		comboBoardAddSheet.setActionCommand("board.description.add.sheet");
 		comboBoardAddSheet.addActionListener(lForCombo);
-		cs.gridx = 27;
-		cs.gridy = 0;
-		cs.gridwidth = 8;
-		addPanel.add(comboBoardAddSheet, cs);
+		panelAddBoardMiddleTop.add(comboBoardAddSheet);
 		
 		JLabel labelColor = new JLabel("Color:");
-		cs.gridx = 35;
-		cs.gridy = 0;
-		cs.gridwidth = 1;
-		addPanel.add(labelColor, cs);
+		panelAddBoardMiddleTop.add(labelColor);
 		
 		comboBoardAddColor = new JComboBox<String>(new Vector<String>(loadComboList(queryColors, "color")));
 		comboBoardAddColor.removeItem("Todas");
 		comboBoardAddColor.setActionCommand("board.description.add.color");
 		comboBoardAddColor.addActionListener(lForCombo);
-		cs.gridx = 36;
-		cs.gridy = 0;
-		cs.gridwidth = 8;
-		addPanel.add(comboBoardAddColor, cs);
+		panelAddBoardMiddleTop.add(comboBoardAddColor);
 		
 		JLabel labelBarCapacity = new JLabel("Cap. Barra:");
-		cs.gridx = 44;
-		cs.gridy = 0;
-		cs.gridwidth = 1;
-		addPanel.add(labelBarCapacity, cs);
+		panelAddBoardMiddleTop.add(labelBarCapacity);
 		
 		comboBoardAddBarCapacity = new JComboBox<String>(new Vector<String>(loadComboList(queryBarCapacities, "bar_capacity")));
 		comboBoardAddBarCapacity.removeItem("Todas");
-		cs.gridx = 45;
-		cs.gridy = 0;
-		cs.gridwidth = 2;
-		addPanel.add(comboBoardAddBarCapacity, cs);
+		panelAddBoardMiddleTop.add(comboBoardAddBarCapacity);
 		
 		JLabel labelBarType = new JLabel("Tipo Barra:");
-		cs.gridx = 47;
-		cs.gridy = 0;
-		cs.gridwidth = 1;
-		addPanel.add(labelBarType, cs);
+		panelAddBoardMiddleTop.add(labelBarType);
 		
 		comboBoardAddBarType = new JComboBox<String>(new Vector<String>(loadComboList(queryBarTypes, "bar_type")));
 		comboBoardAddBarType.removeItem("Todas");
-		cs.gridx = 48;
-		cs.gridy = 0;
-		cs.gridwidth = 6;
-		addPanel.add(comboBoardAddBarType, cs);
+		panelAddBoardMiddleTop.add(comboBoardAddBarType);
+		
+		cs.gridx = 0;
+		cs.gridy = 1;
+		cs.gridwidth = 5;
+		addPanel.add(panelAddBoardMiddleTop, cs);
 		
 		JLabel labelCircuits = new JLabel("Circuitos:");
-		cs.gridx = 54;
-		cs.gridy = 0;
-		cs.gridwidth = 1;
-		addPanel.add(labelCircuits, cs);
+		panelAddBoardMiddleBottom.add(labelCircuits);
 		
 		comboBoardAddCircuits = new JComboBox<String>(new Vector<String>(loadComboList(queryCircuits, "circuits")));
 		comboBoardAddCircuits.removeItem("Todas");
 		comboBoardAddCircuits.setActionCommand("board.description.add.circuits");
 		comboBoardAddCircuits.addActionListener(lForCombo);
-		cs.gridx = 55;
-		cs.gridy = 0;
-		cs.gridwidth = 6;
-		addPanel.add(comboBoardAddCircuits, cs);
+		panelAddBoardMiddleBottom.add(comboBoardAddCircuits);
 		
 		JLabel labelVoltage = new JLabel("Voltaje:");
-		cs.gridx = 0;
-		cs.gridy = 1;
-		cs.gridwidth = 1;
-		addPanel.add(labelVoltage, cs);
+		panelAddBoardMiddleBottom.add(labelVoltage);
 		
 		comboBoardAddVoltage = new JComboBox<String>(new Vector<String>(loadComboList(queryVoltages, "voltage")));
 		comboBoardAddVoltage.removeItem("Todas");
-		cs.gridx = 1;
-		cs.gridy = 1;
-		cs.gridwidth = 6;
-		addPanel.add(comboBoardAddVoltage, cs);
+		panelAddBoardMiddleBottom.add(comboBoardAddVoltage);
 		
 		JLabel labelPhases = new JLabel("Fases:");
-		cs.gridx = 7;
-		cs.gridy = 1;
-		cs.gridwidth = 1;
-		addPanel.add(labelPhases, cs);
+		panelAddBoardMiddleBottom.add(labelPhases);
 		
 		comboBoardAddPhases = new JComboBox<String>(new Vector<String>(Arrays.asList(phases)));
 		comboBoardAddPhases.setActionCommand("board.description.add.phases");
 		comboBoardAddPhases.addActionListener(lForCombo);
-		cs.gridx = 8;
-		cs.gridy = 1;
-		cs.gridwidth = 6;
-		addPanel.add(comboBoardAddPhases, cs);
+		panelAddBoardMiddleBottom.add(comboBoardAddPhases);
 		
 		checkBoardAddGround = new JCheckBox("Tierra");
-		cs.gridx = 14;
-		cs.gridy = 1;
-		cs.gridwidth = 2;
-		addPanel.add(checkBoardAddGround, cs);
+		panelAddBoardMiddleBottom.add(checkBoardAddGround);
 		
 		JLabel labelInterruption = new JLabel("Interrupcion:");
-		cs.gridx = 16;
-		cs.gridy = 1;
-		cs.gridwidth = 1;
-		addPanel.add(labelInterruption, cs);
+		panelAddBoardMiddleBottom.add(labelInterruption);
 		
 		comboBoardAddInterruption = new JComboBox<String>(new Vector<String>(loadComboList(queryInterruptions, "interruption")));
 		comboBoardAddInterruption.removeItem("Todas");
-		cs.gridx = 17;
-		cs.gridy = 1;
-		cs.gridwidth = 6;
-		addPanel.add(comboBoardAddInterruption, cs);
+		panelAddBoardMiddleBottom.add(comboBoardAddInterruption, cs);
+		
+		cs.gridx = 0;
+		cs.gridy = 2;
+		cs.gridwidth = 5;
+		addPanel.add(panelAddBoardMiddleBottom, cs);
 		
 		JLabel labelCaliber = new JLabel("Calibre:");
-		cs.gridx = 23;
-		cs.gridy = 1;
-		cs.gridwidth = 1;
-		addPanel.add(labelCaliber, cs);
+		panelAddBoardBottom.add(labelCaliber, cs);
 		
 		comboBoardAddCaliber = new JComboBox<String>(new Vector<String>(loadComboList(queryCalibers, "caliber")));
 		comboBoardAddCaliber.removeItem("Todas");
-		cs.gridx = 24;
-		cs.gridy = 1;
-		cs.gridwidth = 6;
-		addPanel.add(comboBoardAddCaliber, cs);
+		panelAddBoardBottom.add(comboBoardAddCaliber, cs);
 		
 		JLabel labelLockType = new JLabel("Cerradura:");
-		cs.gridx = 30;
-		cs.gridy = 1;
-		cs.gridwidth = 1;
-		addPanel.add(labelLockType, cs);
+		panelAddBoardBottom.add(labelLockType, cs);
 		
 		comboBoardAddLockType = new JComboBox<String>(new Vector<String>(loadComboList(queryLockTypes, "lock_type")));
 		comboBoardAddLockType.removeItem("Todas");
-		cs.gridx = 31;
-		cs.gridy = 1;
-		cs.gridwidth = 6;
-		addPanel.add(comboBoardAddLockType, cs);
+		panelAddBoardBottom.add(comboBoardAddLockType, cs);
 		
 		JLabel labelPrice = new JLabel("Precio:");
-		cs.gridx = 37;
-		cs.gridy = 1;
-		cs.gridwidth = 1;
-		addPanel.add(labelPrice, cs);
+		panelAddBoardBottom.add(labelPrice, cs);
 		
-		textBoardAddPrice = new JTextField(6);
-		cs.gridx = 38;
-		cs.gridy = 1;
-		cs.gridwidth = 6;
-		addPanel.add(textBoardAddPrice, cs);
+		textBoardAddPrice = new JTextField(15);
+		panelAddBoardBottom.add(textBoardAddPrice, cs);
+		
+		cs.gridx = 0;
+		cs.gridy = 3;
+		cs.gridwidth = 5;
+		addPanel.add(panelAddBoardBottom, cs);
 		
 		JLabel labelDescription = new JLabel("Descripcion:");
 		cs.gridx = 0;
-		cs.gridy = 2;
+		cs.gridy = 4;
 		cs.gridwidth = 1;
 		addPanel.add(labelDescription, cs);
 		
@@ -4869,10 +4760,12 @@ public class SalesMainView extends JFrame{
 		textBoardAddDescription.setEditable(false);
 		textBoardAddDescription.setLineWrap(true);
 		textBoardAddDescription.setWrapStyleWord(true);
-		cs.gridx = 0;
-		cs.gridy = 3;
-		cs.gridwidth = 16;
+		cs.gridx = 1;
+		cs.gridy = 4;
+		cs.gridwidth = 4;
 		addPanel.add(textBoardAddDescription, cs);
+		
+		wrapperPanel.add(addPanel, BorderLayout.CENTER);
 		
 		BoardButtonListener lForBoardButton = new BoardButtonListener();
 		
@@ -4888,18 +4781,22 @@ public class SalesMainView extends JFrame{
 		buttonBoardAddCancel.addActionListener(lForBoardButton);
 		panelButtons.add(buttonBoardAddCancel);
 		
-		cs.gridx = 0;
-		cs.gridy = 4;
-		cs.gridwidth = 43;
-		addPanel.add(panelButtons, cs);
+		wrapperPanel.add(panelButtons, BorderLayout.SOUTH);
 		
 		updateBoardTextAddDescription();
 		
-		return addPanel;
+		return wrapperPanel;
 	}
 	
 	private JPanel createBoardEditPanel() {
+		JPanel wrapperPanel = new JPanel(new BorderLayout());
 		JPanel editPanel = new JPanel(new GridBagLayout());
+		
+		JPanel panelBoardEditTop = new JPanel(new FlowLayout(FlowLayout.LEADING));
+		JPanel panelBoardEditMiddleTop = new JPanel(new FlowLayout(FlowLayout.LEADING));
+		JPanel panelBoardEditMiddleBottom = new JPanel(new FlowLayout(FlowLayout.LEADING));
+		JPanel panelBoardEditBottom = new JPanel(new FlowLayout(FlowLayout.LEADING));
+		
 		ComboBoxListener lForCombo = new ComboBoxListener();
 		TextFieldListener lForText = new TextFieldListener();
 		GridBagConstraints cs = new GridBagConstraints();
@@ -4958,218 +4855,145 @@ public class SalesMainView extends JFrame{
 				+ "GROUP BY lock_types.lock_type";
 		
 		JLabel labelName = new JLabel("Nombre:");
-		cs.gridx = 0;
-		cs.gridy = 0;
-		cs.gridwidth = 1;
-		editPanel.add(labelName, cs);
+		panelBoardEditTop.add(labelName);
 		
-		textBoardEditName = new JTextField(4);
-		cs.gridx = 1;
-		cs.gridy = 0;
-		cs.gridwidth = 6;
-		editPanel.add(textBoardEditName, cs);
+		textBoardEditName = new JTextField(10);
+		panelBoardEditTop.add(textBoardEditName);
 		
 		JLabel labelType = new JLabel("Tipo:");
-		cs.gridx = 7;
-		cs.gridy = 0;
-		cs.gridwidth = 1;
-		editPanel.add(labelType, cs);
+		panelBoardEditTop.add(labelType);
 		
 		comboBoardEditType = new JComboBox<String>(new Vector<String>(loadComboList(queryTypes, "type")));
 		comboBoardEditType.removeItem("Todas");
 		comboBoardEditType.setActionCommand("board.description.edit.type");
 		comboBoardEditType.addActionListener(lForCombo);
 		editBoxType = comboBoardEditType.getSelectedItem().toString();
-		cs.gridx = 8;
-		cs.gridy = 0;
-		cs.gridwidth = 6;
-		editPanel.add(comboBoardEditType, cs);
+		panelBoardEditTop.add(comboBoardEditType);
 		
 		JLabel labelInstallation = new JLabel("Instalacion:");
-		cs.gridx = 14;
-		cs.gridy = 0;
-		cs.gridwidth = 1;
-		editPanel.add(labelInstallation, cs);
+		panelBoardEditTop.add(labelInstallation);
 		
 		comboBoardEditInstallation = new JComboBox<String>(new Vector<String>(loadComboList(queryInstallations, "installation")));
 		comboBoardEditInstallation.removeItem("Todas");
-		cs.gridx = 15;
-		cs.gridy = 0;
-		cs.gridwidth = 4;
-		editPanel.add(comboBoardEditInstallation, cs);
+		panelBoardEditTop.add(comboBoardEditInstallation);
 		
 		JLabel labelNema = new JLabel("Nema:");
-		cs.gridx = 19;
-		cs.gridy = 0;
-		cs.gridwidth = 1;
-		editPanel.add(labelNema, cs);
+		panelBoardEditTop.add(labelNema);
 		
 		comboBoardEditNema = new JComboBox<String>(new Vector<String>(loadComboList(queryNemas, "nema")));
 		comboBoardEditNema.removeItem("Todas");
 		comboBoardEditNema.setActionCommand("board.description.edit.nema");
 		comboBoardEditNema.addActionListener(lForCombo);
-		cs.gridx = 20;
+		panelBoardEditTop.add(comboBoardEditNema);
+		
+		cs.gridx = 0;
 		cs.gridy = 0;
-		cs.gridwidth = 2;
-		editPanel.add(comboBoardEditNema, cs);
+		cs.gridwidth = 5;
+		editPanel.add(panelBoardEditTop, cs);
 		
 		JLabel labelSheet = new JLabel("Lamina:");
-		cs.gridx = 22;
-		cs.gridy = 0;
-		cs.gridwidth = 1;
-		editPanel.add(labelSheet, cs);
+		panelBoardEditMiddleTop.add(labelSheet);
 		
 		comboBoardEditSheet = new JComboBox<String>(new Vector<String>(loadComboList(querySheets, "sheet")));
 		comboBoardEditSheet.removeItem("Todas");
 		comboBoardEditSheet.setActionCommand("board.description.edit.sheet");
 		comboBoardEditSheet.addActionListener(lForCombo);
-		cs.gridx = 23;
-		cs.gridy = 0;
-		cs.gridwidth = 2;
-		editPanel.add(comboBoardEditSheet, cs);
+		panelBoardEditMiddleTop.add(comboBoardEditSheet);
 		
 		JLabel labelColor = new JLabel("Color:");
-		cs.gridx = 25;
-		cs.gridy = 0;
-		cs.gridwidth = 1;
-		editPanel.add(labelColor, cs);
+		panelBoardEditMiddleTop.add(labelColor);
 		
 		comboBoardEditColor = new JComboBox<String>(new Vector<String>(loadComboList(queryColors, "color")));
 		comboBoardEditColor.removeItem("Todas");
 		comboBoardEditColor.setActionCommand("board.description.edit.color");
 		comboBoardEditColor.addActionListener(lForCombo);
-		cs.gridx = 26;
-		cs.gridy = 0;
-		cs.gridwidth = 2;
-		editPanel.add(comboBoardEditColor, cs);
+		panelBoardEditMiddleTop.add(comboBoardEditColor);
 		
 		JLabel labelBarCapacity = new JLabel("Cap. Barra:");
-		cs.gridx = 28;
-		cs.gridy = 0;
-		cs.gridwidth = 1;
-		editPanel.add(labelBarCapacity, cs);
+		panelBoardEditMiddleTop.add(labelBarCapacity);
 		
 		comboBoardEditBarCapacity = new JComboBox<String>(new Vector<String>(loadComboList(queryBarCapacities, "bar_capacity")));
 		comboBoardEditBarCapacity.removeItem("Todas");
-		cs.gridx = 29;
-		cs.gridy = 0;
-		cs.gridwidth = 2;
-		editPanel.add(comboBoardEditBarCapacity, cs);
+		panelBoardEditMiddleTop.add(comboBoardEditBarCapacity);
 		
 		JLabel labelBarType = new JLabel("Tipo Barra:");
-		cs.gridx = 31;
-		cs.gridy = 0;
-		cs.gridwidth = 1;
-		editPanel.add(labelBarType, cs);
+		panelBoardEditMiddleTop.add(labelBarType);
 		
 		comboBoardEditBarType = new JComboBox<String>(new Vector<String>(loadComboList(queryBarTypes, "bar_type")));
 		comboBoardEditBarType.removeItem("Todas");
-		cs.gridx = 32;
-		cs.gridy = 0;
-		cs.gridwidth = 4;
-		editPanel.add(comboBoardEditBarType, cs);
+		panelBoardEditMiddleTop.add(comboBoardEditBarType);
 		
-		JLabel labelCircuits = new JLabel("Circuitos:");
 		cs.gridx = 0;
 		cs.gridy = 1;
-		cs.gridwidth = 1;
-		editPanel.add(labelCircuits, cs);
+		cs.gridwidth = 5;
+		editPanel.add(panelBoardEditMiddleTop, cs);
+		
+		JLabel labelCircuits = new JLabel("Circuitos:");
+		panelBoardEditMiddleBottom.add(labelCircuits);
 		
 		comboBoardEditCircuits = new JComboBox<String>(new Vector<String>(loadComboList(queryCircuits, "circuits")));
 		comboBoardEditCircuits.removeItem("Todas");
 		comboBoardEditCircuits.setActionCommand("board.description.edit.circuits");
 		comboBoardEditCircuits.addActionListener(lForCombo);
-		cs.gridx = 1;
-		cs.gridy = 1;
-		cs.gridwidth = 2;
-		editPanel.add(comboBoardEditCircuits, cs);
+		panelBoardEditMiddleBottom.add(comboBoardEditCircuits);
 		
 		JLabel labelVoltage = new JLabel("Voltaje:");
-		cs.gridx = 3;
-		cs.gridy = 1;
-		cs.gridwidth = 1;
-		editPanel.add(labelVoltage, cs);
+		panelBoardEditMiddleBottom.add(labelVoltage);
 		
 		comboBoardEditVoltage = new JComboBox<String>(new Vector<String>(loadComboList(queryVoltages, "voltage")));
 		comboBoardEditVoltage.removeItem("Todas");
-		cs.gridx = 4;
-		cs.gridy = 1;
-		cs.gridwidth = 4;
-		editPanel.add(comboBoardEditVoltage, cs);
+		panelBoardEditMiddleBottom.add(comboBoardEditVoltage);
 		
 		JLabel labelPhases = new JLabel("Fases:");
-		cs.gridx = 8;
-		cs.gridy = 1;
-		cs.gridwidth = 1;
-		editPanel.add(labelPhases, cs);
+		panelBoardEditMiddleBottom.add(labelPhases);
 		
 		comboBoardEditPhases = new JComboBox<String>(new Vector<String>(Arrays.asList(phases)));
 		comboBoardEditPhases.addKeyListener(lForText);
-		cs.gridx = 9;
-		cs.gridy = 1;
-		cs.gridwidth = 2;
-		editPanel.add(comboBoardEditPhases, cs);
+		panelBoardEditMiddleBottom.add(comboBoardEditPhases);
 		
 		checkBoardEditGround = new JCheckBox("Tierra");
-		cs.gridx = 11;
-		cs.gridy = 1;
-		cs.gridwidth = 2;
-		editPanel.add(checkBoardEditGround, cs);
+		panelBoardEditMiddleBottom.add(checkBoardEditGround);
 		
 		JLabel labelInterruption = new JLabel("Interrupcion:");
-		cs.gridx = 13;
-		cs.gridy = 1;
-		cs.gridwidth = 1;
-		editPanel.add(labelInterruption, cs);
+		panelBoardEditMiddleBottom.add(labelInterruption);
 		
 		comboBoardEditInterruption = new JComboBox<String>(new Vector<String>(loadComboList(queryInterruptions, "interruption")));
 		comboBoardEditInterruption.removeItem("Todas");
-		cs.gridx = 14;
-		cs.gridy = 1;
-		cs.gridwidth = 2;
-		editPanel.add(comboBoardEditInterruption, cs);
+		panelBoardEditMiddleBottom.add(comboBoardEditInterruption);
+		
+		cs.gridx = 0;
+		cs.gridy = 2;
+		cs.gridwidth = 5;
+		editPanel.add(panelBoardEditMiddleBottom, cs);
 		
 		JLabel labelCaliber = new JLabel("Calibre:");
-		cs.gridx = 16;
-		cs.gridy = 1;
-		cs.gridwidth = 1;
-		editPanel.add(labelCaliber, cs);
+		panelBoardEditBottom.add(labelCaliber);
 		
 		comboBoardEditCaliber = new JComboBox<String>(new Vector<String>(loadComboList(queryCalibers, "caliber")));
 		comboBoardEditCaliber.removeItem("Todas");
-		cs.gridx = 17;
-		cs.gridy = 1;
-		cs.gridwidth = 2;
-		editPanel.add(comboBoardEditCaliber, cs);
+		panelBoardEditBottom.add(comboBoardEditCaliber);
 		
 		JLabel labelLockType = new JLabel("Cerradura:");
-		cs.gridx = 19;
-		cs.gridy = 1;
-		cs.gridwidth = 1;
-		editPanel.add(labelLockType, cs);
+		panelBoardEditBottom.add(labelLockType);
 		
 		comboBoardEditLockType = new JComboBox<String>(new Vector<String>(loadComboList(queryLockTypes, "lock_type")));
 		comboBoardEditLockType.removeItem("Todas");
-		cs.gridx = 20;
-		cs.gridy = 1;
-		cs.gridwidth = 6;
-		editPanel.add(comboBoardEditLockType, cs);
+		panelBoardEditBottom.add(comboBoardEditLockType);
 		
 		JLabel labelPrice = new JLabel("Precio:");
-		cs.gridx = 26;
-		cs.gridy = 1;
-		cs.gridwidth = 1;
-		editPanel.add(labelPrice, cs);
+		panelBoardEditBottom.add(labelPrice);
 		
-		textBoardEditPrice = new JTextField(6);
-		cs.gridx = 27;
-		cs.gridy = 1;
-		cs.gridwidth = 6;
-		editPanel.add(textBoardEditPrice, cs);
+		textBoardEditPrice = new JTextField(15);
+		panelBoardEditBottom.add(textBoardEditPrice);
+		
+		cs.gridx = 0;
+		cs.gridy = 3;
+		cs.gridwidth = 5;
+		editPanel.add(panelBoardEditBottom, cs);
 		
 		JLabel labelDescription = new JLabel("Descripcion:");
 		cs.gridx = 0;
-		cs.gridy = 2;
+		cs.gridy = 4;
 		cs.gridwidth = 1;
 		editPanel.add(labelDescription, cs);
 		
@@ -5177,10 +5001,12 @@ public class SalesMainView extends JFrame{
 		textBoardEditDescription.setEditable(false);
 		textBoardEditDescription.setLineWrap(true);
 		textBoardEditDescription.setWrapStyleWord(true);
-		cs.gridx = 0;
-		cs.gridy = 3;
-		cs.gridwidth = 16;
+		cs.gridx = 1;
+		cs.gridy = 4;
+		cs.gridwidth = 4;
 		editPanel.add(textBoardEditDescription, cs);
+		
+		wrapperPanel.add(editPanel, BorderLayout.CENTER);
 		
 		BoardButtonListener lForBoardButton = new BoardButtonListener();
 		
@@ -5197,13 +5023,13 @@ public class SalesMainView extends JFrame{
 		panelButtons.add(buttonBoardEditCancel);
 		
 		cs.gridx = 0;
-		cs.gridy = 4;
-		cs.gridwidth = 30;
-		editPanel.add(panelButtons, cs);
+		cs.gridy = 5;
+		cs.gridwidth = 5;
+		wrapperPanel.add(panelButtons, BorderLayout.SOUTH);
 		
 		updateBoardTextEditDescription();
 		
-		return editPanel;
+		return wrapperPanel;
 	}
 	
 	private JPanel createBoardCommentsPanel() {
@@ -5306,7 +5132,7 @@ public class SalesMainView extends JFrame{
 			textBoardComments.setEditable(false);
 			buttonBoardCommentsEdit.setEnabled(false);
 			textBoardDescriptionName.setText("");
-			textBoardDescriptionPrice.setText("");
+			textBoardDescriptionPrice.setValue(new Double(0.00));
 			tableBoardsResult.clearSelection();
 			selectedTableBoardCircuits = 0;
 			SwingUtilities.invokeLater(new Runnable(){
@@ -5491,7 +5317,7 @@ public class SalesMainView extends JFrame{
 			textBoardDescriptionInterruption.setText("");
 			textBoardDescriptionCaliber.setText("");
 			textBoardDescriptionLockType.setText("");
-			textBoardDescriptionPrice.setText("");
+			textBoardDescriptionPrice.setValue(new Double(0.00));
 			textBoardDescription.setText("");
 		}
 		
@@ -7910,10 +7736,10 @@ public class SalesMainView extends JFrame{
 		panelButtons.add(buttonBudgetEdit);
 		
 		JPanel panelBudgetLower = new JPanel(new BorderLayout(20,20));
-		panelBudgetDescription = createBudgetDescriptionPanel();
+		panelBudgetDescriptionWrapper = createBudgetDescriptionPanel();
 		
 		panelWrapperBudgetDescription = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		panelWrapperBudgetDescription.add(panelBudgetDescription);
+		panelWrapperBudgetDescription.add(panelBudgetDescriptionWrapper);
 		
 		panelBudgetAddNew = createBudgetAddPanel();
 		panelBudgetAddNew.setVisible(false);
@@ -8303,11 +8129,6 @@ public class SalesMainView extends JFrame{
 				+ "FROM  budget_dispatch_places "
 				+ "GROUP BY budget_dispatch_places.place";
 		
-		// TODO Add stages to budget
-//		String queryStages = "SELECT budget_stages.stage "
-//				+ "FROM budget_stages "
-//				+ "GROUP BY budget_stages.stage";
-		
 		String queryDeliveryPeriod = "SELECT budget_delivery_periods.delivery_period "
 				+ "FROM  budget_delivery_periods "
 				+ "GROUP BY budget_delivery_periods.delivery_period "
@@ -8532,6 +8353,134 @@ public class SalesMainView extends JFrame{
 		
 		String queryStages = "SELECT stage FROM budget_stages";
 		
+		panelBudgetDescriptionTop = new JPanel();
+		panelBudgetDescriptionTop.setLayout(new FlowLayout(FlowLayout.LEADING));
+		
+		panelBudgetDescriptionMiddleTop = new JPanel();
+		panelBudgetDescriptionMiddleTop.setLayout(new FlowLayout(FlowLayout.LEADING));
+		
+		panelBudgetDescriptionMiddleBottom = new JPanel();
+		panelBudgetDescriptionMiddleBottom.setLayout(new FlowLayout(FlowLayout.LEADING));
+		
+		panelBudgetDescriptionBottom = new JPanel();
+		panelBudgetDescriptionBottom.setLayout(new FlowLayout(FlowLayout.LEADING));
+		
+		JPanel panelBudgetDescriptionWrapper = new JPanel();
+		panelBudgetDescriptionWrapper.setLayout(new GridBagLayout());
+		
+		GridBagConstraints cs = new GridBagConstraints();
+		
+		cs.fill = GridBagConstraints.HORIZONTAL;
+		cs.insets = new Insets(0, 0, 5, 5);
+		
+		JLabel labelCode = new JLabel("Codigo:");
+		panelBudgetDescriptionTop.add(labelCode);
+		
+		textBudgetDescriptionCode = new JTextField("", 12);
+		textBudgetDescriptionCode.setEditable(false);
+		panelBudgetDescriptionTop.add(textBudgetDescriptionCode);
+		
+		JLabel labelDate = new JLabel("Fecha:");
+		panelBudgetDescriptionTop.add(labelDate);
+		
+		textBudgetDescriptionDate = new JTextField("", 8);
+		textBudgetDescriptionDate.setEditable(false);
+		panelBudgetDescriptionTop.add(textBudgetDescriptionDate);
+		
+		JLabel labelExpiryDays = new JLabel("Vencimiento:");
+		panelBudgetDescriptionTop.add(labelExpiryDays);
+		
+		textBudgetDescriptionExpiryDays = new JTextField("", 3);
+		textBudgetDescriptionExpiryDays.setEditable(false);
+		panelBudgetDescriptionTop.add(textBudgetDescriptionExpiryDays);
+		
+		JLabel labelExpiryDate = new JLabel("Fecha de vencimiento:");
+		panelBudgetDescriptionTop.add(labelExpiryDate);
+		
+		textBudgetDescriptionExpiryDate = new JTextField("", 8);
+		textBudgetDescriptionExpiryDate.setEditable(false);
+		panelBudgetDescriptionTop.add(textBudgetDescriptionExpiryDate);
+		
+		cs.gridx = 0;
+		cs.gridy = 0;
+		cs.gridwidth = 5;
+		panelBudgetDescriptionWrapper.add(panelBudgetDescriptionTop, cs);
+		
+		JLabel labelClientCode = new JLabel("Codigo Cliente:");
+		panelBudgetDescriptionMiddleTop.add(labelClientCode);
+		
+		textBudgetDescriptionClientCode = new JTextField("", 12);
+		textBudgetDescriptionClientCode.setEditable(false);
+		panelBudgetDescriptionMiddleTop.add(textBudgetDescriptionClientCode);
+		
+		JLabel labelClient = new JLabel("Empresa:");
+		panelBudgetDescriptionMiddleTop.add(labelClient);
+		
+		textBudgetDescriptionClient = new JTextField("", 15);
+		textBudgetDescriptionClient.setEditable(false);
+		panelBudgetDescriptionMiddleTop.add(textBudgetDescriptionClient);
+		
+		JLabel labelClientRepresentative = new JLabel("Representante de la Empresa:");
+		panelBudgetDescriptionMiddleTop.add(labelClientRepresentative);
+		
+		textBudgetDescriptionClientRepresentative = new JTextField("", 15);
+		textBudgetDescriptionClientRepresentative.setEditable(false);
+		panelBudgetDescriptionMiddleTop.add(textBudgetDescriptionClientRepresentative);
+		
+		cs.gridx = 0;
+		cs.gridy = 1;
+		cs.gridwidth = 5;
+		panelBudgetDescriptionWrapper.add(panelBudgetDescriptionMiddleTop, cs);
+		
+		JLabel labelWorkName = new JLabel("Nombre de la Obra:");
+		panelBudgetDescriptionMiddleBottom.add(labelWorkName);
+		
+		textBudgetDescriptionWorkName = new JTextField("", 25);
+		textBudgetDescriptionWorkName.setEditable(false);
+		panelBudgetDescriptionMiddleBottom.add(textBudgetDescriptionWorkName);
+		
+		JLabel labelPaymentMethod = new JLabel("Forma de Pago:");
+		panelBudgetDescriptionMiddleBottom.add(labelPaymentMethod);
+		
+		textBudgetDescriptionPaymentMethod = new JTextField("", 25);
+		textBudgetDescriptionPaymentMethod.setEditable(false);
+		panelBudgetDescriptionMiddleBottom.add(textBudgetDescriptionPaymentMethod);
+		
+		cs.gridx = 0;
+		cs.gridy = 2;
+		cs.gridwidth = 5;
+		panelBudgetDescriptionWrapper.add(panelBudgetDescriptionMiddleBottom, cs);
+		
+		JLabel labelSeller = new JLabel("Vendedor:");
+		panelBudgetDescriptionBottom.add(labelSeller);
+		
+		textBudgetDescriptionSeller = new JTextField("", 12);
+		textBudgetDescriptionSeller.setEditable(false);
+		panelBudgetDescriptionBottom.add(textBudgetDescriptionSeller);
+		
+		JLabel labelDispatchPlace = new JLabel("Sitio de entrega:");
+		panelBudgetDescriptionBottom.add(labelDispatchPlace);
+		
+		textBudgetDescriptionDispatchPlace = new JTextField("", 12);
+		textBudgetDescriptionDispatchPlace.setEditable(false);
+		panelBudgetDescriptionBottom.add(textBudgetDescriptionDispatchPlace);
+		
+		JLabel labelDeliveryTime = new JLabel("Tiempo de entrega:");
+		panelBudgetDescriptionBottom.add(labelDeliveryTime);
+		
+		textBudgetDescriptionDeliveryTime = new JTextField("", 3);
+		textBudgetDescriptionDeliveryTime.setEditable(false);
+		panelBudgetDescriptionBottom.add(textBudgetDescriptionDeliveryTime);
+		
+		textBudgetDescriptionDeliveryPeriod = new JTextField("", 5);
+		textBudgetDescriptionDeliveryPeriod.setEditable(false);
+		panelBudgetDescriptionBottom.add(textBudgetDescriptionDeliveryPeriod);
+		
+		cs.gridx = 0;
+		cs.gridy = 3;
+		cs.gridwidth = 5;
+		panelBudgetDescriptionWrapper.add(panelBudgetDescriptionBottom, cs);
+		
 		comboBudgetEditStage = new JComboBox<String>(new Vector<String>(loadComboList(queryStages, "stage")));
 		comboBudgetEditStage.removeItem("Todas");
 		comboBudgetEditStage.addActionListener(new ActionListener() {
@@ -8544,194 +8493,14 @@ public class SalesMainView extends JFrame{
 			}
 		});
 		comboBudgetEditStage.setEnabled(false);
-		panelWrapper.add(comboBudgetEditStage, BorderLayout.WEST);
 		
-		panelBudgetDescription = new JPanel();
-		panelBudgetDescription.setLayout(new GridBagLayout());
-		
-		GridBagConstraints cs = new GridBagConstraints();
-		
-		cs.fill = GridBagConstraints.HORIZONTAL;
-		cs.insets = new Insets(0, 0, 5, 5);
-		
-		JLabel labelId = new JLabel("Id:");
 		cs.gridx = 0;
-		cs.gridy = 0;
+		cs.gridy = 4;
 		cs.gridwidth = 1;
-		panelBudgetDescription.add(labelId, cs);
+		panelBudgetDescriptionWrapper.add(comboBudgetEditStage, cs);
 		
-		textBudgetDescriptionId = new JTextField("", 8);
-		textBudgetDescriptionId.setEditable(false);
-		cs.gridx = 1;
-		cs.gridy = 0;
-		cs.gridwidth = 8;
-		panelBudgetDescription.add(textBudgetDescriptionId, cs);
+		panelWrapper.add(panelBudgetDescriptionWrapper, BorderLayout.CENTER);
 		
-		JLabel labelCode = new JLabel("Codigo:");
-		cs.gridx = 9;
-		cs.gridy = 0;
-		cs.gridwidth = 1;
-		panelBudgetDescription.add(labelCode, cs);
-		
-		textBudgetDescriptionCode = new JTextField("", 8);
-		textBudgetDescriptionCode.setEditable(false);
-		cs.gridx = 10;
-		cs.gridy = 0;
-		cs.gridwidth = 8;
-		panelBudgetDescription.add(textBudgetDescriptionCode, cs);
-		
-		JLabel labelDate = new JLabel("Fecha:");
-		cs.gridx = 18;
-		cs.gridy = 0;
-		cs.gridwidth = 1;
-		panelBudgetDescription.add(labelDate, cs);
-		
-		textBudgetDescriptionDate = new JTextField("", 8);
-		textBudgetDescriptionDate.setEditable(false);
-		cs.gridx = 19;
-		cs.gridy = 0;
-		cs.gridwidth = 8;
-		panelBudgetDescription.add(textBudgetDescriptionDate, cs);
-		
-		JLabel labelExpiryDays = new JLabel("Vencimiento:");
-		cs.gridx = 27;
-		cs.gridy = 0;
-		cs.gridwidth = 1;
-		panelBudgetDescription.add(labelExpiryDays, cs);
-		
-		textBudgetDescriptionExpiryDays = new JTextField("", 6);
-		textBudgetDescriptionExpiryDays.setEditable(false);
-		cs.gridx = 28;
-		cs.gridy = 0;
-		cs.gridwidth = 6;
-		panelBudgetDescription.add(textBudgetDescriptionExpiryDays, cs);
-		
-		JLabel labelExpiryDate = new JLabel("Fecha de vencimiento:");
-		cs.gridx = 34;
-		cs.gridy = 0;
-		cs.gridwidth = 1;
-		panelBudgetDescription.add(labelExpiryDate, cs);
-		
-		textBudgetDescriptionExpiryDate = new JTextField("", 8);
-		textBudgetDescriptionExpiryDate.setEditable(false);
-		cs.gridx = 35;
-		cs.gridy = 0;
-		cs.gridwidth = 8;
-		panelBudgetDescription.add(textBudgetDescriptionExpiryDate, cs);
-		
-		JLabel labelClientCode = new JLabel("Codigo Cliente :");
-		cs.gridx = 43;
-		cs.gridy = 0;
-		cs.gridwidth = 1;
-		panelBudgetDescription.add(labelClientCode, cs);
-		
-		textBudgetDescriptionClientCode = new JTextField("", 8);
-		textBudgetDescriptionClientCode.setEditable(false);
-		cs.gridx = 44;
-		cs.gridy = 0;
-		cs.gridwidth = 8;
-		panelBudgetDescription.add(textBudgetDescriptionClientCode, cs);
-		
-		JLabel labelClient = new JLabel("Empresa:");
-		cs.gridx = 0;
-		cs.gridy = 1;
-		cs.gridwidth = 1;
-		panelBudgetDescription.add(labelClient, cs);
-		
-		textBudgetDescriptionClient = new JTextField("", 12);
-		textBudgetDescriptionClient.setEditable(false);
-		cs.gridx = 1;
-		cs.gridy = 1;
-		cs.gridwidth = 12;
-		panelBudgetDescription.add(textBudgetDescriptionClient, cs);
-		
-		JLabel labelClientRepresentative = new JLabel("Representante de la Empresa:");
-		cs.gridx = 13;
-		cs.gridy = 1;
-		cs.gridwidth = 1;
-		panelBudgetDescription.add(labelClientRepresentative, cs);
-		
-		textBudgetDescriptionClientRepresentative = new JTextField("", 12);
-		textBudgetDescriptionClientRepresentative.setEditable(false);
-		cs.gridx = 14;
-		cs.gridy = 1;
-		cs.gridwidth = 12;
-		panelBudgetDescription.add(textBudgetDescriptionClientRepresentative, cs);
-		
-		JLabel labelWorkName = new JLabel("Nombre de la Obra:");
-		cs.gridx = 26;
-		cs.gridy = 1;
-		cs.gridwidth = 1;
-		panelBudgetDescription.add(labelWorkName, cs);
-		
-		textBudgetDescriptionWorkName = new JTextField("", 10);
-		textBudgetDescriptionWorkName.setEditable(false);
-		cs.gridx = 27;
-		cs.gridy = 1;
-		cs.gridwidth = 10;
-		panelBudgetDescription.add(textBudgetDescriptionWorkName, cs);
-		
-		JLabel labelPaymentMethod = new JLabel("Forma de Pago:");
-		cs.gridx = 37;
-		cs.gridy = 1;
-		cs.gridwidth = 1;
-		panelBudgetDescription.add(labelPaymentMethod, cs);
-		
-		textBudgetDescriptionPaymentMethod = new JTextField("", 14);
-		textBudgetDescriptionPaymentMethod.setEditable(false);
-		cs.gridx = 38;
-		cs.gridy = 1;
-		cs.gridwidth = 14;
-		panelBudgetDescription.add(textBudgetDescriptionPaymentMethod, cs);
-		
-		JLabel labelSeller = new JLabel("Vendedor:");
-		cs.gridx = 0;
-		cs.gridy = 2;
-		cs.gridwidth = 1;
-		panelBudgetDescription.add(labelSeller, cs);
-		
-		textBudgetDescriptionSeller = new JTextField("", 12);
-		textBudgetDescriptionSeller.setEditable(false);
-		cs.gridx = 1;
-		cs.gridy = 2;
-		cs.gridwidth = 12;
-		panelBudgetDescription.add(textBudgetDescriptionSeller, cs);
-		
-		JLabel labelDispatchPlace = new JLabel("Sitio de entrega:");
-		cs.gridx = 13;
-		cs.gridy = 2;
-		cs.gridwidth = 1;
-		panelBudgetDescription.add(labelDispatchPlace, cs);
-		
-		textBudgetDescriptionDispatchPlace = new JTextField("", 12);
-		textBudgetDescriptionDispatchPlace.setEditable(false);
-		cs.gridx = 14;
-		cs.gridy = 2;
-		cs.gridwidth = 12;
-		panelBudgetDescription.add(textBudgetDescriptionDispatchPlace, cs);
-		
-		JLabel labelDeliveryTime = new JLabel("Tiempo de entrega:");
-		cs.gridx = 26;
-		cs.gridy = 2;
-		cs.gridwidth = 1;
-		panelBudgetDescription.add(labelDeliveryTime, cs);
-		
-		textBudgetDescriptionDeliveryTime = new JTextField("", 8);
-		textBudgetDescriptionDeliveryTime.setEditable(false);
-		cs.gridx = 27;
-		cs.gridy = 2;
-		cs.gridwidth = 8;
-		panelBudgetDescription.add(textBudgetDescriptionDeliveryTime, cs);
-		
-		textBudgetDescriptionDeliveryPeriod = new JTextField("", 4);
-		textBudgetDescriptionDeliveryPeriod.setEditable(false);
-		cs.gridx = 35;
-		cs.gridy = 2;
-		cs.gridwidth = 4;
-		panelBudgetDescription.add(textBudgetDescriptionDeliveryPeriod, cs);
-		
-		panelWrapper.add(panelBudgetDescription, BorderLayout.CENTER);
-				
 		return panelWrapper;
 	}
 
@@ -9294,45 +9063,9 @@ public class SalesMainView extends JFrame{
 		fields.add("TRUNCATE((budget_boxes.price * ((100 + budget_boxes.factor) / 100)), 2) as sell_price"); 
 		fields.add("TRUNCATE((budget_boxes.quantity * (budget_boxes.price * ((100 + budget_boxes.factor) / 100))), 2) as total");
 		
-		ArrayList<String> tables = new ArrayList<String>();
-		tables.add(SalesMainView.BOXES_TABLE);
-		tables.add(SalesMainView.BOX_TYPES_TABLE);
-		tables.add(SalesMainView.INSTALLATIONS_TABLE);
-		tables.add(SalesMainView.NEMAS_TABLE);
-		tables.add(SalesMainView.BOX_SHEETS_TABLE);
-		tables.add(SalesMainView.BOX_FINISHES_TABLE);
-		tables.add(SalesMainView.BOX_COLORS_TABLE);
-		tables.add(SalesMainView.BOX_UNITS_TABLE);
-		tables.add(SalesMainView.BOX_CALIBERS_TABLE);
-		tables.add(SalesMainView.LOCK_TYPES_TABLE);
-		tables.add("budget_boxes");
-		
-		// TODO Check if this comments are not necessary and could be deleted
-//		String whereQuery = 
-//				" AND ( (boxes.sheet_id > 0 "
-//					+ " AND boxes.sheet_id = " + SalesMainView.BOX_SHEETS_TABLE + ".id) "
-//					+ " OR boxes.sheet_id = 0) "
-//				+ " AND ( (boxes.finish_id > 0 "
-//					+ " AND boxes.finish_id = " + SalesMainView.BOX_FINISHES_TABLE + ".id) "
-//					+ " OR boxes.finish_id = 0) "
-//				+ " AND ( (boxes.color_id > 0 "
-//					+ " AND boxes.color_id = " + SalesMainView.BOX_COLORS_TABLE + ".id) "
-//					+ " OR boxes.color_id = 0) "
-//				+ " AND ( (boxes.units_id > 0 "
-//					+ " AND boxes.units_id = " + SalesMainView.BOX_UNITS_TABLE + ".id) "
-//					+ " OR boxes.units_id = 0) "
-//				+ " AND ( (boxes.caliber_id > 0 "
-//					+ " AND boxes.caliber_id = " + SalesMainView.BOX_CALIBERS_TABLE + ".id) "
-//					+ " OR boxes.caliber_id = 0) "
-//				+ " AND ( (boxes.lock_type_id > 0 "
-//					+ " AND boxes.lock_type_id = " + SalesMainView.LOCK_TYPES_TABLE + ".id) "
-//					+ " OR boxes.lock_type_id = 0) ";
-		
 		String fieldsQuery = StringTools.implode(",", fields);
-//		String tablesQuery = StringTools.implode(",", tables);
 		String budgetBoxesQuery = "SELECT " + fieldsQuery
 						+ " FROM boxes "
-//						+ tablesQuery
 						+ " INNER JOIN budget_boxes ON boxes.id = budget_boxes.box_id "
 						+ " INNER JOIN box_types ON boxes.type_id = box_types.id "
 						+ " INNER JOIN installations ON boxes.installation_id = installations.id "
@@ -9373,17 +9106,6 @@ public class SalesMainView extends JFrame{
 			tableBudgetBoxesResult.setModel(mForTable);
 		}
 		
-//		if(budgetBoxesData.length > 0) {
-//			MyTableModel mForTable = new MyTableModel(budgetBoxesQuery, budgetBoxesColumnNames, "budget_boxes", editableColumns);
-//			tableBudgetBoxesResult.setModel(mForTable);
-//			if(null != tableBudgetBoxesResult && tableBudgetBoxesResult.getSelectedRow() == -1) {
-//				buttonRemoveBudgetBox.setEnabled(false);
-//			}
-//		} else {
-//			((MyTableModel) tableBudgetBoxesResult.getModel()).setRowCount(0);
-////			tableBudgetBoxesResult.setModel(new DefaultTableModel());
-//			buttonRemoveBudgetBox.setEnabled(false);
-//		}
 		buttonAddBudgetBox.setEnabled(true);
 	}
 	
@@ -9643,8 +9365,8 @@ public class SalesMainView extends JFrame{
 						panelWrapperBudgetDescription.repaint();
 						panelBudgetAddNew.setVisible(false);
 						
-						panelBudgetDescription.setVisible(true);
-						panelWrapperBudgetDescription.add(panelBudgetDescription);
+						panelBudgetDescriptionWrapper.setVisible(true);
+						panelWrapperBudgetDescription.add(panelBudgetDescriptionWrapper);
 						panelWrapperBudgetDescription.validate();
 						panelWrapperBudgetDescription.repaint();
 						
@@ -9663,8 +9385,8 @@ public class SalesMainView extends JFrame{
 						panelWrapperBudgetDescription.repaint();
 						panelBudgetEdit.setVisible(false);
 						
-						panelBudgetDescription.setVisible(true);
-						panelWrapperBudgetDescription.add(panelBudgetDescription);
+						panelBudgetDescriptionWrapper.setVisible(true);
+						panelWrapperBudgetDescription.add(panelBudgetDescriptionWrapper);
 						panelWrapperBudgetDescription.validate();
 						panelWrapperBudgetDescription.repaint();
 						
@@ -9679,10 +9401,10 @@ public class SalesMainView extends JFrame{
 			SwingUtilities.invokeLater(new Runnable(){
 				@Override
 				public void run() {
-					panelWrapperBudgetDescription.remove(panelBudgetDescription);
+					panelWrapperBudgetDescription.remove(panelBudgetDescriptionWrapper);
 					panelWrapperBudgetDescription.validate();
 					panelWrapperBudgetDescription.repaint();
-					panelBudgetDescription.setVisible(false);
+					panelBudgetDescriptionWrapper.setVisible(false);
 					
 					panelBudgetAddNew.setVisible(true);
 					panelWrapperBudgetDescription.add(panelBudgetAddNew);
@@ -9768,10 +9490,10 @@ public class SalesMainView extends JFrame{
 			SwingUtilities.invokeLater(new Runnable(){
 				@Override
 				public void run() {
-					panelWrapperBudgetDescription.remove(panelBudgetDescription);
+					panelWrapperBudgetDescription.remove(panelBudgetDescriptionWrapper);
 					panelWrapperBudgetDescription.validate();
 					panelWrapperBudgetDescription.repaint();
-					panelBudgetDescription.setVisible(false);
+					panelBudgetDescriptionWrapper.setVisible(false);
 					
 					panelBudgetEdit.setVisible(true);
 					panelWrapperBudgetDescription.add(panelBudgetEdit);
@@ -11289,7 +11011,7 @@ public class SalesMainView extends JFrame{
 				textBoardDescriptionInterruption.setText("");
 				textBoardDescriptionCaliber.setText("");
 				textBoardDescriptionLockType.setText("");
-				textBoardDescriptionPrice.setText("");
+				textBoardDescriptionPrice.setValue(new Double(0.00));
 				textBoardDescription.setText("");
 				buttonBoardAdd.setEnabled(true);
 				buttonBoardEdit.setEnabled(false);
@@ -11529,7 +11251,7 @@ public class SalesMainView extends JFrame{
 						textBoardDescriptionInterruption.setText("");
 						textBoardDescriptionCaliber.setText("");
 						textBoardDescriptionLockType.setText("");
-						textBoardDescriptionPrice.setText("");
+						textBoardDescriptionPrice.setValue(new Double(0.00));
 						textBoardDescription.setText("");
 					} else {
 						if(panelBoardDescription.isShowing()) {
@@ -11556,7 +11278,7 @@ public class SalesMainView extends JFrame{
 						textBoardDescriptionInterruption.setText((String) tableBoardsResult.getValueAt(boardsTableSelectedIndex, BOARD_INTERRUPTION_COLUMN));
 						textBoardDescriptionCaliber.setText((String) tableBoardsResult.getValueAt(boardsTableSelectedIndex, BOARD_CALIBER_COLUMN));
 						textBoardDescriptionLockType.setText((String) tableBoardsResult.getValueAt(boardsTableSelectedIndex, BOARD_LOCK_TYPE_COLUMN));
-						textBoardDescriptionPrice.setText("BsF " + tableBoardsResult.getValueAt(boardsTableSelectedIndex, BOARD_PRICE_COLUMN));
+						textBoardDescriptionPrice.setValue(Double.valueOf((String) tableBoardsResult.getValueAt(boardsTableSelectedIndex, BOARD_PRICE_COLUMN)));
 						textBoardComments.setText(db.getBoardComments(selectedBoardId));
 						
 						textBoardDescription.setText("Caja para Tablero, " +
@@ -11721,7 +11443,7 @@ public class SalesMainView extends JFrame{
 					buttonBudgetNotesEdit.setEnabled(true);
 					
 					
-					if(panelBudgetDescription.isShowing()) {
+					if(panelBudgetDescriptionWrapper.isShowing()) {
 						buttonBudgetEdit.setEnabled(true);
 					}
 					
@@ -11732,7 +11454,7 @@ public class SalesMainView extends JFrame{
 					DateTime dt = dtf.parseDateTime((String) tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_DATE_COLUMN));
 					
 					Integer expiryDays = Integer.valueOf(String.valueOf(tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_EXPIRY_DAYS_COLUMN)));
-					textBudgetDescriptionId.setText((String) tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_ID_COLUMN));
+//					textBudgetDescriptionId.setText((String) tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_ID_COLUMN));
 					textBudgetDescriptionCode.setText((String) tableBudgetsResult.getValueAt(budgetsTableSelectedIndex, BUDGET_CODE_COLUMN));
 					textBudgetDescriptionDate.setText(dtf.print(dt));
 					textBudgetDescriptionExpiryDays.setText(expiryDays.toString());
@@ -11822,7 +11544,7 @@ public class SalesMainView extends JFrame{
 				textBoardDescriptionInterruption.setText("");
 				textBoardDescriptionCaliber.setText("");
 				textBoardDescriptionLockType.setText("");
-				textBoardDescriptionPrice.setText("");
+				textBoardDescriptionPrice.setValue(new Double(0.00));
 				textBoardDescription.setText("");
 				((MyTableModel)tableBoardSwitchesResult.getModel()).setRowCount(0);
 //				tableBoardSwitchesResult.setModel(new DefaultTableModel());
@@ -11857,7 +11579,7 @@ public class SalesMainView extends JFrame{
 				
 				JTabbedPane controlBoardTabbedPane = (JTabbedPane) controlBoardSwitchesPanel.getParent();
 				setTabsEnabled(controlBoardTabbedPane, false);
-			} else if (lsm.isSelectionEmpty() && null != panelBudgetDescription && tableBudgetsResult.getSelectedRow() == -1) {
+			} else if (lsm.isSelectionEmpty() && null != panelBudgetDescriptionWrapper && tableBudgetsResult.getSelectedRow() == -1) {
 				selectedBudgetId = 0;
 				comboBudgetEditStage.setEnabled(false);
 				buttonBudgetEdit.setEnabled(false);
@@ -11905,19 +11627,19 @@ public class SalesMainView extends JFrame{
 			} else if (lsm.isSelectionEmpty() && null != panelControlBoardDescription && tableControlBoardMaterialsResult.getSelectedRow() == -1) {
 				buttonRemoveControlBoardMaterial.setEnabled(false);
 				selectedControlBoardMaterialId = -1;
-			} else if (lsm.isSelectionEmpty() && null != panelBudgetDescription && tableBudgetSwitchesResult.getSelectedRow() == -1) {
+			} else if (lsm.isSelectionEmpty() && null != panelBudgetDescriptionWrapper && tableBudgetSwitchesResult.getSelectedRow() == -1) {
 				buttonRemoveBudgetSwitch.setEnabled(false);
 				selectedBudgetSwitchId = -1;
-			} else if (lsm.isSelectionEmpty() && null != panelBudgetDescription && tableBudgetBoxesResult.getSelectedRow() == -1) {
+			} else if (lsm.isSelectionEmpty() && null != panelBudgetDescriptionWrapper && tableBudgetBoxesResult.getSelectedRow() == -1) {
 				buttonRemoveBudgetBox.setEnabled(false);
 				selectedBudgetBoxId = -1;
-			} else if (lsm.isSelectionEmpty() && null != panelBudgetDescription && tableBudgetBoardsResult.getSelectedRow() == -1) {
+			} else if (lsm.isSelectionEmpty() && null != panelBudgetDescriptionWrapper && tableBudgetBoardsResult.getSelectedRow() == -1) {
 				buttonRemoveBudgetBoard.setEnabled(false);
 				selectedBudgetBoardId = -1;
-			} else if (lsm.isSelectionEmpty() && null != panelBudgetDescription && tableBudgetControlBoardsResult.getSelectedRow() == -1) {
+			} else if (lsm.isSelectionEmpty() && null != panelBudgetDescriptionWrapper && tableBudgetControlBoardsResult.getSelectedRow() == -1) {
 				buttonRemoveBudgetControlBoard.setEnabled(false);
 				selectedBudgetControlBoardId = -1;
-			} else if (lsm.isSelectionEmpty() && null != panelBudgetDescription && tableBudgetMaterialsResult.getSelectedRow() == -1) {
+			} else if (lsm.isSelectionEmpty() && null != panelBudgetDescriptionWrapper && tableBudgetMaterialsResult.getSelectedRow() == -1) {
 				buttonRemoveBudgetMaterial.setEnabled(false);
 				selectedBudgetMaterialId = -1;
 			}
@@ -13111,7 +12833,7 @@ public class SalesMainView extends JFrame{
 				ArrayList<Object> listValues = new ArrayList<Object>();
 				Errors err = new Errors();
 				
-				String editedBudgetDate = String.format("%02d", editBudgetDateModel.getDay()) + "-" + String.format("%02d", (editBudgetDateModel.getMonth() + 1)) + "-" + editBudgetDateModel.getYear();
+//				String editedBudgetDate = String.format("%02d", editBudgetDateModel.getDay()) + "-" + String.format("%02d", (editBudgetDateModel.getMonth() + 1)) + "-" + editBudgetDateModel.getYear();
 				Integer editedBudgetExpiryDays = Integer.valueOf(textBudgetEditExpiryDays.getText());
 				Integer editedBudgetClientId = budgetClientEditedId;
 				String editedBudgetWorkName = textBudgetEditWorkName.getText();
@@ -13121,15 +12843,13 @@ public class SalesMainView extends JFrame{
 				Integer editedBudgetDeliveryTime = Integer.valueOf(textBudgetEditDeliveryTime.getText());
 				String editedBudgetDeliveryPeriod = comboBudgetEditDeliveryPeriod.getSelectedItem().toString();
 				
-				// TODO Ask them if the budget date could be changed after it was created
-				if (!editBudgetDate.equals(editedBudgetDate)) {
-					DateTimeFormatter dtf = DateTimeFormat.forPattern("dd-MM-yyyy");
-					DateTimeFormatter dtf2 = DateTimeFormat.forPattern("yyyy-MM-dd");
-					DateTime newDate = dtf.parseDateTime(editedBudgetDate);
-					// TODO Edit Budget code here after the date has been modified
-					listFields.add("`date`");
-					listValues.add("'" + dtf2.print(newDate) + "'");
-				}
+//				if (!editBudgetDate.equals(editedBudgetDate)) {
+//					DateTimeFormatter dtf = DateTimeFormat.forPattern("dd-MM-yyyy");
+//					DateTimeFormatter dtf2 = DateTimeFormat.forPattern("yyyy-MM-dd");
+//					DateTime newDate = dtf.parseDateTime(editedBudgetDate);
+//					listFields.add("`date`");
+//					listValues.add("'" + dtf2.print(newDate) + "'");
+//				}
 				if (!textBudgetEditExpiryDays.getText().isEmpty()) {
 					if	(!String.valueOf(editBudgetExpiryDays).equals(editedBudgetExpiryDays)) {
 						listFields.add("`expiry_days`");
@@ -13367,8 +13087,11 @@ public class SalesMainView extends JFrame{
 				double switchPrice = dialogBoardSwitchAdd.getSwitchAddPrice();
 				if(switchSearchId > 0) {
 					if ((switchQuantity * db.getSwitchPhases(switchSearchId)) + db.getBoardSwitchesQuantity(selectedBoardId) <= selectedTableBoardCircuits) {
-						if(db.addBoardSwitch(selectedBoardId, switchSearchId, switchQuantity, switchPrice)) {
-							loadBoardSwitchTable();
+						int answer = JOptionPane.showConfirmDialog(null, "Esta seguro que desea agregar " + switchQuantity + " interruptor al tablero?", "Aviso", JOptionPane.YES_NO_OPTION);
+						if(answer == JOptionPane.YES_OPTION) {
+							if(db.addBoardSwitch(selectedBoardId, switchSearchId, switchQuantity, switchPrice)) {
+								loadBoardSwitchTable();
+							}
 						}
 					} else {
 						JOptionPane.showMessageDialog(null, "No puede agregar mas de " + selectedTableBoardCircuits + " circuitos");

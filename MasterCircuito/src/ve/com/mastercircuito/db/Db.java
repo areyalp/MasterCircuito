@@ -985,10 +985,12 @@ public class Db extends MysqlDriver {
 	public int getBoardSwitchesQuantity(int boardId) {
 		ResultSet setBoardSwitchesQuantity;
 		int boardSwitchesQuantity = 0;
-		setBoardSwitchesQuantity = this.select("SELECT IFNULL(SUM(board_switches.quantity * switches.phases),0) as cnt " +
-													"FROM board_switches, switches " +
-													"WHERE board_switches.board_container_id = '" + boardId + "' " +
-													"AND board_switches.switch_id = switches.id");
+		String query = "SELECT IFNULL(SUM(board_switches.quantity * switches.phases),0) as cnt " +
+				"FROM board_switches, switches " +
+				"WHERE board_switches.board_container_id = '" + boardId + "' " +
+				"AND board_switches.switch_id = switches.id " +
+				"AND board_switches.main = 0";
+		setBoardSwitchesQuantity = this.select(query);
 		
 		try {
 			setBoardSwitchesQuantity.first();
