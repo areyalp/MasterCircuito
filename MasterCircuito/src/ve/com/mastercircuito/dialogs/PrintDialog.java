@@ -39,8 +39,6 @@ import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.view.JasperViewer;
 import ve.com.mastercircuito.db.Db;
 
-
-
 public class PrintDialog extends JDialog {
 
 	/**
@@ -159,15 +157,16 @@ public class PrintDialog extends JDialog {
 				
 				try {
 					parametersMap.put(JRParameter.REPORT_LOCALE, new Locale("es", "VE"));
-					JasperReport report = (JasperReport) JRLoader.loadObjectFromFile( reportType + printType + ".jasper" );
+					File jasperFile = new File(reportType + printType + ".jasper");
+					JasperReport report = (JasperReport) JRLoader.loadObject(jasperFile);
 					JasperPrint jasperPrint = JasperFillManager.fillReport(report, parametersMap, db.getConnection());
 					if(checkPrintPreview.isSelected()) {
 						JasperViewer.viewReport(jasperPrint, false);
 					} else {
 						String savePath = "";
-						
-						String documentsDirPath = FileSystemView.getFileSystemView().getDefaultDirectory().getPath();
-						String desktopDirPath = System.getProperty("user.home") + "/Desktop";
+						FileSystemView filesys = FileSystemView.getFileSystemView();
+						String documentsDirPath = filesys.getDefaultDirectory().getPath();
+						String desktopDirPath = filesys.getHomeDirectory().getPath();
 						
 						File mastercircuitoDocumentsDir = new File(documentsDirPath + "/MasterCircuito");
 						File mastercircuitoDesktopDir = new File(desktopDirPath + "/MasterCircuito");
@@ -202,6 +201,7 @@ public class PrintDialog extends JDialog {
 				}
 				catch( JRException | IOException  ex ) {
 					ex.printStackTrace();
+					JOptionPane.showMessageDialog(null, ex.getMessage());
 					JOptionPane.showMessageDialog(null, "Ha ocurrido un error inesperado al imprimir");
 				}
 				finally {
